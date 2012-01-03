@@ -88,8 +88,9 @@ private
   # Retrieve value and write fragment to the doc.
   def compile_fragment(bin, doc)
     value = send(bin.definition.getter)
-    value = bin.definition.default if value.nil? # DISCUSS: eventually move back to Ref.
-    write_fragment_for(bin, value, doc)
+    
+    value = bin.definition.default_for(value)
+    write_fragment_for(bin, value, doc) unless value.nil? and not bin.definition.options[:represent_nil]
   end
   
   # Parse value from doc and update the model property.
@@ -100,7 +101,6 @@ private
   end
   
   def write_fragment_for(bin, value, doc) # DISCUSS: move to Binding?
-    return if value.nil?
     bin.write(doc, value)
   end
   
@@ -143,6 +143,7 @@ private
       #   property :name, :from => :title
       #   property :name, :class => Name
       #   property :name, :default => "Mike"
+      #   property :name, :include_nil => true
       def property(name, options={})
         representable_attrs << definition_class.new(name, options)
       end

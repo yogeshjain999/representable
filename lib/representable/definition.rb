@@ -37,9 +37,9 @@ module Representable
       (options[:from] || name).to_s
     end
     
-    def default
-      options[:default] ||= [] if array?  # FIXME: move to CollectionBinding!
-      options[:default]
+    def default_for(value)
+      return default if value.nil? and not options[:represent_nil]
+      value
     end
     
     def representer_module
@@ -48,6 +48,12 @@ module Representable
     
     def attribute
       options[:attribute]
+    end
+    
+  #private
+    def default
+      options[:default] ||= [] if array?  # FIXME: move to CollectionBinding!
+      options[:default]
     end
   end
 end
