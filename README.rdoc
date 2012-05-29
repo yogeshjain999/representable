@@ -247,7 +247,7 @@ You can also define conditions on properties on the class layer.
     property :friends, :if => lambda { forename == "Peter" }
   end
   
-  When rendering or parsing, the +friends+ property is considered only if the condition block evals to true. Note that the block is executed in instance context, giving you access to instance methods.
+When rendering or parsing, the +friends+ property is considered only if the condition block evals to true. Note that the block is executed in instance context, giving you access to instance methods.
 
 == DCI
 
