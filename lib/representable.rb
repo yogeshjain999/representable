@@ -76,7 +76,6 @@ private
   
   def skip_excluded_property?(binding, options)
     return unless props = options[:exclude] || options[:include]
-    props = options[:exclude] || options[:include]
     res   = props.include?(binding.definition.name.to_sym)
     options[:include] ? !res : res
   end
