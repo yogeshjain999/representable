@@ -126,7 +126,7 @@ class DefinitionTest < MiniTest::Spec
     end
     
     it "responds to #default" do
-      assert_equal [], @def.default
+      assert_equal [], @def.send(:default)
     end
   end
   
@@ -143,12 +143,12 @@ class DefinitionTest < MiniTest::Spec
   describe ":default => value" do
     it "responds to #default" do
       @def = Representable::Definition.new(:song)
-      assert_equal nil, @def.default
+      assert_equal nil, @def.send(:default)
     end
     
     it "accepts a default value" do
       @def = Representable::Definition.new(:song, :default => "Atheist Peace")
-      assert_equal "Atheist Peace", @def.default
+      assert_equal "Atheist Peace", @def.send(:default)
     end
   end
   

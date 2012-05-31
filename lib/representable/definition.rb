@@ -54,7 +54,7 @@ module Representable
       value.nil? and not options[:represent_nil]
     end
     
-  #private
+  private
     def default
       options[:default] ||= [] if array?  # FIXME: move to CollectionBinding!
       options[:default]
