@@ -88,21 +88,21 @@ private
   # Retrieve value and write fragment to the doc.
   def compile_fragment(bin, doc)
     value = send(bin.definition.getter)
+    value = bin.definition.default_for(value)
     
-    # centralize the nil check here, on purpose. i do that in favor of Definition#default_for.
-    value = bin.definition.default      if bin.definition.skipable_nil_value?(value)
-    write_fragment_for(bin, value, doc) unless bin.definition.skipable_nil_value?(value)
+    write_fragment_for(bin, value, doc)
   end
   
   # Parse value from doc and update the model property.
   def uncompile_fragment(bin, doc)
     value = read_fragment_for(bin, doc)
+    value = bin.definition.default_for(value)
     
-    value = bin.definition.default if bin.definition.skipable_nil_value?(value)
     send(bin.definition.setter, value)
   end
   
   def write_fragment_for(bin, value, doc) # DISCUSS: move to Binding?
+    return if bin.definition.skipable_nil_value?(value)
     bin.write(doc, value)
   end
   
