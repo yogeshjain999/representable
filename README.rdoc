@@ -251,7 +251,7 @@ When rendering or parsing, the +friends+ property is considered only if the cond
 
 === False and Nil Values
 
-Since 1.2 +false+ values are considered when parsing and rendering. That particularly means properties that used to be unset (i.e. @nil@) after parsing might be @false@ now. Vice versa, +false+ values that weren't included in the rendered document will be visible now.
+Since 1.2 +false+ values are considered when parsing and rendering. That particularly means properties that used to be unset (i.e. +nil+) after parsing might be +false+ now. Vice versa, +false+ values that weren't included in the rendered document will be visible now.
 
 If you want +nil+ values to be included when rendering, use the +:represent_nil+ option.
 
