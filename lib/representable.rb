@@ -89,14 +89,16 @@ private
   def compile_fragment(bin, doc)
     value = send(bin.definition.getter)
     
-    value = bin.definition.default_for(value)
-    write_fragment_for(bin, value, doc) unless value.nil? and not bin.definition.options[:represent_nil]
+    # centralize the nil check here, on purpose. i do that in favor of Definition#default_for.
+    value = bin.definition.default      if bin.definition.skipable_nil_value?(value)
+    write_fragment_for(bin, value, doc) unless bin.definition.skipable_nil_value?(value)
   end
   
   # Parse value from doc and update the model property.
   def uncompile_fragment(bin, doc)
     value = read_fragment_for(bin, doc)
-    value = bin.definition.default if value.nil?
+    
+    value = bin.definition.default if bin.definition.skipable_nil_value?(value)
     send(bin.definition.setter, value)
   end
   

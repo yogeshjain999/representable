@@ -55,6 +55,30 @@ class DefinitionTest < MiniTest::Spec
     end
   end
   
+  describe "#skipable_nil_value?" do
+    # default if skipable_nil_value?
+    before do
+      @def = Representable::Definition.new(:song, :represent_nil => true)
+    end
+    
+    it "returns false when not nil" do
+      assert_equal false, @def.skipable_nil_value?("Disconnect, Disconnect")
+    end
+    
+    it "returns false when nil and :represent_nil => true" do
+      assert_equal false, @def.skipable_nil_value?(nil)
+    end
+    
+    it "returns true when nil and :represent_nil => false" do
+      assert_equal true, Representable::Definition.new(:song).skipable_nil_value?(nil)
+    end
+    
+    it "returns false when not nil and :represent_nil => false" do
+      assert_equal false, Representable::Definition.new(:song).skipable_nil_value?("Fatal Flu")
+    end
+  end
+  
+  
   describe "#default_for" do
     before do
       @def = Representable::Definition.new(:song, :default => "Insider")

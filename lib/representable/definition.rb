@@ -38,7 +38,7 @@ module Representable
     end
     
     def default_for(value)
-      return default if value.nil? and not options[:represent_nil]
+      return default if skipable_nil_value?(value)
       value
     end
     
@@ -48,6 +48,10 @@ module Representable
     
     def attribute
       options[:attribute]
+    end
+    
+    def skipable_nil_value?(value)
+      value.nil? and not options[:represent_nil]
     end
     
   #private
