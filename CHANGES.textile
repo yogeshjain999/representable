@@ -1,7 +1,8 @@
-h2. 1.1.7
+h2. 1.2.0
 
 * Deprecated @:except@ in favor of @:exclude@.
-* A property with `false` value will now be included in the rendered representation. Same applies to parsing, `false` values will now be included. That particularly means properties that used to be unset after parsing might be `false` now. `nil` values are still ignored in both rendering and parsing.
+* A property with @false@ value will now be included in the rendered representation. Same applies to parsing, @false@ values will now be included. That particularly means properties that used to be unset (i.e. @nil@) after parsing might be @false@ now.
+* You can include @nil@ values now in your representations since @#property@ respects @:represent_nil => true@.
 
 h2. 1.1.6
 
