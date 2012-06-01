@@ -1,6 +1,7 @@
 h2. 1.2.1
 
 * Deprecated @:represent_nil@ favor of @:render_nil@.
+* API change: if a property is missing in an incoming document and there is no default set it is completely ignored and *not* set in the represented object.
 
 h2. 1.2.0
 
