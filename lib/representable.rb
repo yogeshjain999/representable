@@ -96,7 +96,11 @@ private
   # Parse value from doc and update the model property.
   def uncompile_fragment(bin, doc)
     value = read_fragment_for(bin, doc)
-    value = bin.definition.default_for(value)
+    
+    if value == Binding::FragmentNotFound
+      return unless bin.definition.options.has_key?(:default)
+      value = bin.definition.default_for(nil) # DISCUSS: use default here for simplicity?
+    end
     
     send(bin.definition.setter, value)
   end

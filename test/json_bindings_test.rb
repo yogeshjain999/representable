@@ -13,6 +13,23 @@ class JSONBindingTest < MiniTest::Spec
   
   
   describe "PropertyBinding" do
+    describe "#read" do
+      before do
+        @property = Representable::JSON::PropertyBinding.new(Representable::Definition.new(:song))
+      end
+      
+      it "returns fragment if present" do
+        assert_equal "Stick The Flag Up Your Goddamn Ass, You Sonofabitch", @property.read({"song" => "Stick The Flag Up Your Goddamn Ass, You Sonofabitch"})
+        assert_equal "", @property.read({"song" => ""})
+        assert_equal nil, @property.read({"song" => nil})
+      end
+      
+      it "returns FRAGMENT_NOT_FOUND if not in document" do
+        assert_equal Representable::Binding::FragmentNotFound, @property.read({})
+      end
+      
+    end
+    
     describe "with plain text" do
       before do
         @property = Representable::JSON::PropertyBinding.new(Representable::Definition.new(:song))

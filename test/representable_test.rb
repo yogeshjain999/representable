@@ -253,6 +253,26 @@ class RepresentableTest < MiniTest::Spec
       @band.update_properties_from({"groupies"=>false}, {}, Representable::JSON)
       assert_equal false, @band.groupies
     end
+    
+    it "ignores (no-default) properties not present in the incoming document" do
+      { Representable::JSON => {}, 
+        Representable::XML  => xml(%{<band/>})
+      }.each do |format, document|
+        nested_repr = Module.new do # this module is never applied.
+          include format
+          property :created_at
+        end
+        
+        repr = Module.new do
+          include format
+          property :name, :class => Object, :extend => nested_repr
+        end
+        
+        @band = Band.new.extend(repr)
+        @band.update_properties_from(document, {}, format)
+        assert_equal nil, @band.name, "Failed in #{format}"
+      end
+    end
   end
   
   describe "#create_representation_with" do

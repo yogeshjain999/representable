@@ -31,7 +31,7 @@ module JsonTest
         
         it "yields new object and options to block" do
           @Band.class_eval { attr_accessor :new_name }
-          @band = @Band.from_json({}, :new_name => "Diesel Boy") do |band, options|
+          @band = @Band.from_json("{}", :new_name => "Diesel Boy") do |band, options|
             band.new_name= options[:new_name]
           end
           assert_equal "Diesel Boy", @band.new_name
@@ -366,7 +366,7 @@ end
       
       class Compilation
         include Representable::JSON
-        collection :bands, :class => Band
+        collection :bands, :class => Band, :default => []
         attr_accessor :bands
       end
       
@@ -378,8 +378,8 @@ end
           assert_equal ["Cobra Skulls", "Diesel Boy"], cd.bands.map(&:name).sort
         end
         
-        it "creates emtpy array per default" do
-          cd = Compilation.from_json({:compilation => {}}.to_json)
+        it "creates emtpy array from default if configured" do
+          cd = Compilation.from_json({}.to_json)
           assert_equal [], cd.bands
         end
       end

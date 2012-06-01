@@ -4,6 +4,7 @@ Bundler.setup
 gem 'minitest'
 require 'representable'
 require 'representable/json'
+require 'representable/xml'
 require 'test/unit'
 require 'minitest/spec'
 require 'minitest/autorun'
@@ -27,4 +28,14 @@ class Song
   def ==(other)
     name == other.name
   end
+end
+
+module XmlHelper
+  def xml(document)
+    Nokogiri::XML(document).root
+  end
+end
+
+MiniTest::Spec.class_eval do
+  include XmlHelper
 end

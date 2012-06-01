@@ -40,7 +40,7 @@ module Representable
       
       def read(node)
         nodes = node.search("./#{xpath}")
-        return if nodes.size == 0 # TODO: write dedicated test!
+        return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
         
         deserialize_from(nodes)
       end

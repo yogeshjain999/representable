@@ -282,7 +282,7 @@ class CollectionTest < MiniTest::Spec
   describe ":class => Band, :from => :band, :collection => true" do
     class Compilation
       include Representable::XML
-      collection :bands, :class => Band, :from => :band
+      collection :bands, :class => Band, :from => :band, :default => []
       attr_accessor :bands
     end
     
@@ -297,7 +297,7 @@ class CollectionTest < MiniTest::Spec
         assert_equal ["Cobra Skulls", "Diesel Boy"], cd.bands.map(&:name).sort
       end
       
-      it "collections can be empty" do
+      it "collections can be empty when default set" do
         cd = Compilation.from_xml(%{
           <compilation>
           </compilation>

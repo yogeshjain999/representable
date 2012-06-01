@@ -27,6 +27,8 @@ module Representable
       end
       
       def read(hash)
+        return FragmentNotFound unless hash.has_key?(definition.from) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
+        
         fragment = hash[definition.from]
         deserialize_from(fragment)
       end
@@ -54,7 +56,6 @@ module Representable
       end
       
       def deserialize_from(fragment)
-        fragment ||= {}
         fragment.collect { |item_fragment| deserialize(item_fragment) }
       end
     end

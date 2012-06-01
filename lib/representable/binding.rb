@@ -1,7 +1,11 @@
 module Representable
   class Binding
-    attr_reader :definition
-
+    class FragmentNotFound
+    end
+    
+    
+    attr_reader :definition # TODO: merge Binding and Definition.
+  
     def initialize(definition)
       @definition = definition
     end
