@@ -60,7 +60,6 @@ module Representable
       value.nil? and not options[:represent_nil]
     end
     
-  #private
     def default
       options[:default]
     end

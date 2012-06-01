@@ -99,7 +99,7 @@ private
     
     if value == Binding::FragmentNotFound
       return unless bin.definition.has_default?
-      value = bin.definition.default_for(nil) # DISCUSS: use default here for simplicity?
+      value = bin.definition.default
     end
     
     send(bin.definition.setter, value)
