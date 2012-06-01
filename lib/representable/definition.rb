@@ -7,6 +7,8 @@ module Representable
     def initialize(sym, options={})
       @name     = sym.to_s
       @options  = options
+      
+      options[:default] ||= [] if array?  # FIXME: move to CollectionBinding!
     end
     
     def clone
@@ -58,9 +60,8 @@ module Representable
       value.nil? and not options[:represent_nil]
     end
     
-  private
+  #private
     def default
-      options[:default] ||= [] if array?  # FIXME: move to CollectionBinding!
       options[:default]
     end
   end

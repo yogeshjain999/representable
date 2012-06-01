@@ -63,6 +63,11 @@ class DefinitionTest < MiniTest::Spec
     it "returns true if :default set" do
       assert_equal true, Representable::Definition.new(:song, :default => nil).has_default?
     end
+    
+    it "returns true if :collection" do
+      assert_equal true, Representable::Definition.new(:songs, :collection => true).has_default?
+    end
+    
   end
   
   

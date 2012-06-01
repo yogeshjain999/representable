@@ -282,7 +282,7 @@ class CollectionTest < MiniTest::Spec
   describe ":class => Band, :from => :band, :collection => true" do
     class Compilation
       include Representable::XML
-      collection :bands, :class => Band, :from => :band, :default => []
+      collection :bands, :class => Band, :from => :band
       attr_accessor :bands
     end
     

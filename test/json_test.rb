@@ -366,7 +366,7 @@ end
       
       class Compilation
         include Representable::JSON
-        collection :bands, :class => Band, :default => []
+        collection :bands, :class => Band
         attr_accessor :bands
       end
       
