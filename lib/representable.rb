@@ -1,5 +1,5 @@
-require 'representable/definition'
 require 'representable/deprecations'
+require 'representable/definition'
 
 # Representable can be used in two ways.
 #

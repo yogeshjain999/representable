@@ -310,11 +310,11 @@ class RepresentableTest < MiniTest::Spec
       assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.send(:create_representation_with, {}, {}, Representable::JSON))
     end
     
-    it "includes nil attribute when :represent_nil is true" do
+    it "includes nil attribute when :render_nil is true" do
       mod = Module.new do
         include Representable::JSON
         property :name
-        property :groupies, :represent_nil => true
+        property :groupies, :render_nil => true
       end
       
       @band.extend(mod) # FIXME: use clean object.

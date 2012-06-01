@@ -57,7 +57,7 @@ module Representable
     end
     
     def skipable_nil_value?(value)
-      value.nil? and not options[:represent_nil]
+      value.nil? and not options[:render_nil]
     end
     
     def default

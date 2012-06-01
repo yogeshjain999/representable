@@ -1,3 +1,7 @@
+h2. 1.2.1
+
+* Deprecated @:represent_nil@ favor of @:render_nil@.
+
 h2. 1.2.0
 
 * Deprecated @:except@ in favor of @:exclude@.

@@ -74,22 +74,22 @@ class DefinitionTest < MiniTest::Spec
   describe "#skipable_nil_value?" do
     # default if skipable_nil_value?
     before do
-      @def = Representable::Definition.new(:song, :represent_nil => true)
+      @def = Representable::Definition.new(:song, :render_nil => true)
     end
     
     it "returns false when not nil" do
       assert_equal false, @def.skipable_nil_value?("Disconnect, Disconnect")
     end
     
-    it "returns false when nil and :represent_nil => true" do
+    it "returns false when nil and :render_nil => true" do
       assert_equal false, @def.skipable_nil_value?(nil)
     end
     
-    it "returns true when nil and :represent_nil => false" do
+    it "returns true when nil and :render_nil => false" do
       assert_equal true, Representable::Definition.new(:song).skipable_nil_value?(nil)
     end
     
-    it "returns false when not nil and :represent_nil => false" do
+    it "returns false when not nil and :render_nil => false" do
       assert_equal false, Representable::Definition.new(:song).skipable_nil_value?("Fatal Flu")
     end
   end
@@ -112,13 +112,13 @@ class DefinitionTest < MiniTest::Spec
       assert_equal "Insider", @def.default_for(nil)
     end
     
-    it "returns nil when value nil and :represent_nil true" do
-      @def = Representable::Definition.new(:song, :represent_nil => true)
+    it "returns nil when value nil and :render_nil true" do
+      @def = Representable::Definition.new(:song, :render_nil => true)
       assert_equal nil, @def.default_for(nil)
     end
     
-    it "returns nil when value nil and :represent_nil true even when :default is set" do
-      @def = Representable::Definition.new(:song, :represent_nil => true, :default => "The Quest")
+    it "returns nil when value nil and :render_nil true even when :default is set" do
+      @def = Representable::Definition.new(:song, :render_nil => true, :default => "The Quest")
       assert_equal nil, @def.default_for(nil)
     end
     
