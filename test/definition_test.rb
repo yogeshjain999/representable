@@ -55,6 +55,17 @@ class DefinitionTest < MiniTest::Spec
     end
   end
   
+  describe "#has_default?" do
+    it "returns false if no :default set" do
+      assert_equal false, Representable::Definition.new(:song).has_default?
+    end
+    
+    it "returns true if :default set" do
+      assert_equal true, Representable::Definition.new(:song, :default => nil).has_default?
+    end
+  end
+  
+  
   describe "#skipable_nil_value?" do
     # default if skipable_nil_value?
     before do

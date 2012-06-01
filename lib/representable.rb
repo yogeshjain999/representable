@@ -98,7 +98,7 @@ private
     value = read_fragment_for(bin, doc)
     
     if value == Binding::FragmentNotFound
-      return unless bin.definition.options.has_key?(:default)
+      return unless bin.definition.has_default?
       value = bin.definition.default_for(nil) # DISCUSS: use default here for simplicity?
     end
     

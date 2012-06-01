@@ -42,6 +42,10 @@ module Representable
       value
     end
     
+    def has_default?
+      options.has_key?(:default)
+    end
+    
     def representer_module
       options[:extend]
     end
