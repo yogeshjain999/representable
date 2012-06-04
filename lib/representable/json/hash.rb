@@ -19,13 +19,15 @@ module Representable::JSON
     
     def create_representation_with(doc, options, format)
       bin   = representable_bindings_for(format).first
-      bin.serialize_for(self)
+      hash  = filter_keys_for(self, options)
+      bin.serialize_for(hash)
     end
     
     def update_properties_from(doc, options, format)
       bin   = representable_bindings_for(format).first
       value = bin.deserialize_from(doc)
-      replace(value)
+      hash  = filter_keys_for(doc, options)
+      replace(hash)
       self
     end
     
@@ -34,6 +36,12 @@ module Representable::JSON
       attrs = super
       attrs << Definition.new(:_self, :hash => true) if attrs.size == 0
       attrs
+    end
+    
+  private
+    def filter_keys_for(hash, options)
+      return hash unless props = options[:exclude] || options[:include]
+      hash.reject { |k,v| options[:exclude] ? props.include?(k.to_sym) : !props.include?(k.to_sym) }
     end
   end
 end

@@ -502,12 +502,32 @@ end
           end
         end
         
-        it "renders objects with #to_json" do
-          assert_equal "{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json
+        describe "#to_json" do
+          it "renders objects" do
+            assert_equal "{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json
+          end
+          
+          it "respects :exclude" do
+            assert_equal "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:exclude => [:one])
+          end
+          
+          it "respects :include" do
+            assert_equal "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:include => [:two])
+          end
         end
         
-        it "returns objects array from #from_json" do
-          assert_equal({"one" => Song.new("Days Go By"), "two" => Song.new("Can't Take Them All")}, {}.extend(@songs_representer).from_json("{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}"))
+        describe "#from_json" do
+          it "returns objects array" do
+            assert_equal({"one" => Song.new("Days Go By"), "two" => Song.new("Can't Take Them All")}, {}.extend(@songs_representer).from_json("{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}"))
+          end
+        
+          it "respects :exclude" do
+            assert_equal({"two" => Song.new("Can't Take Them All")}, {}.extend(@songs_representer).from_json("{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", :exclude => [:one]))
+          end
+          
+          it "respects :include" do
+            assert_equal({"one" => Song.new("Days Go By")}, {}.extend(@songs_representer).from_json("{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", :include => [:one]))
+          end
         end
       end
       
