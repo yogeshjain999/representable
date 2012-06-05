@@ -336,4 +336,42 @@ class CollectionTest < MiniTest::Spec
       assert_equal ["Laundry Basket", "Two Kevins", "Wright and Rong"].sort, album.songs.sort
     end
   end
+  
+  require 'representable/xml/hash'
+  describe "XML::AttributeHash" do  # TODO: move to HashTest.
+    before do
+      @songs_representer = Module.new do
+        include Representable::XML::AttributeHash
+        self.representation_wrap= :favs
+      end
+    end
+    
+    describe "#to_xml" do
+      it "renders values into attributes converting values to strings" do
+        assert_xml_equal "<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(@songs_representer).to_xml
+      end
+      
+      it "respects :exclude" do
+        assert_xml_equal "<favs two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(@songs_representer).to_xml(:exclude => [:one])
+      end
+      
+      it "respects :include" do
+        assert_xml_equal "<favs two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(@songs_representer).to_xml(:include => [:two])
+      end
+    end
+    
+    describe "#from_json" do
+      it "returns hash" do
+        assert_equal({"one" => "Graveyards", "two" => "Can't Take Them All"}, {}.extend(@songs_representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />"))
+      end
+    
+      it "respects :exclude" do
+        assert_equal({"two" => "Can't Take Them All"}, {}.extend(@songs_representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", :exclude => [:one]))
+      end
+      
+      it "respects :include" do
+        assert_equal({"one" => "Graveyards"}, {}.extend(@songs_representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", :include => [:one]))
+      end
+    end
+  end
 end

@@ -493,7 +493,7 @@ end
       property :name
     end
     
-    describe "JSON::Hash" do
+    describe "JSON::Hash" do  # TODO: move to HashTest.
       describe "with contained objects" do
         before do
           @songs_representer = Module.new do

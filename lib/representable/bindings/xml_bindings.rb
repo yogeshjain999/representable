@@ -110,6 +110,24 @@ module Representable
       end
     end
     
+    class AttributeHashBinding < CollectionBinding
+      # DISCUSS: use AttributeBinding here?
+      def write(parent, value)  # DISCUSS: is it correct overriding #write here?
+        value.collect do |k, v|
+          parent[k] = serialize(v.to_s)
+        end
+        parent
+      end
+      
+      def deserialize_from(node)
+        {}.tap do |hash|
+          node.each do |k,v|
+            hash[k] = deserialize(v)
+          end
+        end
+      end
+    end
+    
     
     # Represents a tag attribute. Currently this only works on the top-level tag.
     class AttributeBinding < PropertyBinding
