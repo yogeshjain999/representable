@@ -1,6 +1,9 @@
+require 'representable/hash_methods'
+
 module Representable::JSON
   module Hash
     include Representable::JSON
+    include HashMethods
     
     def self.included(base)
       base.class_eval do
@@ -36,12 +39,6 @@ module Representable::JSON
       attrs = super
       attrs << Definition.new(:_self, :hash => true) if attrs.size == 0
       attrs
-    end
-    
-  private
-    def filter_keys_for(hash, options)
-      return hash unless props = options[:exclude] || options[:include]
-      hash.reject { |k,v| options[:exclude] ? props.include?(k.to_sym) : !props.include?(k.to_sym) }
     end
   end
 end
