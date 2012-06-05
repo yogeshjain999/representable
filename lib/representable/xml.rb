@@ -5,9 +5,10 @@ require 'nokogiri'
 module Representable
   module XML
     def self.binding_for_definition(definition)
-      return CollectionBinding.new(definition)  if definition.array?
-      return HashBinding.new(definition)        if definition.hash?
-      return AttributeBinding.new(definition)        if definition.attribute
+      return CollectionBinding.new(definition)      if definition.array?
+      return HashBinding.new(definition)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
+      return AttributeHashBinding.new(definition)   if definition.hash? and definition.options[:use_attributes]
+      return AttributeBinding.new(definition)       if definition.attribute
       PropertyBinding.new(definition)
     end
     
