@@ -71,6 +71,7 @@ module Representable::XML
       bin   = representable_bindings_for(format).first
       value = bin.deserialize_from(doc)
       replace(value)
+      self
     end
     
     # FIXME: refactor Definition so we can simply add options in #items to existing definition.
