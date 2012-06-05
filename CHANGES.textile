@@ -1,3 +1,8 @@
+h2. 1.2.2
+
+* Added @XML::AttributeHash@ to store hash key-value pairs in attributes instead of dedicated tags.
+* @JSON::Hash@, @XML::Hash@ and @XML::AttributeHash@ now respect @:exclude@ and @:include@ when parsing and rendering.
+
 h2. 1.2.1
 
 * Deprecated @:represent_nil@ favor of @:render_nil@.

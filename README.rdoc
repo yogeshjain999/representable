@@ -185,7 +185,7 @@ You can use #items to configure the element representations contained in the arr
     items :class => Hero, :extend => HeroRepresenter
   end
 
-Collections and hashes can also be deserialized.
+Collections and hashes can also be deserialized. Note that this also works for XML.
 
 == Lonely Hashes
 
@@ -198,6 +198,8 @@ The same goes with hashes where #values lets you configure the hash's values.
   end
   
   {:stu => Hero.new("Stu"), :clive => Hero.new("Cleavage")}.extend(FriendsRepresenter).to_json
+
+In XML, if you want to store hash attributes in tag attributes instead of dedicated nodes, use XML::AttributeHash.
 
 
 == Customizing
