@@ -41,6 +41,7 @@ module Representable
       
       # Copies the representable_attrs to the extended object.
       def self.extended(object)
+        super
         object.representable_attrs=(representable_attrs)
       end
     end
