@@ -33,7 +33,6 @@ module Representable
       include Deprecations
       extend ClassMethods
       extend ClassMethods::Declarations
-      extend ClassMethods::Accessors
       
       def self.included(base)
         base.representable_attrs.push(*representable_attrs.clone) # "inherit".
@@ -138,6 +137,14 @@ private
     end
     
     module Declarations
+      def representable_attrs
+        @representable_attrs ||= Config.new
+      end
+      
+      def representation_wrap=(name)
+        representable_attrs.wrap = name
+      end
+      
       # Declares a represented document node, which is usually a XML tag or a JSON key.
       #
       # Examples:
@@ -169,21 +176,10 @@ private
         options[:hash] = true
         property(name, options)
       end
-    
+      
     private
       def definition_class
         Definition
-      end
-    end
-    
-    
-    module Accessors
-      def representable_attrs
-        @representable_attrs ||= Config.new
-      end
-      
-      def representation_wrap=(name)
-        representable_attrs.wrap = name
       end
     end
   end
