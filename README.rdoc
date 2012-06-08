@@ -320,18 +320,18 @@ Naturally, this works for both ways.
 
 == Coercion
 
-If you fancy coercion when parsing a document you can use the Coercion module which uses virtus[https://github.com/solnic/virtus] for type conversion. Due to some virtus' nature this can be used on class layer with inline representers, only for now.
+If you fancy coercion when parsing a document you can use the Coercion module which uses virtus[https://github.com/solnic/virtus] for type conversion.
 
-Include virtus in your Gemfile, first.
+Include virtus in your Gemfile, first. Be sure to include virtus 0.5.0 or greater.
 
   gem 'virtus'
-  
+
 Use the +:type+ option to specify the conversion target. Note that +:default+ still works.
 
-  class Hero
+  module HeroRepresenter
     include Representable::JSON
     include Virtus
-    extend Representable::Coercion::ClassMethods
+    include Representable::Coercion
       
     property :born_at, :type => DateTime, :default => "May 12th, 2012"
   end

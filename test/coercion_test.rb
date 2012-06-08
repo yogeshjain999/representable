@@ -24,7 +24,7 @@ class VirtusCoercionTest < MiniTest::Spec
     class ImmigrantSong
       include Representable::JSON
       include Virtus
-      extend Representable::Coercion::ClassMethods
+      include Representable::Coercion
       
       property :composed_at, :type => DateTime, :default => "May 12th, 2012"
     end
