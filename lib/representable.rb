@@ -30,19 +30,11 @@ module Representable
   
   def self.included(base)
     base.class_eval do
-      include Deprecations
+      extend ClassInclusions, ModuleExtensions
       extend ClassMethods
       extend ClassMethods::Declarations
       
-      def self.included(base)
-        base.representable_attrs.push(*representable_attrs.clone) # "inherit".
-      end
-      
-      # Copies the representable_attrs to the extended object.
-      def self.extended(object)
-        super
-        object.representable_attrs=(representable_attrs)
-      end
+      include Deprecations
     end
   end
   
@@ -128,6 +120,22 @@ private
   end
   
   
+  module ClassInclusions
+    def included(base)
+      super
+      base.representable_attrs.push(*representable_attrs.clone) # "inherit".
+    end
+  end
+  
+  module ModuleExtensions
+    # Copies the representable_attrs to the extended object.
+    def extended(object)
+      super
+      object.representable_attrs=(representable_attrs)
+    end
+  end
+  
+  
   module ClassMethods
     # Create and yield object and options. Called in .from_json and friends. 
     def create_represented(document, *args)
@@ -135,6 +143,7 @@ private
         yield represented, *args if block_given?
       end
     end
+    
     
     module Declarations
       def representable_attrs
