@@ -16,7 +16,7 @@ require 'representable/definition'
 #
 # == On module level
 #
-# Modules give you much more flexibility since you can mix them into objects at runtime, roughly following the DCI
+# Modules give you much more flexibility since you can mix them into objects at runtime, following the DCI
 # pattern.
 #
 #   module HeroRepresenter
@@ -129,7 +129,7 @@ private
   end
   
   
-  module ClassMethods # :nodoc:
+  module ClassMethods
     # Create and yield object and options. Called in .from_json and friends. 
     def create_represented(document, *args)
       new.tap do |represented|
@@ -138,10 +138,6 @@ private
     end
     
     module Declarations
-      def definition_class
-        Definition
-      end
-      
       # Declares a represented document node, which is usually a XML tag or a JSON key.
       #
       # Examples:
@@ -172,6 +168,11 @@ private
         
         options[:hash] = true
         property(name, options)
+      end
+    
+    private
+      def definition_class
+        Definition
       end
     end
     

@@ -205,7 +205,7 @@ class RepresentableTest < MiniTest::Spec
   
   describe "#definition_class" do
     it "returns Definition class" do
-      assert_equal Representable::Definition, Band.definition_class
+      assert_equal Representable::Definition, Band.send(:definition_class)
     end
   end
 

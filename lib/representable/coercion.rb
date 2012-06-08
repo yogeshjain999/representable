@@ -14,5 +14,4 @@ module Representable::Coercion
       super(name, args)
     end
   end
-  
 end
