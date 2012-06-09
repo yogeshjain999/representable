@@ -27,5 +27,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "minitest", ">= 2.8.1"
   s.add_development_dependency "mocha"
   s.add_development_dependency "mongoid"
-  s.add_development_dependency "virtus"
+  s.add_development_dependency "virtus", "~> 0.5.0"
 end

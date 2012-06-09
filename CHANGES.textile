@@ -1,3 +1,7 @@
+h2. 1.2.3
+
+* Using virtus for coercion now works in both classes and modules. Thanks to @solnic for a great collaboration. Open-source rocks!
+
 h2. 1.2.2
 
 * Added @XML::AttributeHash@ to store hash key-value pairs in attributes instead of dedicated tags.
