@@ -63,7 +63,7 @@ class RepresentableTest < MiniTest::Spec
         end.new
         vd.name        = "Vention Dention"
         vd.street_cred = 1
-        assert_equal "{\"name\":\"Vention Dention\",\"street_cred\":1}", vd.to_json
+        assert_json "{\"name\":\"Vention Dention\",\"street_cred\":1}", vd.to_json
       end
       
       #it "allows including the concrete representer module only" do
@@ -113,7 +113,7 @@ class RepresentableTest < MiniTest::Spec
       band = Bodyjar.new
       band.name = "Bodyjar"
       
-      assert_equal "{\"band\":{\"name\":\"Bodyjar\"}}", band.to_json
+      assert_json "{\"band\":{\"name\":\"Bodyjar\"}}", band.to_json
       assert_xml_equal "<band><name>Bodyjar</name></band>", band.to_xml
     end
     
@@ -130,7 +130,7 @@ class RepresentableTest < MiniTest::Spec
       
       @song = Song.new("Days Go By")
       assert_xml_equal "<song name=\"Days Go By\"/>", @song.extend(SongXmlRepresenter).to_xml
-      assert_equal "{\"name\":\"Days Go By\"}", @song.extend(SongJsonRepresenter).to_json
+      assert_json "{\"name\":\"Days Go By\"}", @song.extend(SongJsonRepresenter).to_json
     end
   end
   
