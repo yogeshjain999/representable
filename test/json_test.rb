@@ -98,7 +98,7 @@ module JsonTest
 
       describe "#to_json" do
         it "delegates to #to_hash and returns string" do
-          assert_equal "{\"name\":\"Rise Against\"}", @Band.new("Rise Against").to_json
+          assert_json "{\"name\":\"Rise Against\"}", @Band.new("Rise Against").to_json
         end
       end
 
@@ -181,14 +181,14 @@ module JsonTest
         end
 
         civ.extend(BandRepresenter)
-        assert_equal "{\"name\":\"CIV\"}", civ.to_json
+        assert_json "{\"name\":\"CIV\"}", civ.to_json
       end
 
       it "extends contained models when serializing" do
         @album = Album.new(Song.new("I Hate My Brain"), Song.new("Mr. Charisma"))
         @album.extend(AlbumRepresenter)
 
-        assert_equal "{\"best_song\":{\"name\":\"Mr. Charisma\"},\"songs\":[{\"name\":\"I Hate My Brain\"},{\"name\":\"Mr. Charisma\"}]}".split("").sort, @album.to_json.split("").sort
+        assert_json "{\"best_song\":{\"name\":\"Mr. Charisma\"},\"songs\":[{\"name\":\"I Hate My Brain\"},{\"name\":\"Mr. Charisma\"}]}", @album.to_json
       end
 
       it "extends contained models when deserializing" do
@@ -220,7 +220,7 @@ module JsonTest
         band = Band.new
         band.name = "Cigar"
 
-        assert_equal '{"name":"Cigar"}', band.to_json
+        assert_json '{"name":"Cigar"}', band.to_json
       end
     end
 
@@ -246,7 +246,7 @@ module JsonTest
         label = Label.new; label.name = "Fat Wreck"
         album = Album.new; album.label = label
 
-        assert_equal '{"label":{"name":"Fat Wreck"}}', album.to_json
+        assert_json '{"label":{"name":"Fat Wreck"}}', album.to_json
       end
 
       describe ":different_name, :class => Label" do
@@ -262,7 +262,7 @@ module JsonTest
           label = Label.new; label.name = "Fat Wreck"
           album = @Album.new; album.seller = label
 
-          assert_equal "{\"seller\":{\"name\":\"Fat Wreck\"}}", album.to_json(:wrap => false)
+          assert_json "{\"seller\":{\"name\":\"Fat Wreck\"}}", album.to_json(:wrap => false)
         end
       end
     end
@@ -281,7 +281,7 @@ module JsonTest
 
       it "respects :from in #to_json" do
         song = Song.new; song.name = "Run To The Hills"
-        assert_equal '{"songName":"Run To The Hills"}', song.to_json
+        assert_json '{"songName":"Run To The Hills"}', song.to_json
       end
     end
 
@@ -313,19 +313,19 @@ module JsonTest
 
     describe "#to_json" do
       it "uses default when not available in object" do
-        assert_equal "{\"name\":\"30 Years Live\"}", @Album.new.to_json
+        assert_json "{\"name\":\"30 Years Live\"}", @Album.new.to_json
       end
 
       it "uses value from represented object when present" do
         album = @Album.new
         album.name = "Live At The Wireless"
-        assert_equal "{\"name\":\"Live At The Wireless\"}", album.to_json
+        assert_json "{\"name\":\"Live At The Wireless\"}", album.to_json
       end
 
       it "uses value from represented object when emtpy string" do
         album = @Album.new
         album.name = ""
-        assert_equal "{\"name\":\"\"}", album.to_json
+        assert_json "{\"name\":\"\"}", album.to_json
       end
     end
   end
@@ -349,7 +349,7 @@ end
         cd = CD.new
         cd.songs = ["Out in the cold", "Microphone"]
 
-        assert_equal '{"songs":["Out in the cold","Microphone"]}', cd.to_json
+        assert_json '{"songs":["Out in the cold","Microphone"]}', cd.to_json
       end
     end
 
@@ -388,7 +388,7 @@ end
         cd = Compilation.new
         cd.bands = [Band.new("Diesel Boy"), Band.new("Bad Religion")]
 
-        assert_equal '{"bands":[{"name":"Diesel Boy"},{"name":"Bad Religion"}]}', cd.to_json
+        assert_json '{"bands":[{"name":"Diesel Boy"},{"name":"Bad Religion"}]}', cd.to_json
       end
     end
 
@@ -409,7 +409,7 @@ end
         songs = Songs.new
         songs.tracks = ["Out in the cold", "Microphone"]
 
-        assert_equal '{"songList":["Out in the cold","Microphone"]}', songs.to_json
+        assert_json '{"songList":["Out in the cold","Microphone"]}', songs.to_json
       end
     end
   end
@@ -431,7 +431,7 @@ end
 
       it "renders with #to_json" do
         @list.songs = {:one => "65", :two => "Emo Boy"}
-        assert_equal "{\"songs\":{\"one\":\"65\",\"two\":\"Emo Boy\"}}".split("").sort, @list.to_json.split("").sort
+        assert_json "{\"songs\":{\"one\":\"65\",\"two\":\"Emo Boy\"}}", @list.to_json
       end
 
       it "parses with #from_json" do
@@ -459,7 +459,7 @@ end
         end
 
         it "renders objects with #to_json" do
-          assert_equal "[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]", [Song.new("Days Go By"), Song.new("Can't Take Them All")].extend(@songs_representer).to_json
+          assert_json "[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]", [Song.new("Days Go By"), Song.new("Can't Take Them All")].extend(@songs_representer).to_json
         end
 
         it "returns objects array from #from_json" do
@@ -475,7 +475,7 @@ end
         end
 
         it "renders contained items #to_json" do
-          assert_equal "[\"Days Go By\",\"Can't Take Them All\"]", ["Days Go By", "Can't Take Them All"].extend(@songs_representer).to_json
+          assert_json "[\"Days Go By\",\"Can't Take Them All\"]", ["Days Go By", "Can't Take Them All"].extend(@songs_representer).to_json
         end
 
         it "returns objects array from #from_json" do
@@ -504,15 +504,15 @@ end
 
         describe "#to_json" do
           it "renders objects" do
-            assert_equal "{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}".split("").sort, {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json.split("").sort
+            assert_json "{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json
           end
 
           it "respects :exclude" do
-            assert_equal "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:exclude => [:one])
+            assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:exclude => [:one])
           end
 
           it "respects :include" do
-            assert_equal "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:include => [:two])
+            assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:include => [:two])
           end
         end
 
@@ -539,7 +539,7 @@ end
         end
 
         it "renders contained items #to_json" do
-          assert_equal "[\"Days Go By\",\"Can't Take Them All\"]", ["Days Go By", "Can't Take Them All"].extend(@songs_representer).to_json
+          assert_json "[\"Days Go By\",\"Can't Take Them All\"]", ["Days Go By", "Can't Take Them All"].extend(@songs_representer).to_json
         end
 
         it "returns objects array from #from_json" do
