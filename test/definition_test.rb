@@ -128,6 +128,66 @@ class DefinitionTest < MiniTest::Spec
     end
   end
     
+  
+  describe "#writable?" do
+
+    it "returns true when :writable is not given" do
+      @def = Representable::Definition.new(:song)
+      assert_equal true, @def.writable?
+    end
+
+    it "returns true when :writable => true" do
+      @def = Representable::Definition.new(:song, :writable => true)
+      assert_equal true, @def.writable?
+    end
+
+    it "returns true when :writable is truthy" do
+      @def = Representable::Definition.new(:song, :writable => Object.new)
+      assert_equal true, @def.writable?
+    end
+
+    it "returns false when :writable => false" do
+      @def = Representable::Definition.new(:song, :writable => false)
+      assert_equal false, @def.writable?
+    end
+
+    it "returns false when :writable is nil" do
+      @def = Representable::Definition.new(:song, :writable => nil)
+      assert_equal false, @def.writable?
+    end
+    
+  end
+
+  describe "#readable?" do
+
+    it "returns true when :readable is not given" do
+      @def = Representable::Definition.new(:song)
+      assert_equal true, @def.readable?
+    end
+
+    it "returns true when :readable => true" do
+      @def = Representable::Definition.new(:song, :readable => true)
+      assert_equal true, @def.readable?
+    end
+
+    it "returns true when :readable is truthy" do
+      @def = Representable::Definition.new(:song, :readable => Object.new)
+      assert_equal true, @def.readable?
+    end
+
+    it "returns false when :readable => false" do
+      @def = Representable::Definition.new(:song, :readable => false)
+      assert_equal false, @def.readable?
+    end
+
+    it "returns false when :readable is nil" do
+      @def = Representable::Definition.new(:song, :readable => nil)
+      assert_equal false, @def.readable?
+    end
+
+  end
+
+
   describe ":collection => true" do
     before do
       @def = Representable::Definition.new(:songs, :collection => true, :tag => :song)

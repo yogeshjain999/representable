@@ -6,9 +6,12 @@ module Representable
     
     def initialize(sym, options={})
       @name     = sym.to_s
-      @options  = options
+      @options  = {
+        :writable => true,
+        :readable => true
+      }.merge(options)
       
-      options[:default] ||= [] if array?  # FIXME: move to CollectionBinding!
+      @options[:default] ||= [] if array?  # FIXME: move to CollectionBinding!
     end
     
     def clone
@@ -63,5 +66,16 @@ module Representable
     def default
       options[:default]
     end
+
+    # Checks and returns if the property is writable
+    def writable?
+      !!options[:writable]
+    end
+
+    # Checks and returns if the property is readable
+    def readable?
+      !!options[:readable]
+    end
+
   end
 end

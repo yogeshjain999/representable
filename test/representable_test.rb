@@ -238,6 +238,13 @@ class RepresentableTest < MiniTest::Spec
       assert_equal 2, @band.groupies
       assert_equal nil, @band.name
     end
+
+    it "ignores non-writable properties" do
+      @band = Class.new(Band) { property :name; collection :founders, :writable => false; attr_accessor :founders }.new
+      @band.update_properties_from({"name" => "Iron Maiden", "groupies" => 2, "founders" => [{ "name" => "Steve Harris" }] }, {}, Representable::JSON)
+      assert_equal "Iron Maiden", @band.name
+      assert_equal nil, @band.founders
+    end
     
     it "always returns self" do
       assert_equal @band, @band.update_properties_from({"name"=>"Nofx"}, {}, Representable::Hash::PropertyBinding)
@@ -292,6 +299,15 @@ class RepresentableTest < MiniTest::Spec
     it "accepts :include option" do
       hash = @band.send(:create_representation_with, {}, {:include => [:groupies]}, Representable::Hash::PropertyBinding)
       assert_equal({"groupies"=>2}, hash)
+    end
+
+    it "ignores non-readable properties" do
+      @band = Class.new(Band) { property :name; collection :founder_ids, :readable => false; attr_accessor :founder_ids }.new
+      @band.name = "Iron Maiden"
+      @band.founder_ids = [1,2,3]
+
+      hash = @band.send(:create_representation_with, {}, {}, Representable::JSON)
+      assert_equal({"name" => "Iron Maiden"}, hash)
     end
 
     it "does not write nil attributes" do

@@ -41,7 +41,7 @@ module Representable
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
     representable_bindings_for(format).each do |bin|
-      next if skip_property?(bin, options)
+      next if skip_property_for_write?(bin, options)
       
       uncompile_fragment(bin, doc)
     end
@@ -52,13 +52,27 @@ private
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
     representable_bindings_for(format).each do |bin|
-      next if skip_property?(bin, options)
+      next if skip_property_for_read?(bin, options)
       
       compile_fragment(bin, doc)
     end
     doc
   end
-  
+
+  # Checks and returns if the property should be deserialized
+  def skip_property_for_write?(binding, options)
+    return true unless binding.definition.writable?
+
+    skip_property?(binding, options)
+  end
+
+  # Checks and returns if the property should be serialized
+  def skip_property_for_read?(binding, options)
+    return true unless binding.definition.readable?
+
+    skip_property?(binding, options)
+  end
+
   # Checks and returns if the property should be included.
   def skip_property?(binding, options)
     return true if skip_excluded_property?(binding, options)  # no need for further evaluation when :exclude'ed
@@ -163,6 +177,8 @@ private
       #   property :name, :class => Name
       #   property :name, :default => "Mike"
       #   property :name, :render_nil => true
+      #   property :name, :readable => false
+      #   property :name, :writable => false
       def property(name, options={})
         representable_attrs << definition_class.new(name, options)
       end
