@@ -7,10 +7,13 @@ module Representable
       include Binding::Extend  # provides #serialize/#deserialize with extend.
       
       def serialize(object)
+        return object if object.nil?
+        
         super(object).to_hash(:wrap => false)
       end
       
-      def deserialize(hash)
+      def deserialize(hash) 
+        # DISCUSS: does it make sense to skip deserialization of nil-values here?
         super(create_object).from_hash(hash)
       end
       

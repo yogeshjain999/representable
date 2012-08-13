@@ -310,17 +310,32 @@ class RepresentableTest < MiniTest::Spec
       assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.send(:create_representation_with, {}, {}, Representable::JSON))
     end
     
-    it "includes nil attribute when :render_nil is true" do
-      mod = Module.new do
-        include Representable::JSON
-        property :name
-        property :groupies, :render_nil => true
+    describe "when :render_nil is true" do
+      it "includes nil attribute" do
+        mod = Module.new do
+          include Representable::JSON
+          property :name
+          property :groupies, :render_nil => true
+        end
+        
+        @band.extend(mod) # FIXME: use clean object.
+        @band.groupies = nil
+        hash = @band.send(:create_representation_with, {}, {}, Representable::JSON)
+        assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
       end
       
-      @band.extend(mod) # FIXME: use clean object.
-      @band.groupies = nil
-      hash = @band.send(:create_representation_with, {}, {}, Representable::JSON)
-      assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
+      it "includes nil attribute without extending" do
+        mod = Module.new do
+          include Representable::JSON
+          property :name
+          property :groupies, :render_nil => true, :extend => BandRepresentation
+        end
+        
+        @band.extend(mod) # FIXME: use clean object.
+        @band.groupies = nil
+        hash = @band.send(:create_representation_with, {}, {}, Representable::JSON)
+        assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
+      end
     end
   end
   
