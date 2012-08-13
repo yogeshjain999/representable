@@ -44,5 +44,25 @@ module Representable
         object
       end
     end
+    
+    module Object
+      include Binding::Extend  # provides #serialize/#deserialize with extend.
+      
+      def serialize(object)
+        return object if object.nil?
+        
+        super(object).send(serialize_method, :wrap => false)
+      end
+      
+      def deserialize(data) 
+        # DISCUSS: does it make sense to skip deserialization of nil-values here?
+        super(create_object).send(deserialize_method, data)
+      end
+      
+      def create_object
+        definition.sought_type.new
+      end
+    end
+    
   end
 end

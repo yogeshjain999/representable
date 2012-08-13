@@ -3,22 +3,14 @@ require 'representable/binding'
 module Representable
   module JSON
     module ObjectBinding
-      # TODO: provide a base ObjectBinding for XML/JSON/MP.
-      include Binding::Extend  # provides #serialize/#deserialize with extend.
+      include Binding::Object
       
-      def serialize(object)
-        return object if object.nil?
-        
-        super(object).to_hash(:wrap => false)
+      def serialize_method
+        :to_hash
       end
       
-      def deserialize(hash) 
-        # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        super(create_object).from_hash(hash)
-      end
-      
-      def create_object
-        definition.sought_type.new
+      def deserialize_method
+        :from_hash
       end
     end
     
