@@ -317,6 +317,26 @@ You can also map properties to tag attributes in representable.
 
 Naturally, this works for both ways.
 
+=== Wrapping collections
+
+It is sometimes unavoidable to wrap tag lists in a container tag.
+
+  module AlbumRepresenter
+    include Representable::XML
+
+    collection :songs, :from => :song, :wrap => :songs
+  end
+
+Note that +:wrap+ defines the container tag name.
+
+  Album.new.to_xml #=> 
+    <album>
+      <songs>
+        <song>Laundry Basket</song>
+        <song>Two Kevins</song>
+        <song>Wright and Rong</song>
+      </songs>
+    </album>
 
 == Coercion
 
