@@ -1,6 +1,7 @@
 h2. 1.2.4
 
 * ObjectBinding no longer tries to extend nil values when rendering and @:render_nil@ is set.
+* In XML you can now use @:wrap@ to define an additional container tag around properties and collections.
 
 h2. 1.2.3
 
