@@ -102,7 +102,7 @@ module Representable
     class HashBinding < CollectionBinding
       def serialize_for(value, parent)
         set_for(parent, value.collect do |k, v|
-          node = Nokogiri::XML::Node.new(k, parent.document)
+          node = node_for(parent, k)
           serialize_node(node, v)
         end)
       end
