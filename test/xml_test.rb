@@ -11,7 +11,9 @@ class Band
   end
 end
 
-
+class Album
+  attr_accessor :songs
+end
   
   
 class XmlTest < MiniTest::Spec
@@ -319,14 +321,14 @@ class CollectionTest < MiniTest::Spec
     
     
   describe ":from" do
-    class Album
-      include Representable::XML
-      collection :songs, :from => :song
-      attr_accessor :songs
-    end
+    let(:xml) { 
+      Module.new do
+        include Representable::XML
+        collection :songs, :from => :song
+      end }
 
     it "collects untyped items" do
-      album = Album.from_xml(%{
+      album = Album.new.extend(xml).from_xml(%{
         <album>
           <song>Two Kevins</song>
           <song>Wright and Rong</song>
@@ -334,6 +336,46 @@ class CollectionTest < MiniTest::Spec
         </album>
       })
       assert_equal ["Laundry Basket", "Two Kevins", "Wright and Rong"].sort, album.songs.sort
+    end
+  end
+
+
+  describe ":wrap" do
+    let (:album) { Album.new.extend(xml) }
+    let (:xml) {
+      Module.new do
+        include Representable::XML
+        collection :songs, :from => :song, :wrap => :songs
+      end }
+
+    describe "#from_xml" do
+      it "finds items in wrapped collection" do
+        album.from_xml(%{
+          <album>
+            <songs>
+              <song>Two Kevins</song>
+              <song>Wright and Rong</song>
+              <song>Laundry Basket</song>
+            </songs>
+          </album>
+        })
+        assert_equal ["Laundry Basket", "Two Kevins", "Wright and Rong"].sort, album.songs.sort
+      end
+    end
+    
+    describe "#to_xml" do
+      it "wraps items" do
+        album.songs = ["Laundry Basket", "Two Kevins", "Wright and Rong"]
+        assert_xml_equal %{
+          <album>
+            <songs>
+              <song>Laundry Basket</song>
+              <song>Two Kevins</song>
+              <song>Wright and Rong</song>
+            </songs>
+          </album>
+        }, album.to_xml
+      end
     end
   end
   

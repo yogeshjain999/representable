@@ -30,11 +30,20 @@ module Representable
       end
       
       def write(parent, value)
-        parent << serialize_for(value, parent)
+        wrap_node = parent
+        
+        if wrap = definition.options[:wrap]
+          parent << wrap_node = node_for(parent, wrap)
+        end
+
+        wrap_node << serialize_for(value, parent)
       end
       
       def read(node)
-        nodes = node.search("./#{xpath}")
+        selector  = "./#{xpath}"
+        selector  = "./#{definition.options[:wrap]}/#{xpath}" if definition.options[:wrap]
+        nodes     = node.search(selector)
+
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
         
         deserialize_from(nodes)
@@ -43,7 +52,7 @@ module Representable
       # Creates wrapped node for the property.
       def serialize_for(value, parent)
       #def serialize_for(value, parent, tag_name=definition.from)
-        node =  Nokogiri::XML::Node.new(definition.from, parent.document)
+        node = node_for(parent, definition.from)
         serialize_node(node, value)
       end
       
@@ -65,19 +74,16 @@ module Representable
       def xpath
         definition.from
       end
+
+      def node_for(parent, name)
+        Nokogiri::XML::Node.new(name.to_s, parent.document)
+      end
     end
     
     class CollectionBinding < PropertyBinding
-      def write(parent, value)
-        serialize_items(value, parent).each do |node|
-          parent << node
-        end
-      end
-      
-      def serialize_items(value, parent)
-        value.collect do |obj|
-          serialize_for(obj, parent)
-        end
+      def serialize_for(value, parent)
+        # return NodeSet so << works.
+        set_for(parent, value.collect { |item| super(item, parent) })
       end
       
       def deserialize_from(nodes)
@@ -85,15 +91,20 @@ module Representable
           deserialize_node(item)
         end
       end
+
+    private
+      def set_for(parent, nodes)
+        Nokogiri::XML::NodeSet.new(parent.document, nodes)
+      end
     end
     
     
     class HashBinding < CollectionBinding
-      def serialize_items(value, parent)
-        value.collect do |k, v|
+      def serialize_for(value, parent)
+        set_for(parent, value.collect do |k, v|
           node = Nokogiri::XML::Node.new(k, parent.document)
           serialize_node(node, v)
-        end
+        end)
       end
       
       def deserialize_from(nodes)
