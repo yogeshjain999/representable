@@ -2,6 +2,18 @@ require 'representable/binding'
 
 module Representable
   module YAML
+    module ObjectBinding
+      include Binding::Object
+      
+      def serialize_method
+        :to_ast
+      end
+      
+      def deserialize_method
+        :from_ast
+      end
+    end
+
     class YAMLBinding < Representable::Binding
       def initialize(definition) # FIXME. make generic.
         super

@@ -8,7 +8,7 @@ module Representable
       #return HashBinding.new(definition)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
       #return AttributeHashBinding.new(definition)   if definition.hash? and definition.options[:use_attributes]
       #return AttributeBinding.new(definition)       if definition.attribute
-      #PropertyBinding.new(definition)
+      PropertyBinding.new(definition)
     end
     
     def self.included(base)
