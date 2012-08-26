@@ -42,10 +42,9 @@ module Representable
     
     class CollectionBinding < PropertyBinding
       def serialize_for(value)
-        puts "collect: #{value.inspect}"
         Psych::Nodes::Sequence.new.tap do |seq|
+          seq.style = Psych::Nodes::Sequence::FLOW if definition.options[:style] == :flow
           value.each { |obj| seq.children << super(obj) }
-          #seq.children << Psych::Nodes::Scalar.new("yoho")
         end
       end
       

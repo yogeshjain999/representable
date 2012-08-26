@@ -14,13 +14,23 @@ class YamlTest < MiniTest::Spec
 
 
     describe "#to_yaml" do
-      it "renders a standard list" do
+      it "renders a block style list per default" do
         album.extend(yaml).to_yaml.must_equal "---
 - songs:
   - Jackhammer
   - Terrible Man
 "
 
+      end
+
+      it "renders a flow style list when :style => :flow set" do
+        yaml = Module.new do
+          include Representable::YAML
+          collection :songs, :style => :flow
+        end
+        album.extend(yaml).to_yaml.must_equal "---
+- songs: [Jackhammer, Terrible Man]
+"
       end
     end
   end
