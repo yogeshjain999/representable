@@ -13,8 +13,8 @@ module Representable
         :from_ast
       end
 
-      def write_scalar(value)
-        value
+      def serialize_for(value)
+        serialize(value)
       end
     end
 
@@ -40,7 +40,6 @@ module Representable
     
     class PropertyBinding < YAMLBinding
       def serialize_for(value)
-        puts "serialize: #{value.inspect}"
         write_scalar serialize(value)
       end
       
