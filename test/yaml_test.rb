@@ -79,9 +79,6 @@ best_song:
         end
       end
     end
-
-    
-
   end
 
 
@@ -100,7 +97,6 @@ songs:
 - Jackhammer
 - Terrible Man
 "
-
       end
 
       it "renders a flow style list when :style => :flow set" do
@@ -111,6 +107,23 @@ songs: [Jackhammer, Terrible Man]
       end
     end
 
+
+    describe "#from_yaml" do
+      it "parses a block style list" do
+        album.extend(yaml).from_yaml("---
+songs:
+- Off Key Melody
+- Sinking").must_equal Album.new(["Off Key Melody", "Sinking"])
+
+      end
+
+      it "parses a flow style list" do
+        album.extend(yaml).from_yaml("---
+songs: [Off Key Melody, Sinking]").must_equal Album.new(["Off Key Melody", "Sinking"])
+      end
+    end
+
+
     describe "with :class and :extend" do
       yaml_song = yaml_representer do 
         property :name
@@ -118,7 +131,7 @@ songs: [Jackhammer, Terrible Man]
       end
       let (:yaml_album) { Module.new do
         include Representable::YAML
-        collection :songs, :extend => yaml_song
+        collection :songs, :extend => yaml_song, :class => Song
       end }
 
       let (:album) { Album.new.tap do |album|
@@ -135,6 +148,17 @@ songs:
 - name: What I Know
   track: 2
 "
+        end
+      end
+
+      describe "#from_yaml" do
+        it "parses collection of typed property" do
+          album.extend(yaml_album).from_yaml("---
+songs:
+- name: One Shot Deal
+  track: 4
+- name: Three Way Dance
+  track: 5").must_equal Album.new([Song.new("One Shot Deal", 4), Song.new("Three Way Dance", 5)])
         end
       end
     end
