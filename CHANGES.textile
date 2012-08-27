@@ -1,3 +1,7 @@
+h2. 1.2.5
+
+* Add support for YAML.
+
 h2. 1.2.4
 
 * ObjectBinding no longer tries to extend nil values when rendering and @:render_nil@ is set.
