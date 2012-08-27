@@ -10,7 +10,7 @@ module Representable
       end
       
       def deserialize_method
-        :from_ast
+        :from_hash
       end
 
       def write_scalar(value)

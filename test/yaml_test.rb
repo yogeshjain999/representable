@@ -29,21 +29,31 @@ best_song: Liar
 ")
       end
 
-      it "renders values into strings" do
+      it "always renders values into strings" do
         Album.new.tap { |a| a.best_song = 8675309 }.extend(yaml).to_yaml.must_equal(
 "---
 best_song: 8675309
 "
 )
       end
-
     end
+
+
+    describe "#from_yaml" do
+      it "parses plain property" do
+        album.extend(yaml).from_yaml(
+"---
+best_song: This Song Is Recycled
+").best_song.must_equal "This Song Is Recycled"
+      end
+    end
+
 
     describe "with :class and :extend" do
       yaml_song = yaml_representer do property :name end
       let (:yaml_album) { Module.new do
         include Representable::YAML
-        property :best_song, :extend => yaml_song
+        property :best_song, :extend => yaml_song, :class => Song
       end }
 
       let (:album) { Album.new.tap do |album|
@@ -59,9 +69,21 @@ best_song:
 "
         end
       end
+
+      describe "#from_yaml" do
+        it "parses embedded typed property" do
+          album.extend(yaml_album).from_yaml("---
+best_song:
+  name: Go With Me
+").must_equal Album.new(nil,Song.new("Go With Me"))
+        end
+      end
     end
 
+    
+
   end
+
 
   describe "collection" do
     let (:yaml) { yaml_representer do collection :songs end }

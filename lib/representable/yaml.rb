@@ -38,13 +38,13 @@ module Representable
     end
     
     
-    def from_xml(doc, *args)
-      node = Nokogiri::XML(doc).root
-      from_node(node, *args)
+    def from_yaml(doc, *args)
+      hash = Psych.load(doc)
+      from_hash(hash, *args)
     end
     
-    def from_node(node, options={})
-      update_properties_from(node, options, XML)
+    def from_hash(hash, options={})
+      update_properties_from(hash, options, YAML)
     end
     
     # Returns a Nokogiri::XML object representing this object.
