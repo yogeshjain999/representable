@@ -48,18 +48,19 @@ module Representable
     end
     
     # Returns a Nokogiri::XML object representing this object.
-    def to_ast(options={})
+    def to_ast(doc, options={})
       #root_tag = options[:wrap] || representation_wrap
-      stream = Psych::Nodes::Stream.new 
-      stream.children << doc = Psych::Nodes::Document.new
-      doc.children << root = Psych::Nodes::Sequence.new
-
+      
+      doc.children << root = Psych::Nodes::Mapping.new
       create_representation_with(root, options, YAML)
-      stream
     end
     
     def to_yaml(*args)
-      to_ast(*args).to_yaml
+      stream = Psych::Nodes::Stream.new 
+      stream.children << doc = Psych::Nodes::Document.new
+      
+      to_ast(doc, *args)
+      stream.to_yaml
     end
   end
 end

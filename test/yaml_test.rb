@@ -23,9 +23,10 @@ class YamlTest < MiniTest::Spec
 
     describe "#to_yaml" do
       it "renders plain property" do
-        album.extend(yaml).to_yaml.must_equal "---
-- best_song: Liar
-"
+        album.extend(yaml).to_yaml.must_equal(
+"---
+best_song: Liar
+")
       end
 
     end
@@ -45,7 +46,7 @@ class YamlTest < MiniTest::Spec
       describe "#to_yaml" do
         it "renders embedded typed property" do
           album.extend(yaml_album).to_yaml.must_equal "---
-- best_song: Liar
+best_song: Liar
 "
         end
       end
@@ -64,9 +65,9 @@ class YamlTest < MiniTest::Spec
     describe "#to_yaml" do
       it "renders a block style list per default" do
         album.extend(yaml).to_yaml.must_equal "---
-- songs:
-  - Jackhammer
-  - Terrible Man
+songs:
+- Jackhammer
+- Terrible Man
 "
 
       end
@@ -74,7 +75,7 @@ class YamlTest < MiniTest::Spec
       it "renders a flow style list when :style => :flow set" do
         yaml = yaml_representer { collection :songs, :style => :flow }
         album.extend(yaml).to_yaml.must_equal "---
-- songs: [Jackhammer, Terrible Man]
+songs: [Jackhammer, Terrible Man]
 "
       end
     end

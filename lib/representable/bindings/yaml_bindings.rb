@@ -27,11 +27,11 @@ module Representable
         deserialize_from(fragment)
       end
       
-      def write(parent, value)
-        parent.children << Psych::Nodes::Mapping.new.tap do |map|
+      def write(map, value)
+        #parent.children << Psych::Nodes::Mapping.new.tap do |map|
           map.children << Psych::Nodes::Scalar.new(definition.from)
           map.children << serialize_for(value)  # FIXME: should be serialize.
-        end
+        #end
       end
     end
     
