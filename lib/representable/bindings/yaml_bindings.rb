@@ -13,8 +13,8 @@ module Representable
         :from_ast
       end
 
-      def serialize_for(value)
-        serialize(value)
+      def write_scalar(value)
+        value
       end
     end
 
@@ -48,7 +48,7 @@ module Representable
       end
 
       def write_scalar(value)
-        Psych::Nodes::Scalar.new(value)
+        Psych::Nodes::Scalar.new(value.to_s)
       end
     end
     

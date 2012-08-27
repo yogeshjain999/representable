@@ -20,9 +20,10 @@ class Album
 end
 
 class Song
-  attr_accessor :name
-  def initialize(name=nil)
-    @name = name
+  attr_accessor :name, :track
+  def initialize(name=nil, track=nil)
+    @name   = name
+    @track  = track
   end
 
   def ==(other)
