@@ -178,7 +178,7 @@ class XmlTest < MiniTest::Spec
       end
       
       it "extends contained models when serializing" do
-        @album = Album.new(Song.new("I Hate My Brain"), Song.new("Mr. Charisma"))
+        @album = Album.new([Song.new("I Hate My Brain"), mr=Song.new("Mr. Charisma")], mr)
         @album.extend(AlbumRepresenter)
         
         assert_xml_equal "<album>

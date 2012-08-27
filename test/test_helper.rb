@@ -13,9 +13,13 @@ require 'mocha'
 
 class Album
   attr_accessor :songs, :best_song
-  def initialize(*songs)
+  def initialize(songs=nil, best_song=nil)
     @songs      = songs
-    @best_song  = songs.last
+    @best_song  = best_song
+  end
+
+  def ==(other)
+    songs == other.songs and best_song == other.best_song
   end
 end
 
@@ -27,7 +31,7 @@ class Song
   end
 
   def ==(other)
-    name == other.name
+    name == other.name and track == other.track
   end
 end
 

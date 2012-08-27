@@ -185,7 +185,7 @@ module JsonTest
       end
 
       it "extends contained models when serializing" do
-        @album = Album.new(Song.new("I Hate My Brain"), Song.new("Mr. Charisma"))
+        @album = Album.new([Song.new("I Hate My Brain"), mr=Song.new("Mr. Charisma")], mr)
         @album.extend(AlbumRepresenter)
 
         assert_json "{\"best_song\":{\"name\":\"Mr. Charisma\"},\"songs\":[{\"name\":\"I Hate My Brain\"},{\"name\":\"Mr. Charisma\"}]}", @album.to_json
