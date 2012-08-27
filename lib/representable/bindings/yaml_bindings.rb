@@ -12,6 +12,10 @@ module Representable
       def deserialize_method
         :from_ast
       end
+
+      def write_scalar(value)
+        value
+      end
     end
 
     class YAMLBinding < Representable::Binding
@@ -28,10 +32,8 @@ module Representable
       end
       
       def write(map, value)
-        #parent.children << Psych::Nodes::Mapping.new.tap do |map|
-          map.children << Psych::Nodes::Scalar.new(definition.from)
-          map.children << serialize_for(value)  # FIXME: should be serialize.
-        #end
+        map.children << Psych::Nodes::Scalar.new(definition.from)
+        map.children << serialize_for(value)  # FIXME: should be serialize.
       end
     end
     
@@ -39,14 +41,14 @@ module Representable
     class PropertyBinding < YAMLBinding
       def serialize_for(value)
         puts "serialize: #{value.inspect}"
-        serialize_scalar serialize(value)
+        write_scalar serialize(value)
       end
       
       def deserialize_from(fragment)
         deserialize(fragment)
       end
 
-      def serialize_scalar(value)
+      def write_scalar(value)
         Psych::Nodes::Scalar.new(value)
       end
     end

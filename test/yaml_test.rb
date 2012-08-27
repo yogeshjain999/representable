@@ -46,7 +46,8 @@ best_song: Liar
       describe "#to_yaml" do
         it "renders embedded typed property" do
           album.extend(yaml_album).to_yaml.must_equal "---
-best_song: Liar
+best_song:
+  name: Liar
 "
         end
       end
