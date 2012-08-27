@@ -14,7 +14,7 @@ This keeps your representation knowledge in one place when implementing REST ser
 
 * Bidirectional - rendering and parsing
 * OOP access to documents
-* Support for JSON and XML
+* Support for JSON, XML and YAML.
 * Coercion support with virtus[https://github.com/solnic/virtus]
 
 
@@ -279,7 +279,7 @@ There's no need to specify a representer for the +origin+ property since the +Lo
 
 == XML support
 
-Representable allows declaring a document's syntax and structure while having different formats. Currently, it ships with JSON and XML bindings.
+Representable allows declaring a document's syntax and structure while having different formats. Currently, it ships with JSON, XML and YAML bindings.
   
   class Hero
     include Representable::XML
@@ -337,6 +337,50 @@ Note that +:wrap+ defines the container tag name.
         <song>Wright and Rong</song>
       </songs>
     </album>
+
+
+== YAML Support
+
+Representers also come in handy if you need to render or parse YAML. The YAML module works exactly like the others.
+
+  module HotBandsRepresenter
+    include Representable::YAML
+
+    property :for
+    collection :names
+  end
+
+Now, just call #to_yaml to render or #from_yaml to parse.
+
+  HotBands.new(:for => "Nick", :names => ["Bad Religion", "Van Halen", "Mozart"]).
+    extend(HotBandsRepresenter).
+    to_yaml
+
+  #=> ---
+  for: Nick
+  names:
+  - Bad Religion
+  - Van Halen
+  - Mozart
+
+=== Nested Objects
+
+The YAML parser does handle nested objects just like JSON and XML does it.
+
+=== Flow Style Lists
+
+If you want flow style (aka inline style) lists, use the :style option. See http://www.yaml.org/spec/1.2/spec.html#id2790088 for more infos on flow sequences.
+
+  module HotBandsRepresenter
+    include Representable::YAML
+
+    collection :names, :style => :flow
+  end
+
+  #=> ---
+  names: [Bad Religion, Van Halen, Mozart]
+
+Need anything else for YAML? Let me know.
 
 == Coercion
 
