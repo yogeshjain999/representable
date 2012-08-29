@@ -18,33 +18,19 @@ module Representable
       end
     end
 
-    class YAMLBinding < Representable::Binding
+    class PropertyBinding < Representable::Hash::PropertyBinding
       def initialize(definition) # FIXME. make generic.
         super
         extend ObjectBinding if definition.typed?
-      end
-      
-      def read(hash)
-        return FragmentNotFound unless hash.has_key?(definition.from) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
-        
-        fragment = hash[definition.from]
-        deserialize_from(fragment)
       end
       
       def write(map, value)
         map.children << Psych::Nodes::Scalar.new(definition.from)
         map.children << serialize_for(value)  # FIXME: should be serialize.
       end
-    end
-    
-    
-    class PropertyBinding < YAMLBinding
+
       def serialize_for(value)
         write_scalar serialize(value)
-      end
-      
-      def deserialize_from(fragment)
-        deserialize(fragment)
       end
 
       def write_scalar(value)
@@ -61,7 +47,7 @@ module Representable
         end
       end
       
-      def deserialize_from(fragment)
+      def deserialize_from(fragment)  # FIXME: redundant from Hash::Bindings
         fragment.collect { |item_fragment| deserialize(item_fragment) }
       end
     end

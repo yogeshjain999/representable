@@ -15,7 +15,7 @@ module Representable
     end
     
     
-    class Binding < Representable::Binding
+    class PropertyBinding < Representable::Binding
       def initialize(definition) # FIXME. make generic.
         super
         extend ObjectBinding if definition.typed?
@@ -31,10 +31,7 @@ module Representable
       def write(hash, value)
         hash[definition.from] = serialize_for(value)
       end
-    end
-    
-    
-    class PropertyBinding < Binding
+      
       def serialize_for(value)
         serialize(value)
       end
@@ -45,7 +42,7 @@ module Representable
     end
     
     
-    class CollectionBinding < Binding
+    class CollectionBinding < PropertyBinding
       def serialize_for(value)
         value.collect { |obj| serialize(obj) }
       end
@@ -56,7 +53,7 @@ module Representable
     end
     
     
-    class HashBinding < Binding
+    class HashBinding < PropertyBinding
       def serialize_for(value)
         # requires value to respond to #each with two block parameters.
         {}.tap do |hash|
