@@ -11,17 +11,13 @@ module Representable
     end
     
     # Main entry point for rendering/parsing a property object.
-    module Hooks
-      def serialize(value)
-        value
-      end
-      
-      def deserialize(fragment)
-        fragment
-      end
+    def serialize(value)
+      value
     end
     
-    include Hooks
+    def deserialize(fragment)
+      fragment
+    end
     
     
     # Hooks into #serialize and #deserialize to extend typed properties
