@@ -1,7 +1,7 @@
 require 'representable/binding'
 
 module Representable
-  module JSON
+  module Hash
     module ObjectBinding
       include Binding::Object
       
@@ -15,7 +15,7 @@ module Representable
     end
     
     
-    class JSONBinding < Representable::Binding
+    class Binding < Representable::Binding
       def initialize(definition) # FIXME. make generic.
         super
         extend ObjectBinding if definition.typed?
@@ -34,7 +34,7 @@ module Representable
     end
     
     
-    class PropertyBinding < JSONBinding
+    class PropertyBinding < Binding
       def serialize_for(value)
         serialize(value)
       end
@@ -45,7 +45,7 @@ module Representable
     end
     
     
-    class CollectionBinding < JSONBinding
+    class CollectionBinding < Binding
       def serialize_for(value)
         value.collect { |obj| serialize(obj) }
       end
@@ -56,7 +56,7 @@ module Representable
     end
     
     
-    class HashBinding < JSONBinding
+    class HashBinding < Binding
       def serialize_for(value)
         # requires value to respond to #each with two block parameters.
         {}.tap do |hash|

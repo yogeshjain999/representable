@@ -1,5 +1,5 @@
 require 'representable'
-require 'representable/bindings/json_bindings'
+require 'representable/bindings/hash_bindings'
 require 'json'
 
 module Representable
@@ -9,9 +9,9 @@ module Representable
   # things might work as expected.
   module JSON
     def self.binding_for_definition(definition)
-      return CollectionBinding.new(definition)  if definition.array?
-      return HashBinding.new(definition)        if definition.hash?
-      PropertyBinding.new(definition)
+      return Representable::Hash::CollectionBinding.new(definition)  if definition.array?
+      return Representable::Hash::HashBinding.new(definition)        if definition.hash?
+      Representable::Hash::PropertyBinding.new(definition)
     end
     
     def self.included(base)

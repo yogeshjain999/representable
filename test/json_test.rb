@@ -128,19 +128,19 @@ module JsonTest
 
       describe "#binding_for_definition" do
         it "returns ObjectBinding" do
-          assert_kind_of Json::ObjectBinding, Json.binding_for_definition(Def.new(:band, :class => Hash))
+          assert_kind_of Representable::Hash::ObjectBinding, Json.binding_for_definition(Def.new(:band, :class => Hash))
         end
 
         it "returns TextBinding" do
-          assert_kind_of Json::PropertyBinding, Json.binding_for_definition(Def.new(:band))
+          assert_kind_of Representable::Hash::PropertyBinding, Json.binding_for_definition(Def.new(:band))
         end
 
         it "returns HashBinding" do
-          assert_kind_of Json::HashBinding, Json.binding_for_definition(Def.new(:band, :hash => true))
+          assert_kind_of Representable::Hash::HashBinding, Json.binding_for_definition(Def.new(:band, :hash => true))
         end
 
         it "returns CollectionBinding" do
-          assert_kind_of Json::CollectionBinding, Json.binding_for_definition(Def.new(:band, :collection => true))
+          assert_kind_of Representable::Hash::CollectionBinding, Json.binding_for_definition(Def.new(:band, :collection => true))
         end
       end
 

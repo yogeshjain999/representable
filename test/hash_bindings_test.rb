@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class JSONBindingTest < MiniTest::Spec
+class HashBindingTest < MiniTest::Spec
   module SongRepresenter
     include Representable::JSON
     property :name
@@ -15,7 +15,7 @@ class JSONBindingTest < MiniTest::Spec
   describe "PropertyBinding" do
     describe "#read" do
       before do
-        @property = Representable::JSON::PropertyBinding.new(Representable::Definition.new(:song))
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song))
       end
       
       it "returns fragment if present" do
@@ -32,7 +32,7 @@ class JSONBindingTest < MiniTest::Spec
     
     describe "with plain text" do
       before do
-        @property = Representable::JSON::PropertyBinding.new(Representable::Definition.new(:song))
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song))
       end
       
       it "extracts with #read" do
@@ -48,7 +48,7 @@ class JSONBindingTest < MiniTest::Spec
     
     describe "with an object" do
       before do
-        @property = Representable::JSON::PropertyBinding.new(Representable::Definition.new(:song, :class => SongWithRepresenter))
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song, :class => SongWithRepresenter))
         @doc      = {}
       end
       
@@ -64,7 +64,7 @@ class JSONBindingTest < MiniTest::Spec
     
     describe "with an object and :extend" do
       before do
-        @property = Representable::JSON::PropertyBinding.new(Representable::Definition.new(:song, :class => Song, :extend => SongRepresenter))
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song, :class => Song, :extend => SongRepresenter))
         @doc      = {}
       end
       
@@ -83,7 +83,7 @@ class JSONBindingTest < MiniTest::Spec
   describe "CollectionBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::JSON::CollectionBinding.new(Representable::Definition.new(:songs, :collection => true))
+        @property = Representable::Hash::CollectionBinding.new(Representable::Definition.new(:songs, :collection => true))
       end
       
       it "extracts with #read" do
@@ -104,7 +104,7 @@ class JSONBindingTest < MiniTest::Spec
   describe "HashBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::JSON::HashBinding.new(Representable::Definition.new(:songs, :hash => true))
+        @property = Representable::Hash::HashBinding.new(Representable::Definition.new(:songs, :hash => true))
       end
       
       it "extracts with #read" do
@@ -120,7 +120,7 @@ class JSONBindingTest < MiniTest::Spec
     
     describe "with objects" do
       before do
-        @property = Representable::JSON::HashBinding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter))
+        @property = Representable::Hash::HashBinding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter))
       end
       
       it "doesn't change the represented hash in #write" do
