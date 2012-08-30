@@ -136,12 +136,6 @@ class RepresentableTest < MiniTest::Spec
   
   
   describe "#property" do
-    it "creates accessors for the attribute" do
-      @band = PunkBand.new
-      assert @band.name = "Bad Religion"
-      assert_equal "Bad Religion", @band.name
-    end
-    
     describe ":from" do
       # TODO: do this with all options.
       it "can be set explicitly" do
