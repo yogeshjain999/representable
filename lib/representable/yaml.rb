@@ -1,8 +1,10 @@
-require 'representable'
+require 'representable/hash'
 require 'representable/bindings/yaml_bindings'
 
 module Representable
   module YAML
+    include Hash
+    
     def self.binding_for_definition(definition)
       return CollectionBinding.new(definition)      if definition.array?
       #return HashBinding.new(definition)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
@@ -28,12 +30,8 @@ module Representable
       #
       # Example:
       #   band.from_xml("<band><name>Nofx</name></band>")
-      def from_xml(*args, &block)
-        create_represented(*args, &block).from_xml(*args)
-      end
-      
-      def from_node(*args, &block)
-        create_represented(*args, &block).from_node(*args)
+      def from_yaml(*args, &block)
+        create_represented(*args, &block).from_yaml(*args)
       end
     end
     
@@ -41,10 +39,6 @@ module Representable
     def from_yaml(doc, *args)
       hash = Psych.load(doc)
       from_hash(hash, *args)
-    end
-    
-    def from_hash(hash, options={})
-      update_properties_from(hash, options, YAML)
     end
     
     # Returns a Nokogiri::XML object representing this object.

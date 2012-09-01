@@ -7,12 +7,6 @@ module Representable
   # If you plan to write your own representer for a new media type, try to use this module (e.g., check how JSON reuses Hash's internal
   # architecture).
   module Hash
-    def self.binding_for_definition(definition)
-      return Representable::Hash::CollectionBinding.new(definition)  if definition.array?
-      return Representable::Hash::HashBinding.new(definition)        if definition.hash?
-      Representable::Hash::PropertyBinding.new(definition)
-    end
-    
     def self.included(base)
       base.class_eval do
         include Representable # either in Hero or HeroRepresentation.
@@ -22,6 +16,12 @@ module Representable
     
     
     module ClassMethods
+      def binding_for_definition(definition)
+        return Representable::Hash::CollectionBinding.new(definition)  if definition.array?
+        return Representable::Hash::HashBinding.new(definition)        if definition.hash?
+        Representable::Hash::PropertyBinding.new(definition)
+      end
+
       def from_hash(*args, &block)
         create_represented(*args, &block).from_hash(*args)
       end
