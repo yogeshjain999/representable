@@ -80,7 +80,7 @@ Those two properties are considered when rendering in #to_json.
 
 == Parsing
 
-The cool thing about Representable is: it works bidirectional. By declaring properties you can not only render but also parse!
+The cool thing about Representable is: it works bidirectional. The document definition in your representer module can also be used for parsing documents and assigning property values.
 
   hook = Hero.from_json('{"forename":"Captain","surename":"Hook"}')
   hook.forename #=> "Captain"

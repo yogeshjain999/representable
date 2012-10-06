@@ -1,3 +1,7 @@
+h2. 1.2.6
+
+Extracted @HashRepresenter@ which operates on hash structures. This allows you to "parse" form data, e.g. as in Rails' @params@ hash. Internally, this is used by JSON and partly by YAML.
+
 h2. 1.2.5
 
 * Add support for YAML.
@@ -20,6 +24,7 @@ h2. 1.2.1
 
 * Deprecated @:represent_nil@ favor of @:render_nil@.
 * API change: if a property is missing in an incoming document and there is no default set it is completely ignored and *not* set in the represented object.
+
 
 h2. 1.2.0
 
