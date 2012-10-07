@@ -126,20 +126,20 @@ class XmlTest < MiniTest::Spec
     
     describe "XML#binding_for_definition" do
       it "returns AttributeBinding" do
-        assert_kind_of XML::AttributeBinding, Representable::XML.binding_for_definition(Def.new(:band, :from => "band", :attribute => true))
+        assert_kind_of XML::AttributeBinding, @band.send(:xml_binding_for_definition, Def.new(:band, :from => "band", :attribute => true))
       end
       
       it "returns PropertyBinding" do
-        assert_kind_of XML::PropertyBinding, Representable::XML.binding_for_definition(Def.new(:band, :class => Hash))
-        assert_kind_of XML::PropertyBinding, Representable::XML.binding_for_definition(Def.new(:band, :from => :content))
+        assert_kind_of XML::PropertyBinding, @band.send(:xml_binding_for_definition, Def.new(:band, :class => Hash))
+        assert_kind_of XML::PropertyBinding, @band.send(:xml_binding_for_definition, Def.new(:band, :from => :content))
       end
       
       it "returns CollectionBinding" do
-        assert_kind_of XML::CollectionBinding, Representable::XML.binding_for_definition(Def.new(:band, :collection => :true))
+        assert_kind_of XML::CollectionBinding, @band.send(:xml_binding_for_definition, Def.new(:band, :collection => :true))
       end
       
       it "returns HashBinding" do
-        assert_kind_of XML::HashBinding, Representable::XML.binding_for_definition(Def.new(:band, :hash => :true))
+        assert_kind_of XML::HashBinding, @band.send(:xml_binding_for_definition, Def.new(:band, :hash => :true))
       end
     end
     

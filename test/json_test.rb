@@ -128,26 +128,26 @@ module JsonTest
 
       describe "#binding_for_definition" do
         it "returns ObjectBinding" do
-          assert_kind_of Representable::Hash::ObjectBinding, Json.binding_for_definition(Def.new(:band, :class => Hash))
+          assert_kind_of Representable::Hash::ObjectBinding, @band.send(:hash_binding_for_definition, Def.new(:band, :class => Hash))
         end
 
         it "returns TextBinding" do
-          assert_kind_of Representable::Hash::PropertyBinding, Json.binding_for_definition(Def.new(:band))
+          assert_kind_of Representable::Hash::PropertyBinding, @band.send(:hash_binding_for_definition, Def.new(:band))
         end
 
         it "returns HashBinding" do
-          assert_kind_of Representable::Hash::HashBinding, Json.binding_for_definition(Def.new(:band, :hash => true))
+          assert_kind_of Representable::Hash::HashBinding, @band.send(:hash_binding_for_definition, Def.new(:band, :hash => true))
         end
 
         it "returns CollectionBinding" do
-          assert_kind_of Representable::Hash::CollectionBinding, Json.binding_for_definition(Def.new(:band, :collection => true))
+          assert_kind_of Representable::Hash::CollectionBinding, @band.send(:hash_binding_for_definition, Def.new(:band, :collection => true))
         end
       end
 
       describe "#representable_bindings" do
         it "returns bindings for each property" do
-          assert_equal 2, @band.send(:representable_bindings_for, Json).size
-          assert_equal "name", @band.send(:representable_bindings_for, Json).first.definition.name
+          assert_equal 2, @band.send(:representable_bindings_for, :hash).size
+          assert_equal "name", @band.send(:representable_bindings_for, :hash).first.definition.name
         end
       end
     end

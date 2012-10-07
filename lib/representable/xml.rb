@@ -4,14 +4,6 @@ require 'nokogiri'
 
 module Representable
   module XML
-    def self.binding_for_definition(definition)
-      return CollectionBinding.new(definition)      if definition.array?
-      return HashBinding.new(definition)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
-      return AttributeHashBinding.new(definition)   if definition.hash? and definition.options[:use_attributes]
-      return AttributeBinding.new(definition)       if definition.attribute
-      PropertyBinding.new(definition)
-    end
-    
     def self.included(base)
       base.class_eval do
         include Representable
@@ -45,18 +37,28 @@ module Representable
     end
     
     def from_node(node, options={})
-      update_properties_from(node, options, XML)
+      update_properties_from(node, options, :xml)
     end
     
     # Returns a Nokogiri::XML object representing this object.
     def to_node(options={})
       root_tag = options[:wrap] || representation_wrap
       
-      create_representation_with(Nokogiri::XML::Node.new(root_tag.to_s, Nokogiri::XML::Document.new), options, XML)
+      create_representation_with(Nokogiri::XML::Node.new(root_tag.to_s, Nokogiri::XML::Document.new), options, :xml)
     end
     
     def to_xml(*args)
       to_node(*args).to_s
+    end
+
+  private
+
+    def xml_binding_for_definition(definition)
+      return CollectionBinding.new(definition)      if definition.array?
+      return HashBinding.new(definition)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
+      return AttributeHashBinding.new(definition)   if definition.hash? and definition.options[:use_attributes]
+      return AttributeBinding.new(definition)       if definition.attribute
+      PropertyBinding.new(definition)
     end
   end
 end

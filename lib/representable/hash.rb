@@ -16,32 +16,34 @@ module Representable
     
     
     module ClassMethods
-      def binding_for_definition(definition)
-        return Representable::Hash::CollectionBinding.new(definition)  if definition.array?
-        return Representable::Hash::HashBinding.new(definition)        if definition.hash?
-        Representable::Hash::PropertyBinding.new(definition)
-      end
-
       def from_hash(*args, &block)
         create_represented(*args, &block).from_hash(*args)
       end
     end
     
     
-    def from_hash(data, options={})
+    def from_hash(data, options={}, format=:hash)
       if wrap = options[:wrap] || representation_wrap
         data = data[wrap.to_s]
       end
       
-      update_properties_from(data, options, JSON)
+      update_properties_from(data, options, format)
     end
     
-    def to_hash(options={})
-      hash = create_representation_with({}, options, JSON)
+    def to_hash(options={}, format=:hash)
+      hash = create_representation_with({}, options, format)
       
       return hash unless wrap = options[:wrap] || representation_wrap
       
       {wrap => hash}
+    end
+
+  private
+
+    def hash_binding_for_definition(definition)
+      return Representable::Hash::CollectionBinding.new(definition)  if definition.array?
+      return Representable::Hash::HashBinding.new(definition)        if definition.hash?
+      Representable::Hash::PropertyBinding.new(definition)
     end
   end
 end

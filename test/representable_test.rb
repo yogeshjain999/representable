@@ -218,40 +218,40 @@ class RepresentableTest < MiniTest::Spec
     end
     
     it "copies values from document to object" do
-      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {}, Representable::JSON)
+      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {}, :hash)
       assert_equal "No One's Choice", @band.name
       assert_equal 2, @band.groupies
     end
     
     it "accepts :exclude option" do
-      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]}, Representable::JSON)
+      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]}, :hash)
       assert_equal "No One's Choice", @band.name
       assert_equal nil, @band.groupies
     end
     
     it "still accepts deprecated :except option" do # FIXME: remove :except option.
-      assert_equal @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:except => [:groupies]}, Representable::JSON), @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]}, Representable::JSON)
+      assert_equal @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:except => [:groupies]}, :hash), @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]}, :hash)
     end
     
     it "accepts :include option" do
-      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:include => [:groupies]}, Representable::JSON)
+      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:include => [:groupies]}, :hash)
       assert_equal 2, @band.groupies
       assert_equal nil, @band.name
     end
     
     it "always returns self" do
-      assert_equal @band, @band.update_properties_from({"name"=>"Nofx"}, {}, Representable::JSON)
+      assert_equal @band, @band.update_properties_from({"name"=>"Nofx"}, {}, :hash)
     end
     
     it "includes false attributes" do
-      @band.update_properties_from({"groupies"=>false}, {}, Representable::JSON)
+      @band.update_properties_from({"groupies"=>false}, {}, :hash)
       assert_equal false, @band.groupies
     end
     
     it "ignores (no-default) properties not present in the incoming document" do
-      { Representable::JSON => {}, 
-        Representable::XML  => xml(%{<band/>})
-      }.each do |format, document|
+      { Representable::JSON => [{}, :hash], 
+        Representable::XML  => [xml(%{<band/>}), :xml]
+      }.each do |format, config|
         nested_repr = Module.new do # this module is never applied.
           include format
           property :created_at
@@ -263,7 +263,7 @@ class RepresentableTest < MiniTest::Spec
         end
         
         @band = Band.new.extend(repr)
-        @band.update_properties_from(document, {}, format)
+        @band.update_properties_from(config.first, {}, config.last)
         assert_equal nil, @band.name, "Failed in #{format}"
       end
     end
@@ -277,31 +277,31 @@ class RepresentableTest < MiniTest::Spec
     end
     
     it "compiles document from properties in object" do
-      assert_equal({"name"=>"No One's Choice", "groupies"=>2}, @band.send(:create_representation_with, {}, {}, Representable::JSON))
+      assert_equal({"name"=>"No One's Choice", "groupies"=>2}, @band.send(:create_representation_with, {}, {}, :hash))
     end
     
     it "accepts :exclude option" do
-      hash = @band.send(:create_representation_with, {}, {:exclude => [:groupies]}, Representable::JSON)
+      hash = @band.send(:create_representation_with, {}, {:exclude => [:groupies]}, :hash)
       assert_equal({"name"=>"No One's Choice"}, hash)
     end
     
     it "still accepts deprecated :except option" do # FIXME: remove :except option.
-      assert_equal @band.send(:create_representation_with, {}, {:except => [:groupies]}, Representable::JSON), @band.send(:create_representation_with, {}, {:exclude => [:groupies]}, Representable::JSON)
+      assert_equal @band.send(:create_representation_with, {}, {:except => [:groupies]}, :hash), @band.send(:create_representation_with, {}, {:exclude => [:groupies]}, :hash)
     end
     
     it "accepts :include option" do
-      hash = @band.send(:create_representation_with, {}, {:include => [:groupies]}, Representable::JSON)
+      hash = @band.send(:create_representation_with, {}, {:include => [:groupies]}, :hash)
       assert_equal({"groupies"=>2}, hash)
     end
 
     it "does not write nil attributes" do
       @band.groupies = nil
-      assert_equal({"name"=>"No One's Choice"}, @band.send(:create_representation_with, {}, {}, Representable::JSON))
+      assert_equal({"name"=>"No One's Choice"}, @band.send(:create_representation_with, {}, {}, :hash))
     end
 
     it "writes false attributes" do
       @band.groupies = false
-      assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.send(:create_representation_with, {}, {}, Representable::JSON))
+      assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.send(:create_representation_with, {}, {}, :hash))
     end
     
     describe "when :render_nil is true" do
@@ -314,7 +314,7 @@ class RepresentableTest < MiniTest::Spec
         
         @band.extend(mod) # FIXME: use clean object.
         @band.groupies = nil
-        hash = @band.send(:create_representation_with, {}, {}, Representable::JSON)
+        hash = @band.send(:create_representation_with, {}, {}, :hash)
         assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
       end
       
@@ -327,7 +327,7 @@ class RepresentableTest < MiniTest::Spec
         
         @band.extend(mod) # FIXME: use clean object.
         @band.groupies = nil
-        hash = @band.send(:create_representation_with, {}, {}, Representable::JSON)
+        hash = @band.send(:create_representation_with, {}, {}, :hash)
         assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
       end
     end
@@ -341,21 +341,21 @@ class RepresentableTest < MiniTest::Spec
     it "respects property when condition true" do
       @pop.class_eval { property :fame, :if => lambda { true } }
       band = @pop.new
-      band.update_properties_from({"fame"=>"oh yes"}, {}, Representable::JSON)
+      band.update_properties_from({"fame"=>"oh yes"}, {}, :hash)
       assert_equal "oh yes", band.fame
     end
     
     it "ignores property when condition false" do
       @pop.class_eval { property :fame, :if => lambda { false } }
       band = @pop.new
-      band.update_properties_from({"fame"=>"oh yes"}, {}, Representable::JSON)
+      band.update_properties_from({"fame"=>"oh yes"}, {}, :hash)
       assert_equal nil, band.fame
     end
     
     it "ignores property when :exclude'ed even when condition is true" do
       @pop.class_eval { property :fame, :if => lambda { true } }
       band = @pop.new
-      band.update_properties_from({"fame"=>"oh yes"}, {:exclude => [:fame]}, Representable::JSON)
+      band.update_properties_from({"fame"=>"oh yes"}, {:exclude => [:fame]}, :hash)
       assert_equal nil, band.fame
     end
     
@@ -364,7 +364,7 @@ class RepresentableTest < MiniTest::Spec
       @pop.class_eval { property :fame, :if => lambda { groupies } }
       band = @pop.new
       band.groupies = true
-      band.update_properties_from({"fame"=>"oh yes"}, {}, Representable::JSON)
+      band.update_properties_from({"fame"=>"oh yes"}, {}, :hash)
       assert_equal "oh yes", band.fame
     end
   end
