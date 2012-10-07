@@ -1,6 +1,10 @@
+h2. 1.2.7
+
+* Moving @Format.binding_for_definition@ to @Format#{format}_binding_for_definition@, making it an instance method in its own "namespace". This allows mixing in multiple representer engines into a user's representer module.
+
 h2. 1.2.6
 
-Extracted @HashRepresenter@ which operates on hash structures. This allows you to "parse" form data, e.g. as in Rails' @params@ hash. Internally, this is used by JSON and partly by YAML.
+* Extracted @HashRepresenter@ which operates on hash structures. This allows you to "parse" form data, e.g. as in Rails' @params@ hash. Internally, this is used by JSON and partly by YAML.
 
 h2. 1.2.5
 
