@@ -111,7 +111,7 @@ private
   end
   
   def representable_bindings_for(format)
-    representable_attrs.map {|attr| send("#{format}_binding_for_definition", attr) }  # DISCUSS: call that on attr directly?
+    representable_attrs.map {|attr| format.build_for(attr) }
   end
   
   # Returns the wrapper for the representation. Mostly used in XML.

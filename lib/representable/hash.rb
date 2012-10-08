@@ -22,28 +22,20 @@ module Representable
     end
     
     
-    def from_hash(data, options={}, format=:hash)
+    def from_hash(data, options={}, binding_builder=PropertyBinding)
       if wrap = options[:wrap] || representation_wrap
         data = data[wrap.to_s]
       end
       
-      update_properties_from(data, options, format)
+      update_properties_from(data, options, binding_builder)
     end
     
-    def to_hash(options={}, format=:hash)
-      hash = create_representation_with({}, options, format)
+    def to_hash(options={}, binding_builder=PropertyBinding)
+      hash = create_representation_with({}, options, binding_builder)
       
       return hash unless wrap = options[:wrap] || representation_wrap
       
       {wrap => hash}
-    end
-
-  private
-
-    def hash_binding_for_definition(definition)
-      return Representable::Hash::CollectionBinding.new(definition)  if definition.array?
-      return Representable::Hash::HashBinding.new(definition)        if definition.hash?
-      Representable::Hash::PropertyBinding.new(definition)
     end
   end
 end

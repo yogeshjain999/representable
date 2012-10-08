@@ -16,6 +16,12 @@ module Representable
     
     
     class PropertyBinding < Representable::Binding
+      def self.build_for(definition)
+        return CollectionBinding.new(definition)  if definition.array?
+        return HashBinding.new(definition)        if definition.hash?
+        new(definition)
+      end
+
       def initialize(*args) # FIXME. make generic.
         super
         extend ObjectBinding if typed?

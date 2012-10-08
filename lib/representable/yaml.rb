@@ -30,7 +30,7 @@ module Representable
     
     def from_yaml(doc, options={})
       hash = Psych.load(doc)
-      from_hash(hash, options, :yaml)
+      from_hash(hash, options, PropertyBinding)
     end
     
     # Returns a Nokogiri::XML object representing this object.
@@ -38,7 +38,7 @@ module Representable
       #root_tag = options[:wrap] || representation_wrap
       
       Psych::Nodes::Mapping.new.tap do |map|
-        create_representation_with(map, options, :yaml)
+        create_representation_with(map, options, PropertyBinding)
       end
     end
     
@@ -48,16 +48,6 @@ module Representable
       
       doc.children << to_ast(*args)
       stream.to_yaml
-    end
-
-  private
-
-    def yaml_binding_for_definition(definition)
-      return CollectionBinding.new(definition)      if definition.array?
-      #return HashBinding.new(definition)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
-      #return AttributeHashBinding.new(definition)   if definition.hash? and definition.options[:use_attributes]
-      #return AttributeBinding.new(definition)       if definition.attribute
-      PropertyBinding.new(definition)
     end
   end
 end
