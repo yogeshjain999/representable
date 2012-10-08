@@ -24,15 +24,15 @@ module Representable
     
     
     class PropertyBinding < Binding
-      def initialize(definition)
+      def initialize(*args)
         super
-        extend ObjectBinding if definition.typed? # FIXME.
+        extend ObjectBinding if typed? # FIXME.
       end
       
       def write(parent, value)
         wrap_node = parent
         
-        if wrap = definition.options[:wrap]
+        if wrap = options[:wrap]
           parent << wrap_node = node_for(parent, wrap)
         end
 
@@ -41,7 +41,7 @@ module Representable
       
       def read(node)
         selector  = "./#{xpath}"
-        selector  = "./#{definition.options[:wrap]}/#{xpath}" if definition.options[:wrap]
+        selector  = "./#{options[:wrap]}/#{xpath}" if options[:wrap]
         nodes     = node.search(selector)
 
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
@@ -52,7 +52,7 @@ module Representable
       # Creates wrapped node for the property.
       def serialize_for(value, parent)
       #def serialize_for(value, parent, tag_name=definition.from)
-        node = node_for(parent, definition.from)
+        node = node_for(parent, from)
         serialize_node(node, value)
       end
       
@@ -72,7 +72,7 @@ module Representable
       
     private
       def xpath
-        definition.from
+        from
       end
 
       def node_for(parent, name)
@@ -138,11 +138,11 @@ module Representable
     # Represents a tag attribute. Currently this only works on the top-level tag.
     class AttributeBinding < PropertyBinding
       def read(node)
-        deserialize(node[definition.from])
+        deserialize(node[from])
       end
       
       def serialize_for(value, parent)
-        parent[definition.from] = serialize(value.to_s)
+        parent[from] = serialize(value.to_s)
       end
       
       def write(parent, value)

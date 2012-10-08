@@ -19,13 +19,13 @@ module Representable
     end
 
     class PropertyBinding < Representable::Hash::PropertyBinding
-      def initialize(definition) # FIXME. make generic.
+      def initialize(*args) # FIXME. make generic.
         super
-        extend ObjectBinding if definition.typed?
+        extend ObjectBinding if typed?
       end
       
       def write(map, value)
-        map.children << Psych::Nodes::Scalar.new(definition.from)
+        map.children << Psych::Nodes::Scalar.new(from)
         map.children << serialize_for(value)  # FIXME: should be serialize.
       end
 
@@ -42,7 +42,7 @@ module Representable
     class CollectionBinding < PropertyBinding
       def serialize_for(value)
         Psych::Nodes::Sequence.new.tap do |seq|
-          seq.style = Psych::Nodes::Sequence::FLOW if definition.options[:style] == :flow
+          seq.style = Psych::Nodes::Sequence::FLOW if options[:style] == :flow
           value.each { |obj| seq.children << super(obj) }
         end
       end

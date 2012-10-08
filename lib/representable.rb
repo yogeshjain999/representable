@@ -68,19 +68,19 @@ private
   
   def skip_excluded_property?(binding, options)
     return unless props = options[:exclude] || options[:include]
-    res   = props.include?(binding.definition.name.to_sym)
+    res   = props.include?(binding.name.to_sym)
     options[:include] ? !res : res
   end
   
   def skip_conditional_property?(binding)
-    return unless condition = binding.definition.options[:if]
+    return unless condition = binding.options[:if]
     not instance_exec(&condition)
   end
   
   # Retrieve value and write fragment to the doc.
   def compile_fragment(bin, doc)
-    value = send(bin.definition.getter)
-    value = bin.definition.default_for(value)
+    value = send(bin.getter)
+    value = bin.default_for(value)
     
     write_fragment_for(bin, value, doc)
   end
@@ -90,15 +90,15 @@ private
     value = read_fragment_for(bin, doc)
     
     if value == Binding::FragmentNotFound
-      return unless bin.definition.has_default?
-      value = bin.definition.default
+      return unless bin.has_default?
+      value = bin.default
     end
     
-    send(bin.definition.setter, value)
+    send(bin.setter, value)
   end
   
   def write_fragment_for(bin, value, doc) # DISCUSS: move to Binding?
-    return if bin.definition.skipable_nil_value?(value)
+    return if bin.skipable_nil_value?(value)
     bin.write(doc, value)
   end
   

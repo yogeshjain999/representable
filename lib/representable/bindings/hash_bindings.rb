@@ -16,20 +16,20 @@ module Representable
     
     
     class PropertyBinding < Representable::Binding
-      def initialize(definition) # FIXME. make generic.
+      def initialize(*args) # FIXME. make generic.
         super
-        extend ObjectBinding if definition.typed?
+        extend ObjectBinding if typed?
       end
       
       def read(hash)
-        return FragmentNotFound unless hash.has_key?(definition.from) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
+        return FragmentNotFound unless hash.has_key?(from) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
         
-        fragment = hash[definition.from]
+        fragment = hash[from]
         deserialize_from(fragment)
       end
       
       def write(hash, value)
-        hash[definition.from] = serialize_for(value)
+        hash[from] = serialize_for(value)
       end
       
       def serialize_for(value)

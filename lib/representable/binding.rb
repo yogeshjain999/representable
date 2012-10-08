@@ -1,14 +1,10 @@
+require 'delegate'
+
 module Representable
-  class Binding
+  class Binding < SimpleDelegator
     class FragmentNotFound
     end
     
-    
-    attr_reader :definition # TODO: merge Binding and Definition.
-  
-    def initialize(definition)
-      @definition = definition
-    end
     
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -33,7 +29,7 @@ module Representable
       end
       
       def extend_for(object)
-        if mod = definition.representer_module
+        if mod = representer_module
           object.extend(*mod)
         end
         
@@ -56,7 +52,7 @@ module Representable
       end
       
       def create_object
-        definition.sought_type.new
+        sought_type.new
       end
     end
     

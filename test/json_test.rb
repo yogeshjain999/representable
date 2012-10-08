@@ -147,7 +147,7 @@ module JsonTest
       describe "#representable_bindings" do
         it "returns bindings for each property" do
           assert_equal 2, @band.send(:representable_bindings_for, :hash).size
-          assert_equal "name", @band.send(:representable_bindings_for, :hash).first.definition.name
+          assert_equal "name", @band.send(:representable_bindings_for, :hash).first.name
         end
       end
     end
