@@ -1,10 +1,14 @@
 require 'delegate'
 
 module Representable
+  # The Binding wraps the Definition instance for this property and provides methods to read/write fragments.
   class Binding < SimpleDelegator
     class FragmentNotFound
     end
     
+    def definition  # TODO: remove in 1.4.
+      raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
+    end
     
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
