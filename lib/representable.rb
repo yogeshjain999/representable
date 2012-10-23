@@ -61,7 +61,7 @@ private
 
   # Checks and returns if the property should be deserialized
   def skip_property_for_write?(binding, options)
-    return true unless binding.writable?
+    return true unless binding.writeable?
 
     skip_property?(binding, options)
   end
@@ -178,7 +178,7 @@ private
       #   property :name, :default => "Mike"
       #   property :name, :render_nil => true
       #   property :name, :readable => false
-      #   property :name, :writable => false
+      #   property :name, :writeable => false
       def property(name, options={})
         representable_attrs << definition_class.new(name, options)
       end

@@ -129,26 +129,26 @@ class DefinitionTest < MiniTest::Spec
   end
     
   
-  describe "#writable?" do
+  describe "#writeable?" do
 
-    it "returns true when :writable is not given" do
+    it "returns true when :writeable is not given" do
       @def = Representable::Definition.new(:song)
-      assert_equal true, @def.writable?
+      assert_equal true, @def.writeable?
     end
 
-    it "returns true when :writable => true" do
-      @def = Representable::Definition.new(:song, :writable => true)
-      assert_equal true, @def.writable?
+    it "returns true when :writeable => true" do
+      @def = Representable::Definition.new(:song, :writeable => true)
+      assert_equal true, @def.writeable?
     end
 
-    it "returns false when :writable => false" do
-      @def = Representable::Definition.new(:song, :writable => false)
-      assert_equal false, @def.writable?
+    it "returns false when :writeable => false" do
+      @def = Representable::Definition.new(:song, :writeable => false)
+      assert_equal false, @def.writeable?
     end
 
-    it "returns nil when :writable is nil" do
-      @def = Representable::Definition.new(:song, :writable => nil)
-      assert_equal nil, @def.writable?
+    it "returns nil when :writeable is nil" do
+      @def = Representable::Definition.new(:song, :writeable => nil)
+      assert_equal nil, @def.writeable?
     end
     
   end
