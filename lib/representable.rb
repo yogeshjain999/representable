@@ -61,14 +61,14 @@ private
 
   # Checks and returns if the property should be deserialized
   def skip_property_for_write?(binding, options)
-    return true unless binding.definition.writable?
+    return true unless binding.writable?
 
     skip_property?(binding, options)
   end
 
   # Checks and returns if the property should be serialized
   def skip_property_for_read?(binding, options)
-    return true unless binding.definition.readable?
+    return true unless binding.readable?
 
     skip_property?(binding, options)
   end

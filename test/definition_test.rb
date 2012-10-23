@@ -141,19 +141,14 @@ class DefinitionTest < MiniTest::Spec
       assert_equal true, @def.writable?
     end
 
-    it "returns true when :writable is truthy" do
-      @def = Representable::Definition.new(:song, :writable => Object.new)
-      assert_equal true, @def.writable?
-    end
-
     it "returns false when :writable => false" do
       @def = Representable::Definition.new(:song, :writable => false)
       assert_equal false, @def.writable?
     end
 
-    it "returns false when :writable is nil" do
+    it "returns nil when :writable is nil" do
       @def = Representable::Definition.new(:song, :writable => nil)
-      assert_equal false, @def.writable?
+      assert_equal nil, @def.writable?
     end
     
   end
@@ -170,19 +165,14 @@ class DefinitionTest < MiniTest::Spec
       assert_equal true, @def.readable?
     end
 
-    it "returns true when :readable is truthy" do
-      @def = Representable::Definition.new(:song, :readable => Object.new)
-      assert_equal true, @def.readable?
-    end
-
     it "returns false when :readable => false" do
       @def = Representable::Definition.new(:song, :readable => false)
       assert_equal false, @def.readable?
     end
 
-    it "returns false when :readable is nil" do
+    it "returns nil when :readable is nil" do
       @def = Representable::Definition.new(:song, :readable => nil)
-      assert_equal false, @def.readable?
+      assert_equal nil, @def.readable?
     end
 
   end

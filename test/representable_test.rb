@@ -241,7 +241,7 @@ class RepresentableTest < MiniTest::Spec
 
     it "ignores non-writable properties" do
       @band = Class.new(Band) { property :name; collection :founders, :writable => false; attr_accessor :founders }.new
-      @band.update_properties_from({"name" => "Iron Maiden", "groupies" => 2, "founders" => [{ "name" => "Steve Harris" }] }, {}, Representable::JSON)
+      @band.update_properties_from({"name" => "Iron Maiden", "groupies" => 2, "founders" => [{ "name" => "Steve Harris" }] }, {}, Representable::Hash::PropertyBinding)
       assert_equal "Iron Maiden", @band.name
       assert_equal nil, @band.founders
     end
@@ -306,7 +306,7 @@ class RepresentableTest < MiniTest::Spec
       @band.name = "Iron Maiden"
       @band.founder_ids = [1,2,3]
 
-      hash = @band.send(:create_representation_with, {}, {}, Representable::JSON)
+      hash = @band.send(:create_representation_with, {}, {}, Representable::Hash::PropertyBinding)
       assert_equal({"name" => "Iron Maiden"}, hash)
     end
 
