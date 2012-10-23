@@ -35,6 +35,7 @@ module Representable
       extend ClassMethods::Declarations
       
       include Deprecations
+      include Options::ReadWrite
     end
   end
   
@@ -56,13 +57,11 @@ private
   end
 
   def serialize_property(binding, doc, options)
-    return unless binding.readable?
     return if skip_property?(binding, options)
     compile_fragment(binding, doc)
   end
 
   def deserialize_property(binding, doc, options)
-    return true unless binding.writeable?
     return if skip_property?(binding, options)
     uncompile_fragment(binding, doc)
   end
@@ -125,6 +124,21 @@ private
   # Returns the wrapper for the representation. Mostly used in XML.
   def representation_wrap
     representable_attrs.wrap_for(self.class.name)
+  end
+
+  # TODO: this should go into features/read_write_options.
+  module Options
+    module ReadWrite
+      def deserialize_property(binding, doc, options)
+        return unless binding.writeable?
+        super
+      end
+
+      def serialize_property(binding, doc, options)
+        return unless binding.readable?
+        super
+      end
+    end
   end
   
   
