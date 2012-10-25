@@ -83,6 +83,31 @@ album = Album.new(:name => "The Police", :songs => [song, Song.new(:title => "Sy
 puts album.extend(AlbumRepresenter).to_json
 
 
+SongRepresenter.module_eval do
+  @representable_attrs = nil
+end
+
+
+######### inheritance
+module SongRepresenter
+  include Representable::JSON
+
+  property :title
+  property :track
+end
+
+module CoverSongRepresenter
+  include Representable::JSON
+  include SongRepresenter
+
+  property :covered_by
+end
+
+
+song = Song.new(:title => "Truth Hits Everybody", :covered_by => "No Use For A Name")
+puts song.extend(CoverSongRepresenter).to_json
+
+
 ### XML
 require 'representable/xml'
 module SongRepresenter
@@ -94,6 +119,11 @@ module SongRepresenter
 end
 song = Song.new(:title => "Fallout", :composers => ["Steward Copeland", "Sting"])
 puts song.extend(SongRepresenter).to_xml
+
+
+SongRepresenter.module_eval do
+  @representable_attrs = nil
+end
 
 
 ### YAML
@@ -108,36 +138,21 @@ end
 puts song.extend(SongRepresenter).to_yaml
 
 
-class HotBands < OpenStruct
+SongRepresenter.module_eval do
+  @representable_attrs = nil
 end
 
 
+### YAML
 module SongRepresenter
   include Representable::YAML
 
   property :title
   property :track
+  collection :composers, :style => :flow
 end
-
-module AlbumRepresenter
-  include Representable::YAML
-
-  property :name
-  collection :songs, :extend => SongRepresenter, :class => Song
-end
-
-module HotBandsRepresenter
-  include Representable::YAML
-
-  property :for
-  collection :names, :style => :flow
-end
-
-puts HotBands.new(:for => "Nick", :names => ["Bad Religion", "Van Halen", "Mozart"]).extend(HotBandsRepresenter).to_yaml
-
-
-puts Album.new(:songs => [Song.new(:title => "Alltax", :track => 7)]).extend(AlbumRepresenter).to_yaml
+puts song.extend(SongRepresenter).to_yaml
 
 
 ######### custom methods in representer
-######### inheritance
+######### r/w, conditions
