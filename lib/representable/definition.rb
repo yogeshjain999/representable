@@ -63,18 +63,5 @@ module Representable
     def default
       options[:default]
     end
-
-    # Checks and returns if the property is writeable
-    def writeable?
-      return options[:writeable] if options.has_key?(:writeable)
-      true
-    end
-
-    # Checks and returns if the property is readable
-    def readable?
-      return options[:readable] if options.has_key?(:readable)
-      true
-    end
-
   end
 end

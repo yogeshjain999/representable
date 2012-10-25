@@ -1,5 +1,6 @@
 require 'representable/deprecations'
 require 'representable/definition'
+require 'representable/feature/readable_writeable'
 
 # Representable can be used in two ways.
 #
@@ -35,7 +36,7 @@ module Representable
       extend ClassMethods::Declarations
       
       include Deprecations
-      include Options::ReadWrite
+      include Feature::ReadableWriteable
     end
   end
   
@@ -125,22 +126,6 @@ private
   def representation_wrap
     representable_attrs.wrap_for(self.class.name)
   end
-
-  # TODO: this should go into features/read_write_options.
-  module Options
-    module ReadWrite
-      def deserialize_property(binding, doc, options)
-        return unless binding.writeable?
-        super
-      end
-
-      def serialize_property(binding, doc, options)
-        return unless binding.readable?
-        super
-      end
-    end
-  end
-  
   
   module ClassInclusions
     def included(base)
