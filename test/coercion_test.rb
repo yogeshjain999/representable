@@ -10,12 +10,14 @@ class VirtusCoercionTest < MiniTest::Spec
       module SongRepresenter
         include Representable::JSON
         include Representable::Coercion
-        property :composed_at, :type => DateTime 
+        property :composed_at, :type => DateTime
+        property :track, :type => Integer
       end
      
       it "coerces properties in #from_json" do
-        song = Song.new.extend(SongRepresenter).from_json("{\"composed_at\":\"November 18th, 1983\"}")
+        song = Song.new.extend(SongRepresenter).from_json("{\"composed_at\":\"November 18th, 1983\",\"track\":\"18\",}")
         assert_kind_of DateTime, song.composed_at
+        assert_equal 18, song.track
         assert_equal DateTime.parse("Fri, 18 Nov 1983 00:00:00 +0000"), song.composed_at
       end
     end
