@@ -1,6 +1,15 @@
 require 'test_helper'
 
 class RepresentableTest < MiniTest::Spec
+  def self.representer!(name=:representer, &block)
+    let(name) do
+      Module.new do
+        include Representable::Hash
+        instance_exec(&block)
+      end
+    end
+  end
+
   class Band
     include Representable
     property :name
@@ -404,37 +413,55 @@ class RepresentableTest < MiniTest::Spec
     end
   end
 
-  describe ":extend" do
+  describe ":extend and :class" do
     module UpcaseRepresenter
       def to_hash(*); upcase; end
-      def from_hash(hsh); hsh[:name].upcase; end
+      def from_hash(hsh); self.class.new hsh.upcase; end   # DISCUSS: from_hash must return self.
     end
     module DowncaseRepresenter 
       def to_hash(*); downcase; end
       def from_hash(hsh); hsh.downcase; end
     end
     class UpcaseString < String; end
-    let (:representer) { Module.new do
-      include Representable::Hash
-      property :name, :extend => lambda { |name|  name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
-    end }
+    
+    describe "property with :extend" do
+      representer! do
+        property :name, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+      end
 
-    it "uses lambda when rendering" do
-      assert_equal({"name" => "you make me thick"}, Song.new("You Make Me Thick").extend(representer).to_hash )
-      assert_equal({"name" => "STEPSTRANGER"}, Song.new(UpcaseString.new "Stepstranger").extend(representer).to_hash )
+      it "uses lambda when rendering" do
+        assert_equal({"name" => "you make me thick"}, Song.new("You Make Me Thick").extend(representer).to_hash )
+        assert_equal({"name" => "STEPSTRANGER"}, Song.new(UpcaseString.new "Stepstranger").extend(representer).to_hash )
+      end
+
+      it "uses lambda when parsing" do
+        Song.new.extend(representer).from_hash({"name" => "You Make Me Thick"}).name.must_equal "you make me thick"
+        Song.new.extend(representer).from_hash({"name" => "Stepstranger"}).name.must_equal "stepstranger" # DISCUSS: we compare "".is_a?(UpcaseString)
+      end
+
+      describe "with :class lambda" do
+        representer! do
+          property :name, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
+                          :class  => lambda { |fragment| fragment == "Still Failing?" ? String : UpcaseString }
+        end
+
+        it "creates instance from :class lambda when parsing" do
+          song = Song.new.extend(representer).from_hash({"name" => "Quitters Never Win"})
+          song.name.must_be_kind_of UpcaseString
+          song.name.must_equal "QUITTERS NEVER WIN"
+
+          song = Song.new.extend(representer).from_hash({"name" => "Still Failing?"})
+          song.name.must_be_kind_of String
+          song.name.must_equal "still failing?"
+        end
+      end
     end
 
-    it "uses lambda when parsing" do
-      Song.new.extend(representer).from_hash({"name" => "You Make Me Thick"}).name.must_equal "you make me thick"
-      Song.new.extend(representer).from_hash({"name" => "Stepstranger"}).name.must_equal "stepstranger" # DISCUSS: we compare "".is_a?(UpcaseString)
-    end
 
-
-    describe "collection" do
-      let (:representer) { Module.new do
-        include Representable::Hash
-        collection :songs, :extend => lambda { |name|  name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
-      end }
+    describe "collection with :extend" do
+      representer! do
+        collection :songs, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+      end
 
       it "uses lambda for each item when rendering" do
         Album.new([UpcaseString.new("Dean Martin"), "Charlie Still Smirks"]).extend(representer).to_hash.must_equal("songs"=>["DEAN MARTIN", "charlie still smirks"])
@@ -443,6 +470,18 @@ class RepresentableTest < MiniTest::Spec
       it "uses lambda for each item when parsing" do
         album = Album.new.extend(representer).from_hash("songs"=>["DEAN MARTIN", "charlie still smirks"])
         album.songs.must_equal ["dean martin", "charlie still smirks"] # DISCUSS: we compare "".is_a?(UpcaseString)
+      end
+
+      describe "with :class lambda" do
+        representer! do
+          collection :songs,  :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
+                              :class  => lambda { |fragment| fragment == "Still Failing?" ? String : UpcaseString }
+        end
+
+        it "creates instance from :class lambda for each item when parsing" do
+          album = Album.new.extend(representer).from_hash("songs"=>["Still Failing?", "charlie still smirks"])
+          album.songs.must_equal ["still failing?", "CHARLIE STILL SMIRKS"]
+        end
       end
     end
     

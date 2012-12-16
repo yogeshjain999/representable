@@ -36,7 +36,7 @@ module Representable
         if mod = representer_module_for(object)
           object.extend(*mod)
         end
-        
+
         object
       end
     
@@ -61,11 +61,20 @@ module Representable
       
       def deserialize(data)
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        super(create_object).send(deserialize_method, data)
+        super(create_object(data)).send(deserialize_method, data)
       end
       
-      def create_object
-        sought_type.new
+      def create_object(fragment)
+        class_for(fragment).new
+      end
+
+    private
+      def class_for(fragment, *args)
+        if sought_type.is_a?(Proc)
+          return sought_type.call(fragment, *args) # TODO: how to pass additional data to the computing block?`
+        end
+
+        sought_type # :class.
       end
     end
     
