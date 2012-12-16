@@ -33,7 +33,7 @@ module Representable
       end
       
       def extend_for(object)
-        if mod = representer_module_for(object)
+        if mod = representer_module_for(object) # :extend.
           object.extend(*mod)
         end
 
@@ -42,11 +42,12 @@ module Representable
     
     private
       def representer_module_for(object, *args)
-        if representer_module.is_a?(Proc)
-          return representer_module.call(object, *args) # TODO: how to pass additional data to the computing block?`
-        end
+        call_proc_for(representer_module, object)   # TODO: how to pass additional data to the computing block?`
+      end
 
-        representer_module # :extend.
+      def call_proc_for(proc, *args)
+        return proc unless proc.is_a?(Proc)
+        proc.call(*args)
       end
     end
     
@@ -70,13 +71,8 @@ module Representable
 
     private
       def class_for(fragment, *args)
-        if sought_type.is_a?(Proc)
-          return sought_type.call(fragment, *args) # TODO: how to pass additional data to the computing block?`
-        end
-
-        sought_type # :class.
+        call_proc_for(sought_type, fragment)
       end
     end
-    
   end
 end
