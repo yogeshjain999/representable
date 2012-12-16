@@ -176,3 +176,4 @@ puts song.extend(SongRepresenter).to_yaml
 ######### custom methods in representer (using helpers)
 ######### r/w, conditions
 #########
+######### polymorphic :extend and :class
