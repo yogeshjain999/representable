@@ -24,7 +24,7 @@ module Representable
     # at runtime.
     module Extend
       # Extends the object with its representer before serialization.
-      def serialize(object)
+      def serialize(*)
         extend_for(super)
       end
       
@@ -33,11 +33,20 @@ module Representable
       end
       
       def extend_for(object)
-        if mod = representer_module
+        if mod = representer_module_for(object)
           object.extend(*mod)
         end
         
         object
+      end
+    
+    private
+      def representer_module_for(object, *args)
+        if representer_module.is_a?(Proc)
+          return representer_module.call(object, *args) # TODO: how to pass additional data to the computing block?`
+        end
+
+        representer_module # :extend.
       end
     end
     
@@ -47,10 +56,10 @@ module Representable
       def serialize(object)
         return object if object.nil?
         
-        super(object).send(serialize_method, :wrap => false)
+        super.send(serialize_method, :wrap => false)
       end
       
-      def deserialize(data) 
+      def deserialize(data)
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
         super(create_object).send(deserialize_method, data)
       end

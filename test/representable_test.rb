@@ -403,6 +403,50 @@ class RepresentableTest < MiniTest::Spec
       assert_equal "oh yes", band.fame
     end
   end
+
+  describe ":extend" do
+    module UpcaseRepresenter
+      def to_hash(*); upcase; end
+      def from_hash(hsh); hsh[:name].upcase; end
+    end
+    module DowncaseRepresenter 
+      def to_hash(*); downcase; end
+      def from_hash(hsh); hsh.downcase; end
+    end
+    class UpcaseString < String; end
+    let (:representer) { Module.new do
+      include Representable::Hash
+      property :name, :extend => lambda { |name|  name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+    end }
+
+    it "uses lambda when rendering" do
+      assert_equal({"name" => "you make me thick"}, Song.new("You Make Me Thick").extend(representer).to_hash )
+      assert_equal({"name" => "STEPSTRANGER"}, Song.new(UpcaseString.new "Stepstranger").extend(representer).to_hash )
+    end
+
+    it "uses lambda when parsing" do
+      Song.new.extend(representer).from_hash({"name" => "You Make Me Thick"}).name.must_equal "you make me thick"
+      Song.new.extend(representer).from_hash({"name" => "Stepstranger"}).name.must_equal "stepstranger" # DISCUSS: we compare "".is_a?(UpcaseString)
+    end
+
+
+    describe "collection" do
+      let (:representer) { Module.new do
+        include Representable::Hash
+        collection :songs, :extend => lambda { |name|  name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+      end }
+
+      it "uses lambda for each item when rendering" do
+        Album.new([UpcaseString.new("Dean Martin"), "Charlie Still Smirks"]).extend(representer).to_hash.must_equal("songs"=>["DEAN MARTIN", "charlie still smirks"])
+      end
+
+      it "uses lambda for each item when parsing" do
+        album = Album.new.extend(representer).from_hash("songs"=>["DEAN MARTIN", "charlie still smirks"])
+        album.songs.must_equal ["dean martin", "charlie still smirks"] # DISCUSS: we compare "".is_a?(UpcaseString)
+      end
+    end
+    
+  end
   
   describe "Config" do
     before do

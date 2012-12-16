@@ -59,6 +59,11 @@ puts song.extend(SongRepresenter).to_json
 ######### nesting types
 
 class Album < OpenStruct
+  def name
+    puts @table.inspect
+    #@attributes
+    @table[:name]
+  end
 end
 
 module AlbumRepresenter
@@ -82,6 +87,20 @@ end
 album = Album.new(:name => "The Police", :songs => [song, Song.new(:title => "Synchronicity")])
 puts album.extend(AlbumRepresenter).to_json
 
+
+SongRepresenter.module_eval do
+  @representable_attrs = nil
+end
+
+
+######### using helpers (customizing the rendering/parsing) 
+module AlbumRepresenter
+  def name
+    super.upper
+  end
+end
+album = Album.new(:name => "The Police", :songs => [song, Song.new(:title => "Synchronicity")])
+puts album.extend(AlbumRepresenter).to_json
 
 SongRepresenter.module_eval do
   @representable_attrs = nil
@@ -154,5 +173,6 @@ end
 puts song.extend(SongRepresenter).to_yaml
 
 
-######### custom methods in representer
+######### custom methods in representer (using helpers)
 ######### r/w, conditions
+#########
