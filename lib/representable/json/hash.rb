@@ -1,9 +1,10 @@
+require 'representable/json'
 require 'representable/hash_methods'
 
 module Representable::JSON
   module Hash
     include Representable::JSON
-    include HashMethods
+    include Representable::HashMethods
 
     def self.included(base)
       base.class_eval do
