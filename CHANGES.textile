@@ -1,3 +1,7 @@
+h2. 1.2.10
+
+* When @:class@ returns @nil@ we no longer try to create a new instance but use the processed fragment itself.
+
 h2. 1.2.9
 
 * @:extend@ and @:class@ now also accept procs which allows having polymorphic properties and collections where representer and class can be chosen at runtime.

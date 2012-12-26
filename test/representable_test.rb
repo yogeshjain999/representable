@@ -454,6 +454,18 @@ class RepresentableTest < MiniTest::Spec
           song.name.must_be_kind_of String
           song.name.must_equal "still failing?"
         end
+
+        describe "when :class lambda returns nil" do
+          representer! do
+            property :name, :extend => lambda { |name| Module.new { def from_hash(data); data; end } },
+                            :class  => nil
+          end
+
+          it "skips creating new instance" do
+            song = Song.new.extend(representer).from_hash({"name" => string = "Satellite"})
+            song.name.object_id.must_equal string.object_id
+          end
+        end
       end
     end
 

@@ -66,7 +66,8 @@ module Representable
       end
       
       def create_object(fragment)
-        class_for(fragment).new
+        item_class = class_for(fragment) or return fragment # DISCUSS: is it legal to return the very fragment here?
+        item_class.new
       end
 
     private
