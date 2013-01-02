@@ -9,6 +9,11 @@ module Representable
     def definition  # TODO: remove in 1.4.
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
     end
+
+    def initialize(definition, represented)
+      super(definition)
+      @represented = represented
+    end
     
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -47,7 +52,7 @@ module Representable
 
       def call_proc_for(proc, *args)
         return proc unless proc.is_a?(Proc)
-        proc.call(*args)
+        @represented.instance_exec(*args, &proc)
       end
     end
     
@@ -57,7 +62,7 @@ module Representable
       def serialize(object)
         return object if object.nil?
         
-        super.send(serialize_method, :wrap => false)
+        super.send(serialize_method, :wrap => false, :binding => self)
       end
       
       def deserialize(data)

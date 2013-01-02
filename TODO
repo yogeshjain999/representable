@@ -1,8 +1,7 @@
 * Pass key/index as first block arg to :class and :extendv
 class: |key, hsh|
 
-* Don't extend when lambda returns nil
-	class: nil -> no extend
-
 * Allow passing options to Binding#serialize.
 	serialize(.., options{:exclude => ..})
+
+* Allow :writer and :reader / :getter/:setter

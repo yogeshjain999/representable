@@ -119,7 +119,7 @@ private
   end
   
   def representable_bindings_for(format)
-    representable_attrs.map {|attr| format.build_for(attr) }
+    representable_attrs.map {|attr| format.build_for(attr, self) }
   end
   
   # Returns the wrapper for the representation. Mostly used in XML.

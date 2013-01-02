@@ -424,6 +424,22 @@ class RepresentableTest < MiniTest::Spec
     end
     class UpcaseString < String; end
     
+
+    describe "lambda blocks" do
+      representer! do
+        property :name, :extend => lambda { |name| compute_representer(name) }
+      end
+
+      it "executes lambda in represented instance context" do
+        Song.new("Carnage").instance_eval do
+          def compute_representer(name)
+            UpcaseRepresenter
+          end
+          self
+        end.extend(representer).to_hash.must_equal({"name" => "CARNAGE"})
+      end
+    end
+
     describe "property with :extend" do
       representer! do
         property :name, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
