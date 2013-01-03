@@ -62,7 +62,7 @@ module Representable
       def serialize(object)
         return object if object.nil?
         
-        super.send(serialize_method, :wrap => false, :binding => self)
+        super.send(serialize_method, :wrap => false)  # TODO: pass :binding => self
       end
       
       def deserialize(data)
