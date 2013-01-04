@@ -1,9 +1,7 @@
-h2. 1.2.10
-
-* When @:class@ returns @nil@ we no longer try to create a new instance but use the processed fragment itself.
-
 h2. 1.2.9
 
+* When @:class@ returns @nil@ we no longer try to create a new instance but use the processed fragment itself.
+* @:instance@ allows overriding the @ObjectBinding#create_object@ workflow by returning an instance from the lambda. This is particularly helpful when you need to inject additional data into the property object created in #deserialize.
 * @:extend@ and @:class@ now also accept procs which allows having polymorphic properties and collections where representer and class can be chosen at runtime.
 
 h2. 1.2.8
