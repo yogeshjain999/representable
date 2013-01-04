@@ -440,6 +440,20 @@ class RepresentableTest < MiniTest::Spec
       end
     end
 
+    describe ":instance" do
+      obj = String.new("Fate")
+      mod = Module.new { def from_hash(*); self; end }
+      representer! do
+        property :name, :extend => mod, :instance => lambda { |name| obj }
+      end
+
+      it "uses object from :instance but still extends it" do
+        song = Song.new.extend(representer).from_hash("name" => "Eric's Had A Bad Day")
+        song.name.must_equal obj
+        song.name.must_be_kind_of mod
+      end
+    end
+
     describe "property with :extend" do
       representer! do
         property :name, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String

@@ -25,6 +25,10 @@ class DefinitionTest < MiniTest::Spec
       it "is true when :extend is present, only" do
         assert Representable::Definition.new(:songs, :extend => Hash).typed?
       end
+
+      it "is true when :instance is present, only" do
+        assert Representable::Definition.new(:songs, :instance => Object.new).typed?
+      end
     end
     
     it "responds to #getter and returns string" do

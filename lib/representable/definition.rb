@@ -20,7 +20,7 @@ module Representable
     end
     
     def typed?
-      sought_type.is_a?(Class) or representer_module  # also true if only :extend is set, for people who want solely rendering.
+      sought_type.is_a?(Class) or representer_module or options[:instance]  # also true if only :extend is set, for people who want solely rendering.
     end
     
     def array?

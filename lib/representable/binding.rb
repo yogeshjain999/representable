@@ -71,13 +71,22 @@ module Representable
       end
       
       def create_object(fragment)
-        item_class = class_for(fragment) or return fragment # DISCUSS: is it legal to return the very fragment here?
-        item_class.new
+        instance_for(fragment) or class_for(fragment)
       end
 
     private
       def class_for(fragment, *args)
+        item_class = class_from(fragment) or return fragment # DISCUSS: is it legal to return the very fragment here?
+        item_class.new
+      end
+
+      def class_from(fragment, *args)
         call_proc_for(sought_type, fragment)
+      end
+
+      def instance_for(fragment, *args)
+        return unless options[:instance] 
+        call_proc_for(options[:instance], fragment)
       end
     end
   end
