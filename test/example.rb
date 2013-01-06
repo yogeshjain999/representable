@@ -4,6 +4,14 @@ Bundler.setup
 require 'representable/yaml'
 require 'ostruct'
 
+def reset_representer(*module_name)
+  module_name.each do |mod|
+    mod.module_eval do
+      @representable_attrs = nil
+    end
+  end
+end
+
 class Song < OpenStruct
 end
 
@@ -96,7 +104,7 @@ end
 ######### using helpers (customizing the rendering/parsing) 
 module AlbumRepresenter
   def name
-    super.upper
+    super.upcase
   end
 end
 album = Album.new(:name => "The Police", :songs => [song, Song.new(:title => "Synchronicity")])
@@ -172,8 +180,94 @@ module SongRepresenter
 end
 puts song.extend(SongRepresenter).to_yaml
 
+SongRepresenter.module_eval do
+  @representable_attrs = nil
+end
+
+# R/W support
+song = Song.new(:title => "You're Wrong", :track => 4)
+module SongRepresenter
+  include Representable::Hash
+
+  property :title, :readable => false
+  property :track
+end
+puts song.extend(SongRepresenter).to_hash
+
+SongRepresenter.module_eval do
+  @representable_attrs = nil
+end
+
+module SongRepresenter
+  include Representable::Hash
+
+  property :title, :writeable => false
+  property :track
+end
+song = Song.new.extend(SongRepresenter)
+song.from_hash({:title => "Fallout", :track => 1})
+puts song
 
 ######### custom methods in representer (using helpers)
-######### r/w, conditions
+######### conditions
 #########
 ######### polymorphic :extend and :class, instance context!, :instance
+class CoverSong < Song
+end
+
+songs = [Song.new(title: "Weirdo", track: 5), CoverSong.new(title: "Truth Hits Everybody", track: 6, copyright: "The Police")]
+album = Album.new(name: "Incognito", songs: songs)
+
+
+reset_representer(SongRepresenter, AlbumRepresenter)
+
+module SongRepresenter
+  include Representable::Hash
+
+  property :title
+  property :track
+end
+
+module CoverSongRepresenter
+  include Representable::Hash
+  include SongRepresenter
+
+  property :copyright
+end
+
+module AlbumRepresenter
+  include Representable::Hash
+
+  property :name
+  collection :songs, :extend => lambda { |song| song.is_a?(CoverSong) ? CoverSongRepresenter : SongRepresenter }
+end
+
+puts album.extend(AlbumRepresenter).to_hash
+
+reset_representer(AlbumRepresenter)
+
+module AlbumRepresenter
+  include Representable::Hash
+
+  property :name
+  collection :songs, 
+    :extend => lambda { |song| song.is_a?(CoverSong) ? CoverSongRepresenter : SongRepresenter },
+    :class  => lambda { |hsh| hsh.has_key?("copyright") ? CoverSong : Song } #=> {"title"=>"Weirdo", "track"=>5}
+end
+
+album = Album.new.extend(AlbumRepresenter).from_hash({"name"=>"Incognito", "songs"=>[{"title"=>"Weirdo", "track"=>5}, {"title"=>"Truth Hits Everybody", "track"=>6, "copyright"=>"The Police"}]})
+puts album.inspect
+
+reset_representer(AlbumRepresenter)
+
+module AlbumRepresenter
+  include Representable::Hash
+
+  property :name
+  collection :songs, 
+    :extend   => lambda { |song| song.is_a?(CoverSong) ? CoverSongRepresenter : SongRepresenter },
+    :instance => lambda { |hsh| hsh.has_key?("copyright") ? CoverSong.new : Song.new(original: true) }
+end
+
+album = Album.new.extend(AlbumRepresenter).from_hash({"name"=>"Incognito", "songs"=>[{"title"=>"Weirdo", "track"=>5}, {"title"=>"Truth Hits Everybody", "track"=>6, "copyright"=>"The Police"}]})
+puts album.inspect
