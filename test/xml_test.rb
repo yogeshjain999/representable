@@ -388,19 +388,16 @@ class CollectionTest < MiniTest::Spec
 
     describe "XML::Collection" do
       describe "with contained objects" do
-        before do
-          @songs_representer = Module.new do
-            include Representable::XML::Collection
-            items :class => Song, :extend => SongRepresenter, :wrap => :songs
-          end
+        representer!(Representable::XML::Collection)  do
+          items :class => Song, :extend => SongRepresenter, :wrap => :songs
         end
 
         it "renders objects with #to_xml" do
-          assert_json "<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>", [Song.new("Days Go By"), Song.new("Can't Take Them All")].extend(@songs_representer).to_xml
+          assert_equal "<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>", [Song.new("Days Go By"), Song.new("Can't Take Them All")].extend(representer).to_xml
         end
 
         it "returns objects array from #from_xml" do
-          assert_equal [Song.new("Days Go By"), Song.new("Can't Take Them All")], [].extend(@songs_representer).from_xml("<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>")
+          assert_equal [Song.new("Days Go By"), Song.new("Can't Take Them All")], [].extend(representer).from_xml("<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>")
         end
       end
     end

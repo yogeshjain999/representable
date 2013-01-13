@@ -1,15 +1,6 @@
 require 'test_helper'
 
 class RepresentableTest < MiniTest::Spec
-  def self.representer!(name=:representer, &block)
-    let(name) do
-      Module.new do
-        include Representable::Hash
-        instance_exec(&block)
-      end
-    end
-  end
-
   class Band
     include Representable
     property :name

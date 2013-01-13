@@ -53,4 +53,13 @@ end
 MiniTest::Spec.class_eval do
   include AssertJson::Assertions
   include XmlHelper
+
+  def self.representer!(format=Representable::Hash, name=:representer, &block)
+    let(name) do
+      Module.new do
+        include format
+        instance_exec(&block)
+      end
+    end
+  end
 end
