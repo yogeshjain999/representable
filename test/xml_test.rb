@@ -389,14 +389,16 @@ class CollectionTest < MiniTest::Spec
     describe "XML::Collection" do
       describe "with contained objects" do
         representer!(Representable::XML::Collection)  do
-          items :class => Song, :extend => SongRepresenter, :wrap => :songs
+          items :class => Song, :extend => SongRepresenter
+          self.representation_wrap= :songs
         end
 
         it "renders objects with #to_xml" do
-          assert_equal "<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>", [Song.new("Days Go By"), Song.new("Can't Take Them All")].extend(representer).to_xml
+          assert_xml_equal "<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>", [Song.new("Days Go By"), Song.new("Can't Take Them All")].extend(representer).to_xml
         end
 
         it "returns objects array from #from_xml" do
+          puts "ficken"
           assert_equal [Song.new("Days Go By"), Song.new("Can't Take Them All")], [].extend(representer).from_xml("<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>")
         end
       end
@@ -405,38 +407,35 @@ class CollectionTest < MiniTest::Spec
 
   require 'representable/xml/hash'
   describe "XML::AttributeHash" do  # TODO: move to HashTest.
-    before do
-      @songs_representer = Module.new do
-        include Representable::XML::AttributeHash
-        self.representation_wrap= :favs
-      end
+    representer!(Representable::XML::AttributeHash) do
+      self.representation_wrap= :favs
     end
     
     describe "#to_xml" do
       it "renders values into attributes converting values to strings" do
-        assert_xml_equal "<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(@songs_representer).to_xml
+        assert_xml_equal "<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(representer).to_xml
       end
       
       it "respects :exclude" do
-        assert_xml_equal "<favs two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(@songs_representer).to_xml(:exclude => [:one])
+        assert_xml_equal "<favs two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(representer).to_xml(:exclude => [:one])
       end
       
       it "respects :include" do
-        assert_xml_equal "<favs two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(@songs_representer).to_xml(:include => [:two])
+        assert_xml_equal "<favs two=\"Can't Take Them All\" />", {:one => :Graveyards, :two => "Can't Take Them All"}.extend(representer).to_xml(:include => [:two])
       end
     end
     
     describe "#from_json" do
       it "returns hash" do
-        assert_equal({"one" => "Graveyards", "two" => "Can't Take Them All"}, {}.extend(@songs_representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />"))
+        assert_equal({"one" => "Graveyards", "two" => "Can't Take Them All"}, {}.extend(representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />"))
       end
     
       it "respects :exclude" do
-        assert_equal({"two" => "Can't Take Them All"}, {}.extend(@songs_representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", :exclude => [:one]))
+        assert_equal({"two" => "Can't Take Them All"}, {}.extend(representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", :exclude => [:one]))
       end
       
       it "respects :include" do
-        assert_equal({"one" => "Graveyards"}, {}.extend(@songs_representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", :include => [:one]))
+        assert_equal({"one" => "Graveyards"}, {}.extend(representer).from_xml("<favs one=\"Graveyards\" two=\"Can't Take Them All\" />", :include => [:one]))
       end
     end
   end

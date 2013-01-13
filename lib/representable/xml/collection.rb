@@ -19,12 +19,13 @@ module Representable::XML
     
     def create_representation_with(doc, options, format)
       bin   = representable_bindings_for(format).first
-      bin.serialize_for(self)
+      doc << bin.serialize_for(self, doc) # FIXME: why isn't that added to doc automatically?
+      doc
     end
     
     def update_properties_from(doc, options, format)
       bin   = representable_bindings_for(format).first
-      value = bin.deserialize_from(doc)
+      value = bin.deserialize_from(doc.search("/#{representable_attrs.wrap}").children) # FIXME: use Binding#read.
       replace(value)
     end
     
