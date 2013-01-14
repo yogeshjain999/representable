@@ -88,23 +88,34 @@ private
   # Retrieve value and write fragment to the doc.
   def compile_fragment(bin, doc)
     value = send(bin.getter)
-    value = bin.default_for(value)
     
-    write_fragment_for(bin, value, doc)
+    write_fragment(bin, doc, value)
   end
   
   # Parse value from doc and update the model property.
   def uncompile_fragment(bin, doc)
+    value = read_fragment(bin, doc)
+
+    send(bin.setter, value)
+  end
+  
+  def read_fragment(bin, doc) # TODO: move to Binding.
     value = read_fragment_for(bin, doc)
     
     if value == Binding::FragmentNotFound
       return unless bin.has_default?
       value = bin.default
     end
-    
-    send(bin.setter, value)
+
+    value
   end
-  
+
+  def write_fragment(bin, doc, value) # TODO: move to Binding.
+    value = bin.default_for(value)
+    
+    write_fragment_for(bin, value, doc)
+  end
+
   def write_fragment_for(bin, value, doc) # DISCUSS: move to Binding?
     return if bin.skipable_nil_value?(value)
     bin.write(doc, value)
