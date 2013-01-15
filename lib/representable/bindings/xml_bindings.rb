@@ -48,10 +48,7 @@ module Representable
       end
       
       def read(node)
-        selector  = "./#{xpath}"
-        selector  = "./#{options[:wrap]}/#{xpath}" if options[:wrap]
-        nodes     = node.search(selector)
-
+        nodes = find_nodes(node)
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
         
         deserialize_from(nodes)
@@ -81,6 +78,12 @@ module Representable
     private
       def xpath
         from
+      end
+
+      def find_nodes(doc)
+        selector  = "./#{xpath}"
+        selector  = "./#{options[:wrap]}/#{xpath}" if options[:wrap]
+        nodes     = doc.search(selector)
       end
 
       def node_for(parent, name)
