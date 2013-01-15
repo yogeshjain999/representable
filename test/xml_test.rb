@@ -398,7 +398,6 @@ class CollectionTest < MiniTest::Spec
         end
 
         it "returns objects array from #from_xml" do
-          puts "ficken"
           assert_equal [Song.new("Days Go By"), Song.new("Can't Take Them All")], [].extend(representer).from_xml("<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>")
         end
       end
