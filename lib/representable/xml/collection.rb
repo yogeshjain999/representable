@@ -24,7 +24,7 @@ module Representable::XML
     
     def update_properties_from(doc, options, format)
       bin   = representable_bindings_for(format).first
-      value = bin.deserialize_from(doc.search("/#{representable_attrs.wrap}").children) # FIXME: use Binding#read.
+      value = bin.deserialize_from(doc.search("./*")) # FIXME: use Binding#read.
       replace(value)
     end
     
