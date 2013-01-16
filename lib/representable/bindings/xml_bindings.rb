@@ -81,9 +81,9 @@ module Representable
       end
 
       def find_nodes(doc)
-        selector  = "./#{xpath}"
-        selector  = "./#{options[:wrap]}/#{xpath}" if options[:wrap]
-        nodes     = doc.search(selector)
+        selector  = xpath
+        selector  = "#{options[:wrap]}/#{xpath}" if options[:wrap]
+        nodes     = doc.xpath(selector)
       end
 
       def node_for(parent, name)
