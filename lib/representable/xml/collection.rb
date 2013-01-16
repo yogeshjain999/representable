@@ -19,8 +19,7 @@ module Representable::XML
     
     def create_representation_with(doc, options, format)
       bin   = representable_bindings_for(format).first
-      doc << bin.serialize_for(self, doc) # FIXME: why isn't that added to doc automatically?
-      doc
+      bin.write(doc, self)
     end
     
     def update_properties_from(doc, options, format)
