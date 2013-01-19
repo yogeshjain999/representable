@@ -24,6 +24,33 @@ module Representable
       fragment
     end
     
+
+    def write_fragment(doc, value)
+      value = default_for(value)
+      
+      write_fragment_for(value, doc)
+    end
+
+    def write_fragment_for(value, doc)
+      return if skipable_nil_value?(value)
+      write(doc, value)
+    end
+
+    def read_fragment(doc)
+      value = read_fragment_for(doc)
+      
+      if value == FragmentNotFound
+        return unless has_default?
+        value = default
+      end
+
+      value
+    end
+
+    def read_fragment_for(doc)
+      read(doc)
+    end
+    
     
     # Hooks into #serialize and #deserialize to extend typed properties
     # at runtime.
