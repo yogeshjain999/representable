@@ -248,10 +248,6 @@ class RepresentableTest < MiniTest::Spec
       assert_equal nil, @band.groupies
     end
     
-    it "still accepts deprecated :except option" do # FIXME: remove :except option.
-      assert_equal @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:except => [:groupies]}, Representable::Hash::PropertyBinding), @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]}, Representable::Hash::PropertyBinding)
-    end
-    
     it "accepts :include option" do
       @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:include => [:groupies]}, Representable::Hash::PropertyBinding)
       assert_equal 2, @band.groupies
@@ -309,10 +305,6 @@ class RepresentableTest < MiniTest::Spec
     it "accepts :exclude option" do
       hash = @band.send(:create_representation_with, {}, {:exclude => [:groupies]}, Representable::Hash::PropertyBinding)
       assert_equal({"name"=>"No One's Choice"}, hash)
-    end
-    
-    it "still accepts deprecated :except option" do # FIXME: remove :except option.
-      assert_equal @band.send(:create_representation_with, {}, {:except => [:groupies]}, Representable::Hash::PropertyBinding), @band.send(:create_representation_with, {}, {:exclude => [:groupies]}, Representable::Hash::PropertyBinding)
     end
     
     it "accepts :include option" do

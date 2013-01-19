@@ -211,6 +211,7 @@ puts song
 ######### custom methods in representer (using helpers)
 ######### conditions
 ######### :as
+######### XML::Collection
 ######### polymorphic :extend and :class, instance context!, :instance
 class CoverSong < Song
 end
