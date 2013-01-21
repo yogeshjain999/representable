@@ -1,8 +1,8 @@
 = Representable
 
-Representable maps Ruby objects to documents and back. In other words: Take an object and extend it with a representer module. This will allow you to render a JSON, XML or YAML document representing that object.  But that's only half of it! You can also use representerS to parse a document and create an object.
+Representable maps Ruby objects to documents and back. In other words: Take an object and extend it with a representer module. This will allow you to render a JSON, XML or YAML document from that object. But that's only half of it! You can also use representers to parse a document and create an object.
 
-Representable is helpful for all kind of rendering and parsing workflows. However, it is mostly found in API code as in the roar gem for creating real REST APIs.
+Representable is helpful for all kind of rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
 
 
 == Installation
@@ -95,12 +95,12 @@ Surprisingly, #collection lets us define lists of objects to represent.
     #=> {"title":"Fallout","composers":["Steward Copeland","Sting"]}
 
 
-And again, this works both ways - it also parses the consumers from the document.
+And again, this works both ways - beside the title it also parses the composers from the document.
 
 
 == Nesting
 
-Representers can also manage compositions. Why not use albums that contain lists of songs?
+Representers can also manage compositions. Why not use an album that contains a list of songs?
 
     class Album < OpenStruct
     end
@@ -114,10 +114,10 @@ Here comes the representer that defines the composition.
       include Representable::JSON
 
       property :name
-      collection :songs, :extend => SongRepresenter, :class => Song
+      collection :songs, extend: SongRepresenter, class: Song
     end
 
-Note that nesting works on both plain properties and collections.
+Note that nesting works with both plain `#property` and `#collection`.
 
 When rendering, the `:extend` module is used to extend the attribute(s) with the correct representer module.
 
@@ -148,7 +148,7 @@ While representable does a great job with JSON, it also features support for XML
 
 For XML we just include the `Representable::XML` module.
 
-    Song.new(:title => "Fallout", :composers => ["Steward Copeland", "Sting"]).
+    Song.new(title: "Fallout", composers: ["Steward Copeland", "Sting"]).
       extend(SongRepresenter).to_xml
 
     #=> <song>
@@ -201,8 +201,6 @@ Inheritance works by `include`ing already defined representers.
       extend(CoverSongRepresenter).to_json
 
     #=> {"title":"Truth Hits Everybody","copyright":"The Police"}
-
-
 
 
 == Polymorphic Extend
@@ -259,6 +257,65 @@ If this is not enough, you may override the entire object creation process using
         :extend   => ...,
         :instance => lambda { |hsh| hsh.has_key?("copyright") ? CoverSong.new : Song.new(original: true) }
     end
+
+
+== Hashes
+
+As an addition to single properties and collections representable also offers to represent hash attributes.
+    
+    module SongRepresenter
+      include Representable::JSON
+
+      property :title
+      hash :ratings
+    end
+
+    Song.new(title: "Bliss", ratings: {"Rolling Stone" => 4.9, "FryZine" => 4.5}).
+    extend(SongRepresenter).to_json
+    
+    #=> {"title":"Bliss","ratings":{"Rolling Stone":4.9,"FryZine":4.5}}
+
+
+== Lonely Hashes
+
+Need to represent a bare hash without any container? Use the `JSON::Hash` representer (or XML::Hash).
+
+    require 'representable/json/hash'
+
+    module FavoriteSongsRepresenter
+      include Representable::JSON::Hash
+    end
+
+{"Nick" => "Hyper Music", "El" => "Blown In The Wind"}.extend(FavoriteSongsRepresenter).to_json
+#=> {"Nick":"Hyper Music","El":"Blown In The Wind"}
+
+Works both ways. The values are configurable and might be self-representing objects in turn. Tell the `Hash` by using `#values`.
+
+    module FavoriteSongsRepresenter
+      include Representable::JSON::Hash
+
+      values extend: SongRepresenter, class: Song
+    end
+
+{"Nick" => Song.new(title: "Hyper Music")}.extend(FavoriteSongsRepresenter).to_json
+
+
+== Lonely Collections
+
+Same goes with arrays.
+
+    require 'representable/json/collection'
+
+    module SongsRepresenter
+      include Representable::JSON::Collection
+
+      items extend: SongRepresenter, class: Song
+    end
+
+The `#items` method lets you configure the contained entity representing here.
+
+    [Song.new(title: "Hyper Music"), Song.new(title: "Screenager")].extend(SongsRepresenter).to_json
+    #=> [{"title":"Hyper Music"},{"title":"Screenager"}]
 
 
 == YAML Support
@@ -347,14 +404,12 @@ If your property name doesn't match the attribute name in the document, use the 
 
 === False and Nil Values
 
-Since 1.2 `false` values are considered when parsing and rendering. That particularly means properties that used to be unset (i.e. `nil`) after parsing might be `false` now. Vice versa, `false` properties that weren't included in the rendered document will be visible now.
+Since representable-1.2 `false` values _are_ considered when parsing and rendering. That particularly means properties that used to be unset (i.e. `nil`) after parsing might be `false` now. Vice versa, `false` properties that weren't included in the rendered document will be visible now.
 
 If you want +nil+ values to be included when rendering, use the `:render_nil` option.
 
   property :track, render_nil: true
 
-
-#hash
 
 == Lonely Collections
 
@@ -373,17 +428,6 @@ You can use #items to configure the element representations contained in the arr
 
 Collections and hashes can also be deserialized. Note that this also works for XML.
 
-== Lonely Hashes
-
-The same goes with hashes where #values lets you configure the hash's values.
-
-  module FriendsRepresenter
-    include Representable::JSON::Hash
-    
-    values :class => Hero, :extend => HeroRepresenter
-  end
-  
-  {:stu => Hero.new("Stu"), :clive => Hero.new("Cleavage")}.extend(FriendsRepresenter).to_json
 
 In XML, if you want to store hash attributes in tag attributes instead of dedicated nodes, use XML::AttributeHash.
 
