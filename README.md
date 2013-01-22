@@ -297,8 +297,9 @@ Works both ways. The values are configurable and might be self-representing obje
       values extend: SongRepresenter, class: Song
     end
 
-{"Nick" => Song.new(title: "Hyper Music")}.extend(FavoriteSongsRepresenter).to_json
+    {"Nick" => Song.new(title: "Hyper Music")}.extend(FavoriteSongsRepresenter).to_json
 
+ In XML, if you want to store hash attributes in tag attributes instead of dedicated nodes, use `XML::AttributeHash`.
 
 == Lonely Collections
 
@@ -316,6 +317,8 @@ The `#items` method lets you configure the contained entity representing here.
 
     [Song.new(title: "Hyper Music"), Song.new(title: "Screenager")].extend(SongsRepresenter).to_json
     #=> [{"title":"Hyper Music"},{"title":"Screenager"}]
+
+Note that this also works for XML.
 
 
 == YAML Support
@@ -339,6 +342,46 @@ A nice feature is that `#collection` also accepts a `:style` option which helps 
     composers:
     - Steward Copeland
     - Sting
+
+
+== More on XML
+
+=== Mapping tag attributes
+
+You can also map properties to tag attributes in representable.
+
+  module SongRepresenter
+    include Representable::XML
+
+    property :title, attribute: true
+    property :track, attribute: true
+  end
+  
+  Song.new(title: "American Idle").to_xml
+  #=> <song title="American Idle" />
+
+Naturally, this works for both ways.
+
+=== Wrapping collections
+
+It is sometimes unavoidable to wrap tag lists in a container tag.
+
+  module AlbumRepresenter
+    include Representable::XML
+
+    collection :songs, :from => :song, :wrap => :songs
+  end
+
+Note that +:wrap+ defines the container tag name.
+
+  Album.new.to_xml #=> 
+    <album>
+      <songs>
+        <song>Laundry Basket</song>
+        <song>Two Kevins</song>
+        <song>Wright and Rong</song>
+      </songs>
+    </album>
 
 
 == Avoiding Modules
@@ -411,68 +454,6 @@ If you want +nil+ values to be included when rendering, use the `:render_nil` op
   property :track, render_nil: true
 
 
-== Lonely Collections
-
-Need an array represented without any wrapping?
-
-  ["stays young", "can fly"].extend(Representable::JSON::Collection).to_json
-  #=> "[\"stays young\", \"can fly\"]"
-  
-You can use #items to configure the element representations contained in the array.
-
-  module FeaturesRepresenter
-    include Representable::JSON::Collection
-    
-    items :class => Hero, :extend => HeroRepresenter
-  end
-
-Collections and hashes can also be deserialized. Note that this also works for XML.
-
-
-In XML, if you want to store hash attributes in tag attributes instead of dedicated nodes, use XML::AttributeHash.
-
-
-
-
-
-
-=== Mapping tag attributes
-
-You can also map properties to tag attributes in representable.
-
-  class Hero
-  	attr_accessor :name
-    include Representable::XML
-    property :name, :attribute => true
-  end
-  
-  Hero.new(:name => "Peter Pan").to_xml
-  #=> <hero name="Peter Pan" />
-
-Naturally, this works for both ways.
-
-=== Wrapping collections
-
-It is sometimes unavoidable to wrap tag lists in a container tag.
-
-  module AlbumRepresenter
-    include Representable::XML
-
-    collection :songs, :from => :song, :wrap => :songs
-  end
-
-Note that +:wrap+ defines the container tag name.
-
-  Album.new.to_xml #=> 
-    <album>
-      <songs>
-        <song>Laundry Basket</song>
-        <song>Two Kevins</song>
-        <song>Wright and Rong</song>
-      </songs>
-    </album>
-
-
 == Coercion
 
 If you fancy coercion when parsing a document you can use the Coercion module which uses virtus[https://github.com/solnic/virtus] for type conversion.
@@ -493,14 +474,9 @@ Use the `:type` option to specify the conversion target. Note that `:default` st
     end
 
 
-== Roar
-
-Representable was written with REST representations in mind. However, it is a generic module for working with documents. If you do consider using it for a REST project, check out the {Roar framework}[http://github.com/apotonick/roar], which comes with representers, built-in hypermedia support and more. It internally uses Representable and streamlines the process for building hypermedia-driven REST applications.
-
-
 == Copyright
 
-Representable is a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his inspiring work.
+Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his inspiring work.
 
-* Copyright (c) 2011 Nick Sutterer <apotonick@gmail.com>
+* Copyright (c) 2011-2013 Nick Sutterer <apotonick@gmail.com>
 * ROXML is Copyright (c) 2004-2009 Ben Woosley, Zak Mandhro and Anders Engstrom.
