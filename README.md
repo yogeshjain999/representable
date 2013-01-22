@@ -1,18 +1,20 @@
-= Representable
+# Representable
 
-Representable maps Ruby objects to documents and back. In other words: Take an object and extend it with a representer module. This will allow you to render a JSON, XML or YAML document from that object. But that's only half of it! You can also use representers to parse a document and create an object.
+Representable maps ruby objects to documents and back.
+
+In other words: Take an object and extend it with a representer module. This will allow you to render a JSON, XML or YAML document from that object. But that's only half of it! You can also use representers to parse a document and create an object.
 
 Representable is helpful for all kind of rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
 
 
-== Installation
+## Installation
 
 The representable gem is almost dependency-free. Almost.
 
     gem 'representable'
 
 
-== Example
+## Example
 
 What if we're writing an API for music - songs, albums, bands.
 
@@ -22,7 +24,7 @@ What if we're writing an API for music - songs, albums, bands.
     song = Song.new(title: "Fallout", track: 1)
 
 
-== Defining Representations
+## Defining Representations
 
 Representations are defined using representer modules.
 
@@ -35,10 +37,10 @@ Representations are defined using representer modules.
       property :track
     end
 
-In the representer the #property method allows declaring represented attributes of the object. All the representer requires for rendering are readers on the represented object, e.g. `#title` and `#track`. When parsing, it will call setter - in our example, that'd be `#title=` and `#track=`.
+In the representer the #property method allows declaring represented attributes of the object. All the representer requires for rendering are readers on the represented object, e.g. `#title` and `#track`. When parsing, it will call setters - in our example, that'd be `#title=` and `#track=`.
 
 
-== Rendering
+## Rendering
 
 Mixing in the representer into the object adds a rendering method.
 
@@ -46,7 +48,7 @@ Mixing in the representer into the object adds a rendering method.
     #=> {"title":"Fallout","track":1}
 
 
-== Parsing
+## Parsing
 
 It also adds support for parsing.
 
@@ -54,7 +56,7 @@ It also adds support for parsing.
     #=> #<Song title="Roxanne", track=nil>
 
 
-== Wrapping
+## Wrapping
 
 Let the representer know if you want wrapping.
 
@@ -75,7 +77,7 @@ This will add a container for rendering and consuming.
 Setting `self.representation_wrap = true` will advice representable to figure out the wrap itself by inspecting the represented object class.
 
 
-== Collections
+## Collections
 
 Let's add a list of composers to the song representation.
 
@@ -87,18 +89,18 @@ Let's add a list of composers to the song representation.
       collection :composers
     end
 
-Surprisingly, #collection lets us define lists of objects to represent.
+Surprisingly, `#collection` lets us define lists of objects to represent.
 
-    Song.new(title: "Fallout", composers: ["Steward Copeland", "Sting"])
-      .extend(SongRepresenter).to_json
+    Song.new(title: "Fallout", composers: ["Steward Copeland", "Sting"]).
+      extend(SongRepresenter).to_json
 
     #=> {"title":"Fallout","composers":["Steward Copeland","Sting"]}
 
 
-And again, this works both ways - beside the title it also parses the composers from the document.
+And again, this works both ways - in addition to the title it extracts the composers from the document, too.
 
 
-== Nesting
+## Nesting
 
 Representers can also manage compositions. Why not use an album that contains a list of songs?
 
@@ -132,7 +134,7 @@ Parsing a documents needs both `:extend` and the `:class` option as the parser r
     #=> #<Album name="Offspring", songs=[#<Song title="Genocide">, #<Song title="Nitro", composers=["Offspring"]>]>
 
 
-== XML Support
+## XML Support
 
 While representable does a great job with JSON, it also features support for XML, YAML and pure ruby hashes.
 
@@ -158,13 +160,16 @@ For XML we just include the `Representable::XML` module.
         </song>
 
 
-== Using Helpers
+## Using Helpers
 
 Sometimes it's useful to override accessors to customize output or parsing.
 
     module AlbumRepresenter
       include Representable::JSON
       
+      property :name
+      collection :songs
+
       def name
         super.upcase
       end
@@ -184,7 +189,7 @@ To change the parsing process override the setter.
       end
 
 
-== Inheritance
+## Inheritance
 
 To reuse existing representers you can inherit from those modules.
 
@@ -203,7 +208,7 @@ Inheritance works by `include`ing already defined representers.
     #=> {"title":"Truth Hits Everybody","copyright":"The Police"}
 
 
-== Polymorphic Extend
+## Polymorphic Extend
 
 Sometimes heterogenous collections of objects from different classes must be represented. Or you don't know which representer to use at compile-time and need to delay the computation until runtime. This is why `:extend` accepts a lambda, too.
 
@@ -232,7 +237,7 @@ The `CoverSong` instances are to be represented by their very own `CoverSongRepr
 Note that the lambda block is evaluated in the represented object context which allows to access helpers or whatever in the block. This works for single properties, too.
 
 
-== Polymorphic Object Creation
+## Polymorphic Object Creation
 
 Rendering heterogenous collections usually implies that you also need to parse those. Luckily, `:class` also accepts a lambda.
 
@@ -259,7 +264,7 @@ If this is not enough, you may override the entire object creation process using
     end
 
 
-== Hashes
+## Hashes
 
 As an addition to single properties and collections representable also offers to represent hash attributes.
     
@@ -276,7 +281,7 @@ As an addition to single properties and collections representable also offers to
     #=> {"title":"Bliss","ratings":{"Rolling Stone":4.9,"FryZine":4.5}}
 
 
-== Lonely Hashes
+## Lonely Hashes
 
 Need to represent a bare hash without any container? Use the `JSON::Hash` representer (or XML::Hash).
 
@@ -286,8 +291,8 @@ Need to represent a bare hash without any container? Use the `JSON::Hash` repres
       include Representable::JSON::Hash
     end
 
-{"Nick" => "Hyper Music", "El" => "Blown In The Wind"}.extend(FavoriteSongsRepresenter).to_json
-#=> {"Nick":"Hyper Music","El":"Blown In The Wind"}
+    {"Nick" => "Hyper Music", "El" => "Blown In The Wind"}.extend(FavoriteSongsRepresenter).to_json
+    #=> {"Nick":"Hyper Music","El":"Blown In The Wind"}
 
 Works both ways. The values are configurable and might be self-representing objects in turn. Tell the `Hash` by using `#values`.
 
@@ -301,7 +306,7 @@ Works both ways. The values are configurable and might be self-representing obje
 
  In XML, if you want to store hash attributes in tag attributes instead of dedicated nodes, use `XML::AttributeHash`.
 
-== Lonely Collections
+## Lonely Collections
 
 Same goes with arrays.
 
@@ -321,7 +326,7 @@ The `#items` method lets you configure the contained entity representing here.
 Note that this also works for XML.
 
 
-== YAML Support
+## YAML Support
 
 Representable also comes with a YAML representer.
 
@@ -333,58 +338,56 @@ Representable also comes with a YAML representer.
       collection :composers, :style => :flow
     end
 
-A nice feature is that `#collection` also accepts a `:style` option which helps having nicely formatted inline (or "flow") arrays in your YAML.
+A nice feature is that `#collection` also accepts a `:style` option which helps having nicely formatted inline (or "flow") arrays in your YAML - if you want that!
 
     song.extend(SongRepresenter).to_yaml
     #=>
     ---
     title: Fallout
-    composers:
-    - Steward Copeland
-    - Sting
+    composers: [Steward Copeland, Sting]
 
 
-== More on XML
+## More on XML
 
-=== Mapping tag attributes
+### Mapping tag attributes
 
 You can also map properties to tag attributes in representable.
 
-  module SongRepresenter
-    include Representable::XML
+    module SongRepresenter
+      include Representable::XML
 
-    property :title, attribute: true
-    property :track, attribute: true
-  end
-  
-  Song.new(title: "American Idle").to_xml
-  #=> <song title="American Idle" />
+      property :title, attribute: true
+      property :track, attribute: true
+    end
+    
+    Song.new(title: "American Idle").to_xml
+    #=> <song title="American Idle" />
 
 Naturally, this works for both ways.
 
-=== Wrapping collections
+### Wrapping collections
 
 It is sometimes unavoidable to wrap tag lists in a container tag.
 
-  module AlbumRepresenter
-    include Representable::XML
+    module AlbumRepresenter
+      include Representable::XML
 
-    collection :songs, :from => :song, :wrap => :songs
-  end
+      collection :songs, :from => :song, :wrap => :songs
+    end
 
-Note that +:wrap+ defines the container tag name.
+Note that `:wrap` defines the container tag name.
 
-  Album.new.to_xml #=> 
-    <album>
-      <songs>
-        <song>Laundry Basket</song>
-        <song>Two Kevins</song>
-        <song>Wright and Rong</song>
-      </songs>
-    </album>
+    Album.new.to_xml #=> 
+      <album>
+        <songs>
+          <song>Laundry Basket</song>
+          <song>Two Kevins</song>
+          <song>Wright and Rong</song>
+        </songs>
+      </album>
 
 
-== Avoiding Modules
+## Avoiding Modules
 
 There's been a rough discussion whether or not to use `extend` in Ruby. If you want to save that particular step when representing objects, define the representers right in your classes.
 
@@ -397,12 +400,12 @@ There's been a rough discussion whether or not to use `extend` in Ruby. If you w
 I do not recommend this approach as it bloats your domain classes with representation logic that is barely needed elsewhere.
 
 
-== More Options
+## More Options
 
-Here's a quick overview about other available options for `#property' and its bro `#collection`.
+Here's a quick overview about other available options for `#property` and its bro `#collection`.
 
 
-=== Read/Write Restrictions
+### Read/Write Restrictions
 
 Using the `:readable` and `:writeable` options access to properties can be restricted.
 
@@ -411,56 +414,56 @@ Using the `:readable` and `:writeable` options access to properties can be restr
 This will leave out the `title` property in the rendered document. Vice-versa, `:writeable` will skip the property when parsing and does not assign it.
 
 
-=== Filtering
+### Filtering
 
-Representable also allows you to skip and include properties using the +:exclude+ and +:include+ options passed directly to the respective method.
+Representable also allows you to skip and include properties using the `:exclude` and `:include` options passed directly to the respective method.
 
-  song.to_json(:include => :title)
-  #=> {"title":"Roxanne"}
+    song.to_json(:include => :title)
+    #=> {"title":"Roxanne"}
 
 
-=== Conditions
+### Conditions
 
 You can also define conditions on properties using `:if`, making them being considered only when the block returns a true value.
 
-  module SongRepresenter
-    include Representable::JSON
+    module SongRepresenter
+      include Representable::JSON
 
-    property :title
-    property :track, if: lambda { track > 0 }
-  end
+      property :title
+      property :track, if: lambda { track > 0 }
+    end
   
-When rendering or parsing, the +track+ property is considered only if track is valid. Note that the block is executed in instance context, giving you access to instance methods.
+When rendering or parsing, the `track` property is considered only if track is valid. Note that the block is executed in instance context, giving you access to instance methods.
 
 
-=== Mapping
+### Mapping
 
-If your property name doesn't match the attribute name in the document, use the +:as+ option.
+If your property name doesn't match the attribute name in the document, use the `:as` option.
 
-  module SongRepresenter
-    property :title
-    property :track, as: :track_number
-  end
-  
-  song.to_json #=> {"title":"Superstars","track_number":1}
+    module SongRepresenter
+      property :title
+      property :track, as: :track_number
+    end
+    
+    song.to_json #=> {"title":"Superstars","track_number":1}
 
 
-=== False and Nil Values
+### False and Nil Values
 
 Since representable-1.2 `false` values _are_ considered when parsing and rendering. That particularly means properties that used to be unset (i.e. `nil`) after parsing might be `false` now. Vice versa, `false` properties that weren't included in the rendered document will be visible now.
 
-If you want +nil+ values to be included when rendering, use the `:render_nil` option.
+If you want `nil` values to be included when rendering, use the `:render_nil` option.
 
   property :track, render_nil: true
 
 
-== Coercion
+## Coercion
 
-If you fancy coercion when parsing a document you can use the Coercion module which uses virtus[https://github.com/solnic/virtus] for type conversion.
+If you fancy coercion when parsing a document you can use the Coercion module which uses [virtus](https://github.com/solnic/virtus) for type conversion.
 
 Include virtus in your Gemfile, first. Be sure to include virtus 0.5.0 or greater.
 
-  gem 'virtus', ">= 0.5.0"
+    gem 'virtus', ">= 0.5.0"
 
 Use the `:type` option to specify the conversion target. Note that `:default` still works.
 
@@ -474,7 +477,7 @@ Use the `:type` option to specify the conversion target. Note that `:default` st
     end
 
 
-== Copyright
+## Copyright
 
 Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his inspiring work.
 
