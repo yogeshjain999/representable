@@ -45,11 +45,7 @@ puts song.extend(SongRepresenter).to_json
 
 ######### collections
 
-module SongRepresenter
-  include Representable::JSON
-
-  self.representation_wrap= false
-end
+reset_representer(SongRepresenter)
 
 module SongRepresenter
   include Representable::JSON
@@ -84,6 +80,7 @@ end
 album = Album.new(:name => "The Police", :song => song)
 puts album.extend(AlbumRepresenter).to_json
 
+reset_representer(AlbumRepresenter)
 
 module AlbumRepresenter
   include Representable::JSON
@@ -96,23 +93,25 @@ album = Album.new(:name => "The Police", :songs => [song, Song.new(:title => "Sy
 puts album.extend(AlbumRepresenter).to_json
 
 
-SongRepresenter.module_eval do
-  @representable_attrs = nil
-end
+album = Album.new.extend(AlbumRepresenter).from_json(%{{"name":"Offspring","songs":[{"title":"Genocide"},{"title":"Nitro","composers":["Offspring"]}]}
+})
+puts album.inspect
 
+reset_representer(SongRepresenter)
 
 ######### using helpers (customizing the rendering/parsing) 
 module AlbumRepresenter
+  include Representable::JSON
+
   def name
     super.upcase
   end
 end
-album = Album.new(:name => "The Police", :songs => [song, Song.new(:title => "Synchronicity")])
-puts album.extend(AlbumRepresenter).to_json
 
-SongRepresenter.module_eval do
-  @representable_attrs = nil
-end
+puts Album.new(:name => "The Police").
+  extend(AlbumRepresenter).to_json
+
+reset_representer(SongRepresenter)
 
 
 ######### inheritance
@@ -147,10 +146,7 @@ end
 song = Song.new(:title => "Fallout", :composers => ["Steward Copeland", "Sting"])
 puts song.extend(SongRepresenter).to_xml
 
-
-SongRepresenter.module_eval do
-  @representable_attrs = nil
-end
+reset_representer(SongRepresenter)
 
 
 ### YAML
@@ -272,3 +268,43 @@ end
 
 album = Album.new.extend(AlbumRepresenter).from_hash({"name"=>"Incognito", "songs"=>[{"title"=>"Weirdo", "track"=>5}, {"title"=>"Truth Hits Everybody", "track"=>6, "copyright"=>"The Police"}]})
 puts album.inspect
+
+######### #hash
+
+reset_representer(SongRepresenter)
+
+module SongRepresenter
+  include Representable::JSON
+
+  property :title
+  hash :ratings
+end
+
+puts Song.new(title: "Bliss", ratings: {"Rolling Stone" => 4.9, "FryZine" => 4.5}).extend(SongRepresenter).to_json
+
+######### JSON::Hash
+
+module FavoriteSongsRepresenter
+  include Representable::JSON::Hash
+end
+
+puts( {"Nick" => "Hyper Music", "El" => "Blown In The Wind"}.extend(FavoriteSongsRepresenter).to_json)
+
+require 'representable/json/hash'
+module FavoriteSongsRepresenter
+  include Representable::JSON::Hash
+
+  values extend: SongRepresenter, class: Song
+end
+
+puts( {"Nick" => Song.new(title: "Hyper Music")}.extend(FavoriteSongsRepresenter).to_json)
+
+
+require 'representable/json/collection'
+module SongsRepresenter
+  include Representable::JSON::Collection
+
+  items extend: SongRepresenter, class: Song
+end
+
+puts [Song.new(title: "Hyper Music"), Song.new(title: "Screenager")].extend(SongsRepresenter).to_json
