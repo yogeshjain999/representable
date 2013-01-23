@@ -5,3 +5,9 @@ class: |key, hsh|
 	serialize(.., options{:exclude => ..})
 
 * Allow :writer and :reader / :getter/:setter
+
+document `XML::AttributeHash` etc
+
+* deprecate :from, make :a(lia)s authorative.
+* cleanup ReadableWriteable
+* deprecate Representable::*::ClassMethods (::from_hash and friends)
