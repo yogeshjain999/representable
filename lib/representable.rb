@@ -94,9 +94,9 @@ private
   
   # Parse value from doc and update the model property.
   def uncompile_fragment(bin, doc)
-    value = bin.read_fragment(doc)
-
-    send(bin.setter, value)
+    bin.read_fragment(doc) do |value|
+      send(bin.setter, value)
+    end
   end
   
   def representable_attrs

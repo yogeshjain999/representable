@@ -44,7 +44,7 @@ module Representable
         value = default
       end
 
-      value
+      yield value
     end
 
     def read_fragment_for(doc)

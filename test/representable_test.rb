@@ -269,6 +269,13 @@ class RepresentableTest < MiniTest::Spec
       @band.update_properties_from({"groupies"=>false}, {}, Representable::Hash::PropertyBinding)
       assert_equal false, @band.groupies
     end
+
+    it "ignores properties not present in the incoming document" do
+      @band.instance_eval do
+        def name=(*); raise "I should never be called!"; end
+      end
+      @band.update_properties_from({}, {}, Representable::Hash::PropertyBinding)
+    end
     
     it "ignores (no-default) properties not present in the incoming document" do
       { Representable::JSON => [{}, Representable::Hash::PropertyBinding], 
@@ -287,6 +294,29 @@ class RepresentableTest < MiniTest::Spec
         @band = Band.new.extend(repr)
         @band.update_properties_from(config.first, {}, config.last)
         assert_equal nil, @band.name, "Failed in #{format}"
+      end
+    end
+
+    describe "passing options" do
+      module TrackRepresenter
+        include Representable::Hash
+        property :nr
+
+        def to_hash(options)
+          @nr = options[:nr]
+          super
+        end
+        attr_accessor :nr
+      end
+
+      representer! do
+        property :track, :extend => TrackRepresenter
+      end
+
+      describe "#to_hash" do
+        it "propagates to nested objects" do
+          Song.new("Ocean Song", Object.new).extend(representer).to_hash(:nr => 9).must_equal ""
+        end
       end
     end
   end
