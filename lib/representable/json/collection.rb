@@ -18,12 +18,12 @@ module Representable::JSON
     
     
     def create_representation_with(doc, options, format)
-      bin   = representable_bindings_for(format).first
+      bin   = representable_bindings_for(format, options).first
       bin.serialize_for(self)
     end
     
     def update_properties_from(doc, options, format)
-      bin   = representable_bindings_for(format).first
+      bin   = representable_bindings_for(format, options).first
       value = bin.deserialize_from(doc)
       replace(value)
     end

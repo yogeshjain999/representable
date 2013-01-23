@@ -11,3 +11,7 @@ document `XML::AttributeHash` etc
 * deprecate :from, make :a(lia)s authorative.
 * cleanup ReadableWriteable
 * deprecate Representable::*::ClassMethods (::from_hash and friends)
+
+* Song < OpenStruct in test_helper
+
+* have representable-options (:include, :exclude) and user-options 

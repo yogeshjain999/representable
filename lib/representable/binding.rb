@@ -10,9 +10,10 @@ module Representable
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
     end
 
-    def initialize(definition, represented)
+    def initialize(definition, represented, user_options={})  # TODO: remove default arg.
       super(definition)
-      @represented = represented
+      @represented  = represented
+      @user_options = user_options
     end
     
     # Main entry point for rendering/parsing a property object.
@@ -89,12 +90,12 @@ module Representable
       def serialize(object)
         return object if object.nil?
         
-        super.send(serialize_method, :wrap => false)  # TODO: pass :binding => self
+        super.send(serialize_method, @user_options.merge!({:wrap => false}))  # TODO: pass :binding => self
       end
       
       def deserialize(data)
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        super(create_object(data)).send(deserialize_method, data)
+        super(create_object(data)).send(deserialize_method, data, @user_options)
       end
       
       def create_object(fragment)

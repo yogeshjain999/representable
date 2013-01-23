@@ -42,7 +42,7 @@ module Representable
   
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
-    representable_bindings_for(format).each do |bin|
+    representable_bindings_for(format, options).each do |bin|
       deserialize_property(bin, doc, options)
     end
     self
@@ -51,7 +51,7 @@ module Representable
 private
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    representable_bindings_for(format).each do |bin|
+    representable_bindings_for(format, options).each do |bin|
       serialize_property(bin, doc, options)
     end
     doc
@@ -103,13 +103,19 @@ private
     @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
   end
   
-  def representable_bindings_for(format)
-    representable_attrs.map {|attr| format.build_for(attr, self) }
+  def representable_bindings_for(format, options)
+    options = cleanup_options(options)  # FIXME: make representable-options and user-options two different hashes.
+    representable_attrs.map {|attr| format.build_for(attr, self, options) }
   end
   
   # Returns the wrapper for the representation. Mostly used in XML.
   def representation_wrap
     representable_attrs.wrap_for(self.class.name)
+  end
+
+private
+  def cleanup_options(options) # TODO: remove me.
+    options.reject { |k,v| [:include, :exclude].include?(k) }
   end
   
   module ClassInclusions

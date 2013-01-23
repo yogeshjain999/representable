@@ -18,12 +18,12 @@ module Representable::XML
     
     
     def create_representation_with(doc, options, format)
-      bin   = representable_bindings_for(format).first
+      bin   = representable_bindings_for(format, options).first
       bin.write(doc, self)
     end
     
     def update_properties_from(doc, options, format)
-      bin   = representable_bindings_for(format).first
+      bin   = representable_bindings_for(format, options).first
       value = bin.deserialize_from(doc.search("./*")) # FIXME: use Binding#read.
       replace(value)
     end
