@@ -24,12 +24,12 @@ module Representable
     
     
     class PropertyBinding < Binding
-      def self.build_for(definition, represented)
-        return CollectionBinding.new(definition, represented)      if definition.array?
-        return HashBinding.new(definition, represented)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
-        return AttributeHashBinding.new(definition, represented)   if definition.hash? and definition.options[:use_attributes]
-        return AttributeBinding.new(definition, represented)       if definition.attribute
-        new(definition, represented)
+      def self.build_for(definition, *args)
+        return CollectionBinding.new(definition, *args)      if definition.array?
+        return HashBinding.new(definition, *args)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
+        return AttributeHashBinding.new(definition, *args)   if definition.hash? and definition.options[:use_attributes]
+        return AttributeBinding.new(definition, *args)       if definition.attribute
+        new(definition, *args)
       end
 
       def initialize(*args)
