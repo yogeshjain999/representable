@@ -372,7 +372,7 @@ It is sometimes unavoidable to wrap tag lists in a container tag.
     module AlbumRepresenter
       include Representable::XML
 
-      collection :songs, :from => :song, :wrap => :songs
+      collection :songs, :as => :song, :wrap => :songs
     end
 
 Note that `:wrap` defines the container tag name.
