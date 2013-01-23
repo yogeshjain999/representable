@@ -306,6 +306,10 @@ class RepresentableTest < MiniTest::Spec
           @nr = options[:nr]
           super
         end
+        def from_hash(data, options)
+          super
+          @nr = options[:nr]
+        end
         attr_accessor :nr
       end
 
@@ -315,7 +319,13 @@ class RepresentableTest < MiniTest::Spec
 
       describe "#to_hash" do
         it "propagates to nested objects" do
-          Song.new("Ocean Song", Object.new).extend(representer).to_hash(:nr => 9).must_equal ""
+          Song.new("Ocean Song", Object.new).extend(representer).to_hash(:nr => 9).must_equal({"track"=>{"nr"=>9}})
+        end
+      end
+
+      describe "#from_hash" do
+        it "propagates to nested objects" do
+          Song.new.extend(representer).from_hash({"track"=>{"nr" => "replace me"}}, :nr => 9).track.must_equal 9
         end
       end
     end
@@ -429,11 +439,11 @@ class RepresentableTest < MiniTest::Spec
   describe ":extend and :class" do
     module UpcaseRepresenter
       def to_hash(*); upcase; end
-      def from_hash(hsh); self.class.new hsh.upcase; end   # DISCUSS: from_hash must return self.
+      def from_hash(hsh, *args); self.class.new hsh.upcase; end   # DISCUSS: from_hash must return self.
     end
     module DowncaseRepresenter 
       def to_hash(*); downcase; end
-      def from_hash(hsh); hsh.downcase; end
+      def from_hash(hsh, *args); hsh.downcase; end
     end
     class UpcaseString < String; end
     
@@ -500,7 +510,7 @@ class RepresentableTest < MiniTest::Spec
 
         describe "when :class lambda returns nil" do
           representer! do
-            property :name, :extend => lambda { |name| Module.new { def from_hash(data); data; end } },
+            property :name, :extend => lambda { |name| Module.new { def from_hash(data, *args); data; end } },
                             :class  => nil
           end
 
