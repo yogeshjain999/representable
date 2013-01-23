@@ -1,3 +1,9 @@
+h2. 1.3.0
+
+* Remove @:exclude@ option.
+* Moving all read/write logic to @Binding@. If you did override @#read_fragment@ and friends in your representer/models this won't work anymore.
+* Options passed to @to_*/from_*@ are now passed to nested objects. 
+
 h2. 1.2.9
 
 * When @:class@ returns @nil@ we no longer try to create a new instance but use the processed fragment itself.
