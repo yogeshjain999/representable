@@ -468,7 +468,6 @@ Use the `:type` option to specify the conversion target. Note that `:default` st
 
     module SongRepresenter
       include Representable::JSON
-      include Virtus
       include Representable::Coercion
       
       property :title
