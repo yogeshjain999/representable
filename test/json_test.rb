@@ -417,29 +417,35 @@ end
 
   class HashTest < MiniTest::Spec
     describe "hash :songs" do
-      before do
-        representer = Module.new do
-          include Representable::JSON
-          hash :songs
-        end
-
-        class SongList
-          attr_accessor :songs
-        end
-
-        @list = SongList.new.extend(representer)
+      representer!(Representable::JSON) do
+        hash :songs
       end
 
+      subject { OpenStruct.new.extend(representer) }
+
       it "renders with #to_json" do
-        @list.songs = {:one => "65", :two => "Emo Boy"}
-        assert_json "{\"songs\":{\"one\":\"65\",\"two\":\"Emo Boy\"}}", @list.to_json
+        subject.songs = {:one => "65", :two => "Emo Boy"}
+        assert_json "{\"songs\":{\"one\":\"65\",\"two\":\"Emo Boy\"}}", subject.to_json
       end
 
       it "parses with #from_json" do
-        assert_equal({"one" => "65", "two" => ["Emo Boy"]}, @list.from_json("{\"songs\":{\"one\":\"65\",\"two\":[\"Emo Boy\"]}}").songs)
+        assert_equal({"one" => "65", "two" => ["Emo Boy"]}, subject.from_json("{\"songs\":{\"one\":\"65\",\"two\":[\"Emo Boy\"]}}").songs)
       end
     end
 
+    describe "hash :songs, :class => Song" do
+      representer!(Representable::JSON) do
+        hash :songs, :extend => Module.new { include Representable::JSON; property :name }, :class => Song
+      end
+
+      it "renders" do
+        OpenStruct.new(:songs => {"7" => Song.new("Contemplation")}).extend(representer).to_hash.must_equal("songs"=>{"7"=>{"name"=>"Contemplation"}})
+      end
+
+      it "parses" do
+        OpenStruct.new.extend(representer).from_hash("songs"=>{"7"=>{"name"=>"Contemplation"}}).songs.must_equal({"7"=>Song.new("Contemplation")})
+      end
+    end
   end
 
 
