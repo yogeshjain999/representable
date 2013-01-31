@@ -55,6 +55,19 @@ It also adds support for parsing.
     song = Song.new.extend(SongRepresenter).from_json(%{ {"title":"Roxanne"} })
     #=> #<Song title="Roxanne", track=nil>
 
+## Mapping
+
+If your property name doesn't match the name in the document, use the `:as` option.
+
+    module SongRepresenter
+      include Representable::JSON
+
+      property :title, as: :name
+      property :track
+    end
+    
+    song.to_json #=> {"name":"Fallout","track":1}
+
 
 ## Wrapping
 
@@ -434,18 +447,6 @@ You can also define conditions on properties using `:if`, making them being cons
     end
   
 When rendering or parsing, the `track` property is considered only if track is valid. Note that the block is executed in instance context, giving you access to instance methods.
-
-
-### Mapping
-
-If your property name doesn't match the attribute name in the document, use the `:as` option.
-
-    module SongRepresenter
-      property :title
-      property :track, as: :track_number
-    end
-    
-    song.to_json #=> {"title":"Superstars","track_number":1}
 
 
 ### False and Nil Values
