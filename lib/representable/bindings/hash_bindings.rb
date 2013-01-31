@@ -63,13 +63,15 @@ module Representable
     class HashBinding < PropertyBinding
       def serialize_for(value)
         # requires value to respond to #each with two block parameters.
-        {}.tap do |hash|
-          value.each { |key, obj| hash[key] = serialize(obj) }
+        {}.tap do |hsh|
+          value.each { |key, obj| hsh[key] = serialize(obj) }
         end
       end
       
       def deserialize_from(fragment)
-        fragment.each { |key, item_fragment| fragment[key] = deserialize(item_fragment) }
+        {}.tap do |hsh|
+          fragment.each { |key, item_fragment| hsh[key] = deserialize(item_fragment) }
+        end
       end
     end
   end

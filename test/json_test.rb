@@ -460,8 +460,18 @@ end
         OpenStruct.new(:songs => {"7" => Song.new("Contemplation")}).extend(representer).to_hash.must_equal("songs"=>{"7"=>{"name"=>"Contemplation"}})
       end
 
-      it "parses" do
-        OpenStruct.new.extend(representer).from_hash("songs"=>{"7"=>{"name"=>"Contemplation"}}).songs.must_equal({"7"=>Song.new("Contemplation")})
+      describe "parsing" do
+        subject { OpenStruct.new.extend(representer) }
+        let (:hash) { {"7"=>{"name"=>"Contemplation"}} }
+
+        it "parses incoming hash" do
+          subject.from_hash("songs"=>hash).songs.must_equal({"7"=>Song.new("Contemplation")})
+        end
+
+        it "doesn't modify the incoming hash" do
+          subject.from_hash("songs"=> incoming_hash = hash.dup)
+          hash.must_equal incoming_hash
+        end
       end
     end
   end
