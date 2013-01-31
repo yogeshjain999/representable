@@ -55,7 +55,7 @@ It also adds support for parsing.
     song = Song.new.extend(SongRepresenter).from_json(%{ {"title":"Roxanne"} })
     #=> #<Song title="Roxanne", track=nil>
 
-## Mapping
+## Aliasing
 
 If your property name doesn't match the name in the document, use the `:as` option.
 
