@@ -571,31 +571,29 @@ class RepresentableTest < MiniTest::Spec
   end
   
   describe "Config" do
-    before do
-      @config = Representable::Config.new
-      PunkRock = Class.new
-    end
+    subject { Representable::Config.new }
+    PunkRock = Class.new
     
     describe "wrapping" do
       it "returns false per default" do
-        assert_equal nil, @config.wrap_for("Punk")
+        assert_equal nil, subject.wrap_for("Punk")
       end
       
       it "infers a printable class name if set to true" do
-        @config.wrap = true
-        assert_equal "punk_rock", @config.wrap_for(PunkRock)
+        subject.wrap = true
+        assert_equal "punk_rock", subject.wrap_for(PunkRock)
       end
       
       it "can be set explicitely" do
-        @config.wrap = "Descendents"
-        assert_equal "Descendents", @config.wrap_for(PunkRock)
+        subject.wrap = "Descendents"
+        assert_equal "Descendents", subject.wrap_for(PunkRock)
       end
     end
     
     describe "clone" do
       it "clones all definitions" do
-        @config << Object.new
-        assert @config.first != @config.clone.first
+        subject << Object.new
+        assert subject.first != subject.clone.first
       end
     end
   end
