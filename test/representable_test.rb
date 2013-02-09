@@ -604,56 +604,45 @@ class RepresentableTest < MiniTest::Spec
         include Representable::Hash
         representable_attrs.inherited_array(:links) << "bar"
       end
-      module Child
-        puts "TESTINGF"
-        include Representable::Hash
-        include Parent
-      end
 
       it "inherits to uninitialized child" do
-        Child.representable_attrs.inherited_array(:links).must_equal(["bar"])
-      end
-    end
-    describe "#inherited_array" do
-      before do
-        #subject.inheritable_array :links
-      end
-
-      it "returns empty array" do
-        subject.inherited_array(:links).must_equal([])
+        representer_for do # child
+          include(representer_for do # parent
+            representable_attrs.inherited_array(:links) << "bar"
+          end)
+        end.representable_attrs.inherited_array(:links).must_equal(["bar"])
       end
 
-      it "allows adding" do
-        subject.inherited_array(:links) << "bar"
-        subject.inherited_array(:links).must_equal(["bar"])
+      it "works with uninitialized parent" do
+        representer_for do # child
+          representable_attrs.inherited_array(:links) << "bar"
+
+          include(representer_for do # parent
+          end)
+        end.representable_attrs.inherited_array(:links).must_equal(["bar"])
       end
 
-      describe "#inherit" do
-        it "works with uninitialized parent" do
-          subject.inherited_array(:links) << "club"
-          subject.inherit(Representable::Config.new)
-          subject.inherited_array(:links).must_equal(["club"])
-        end
+      it "inherits when both are initialized" do
+        representer_for do # child
+          representable_attrs.inherited_array(:links) << "bar"
 
-        it "inherits from initialized parent" do
-          subject.inherited_array(:links) << "club"
+          include(representer_for do # parent
+            representable_attrs.inherited_array(:links) << "stadium"
+          end)
+        end.representable_attrs.inherited_array(:links).must_equal(["bar", "stadium"])
+      end
 
-          parent = Representable::Config.new
-          #parent.inheritable_array(:links)
-          parent.inherited_array(:links) << "stadium"
+      it "clones parent inheritables" do # FIXME: actually we don't clone here!
+        representer_for do # child
+          representable_attrs.inherited_array(:links) << "bar"
 
-          subject.inherit(parent)
-          subject.inherited_array(:links).must_equal(["club", "stadium"])
-        end
+          include(parent = representer_for do # parent
+            representable_attrs.inherited_array(:links) << "stadium"
+          end)
 
-        it "inherits as an uninitialized child" do
-          parent = Representable::Config.new
-          #parent.inheritable_array(:links)
-          parent.inherited_array(:links) << "stadium"
-
-          subject.inherit(parent)
-          subject.inherited_array(:links).must_equal(["stadium"])
-        end
+          parent.representable_attrs.inherited_array(:links) << "park"  # modify parent array.
+        
+        end.representable_attrs.inherited_array(:links).must_equal(["bar", "stadium"])
       end
     end
   end
