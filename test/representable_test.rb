@@ -596,5 +596,65 @@ class RepresentableTest < MiniTest::Spec
         assert subject.first != subject.clone.first
       end
     end
+
+    # TODO: this section will soon be moved to uber.
+    describe "inheritance when including" do
+      # TODO: test all the below issues AND if cloning works.
+      module Parent
+        include Representable::Hash
+        representable_attrs.inherited_array(:links) << "bar"
+      end
+      module Child
+        puts "TESTINGF"
+        include Representable::Hash
+        include Parent
+      end
+
+      it "inherits to uninitialized child" do
+        Child.representable_attrs.inherited_array(:links).must_equal(["bar"])
+      end
+    end
+    describe "#inherited_array" do
+      before do
+        #subject.inheritable_array :links
+      end
+
+      it "returns empty array" do
+        subject.inherited_array(:links).must_equal([])
+      end
+
+      it "allows adding" do
+        subject.inherited_array(:links) << "bar"
+        subject.inherited_array(:links).must_equal(["bar"])
+      end
+
+      describe "#inherit" do
+        it "works with uninitialized parent" do
+          subject.inherited_array(:links) << "club"
+          subject.inherit(Representable::Config.new)
+          subject.inherited_array(:links).must_equal(["club"])
+        end
+
+        it "inherits from initialized parent" do
+          subject.inherited_array(:links) << "club"
+
+          parent = Representable::Config.new
+          #parent.inheritable_array(:links)
+          parent.inherited_array(:links) << "stadium"
+
+          subject.inherit(parent)
+          subject.inherited_array(:links).must_equal(["club", "stadium"])
+        end
+
+        it "inherits as an uninitialized child" do
+          parent = Representable::Config.new
+          #parent.inheritable_array(:links)
+          parent.inherited_array(:links) << "stadium"
+
+          subject.inherit(parent)
+          subject.inherited_array(:links).must_equal(["stadium"])
+        end
+      end
+    end
   end
 end

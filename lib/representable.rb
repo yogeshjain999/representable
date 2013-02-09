@@ -121,7 +121,8 @@ private
   module ClassInclusions
     def included(base)
       super
-      base.representable_attrs.push(*representable_attrs.clone) # "inherit".
+      #base.representable_attrs.push(*representable_attrs.clone) # "inherit".
+      base.representable_attrs.inherit(representable_attrs)
     end
   end
   
@@ -206,6 +207,24 @@ private
     
     def clone
       self.class.new(collect { |d| d.clone })
+    end
+
+    # TODO: move to separate module
+    # DISCUSS: experimental. this will soon be moved to a separate gem.
+    def inherited_array(name)
+      inheritable_arrays[name] ||= []
+    end
+    def inheritable_arrays
+      @inheritable_arrays ||= {}
+    end
+
+    def inherit(parent)
+      push(*parent.clone)  # FIXME: make this an inherited_array itself!
+      #TODO: test the cloning, too! 
+      
+      parent.inheritable_arrays.keys.each do |k|
+        inherited_array(k).push *parent.inherited_array(k)
+      end
     end
     
   private
