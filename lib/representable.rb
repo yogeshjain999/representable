@@ -121,7 +121,6 @@ private
   module ClassInclusions
     def included(base)
       super
-      #base.representable_attrs.push(*representable_attrs.clone) # "inherit".
       base.representable_attrs.inherit(representable_attrs)
     end
   end
@@ -195,6 +194,7 @@ private
   end
   
   
+  # NOTE: the API of Config is subject to change so don't rely too much on this private object.
   class Config < Array
     attr_accessor :wrap
     
@@ -209,24 +209,10 @@ private
       self.class.new(collect { |d| d.clone })
     end
 
-    # TODO: move to separate module
-    # DISCUSS: experimental. this will soon be moved to a separate gem.
-    def inherited_array(name)
-      inheritable_arrays[name] ||= []
-    end
-    def inheritable_arrays
-      @inheritable_arrays ||= {}
+    def inherit(parent)
+      push(*parent.clone)
     end
 
-    def inherit(parent)
-      push(*parent.clone)  # FIXME: make this an inherited_array itself!
-      #TODO: test the cloning, too! 
-      
-      parent.inheritable_arrays.keys.each do |k|
-        inherited_array(k).push *parent.inherited_array(k)
-      end
-    end
-    
   private
     def infer_name_for(name)
       name.to_s.split('::').last.

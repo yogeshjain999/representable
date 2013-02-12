@@ -596,54 +596,5 @@ class RepresentableTest < MiniTest::Spec
         assert subject.first != subject.clone.first
       end
     end
-
-    # TODO: this section will soon be moved to uber.
-    describe "inheritance when including" do
-      # TODO: test all the below issues AND if cloning works.
-      module Parent
-        include Representable::Hash
-        representable_attrs.inherited_array(:links) << "bar"
-      end
-
-      it "inherits to uninitialized child" do
-        representer_for do # child
-          include(representer_for do # parent
-            representable_attrs.inherited_array(:links) << "bar"
-          end)
-        end.representable_attrs.inherited_array(:links).must_equal(["bar"])
-      end
-
-      it "works with uninitialized parent" do
-        representer_for do # child
-          representable_attrs.inherited_array(:links) << "bar"
-
-          include(representer_for do # parent
-          end)
-        end.representable_attrs.inherited_array(:links).must_equal(["bar"])
-      end
-
-      it "inherits when both are initialized" do
-        representer_for do # child
-          representable_attrs.inherited_array(:links) << "bar"
-
-          include(representer_for do # parent
-            representable_attrs.inherited_array(:links) << "stadium"
-          end)
-        end.representable_attrs.inherited_array(:links).must_equal(["bar", "stadium"])
-      end
-
-      it "clones parent inheritables" do # FIXME: actually we don't clone here!
-        representer_for do # child
-          representable_attrs.inherited_array(:links) << "bar"
-
-          include(parent = representer_for do # parent
-            representable_attrs.inherited_array(:links) << "stadium"
-          end)
-
-          parent.representable_attrs.inherited_array(:links) << "park"  # modify parent array.
-        
-        end.representable_attrs.inherited_array(:links).must_equal(["bar", "stadium"])
-      end
-    end
   end
 end
