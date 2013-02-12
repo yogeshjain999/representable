@@ -145,7 +145,7 @@ private
     
     module Declarations
       def representable_attrs
-        @representable_attrs ||= Config.new
+        @representable_attrs ||= build_config
       end
       
       def representation_wrap=(name)
@@ -189,6 +189,10 @@ private
     private
       def definition_class
         Definition
+      end
+
+      def build_config
+        Config.new
       end
     end
   end
