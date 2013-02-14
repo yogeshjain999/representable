@@ -476,6 +476,15 @@ Use the `:type` option to specify the conversion target. Note that `:default` st
     end
 
 
+## Undocumented Features
+
+(Please don't read this section!)
+
+If you need a special binding for a property you're free to create it using the `:binding` option.
+
+    property :title, :binding => lambda { |*args| JSON::TitleBinding.new(*args) }
+
+
 ## Copyright
 
 Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his inspiring work.
