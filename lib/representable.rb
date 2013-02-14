@@ -105,7 +105,7 @@ private
   
   def representable_bindings_for(format, options)
     options = cleanup_options(options)  # FIXME: make representable-options and user-options two different hashes.
-    representable_attrs.map {|attr| format.build_for(attr, self, options) }
+    representable_attrs.map {|attr| format.build(attr, self, options) }
   end
   
   # Returns the wrapper for the representation. Mostly used in XML.

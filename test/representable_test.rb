@@ -567,6 +567,21 @@ class RepresentableTest < MiniTest::Spec
         end
       end
     end
+
+    describe ":binding" do
+      representer! do
+        class MyBinding < Representable::Binding
+          def write(doc, *args)
+            doc[:title] = @represented.title
+          end
+        end
+        property :title, :binding => lambda { |*args| MyBinding.new(*args) }
+      end
+
+      it "uses the specified binding instance" do
+        OpenStruct.new(:title => "Affliction").extend(representer).to_hash.must_equal({:title => "Affliction"})
+      end
+    end
     
   end
   

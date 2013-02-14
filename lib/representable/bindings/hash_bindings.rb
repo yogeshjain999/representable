@@ -17,7 +17,6 @@ module Representable
     
     class PropertyBinding < Representable::Binding
       def self.build_for(definition, *args)  # TODO: remove default arg.
-        binding = super and return binding
         return CollectionBinding.new(definition, *args)  if definition.array?
         return HashBinding.new(definition, *args)        if definition.hash?
         new(definition, *args)

@@ -14,4 +14,4 @@ document `XML::AttributeHash` etc
 
 * Song < OpenStruct in test_helper
 
-* have representable-options (:include, :exclude) and user-options 
+* have representable-options (:include, :exclude) and user-options

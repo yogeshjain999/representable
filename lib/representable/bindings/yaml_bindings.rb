@@ -20,7 +20,6 @@ module Representable
 
     class PropertyBinding < Representable::Hash::PropertyBinding
       def self.build_for(definition, *args)
-        binding = Binding.build_for(definition, *args) and return binding
         return CollectionBinding.new(definition, *args) if definition.array?
         new(definition, *args)
       end

@@ -6,9 +6,10 @@ module Representable
     class FragmentNotFound
     end
 
-    def self.build_for(definition, *args)
+    def self.build(definition, *args)
       # DISCUSS: move #create_binding to this class?
-      definition.create_binding(*args) if definition.binding
+      return definition.create_binding(*args) if definition.binding
+      build_for(definition, *args)
     end
     
     def definition  # TODO: remove in 1.4.
