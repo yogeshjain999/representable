@@ -68,12 +68,8 @@ module Representable
       options[:binding]
     end
 
-    def has_binding?
-      options.has_key?(:binding)
-    end
-
-    def instantiate_binding *args
-      binding.new(self, *args)
+    def create_binding(*args)
+      binding.call(self, *args)
     end
   end
 end

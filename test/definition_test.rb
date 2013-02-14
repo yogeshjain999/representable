@@ -181,21 +181,21 @@ class DefinitionTest < MiniTest::Spec
 
   end
 
-  describe "#has_binding?" do
+  describe "#binding" do
     it "returns true when :binding is set" do
-      assert_equal true, Representable::Definition.new(:songs, :binding => Object).has_binding?
+      assert Representable::Definition.new(:songs, :binding => Object).binding
     end
 
     it "returns false when :binding is not set" do
-      assert_equal false, Representable::Definition.new(:songs).has_binding?
+      assert !Representable::Definition.new(:songs).binding
     end
   end
 
-  describe "#instantiate_binding" do
-    it "instantiates the specified binding" do
-      binding = mock
-      binding.expects(:new).with(kind_of(Representable::Definition),:passed_args).returns(:instantiated_binding).once
-      assert_equal :instantiated_binding, Representable::Definition.new(:songs, :binding => binding).instantiate_binding(:passed_args)
+  describe "#create_binding" do
+    it "executes the block (without special context)" do
+      definition = Representable::Definition.new(:title, :binding => lambda { |*args| @binding = Representable::Binding.new(*args) })
+      definition.create_binding(object=Object.new).must_equal @binding
+      @binding.instance_variable_get(:@represented).must_equal object
     end
   end
 

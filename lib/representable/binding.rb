@@ -5,6 +5,11 @@ module Representable
   class Binding < SimpleDelegator
     class FragmentNotFound
     end
+
+    def self.build_for(definition, *args)
+      # DISCUSS: move #create_binding to this class?
+      definition.create_binding(*args) if definition.binding
+    end
     
     def definition  # TODO: remove in 1.4.
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
