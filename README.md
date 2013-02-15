@@ -195,11 +195,11 @@ The same works for parsing using the `:setter` method.
 
 Here, the block retrieves two arguments: the parsed value and your user options.
 
-You can also use the `:getter` option instead of writing a reader method. Even when you're not passing in options you can still use this technique.
+You can also use the `:getter` option instead of writing a reader method. Even when you're not interested in user options you can still use this technique.
 
     property :title, :getter => lambda { |*| @name }
 
-This hash will also be available in the `:if` block, documented [here]("#conditions") and will be passed to nested objects.
+This hash will also be available in the `:if` block, documented [here](https://github.com/apotonick/representable/#conditions) and will be passed to nested objects.
 
 ## Using Helpers
 
