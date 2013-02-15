@@ -452,14 +452,37 @@ class RepresentableTest < MiniTest::Spec
       assert_equal "oh yes", band.fame
     end
 
-    it "propagates user options to the block" do
-      song = OpenStruct.new(:name => "Outbound").extend(
-        representer_for do
-          property :name, :if => lambda { |opts| opts[:include_name] }
-        end)
+    describe "propagating user options to the block" do
+      representer! do
+        property :name, :if => lambda { |opts| opts[:include_name] }
+      end
+      subject { OpenStruct.new(:name => "Outbound").extend(representer) }
 
-      song.to_hash.must_equal({})
-      song.to_hash(:include_name => true).must_equal({"name" => "Outbound"})
+      it "works without specifying options" do
+        subject.to_hash.must_equal({})
+      end
+
+      it "passes user options to block" do
+        subject.to_hash(:include_name => true).must_equal({"name" => "Outbound"})
+      end
+    end
+  end
+
+  describe ":getter and :setter" do
+    representer! do
+      property :name, 
+        :getter => lambda { |args| "#{args[:welcome]} #{name}" }, 
+        :setter => lambda { |val, args| self.name = "#{args[:welcome]} #{val}" }
+    end
+
+    subject { OpenStruct.new(:name => "Mony Mony").extend(representer) }
+
+    it "uses :getter when rendering" do
+      subject.to_hash(:welcome => "Hi").must_equal({"name" => "Hi Mony Mony"})
+    end
+
+    it "uses :setter when parsing" do
+      subject.from_hash({"name" => "Eyes Without A Face"}, :welcome => "Hello").name.must_equal "Hello Eyes Without A Face"
     end
   end
 

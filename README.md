@@ -172,6 +172,34 @@ For XML we just include the `Representable::XML` module.
           <composers>Sting</composers>
         </song>
 
+## Passing Options
+
+You're free to pass an options hash into the rendering or parsing.
+
+    song.to_json(:append => "SOLD OUT!")
+
+If you want to append the "SOLD OUT!" to the song's `title` when rendering, use the `:getter` option.
+
+    SongRepresenter
+      include Representable::JSON
+
+      property :title, :getter => lambda { |args| title + args[:append] }
+    end
+
+Note that the block is executed in the represented model context which allows using accessors and instance variables.
+
+
+The same works for parsing using the `:setter` method.
+
+    property :title, :setter => lambda { |val, args| self.title= val + args[:append] }
+
+Here, the block retrieves two arguments: the parsed value and your user options.
+
+You can also use the `:getter` option instead of writing a reader method. Even when you're not passing in options you can still use this technique.
+
+    property :title, :getter => lambda { |*| @name }
+
+This hash will also be available in the `:if` block, documented [here]("#conditions") and will be passed to nested objects.
 
 ## Using Helpers
 
@@ -416,7 +444,6 @@ I do not recommend this approach as it bloats your domain classes with represent
 ## More Options
 
 Here's a quick overview about other available options for `#property` and its bro `#collection`.
-
 
 ### Read/Write Restrictions
 
