@@ -92,7 +92,7 @@ private
   
   # Retrieve value and write fragment to the doc.
   def compile_fragment(bin, doc)
-    value = get_for(bin)
+    value = bin.get
     
     bin.write_fragment(doc, value)
   end
@@ -100,20 +100,10 @@ private
   # Parse value from doc and update the model property.
   def uncompile_fragment(bin, doc)
     bin.read_fragment(doc) do |value|
-      set_for(bin, value)
+      bin.set(value)
     end
   end
 
-  # TODO: move to Binding.
-  def get_for(bin)
-    return instance_exec(bin.user_options, &bin.options[:getter]) if bin.options[:getter]
-    send(bin.getter)
-  end
-  def set_for(bin, value)
-    value = instance_exec(value, bin.user_options, &bin.options[:setter]) if bin.options[:setter]
-    send(bin.setter, value)
-  end
-  
   def representable_attrs
     @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
   end

@@ -22,7 +22,7 @@ module Representable
       @user_options = user_options
     end
 
-    attr_reader :user_options # TODO: make private/remove.
+    attr_reader :user_options, :represented # TODO: make private/remove.
     
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -58,6 +58,16 @@ module Representable
 
     def read_fragment_for(doc)
       read(doc)
+    end
+
+    def get
+      return represented.instance_exec(user_options, &options[:getter]) if options[:getter]
+      represented.send(getter)
+    end
+
+    def set(value)
+      value = represented.instance_exec(value, user_options, &options[:setter]) if options[:setter]
+      represented.send(setter, value)
     end
     
     
