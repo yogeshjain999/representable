@@ -1,7 +1,3 @@
-require 'bundler'
-Bundler.setup
-
-gem 'minitest'
 require 'representable'
 require 'representable/json'
 require 'representable/xml'
@@ -9,7 +5,7 @@ require 'test/unit'
 require 'minitest/spec'
 require 'minitest/autorun'
 require 'test_xml/mini_test'
-require 'mocha'
+require 'mocha/setup'
 
 class Album
   attr_accessor :songs, :best_song
