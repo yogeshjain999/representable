@@ -21,6 +21,8 @@ module Representable
       @represented  = represented
       @user_options = user_options
     end
+
+    attr_reader :user_options # TODO: make private/remove.
     
     # Main entry point for rendering/parsing a property object.
     def serialize(value)

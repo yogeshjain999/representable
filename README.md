@@ -448,6 +448,14 @@ You can also define conditions on properties using `:if`, making them being cons
   
 When rendering or parsing, the `track` property is considered only if track is valid. Note that the block is executed in instance context, giving you access to instance methods.
 
+As always, the block retrieves your options. Given this render call
+
+    song.to_json(minimum_track: 2)
+
+your `:if` may process the options.
+
+    property :track, if: lambda { |opts| track > opts[:minimum_track] }
+
 
 ### False and Nil Values
 

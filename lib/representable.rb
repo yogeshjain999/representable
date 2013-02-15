@@ -81,8 +81,13 @@ private
   end
   
   def skip_conditional_property?(binding)
+    # TODO: move to Binding.
     return unless condition = binding.options[:if]
-    not instance_exec(&condition)
+
+    args = []
+    args << binding.user_options if condition.arity > 0 # TODO: remove arity check. users should know whether they pass options or not.
+
+    not instance_exec(*args, &condition)
   end
   
   # Retrieve value and write fragment to the doc.

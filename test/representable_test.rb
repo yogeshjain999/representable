@@ -444,13 +444,22 @@ class RepresentableTest < MiniTest::Spec
       assert_equal nil, band.fame
     end
     
-    
     it "executes block in instance context" do
       @pop.class_eval { property :fame, :if => lambda { groupies } }
       band = @pop.new
       band.groupies = true
       band.update_properties_from({"fame"=>"oh yes"}, {}, Representable::Hash::PropertyBinding)
       assert_equal "oh yes", band.fame
+    end
+
+    it "propagates user options to the block" do
+      song = OpenStruct.new(:name => "Outbound").extend(
+        representer_for do
+          property :name, :if => lambda { |opts| opts[:include_name] }
+        end)
+
+      song.to_hash.must_equal({})
+      song.to_hash(:include_name => true).must_equal({"name" => "Outbound"})
     end
   end
 
