@@ -3,7 +3,4 @@ notifications:
 matrix:
   include:
     - rvm: 1.9.3
-      gemfile: gemfiles/Gemfile.mongoid-2.4
-    - rvm: 1.9.3
-      gemfile: Gemfile
-    
+
