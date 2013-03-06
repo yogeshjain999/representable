@@ -20,8 +20,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_dependency "nokogiri"
-  s.add_dependency "json"
-  
+  s.add_dependency "yajl-ruby"
+
   s.add_development_dependency "rake"
   s.add_development_dependency "test_xml"
   s.add_development_dependency "minitest", ">= 2.8.1"
