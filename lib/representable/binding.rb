@@ -11,7 +11,7 @@ module Representable
       return definition.create_binding(*args) if definition.binding
       build_for(definition, *args)
     end
-    
+
     def definition  # TODO: remove in 1.4.
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
     end
@@ -23,20 +23,32 @@ module Representable
     end
 
     attr_reader :user_options, :represented # TODO: make private/remove.
-    
+
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
       value
     end
-    
+
     def deserialize(fragment)
       fragment
     end
-    
+
+    # Retrieve value and write fragment to the doc.
+    def compile_fragment(doc)
+      write_fragment(doc, get)
+    end
+
+    # Parse value from doc and update the model property.
+    def uncompile_fragment(doc)
+      read_fragment(doc) do |value|
+        set(value)
+      end
+    end
+
 
     def write_fragment(doc, value)
       value = default_for(value)
-      
+
       write_fragment_for(value, doc)
     end
 
@@ -47,7 +59,7 @@ module Representable
 
     def read_fragment(doc)
       value = read_fragment_for(doc)
-      
+
       if value == FragmentNotFound
         return unless has_default?
         value = default
@@ -69,8 +81,8 @@ module Representable
       value = represented.instance_exec(value, user_options, &options[:setter]) if options[:setter]
       represented.send(setter, value)
     end
-    
-    
+
+
     # Hooks into #serialize and #deserialize to extend typed properties
     # at runtime.
     module Extend
@@ -78,11 +90,11 @@ module Representable
       def serialize(*)
         extend_for(super)
       end
-      
+
       def deserialize(*)
         extend_for(super)
       end
-      
+
       def extend_for(object)
         if mod = representer_module_for(object) # :extend.
           object.extend(*mod)
@@ -90,7 +102,7 @@ module Representable
 
         object
       end
-    
+
     private
       def representer_module_for(object, *args)
         call_proc_for(representer_module, object)   # TODO: how to pass additional data to the computing block?`
@@ -101,21 +113,21 @@ module Representable
         @represented.instance_exec(*args, &proc)
       end
     end
-    
+
     module Object
       include Binding::Extend  # provides #serialize/#deserialize with extend.
-      
+
       def serialize(object)
         return object if object.nil?
-        
+
         super.send(serialize_method, @user_options.merge!({:wrap => false}))  # TODO: pass :binding => self
       end
-      
+
       def deserialize(data)
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
         super(create_object(data)).send(deserialize_method, data, @user_options)
       end
-      
+
       def create_object(fragment)
         instance_for(fragment) or class_for(fragment)
       end
@@ -131,7 +143,7 @@ module Representable
       end
 
       def instance_for(fragment, *args)
-        return unless options[:instance] 
+        return unless options[:instance]
         call_proc_for(options[:instance], fragment)
       end
     end
