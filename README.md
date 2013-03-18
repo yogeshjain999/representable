@@ -65,7 +65,7 @@ If your property name doesn't match the name in the document, use the `:as` opti
       property :title, as: :name
       property :track
     end
-    
+
     song.to_json #=> {"name":"Fallout","track":1}
 
 
@@ -207,7 +207,7 @@ Sometimes it's useful to override accessors to customize output or parsing.
 
     module AlbumRepresenter
       include Representable::JSON
-      
+
       property :name
       collection :songs
 
@@ -260,9 +260,9 @@ Given we not only have songs, but also cover songs.
 
 And a non-homogenous collection of songs.
 
-    songs = [ Song.new(title: "Weirdo", track: 5), 
+    songs = [ Song.new(title: "Weirdo", track: 5),
               CoverSong.new(title: "Truth Hits Everybody", track: 6, copyright: "The Police")]
-    
+
     album = Album.new(name: "Incognito", songs: songs)
 
 
@@ -286,7 +286,7 @@ Rendering heterogenous collections usually implies that you also need to parse t
       include Representable::JSON
 
       property :name
-      collection :songs, 
+      collection :songs,
         :extend => ...,
         :class  => lambda { |hsh| hsh.has_key?("copyright") ? CoverSong : Song }
     end
@@ -299,7 +299,7 @@ If this is not enough, you may override the entire object creation process using
       include Representable::JSON
 
       property :name
-      collection :songs, 
+      collection :songs,
         :extend   => ...,
         :instance => lambda { |hsh| hsh.has_key?("copyright") ? CoverSong.new : Song.new(original: true) }
     end
@@ -308,7 +308,7 @@ If this is not enough, you may override the entire object creation process using
 ## Hashes
 
 As an addition to single properties and collections representable also offers to represent hash attributes.
-    
+
     module SongRepresenter
       include Representable::JSON
 
@@ -318,7 +318,7 @@ As an addition to single properties and collections representable also offers to
 
     Song.new(title: "Bliss", ratings: {"Rolling Stone" => 4.9, "FryZine" => 4.5}).
     extend(SongRepresenter).to_json
-    
+
     #=> {"title":"Bliss","ratings":{"Rolling Stone":4.9,"FryZine":4.5}}
 
 
@@ -400,7 +400,7 @@ You can also map properties to tag attributes in representable.
       property :title, attribute: true
       property :track, attribute: true
     end
-    
+
     Song.new(title: "American Idle").to_xml
     #=> <song title="American Idle" />
 
@@ -418,7 +418,7 @@ It is sometimes unavoidable to wrap tag lists in a container tag.
 
 Note that `:wrap` defines the container tag name.
 
-    Album.new.to_xml #=> 
+    Album.new.to_xml #=>
       <album>
         <songs>
           <song>Laundry Basket</song>
@@ -444,6 +444,19 @@ I do not recommend this approach as it bloats your domain classes with represent
 ## More Options
 
 Here's a quick overview about other available options for `#property` and its bro `#collection`.
+
+
+### Overriding Read And Write
+
+This can be handy if a property needs to be compiled from several fragments. The lambda has access to the entire object document (either hash or `Nokogiri` node) and user options.
+
+    property :title, :writer => lambda { |doc, args| doc["title"] = title || original_title }
+
+When using the `:writer` option it is up to you to add fragments to the `doc` - representable won't add anything for this property.
+
+The same works for parsing using `:reader`.
+
+    property :title, :reader => lambda { |doc, args| self.title = doc["title"] || doc["name"] }
 
 ### Read/Write Restrictions
 
@@ -472,7 +485,7 @@ You can also define conditions on properties using `:if`, making them being cons
       property :title
       property :track, if: lambda { track > 0 }
     end
-  
+
 When rendering or parsing, the `track` property is considered only if track is valid. Note that the block is executed in instance context, giving you access to instance methods.
 
 As always, the block retrieves your options. Given this render call
@@ -505,7 +518,7 @@ Use the `:type` option to specify the conversion target. Note that `:default` st
     module SongRepresenter
       include Representable::JSON
       include Representable::Coercion
-      
+
       property :title
       property :recorded_at, :type => DateTime, :default => "May 12th, 2012"
     end

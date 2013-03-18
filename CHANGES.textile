@@ -1,3 +1,7 @@
+h2. 1.3.5
+
+* Added `:reader` and `:writer` to allow overriding rendering/parsing of a property fragment and to give the user access to the entire document.
+
 h2. 1.3.4
 
 * Replacing `json` gem with `multi_json` hoping not to cause trouble.
