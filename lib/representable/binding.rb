@@ -35,11 +35,15 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
+      return represented.instance_exec(doc, user_options, &options[:writer]) if options[:writer]
+
       write_fragment(doc, get)
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
+      return represented.instance_exec(doc, user_options, &options[:reader]) if options[:reader]
+
       read_fragment(doc) do |value|
         set(value)
       end
@@ -73,13 +77,21 @@ module Representable
     end
 
     def get
-      return represented.instance_exec(user_options, &options[:getter]) if options[:getter]
+      return represented_exec_for(:getter) if options[:getter]
       represented.send(getter)
     end
 
     def set(value)
-      value = represented.instance_exec(value, user_options, &options[:setter]) if options[:setter]
+      #value = represented.instance_exec(value, user_options, &options[:setter]) if options[:setter]
+      value = represented_exec_for(:setter, value) if options[:setter]
       represented.send(setter, value)
+    end
+
+  private
+    # Execute the block for +option_name+ on the represented object.
+    def represented_exec_for(option_name, *args)
+      return unless options[option_name]
+      represented.instance_exec(*args+[user_options], &options[option_name])
     end
 
 
