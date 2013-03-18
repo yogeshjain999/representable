@@ -35,20 +35,19 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
-      return represented.instance_exec(doc, user_options, &options[:writer]) if options[:writer]
+      return represented_exec_for(:writer, doc) if options[:writer]
 
       write_fragment(doc, get)
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
-      return represented.instance_exec(doc, user_options, &options[:reader]) if options[:reader]
+      return represented_exec_for(:reader, doc) if options[:reader]
 
       read_fragment(doc) do |value|
         set(value)
       end
     end
-
 
     def write_fragment(doc, value)
       value = default_for(value)
@@ -82,7 +81,6 @@ module Representable
     end
 
     def set(value)
-      #value = represented.instance_exec(value, user_options, &options[:setter]) if options[:setter]
       value = represented_exec_for(:setter, value) if options[:setter]
       represented.send(setter, value)
     end
@@ -122,6 +120,7 @@ module Representable
 
       def call_proc_for(proc, *args)
         return proc unless proc.is_a?(Proc)
+        # DISCUSS: use represented_exec_for here?
         @represented.instance_exec(*args, &proc)
       end
     end
