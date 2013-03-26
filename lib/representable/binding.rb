@@ -6,6 +6,20 @@ module Representable
     class FragmentNotFound
     end
 
+    module RepresentingStrategy
+      class Decorate
+        def decorate(object, mod)
+          mod.new(object)
+        end
+      end
+
+      class Extend
+        def decorate(object, mod)
+          object.extend(*mod)
+        end
+      end
+    end
+
     def self.build(definition, *args)
       # DISCUSS: move #create_binding to this class?
       return definition.create_binding(*args) if definition.binding
@@ -16,13 +30,14 @@ module Representable
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
     end
 
-    def initialize(definition, represented, user_options={})  # TODO: remove default arg.
+    def initialize(definition, represented, user_options={}, decorator=RepresentingStrategy::Extend.new)  # TODO: remove default arg.
       super(definition)
       @represented  = represented
       @user_options = user_options
+      @decorator    = decorator # DISCUSS: should we keep this here?
     end
 
-    attr_reader :user_options, :represented # TODO: make private/remove.
+    attr_reader :user_options, :represented, :decorator # TODO: make private/remove.
 
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -106,11 +121,9 @@ module Representable
       end
 
       def extend_for(object)
-        if mod = representer_module_for(object) # :extend.
-          object.extend(*mod)
-        end
+        return object unless mod = representer_module_for(object) # :extend.
 
-        object
+        decorator.decorate(object, mod) #object.extend(*mod)
       end
 
     private
@@ -125,6 +138,8 @@ module Representable
       end
     end
 
+    # Overrides #serialize/#deserialize to call #to_*/from_*.
+    # Computes :class in #deserialize. # TODO: shouldn't this be in a separate module? ObjectSerialize/ObjectDeserialize?
     module Object
       include Binding::Extend  # provides #serialize/#deserialize with extend.
 
@@ -136,7 +151,9 @@ module Representable
 
       def deserialize(data)
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        super(create_object(data)).send(deserialize_method, data, @user_options)
+        create_object(data).tap do |obj|
+          super(obj).send(deserialize_method, data, @user_options)
+        end
       end
 
       def create_object(fragment)
