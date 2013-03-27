@@ -303,6 +303,10 @@ class RepresentableTest < MiniTest::Spec
     end
 
     describe "passing options" do
+      class Track
+        attr_accessor :nr
+      end
+
       module TrackRepresenter
         include Representable::Hash
         property :nr
@@ -312,25 +316,25 @@ class RepresentableTest < MiniTest::Spec
           super
         end
         def from_hash(data, options)
-          super
-          @nr = options[:nr]
+          super.tap do
+            @nr = options[:nr]
+          end
         end
-        attr_accessor :nr
       end
 
       representer! do
-        property :track, :extend => TrackRepresenter
+        property :track, :extend => TrackRepresenter, :class => Track
       end
 
       describe "#to_hash" do
         it "propagates to nested objects" do
-          Song.new("Ocean Song", Object.new).extend(representer).to_hash(:nr => 9).must_equal({"track"=>{"nr"=>9}})
+          Song.new("Ocean Song", Track.new).extend(representer).to_hash(:nr => 9).must_equal({"track"=>{"nr"=>9}})
         end
       end
 
       describe "#from_hash" do
         it "propagates to nested objects" do
-          Song.new.extend(representer).from_hash({"track"=>{"nr" => "replace me"}}, :nr => 9).track.must_equal 9
+          Song.new.extend(representer).from_hash({"track"=>{"nr" => "replace me"}}, :nr => 9).track.nr.must_equal 9
         end
       end
     end
@@ -507,11 +511,11 @@ class RepresentableTest < MiniTest::Spec
   describe ":extend and :class" do
     module UpcaseRepresenter
       def to_hash(*); upcase; end
-      def from_hash(hsh, *args); self.class.new hsh.upcase; end   # DISCUSS: from_hash must return self.
+      def from_hash(hsh, *args); replace hsh.upcase; end   # DISCUSS: from_hash must return self.
     end
     module DowncaseRepresenter
       def to_hash(*); downcase; end
-      def from_hash(hsh, *args); hsh.downcase; end
+      def from_hash(hsh, *args); replace hsh.downcase; end
     end
     class UpcaseString < String; end
 
@@ -633,6 +637,36 @@ class RepresentableTest < MiniTest::Spec
       end
     end
 
+    describe "decorator" do
+      require 'representable/decorator'
+      class SongRepresentation < Representable::Decorator# DISCUSS: call it Representer?
+        include Representable::JSON
+        property :name
+      end
+
+      class AlbumRepresentation < Representable::Decorator
+        include Representable::JSON
+        collection :songs, :class => Song, :extend => SongRepresentation
+      end
+
+      let (:song) { Song.new("Mama, I'm Coming Home") }
+      let (:album) { Album.new([song]) }
+      let (:decorator) { AlbumRepresentation.new(album) }
+
+      it "renders" do
+        decorator.to_hash.must_equal({"songs"=>[{"name"=>"Mama, I'm Coming Home"}]})
+        album.wont_respond_to :to_hash
+        song.wont_respond_to :to_hash # DISCUSS: weak test, how to assert blank slate?
+      end
+
+      it "parses" do
+        decorator.from_hash({"songs"=>[{"name"=>"Atomic Garden"}]})
+        album.songs.first.must_be_kind_of Song
+        album.songs.must_equal [Song.new("Atomic Garden")]
+        album.wont_respond_to :to_hash
+        song.wont_respond_to :to_hash # DISCUSS: weak test, how to assert blank slate?
+      end
+    end
   end
 
   describe "Config" do
