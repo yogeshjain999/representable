@@ -1,10 +1,8 @@
-* Pass key/index as first block arg to :class and :extendv
+* Pass key/index as first block arg to :class and :extend
 class: |key, hsh|
 
 * Allow passing options to Binding#serialize.
 	serialize(.., options{:exclude => ..})
-
-* Allow :writer and :reader / :getter/:setter
 
 document `XML::AttributeHash` etc
 
@@ -16,7 +14,7 @@ document `XML::AttributeHash` etc
 
 * have representable-options (:include, :exclude) and user-options
 
-
+* make all properties "Object-like", even arrays of strings etc.
 
 
 def compile_fragment(doc)
