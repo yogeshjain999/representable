@@ -34,7 +34,7 @@ module Representable
       super(definition)
       @represented  = represented
       @user_options = user_options
-      @decorator    = decorator # DISCUSS: should we keep this here?
+      @decorator    = decorator
     end
 
     attr_reader :user_options, :represented, :decorator # TODO: make private/remove.
@@ -120,7 +120,7 @@ module Representable
         extend_for(super)
       end
 
-      def extend_for(object)
+      def extend_for(object)  # TODO: rename. #setup/#prepare.
         return object unless mod = representer_module_for(object) # :extend.
 
         decorator.decorate(object, mod) #object.extend(*mod)

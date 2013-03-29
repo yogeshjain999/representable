@@ -104,17 +104,22 @@ private
     @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
   end
 
-  def representable_bindings_for(format, options)
-    options = cleanup_options(options)  # FIXME: make representable-options and user-options two different hashes.
-    representable_attrs.map {|attr| format.build(attr, self, options) }
-  end
-
   # Returns the wrapper for the representation. Mostly used in XML.
   def representation_wrap
     representable_attrs.wrap_for(self.class.name)
   end
 
 private
+  def representable_bindings_for(format, options)
+    options = cleanup_options(options)  # FIXME: make representable-options and user-options two different hashes.
+    representable_attrs.map {|attr| representable_binding_for(attr, format, options) }
+  end
+
+  def representable_binding_for(attribute, format, options)
+    # DISCUSS: shouldn't this happen in Binding?
+    format.build(attribute, self, options)
+  end
+
   def cleanup_options(options) # TODO: remove me.
     options.reject { |k,v| [:include, :exclude].include?(k) }
   end
