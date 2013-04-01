@@ -456,6 +456,31 @@ class RepresentableTest < MiniTest::Spec
       assert_equal "oh yes", band.fame
     end
 
+    describe "executing :if lambda in represented instance context" do
+      representer! do
+        property :label, :if => lambda { signed_contract }
+      end
+
+      subject { OpenStruct.new(:signed_contract => false, :label => "Fat") }
+
+      it "skips when false" do
+        subject.extend(representer).to_hash.must_equal({})
+      end
+
+      it "represents when true" do
+        subject.signed_contract= true
+        subject.extend(representer).to_hash.must_equal({"label"=>"Fat"})
+      end
+
+      it "works with decorator" do
+        rpr = representer
+        Class.new(Representable::Decorator) do
+          include rpr
+        end.new(subject).to_hash.must_equal({})
+      end
+    end
+
+
     describe "propagating user options to the block" do
       representer! do
         property :name, :if => lambda { |opts| opts[:include_name] }

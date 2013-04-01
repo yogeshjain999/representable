@@ -87,7 +87,7 @@ private
     args = []
     args << binding.user_options if condition.arity > 0 # TODO: remove arity check. users should know whether they pass options or not.
 
-    not instance_exec(*args, &condition)
+    not represented.instance_exec(*args, &condition)
   end
 
   # TODO: remove in 1.4.
