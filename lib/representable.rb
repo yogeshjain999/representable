@@ -117,7 +117,11 @@ private
 
   def representable_binding_for(attribute, format, options)
     # DISCUSS: shouldn't this happen in Binding?
-    format.build(attribute, self, options)
+    format.build(attribute, represented, options)
+  end
+
+  def represented
+    self
   end
 
   def cleanup_options(options) # TODO: remove me.
