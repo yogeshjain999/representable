@@ -9,7 +9,7 @@ module Representable
     end
 
     def representable_binding_for(attr, format, options)
-      format.build(attr, represented, options, Binding::RepresentingStrategy::Decorate.new)
+      format.build(attr, represented, options, Binding::PrepareStrategy::Decorate.new)
     end
   end
 end

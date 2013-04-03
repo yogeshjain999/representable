@@ -6,15 +6,15 @@ module Representable
     class FragmentNotFound
     end
 
-    module RepresentingStrategy
+    module PrepareStrategy
       class Decorate
-        def decorate(object, mod)
+        def prepare(object, mod)
           mod.new(object)
         end
       end
 
       class Extend
-        def decorate(object, mod)
+        def prepare(object, mod)
           object.extend(*mod)
         end
       end
@@ -30,14 +30,14 @@ module Representable
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
     end
 
-    def initialize(definition, represented, user_options={}, decorator=RepresentingStrategy::Extend.new)  # TODO: remove default arg.
+    def initialize(definition, represented, user_options={}, preparer=PrepareStrategy::Extend.new)  # TODO: remove default arg.
       super(definition)
       @represented  = represented
       @user_options = user_options
-      @decorator    = decorator
+      @preparer     = preparer
     end
 
-    attr_reader :user_options, :represented, :decorator # TODO: make private/remove.
+    attr_reader :user_options, :represented, :preparer # TODO: make private/remove.
 
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -108,22 +108,22 @@ module Representable
     end
 
 
-    # Hooks into #serialize and #deserialize to extend typed properties
+    # Hooks into #serialize and #deserialize to setup (extend/decorate) typed properties
     # at runtime.
-    module Extend
+    module Prepare
       # Extends the object with its representer before serialization.
       def serialize(*)
-        extend_for(super)
+        prepare(super)
       end
 
       def deserialize(*)
-        extend_for(super)
+        prepare(super)
       end
 
-      def extend_for(object)  # TODO: rename. #setup/#prepare.
+      def prepare(object)
         return object unless mod = representer_module_for(object) # :extend.
 
-        decorator.decorate(object, mod) #object.extend(*mod)
+        preparer.prepare(object, mod)
       end
 
     private
@@ -141,7 +141,7 @@ module Representable
     # Overrides #serialize/#deserialize to call #to_*/from_*.
     # Computes :class in #deserialize. # TODO: shouldn't this be in a separate module? ObjectSerialize/ObjectDeserialize?
     module Object
-      include Binding::Extend  # provides #serialize/#deserialize with extend.
+      include Binding::Prepare
 
       def serialize(object)
         return object if object.nil?
