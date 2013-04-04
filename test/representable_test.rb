@@ -647,6 +647,16 @@ class RepresentableTest < MiniTest::Spec
       end
     end
 
+    describe ":decorator" do
+      let (:extend_rpr) { Module.new { include Representable::Hash; collection :songs, :extend => SongRepresenter } }
+      let (:decorator_rpr) { Module.new { include Representable::Hash; collection :songs, :decorator => SongRepresenter } }
+      let (:songs) { [Song.new("Bloody Mary")] }
+
+      it "is aliased to :extend" do
+        Album.new(songs).extend(extend_rpr).to_hash.must_equal Album.new(songs).extend(decorator_rpr).to_hash
+      end
+    end
+
     describe ":binding" do
       representer! do
         class MyBinding < Representable::Binding
