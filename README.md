@@ -55,6 +55,12 @@ It also adds support for parsing.
     song = Song.new.extend(SongRepresenter).from_json(%{ {"title":"Roxanne"} })
     #=> #<Song title="Roxanne", track=nil>
 
+
+## Extend vs. Decorator
+
+If you don't want representer modules to be mixed into your objects (using `#extend`) you can use the `Decorator` strategy [described below](https://github.com/apotonick/representable/#TODO:FIXME).
+
+
 ## Aliasing
 
 If your property name doesn't match the name in the document, use the `:as` option.
@@ -146,6 +152,30 @@ Parsing a documents needs both `:extend` and the `:class` option as the parser r
 
     #=> #<Album name="Offspring", songs=[#<Song title="Genocide">, #<Song title="Nitro", composers=["Offspring"]>]>
 
+## Decorator vs. Extend
+
+People who dislike `:extend` go use the `Decorator` strategy!
+
+    class SongRepresentation < Representable::Decorator
+      include Representable::JSON
+
+      property :title
+      property :track
+    end
+
+The `Decorator` constructor requires the represented object.
+
+    SongRepresentation.new(song).to_json
+
+This will leave the `song` instance untouched as the decorator just uses public accessors to represent the hit.
+
+In compositions you need to specify the decorators for the nested items using the `:decorator` option where you'd normally use `:extend`.
+
+    class AlbumRepresentation < Representable::Decorator
+      include Representable::JSON
+
+      collection :songs, :class => Song, :decorator => SongRepresentation
+    end
 
 ## XML Support
 
