@@ -663,8 +663,9 @@ class RepresentableTest < MiniTest::Spec
     end
 
     describe "decorator" do
+      # TODO: Move to global place since it's used twice.
       require 'representable/decorator'
-      class SongRepresentation < Representable::Decorator# DISCUSS: call it Representer?
+      class SongRepresentation < Representable::Decorator
         include Representable::JSON
         property :name
       end
@@ -690,6 +691,25 @@ class RepresentableTest < MiniTest::Spec
         album.songs.must_equal [Song.new("Atomic Garden")]
         album.wont_respond_to :to_hash
         song.wont_respond_to :to_hash # DISCUSS: weak test, how to assert blank slate?
+      end
+    end
+
+    describe "::prepare" do
+      let (:song) { Song.new("Still Friends In The End") }
+      let (:album) { Album.new([song]) }
+
+      it "uses :extend strategy" do
+        album_rpr = Module.new { include Representable::Hash; collection :songs, :class => Song, :extend => SongRepresenter}
+
+        Representable.prepare(album, album_rpr, :extend).to_hash.must_equal({"songs"=>[{"name"=>"Still Friends In The End"}]})
+        album.must_respond_to :to_hash
+      end
+
+      it "uses :decorate strategy" do
+        album_rpr = AlbumRepresentation
+
+        Representable.prepare(album, album_rpr, :decorate).to_hash.must_equal({"songs"=>[{"name"=>"Still Friends In The End"}]})
+        album.wont_respond_to :to_hash
       end
     end
   end
