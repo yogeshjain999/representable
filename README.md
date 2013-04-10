@@ -58,7 +58,7 @@ It also adds support for parsing.
 
 ## Extend vs. Decorator
 
-If you don't want representer modules to be mixed into your objects (using `#extend`) you can use the `Decorator` strategy [described below](https://github.com/apotonick/representable/#TODO:FIXME).
+If you don't want representer modules to be mixed into your objects (using `#extend`) you can use the `Decorator` strategy [described below](https://github.com/apotonick/representable#decorator-vs-extend).
 
 
 ## Aliasing
