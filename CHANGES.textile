@@ -1,3 +1,8 @@
+h2. 1.4.0
+
+* We now have two strategies for representing: the old extend approach and the brand-new decorator which leaves represented objects untouched. See "README":https://github.com/apotonick/representable#decorator-vs-extend for details.
+* Internally, either extending or decorating in the Binding now happens through the representer class method `::prepare` (i.e. `Decorator::prepare` or `Representable::prepare` for modules). That means any representer module or class must expose this class method.
+
 h2. 1.3.5
 
 * Added `:reader` and `:writer` to allow overriding rendering/parsing of a property fragment and to give the user access to the entire document.
