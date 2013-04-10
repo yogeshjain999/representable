@@ -40,21 +40,6 @@ module Representable
     end
   end
 
-  module Prepare
-    # Depending on +strategy+ returns the extended +represented+ object or the decorator instance.
-    def prepare(represented, mod, strategy)
-      strategy_for(strategy).new.prepare(represented, mod)
-    end
-
-  private
-    def strategy_for(symbol)
-      { :extend   => Binding::PrepareStrategy::Extend,
-        :decorate => Binding::PrepareStrategy::Decorate
-      }.fetch(symbol)
-    end
-  end
-  extend Prepare
-
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
     representable_bindings_for(format, options).each do |bin|
@@ -167,6 +152,10 @@ private
       end
     end
 
+    def prepare(represented)
+      represented.extend(self)  # was: PrepareStrategy::Extend.
+    end
+
 
     module Declarations
       def representable_attrs
@@ -251,3 +240,5 @@ private
     end
   end
 end
+
+require 'representable/decorator'

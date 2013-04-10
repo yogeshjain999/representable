@@ -535,10 +535,12 @@ class RepresentableTest < MiniTest::Spec
 
   describe ":extend and :class" do
     module UpcaseRepresenter
+      include Representable
       def to_hash(*); upcase; end
       def from_hash(hsh, *args); replace hsh.upcase; end   # DISCUSS: from_hash must return self.
     end
     module DowncaseRepresenter
+      include Representable
       def to_hash(*); downcase; end
       def from_hash(hsh, *args); replace hsh.downcase; end
     end
@@ -562,7 +564,7 @@ class RepresentableTest < MiniTest::Spec
 
     describe ":instance" do
       obj = String.new("Fate")
-      mod = Module.new { def from_hash(*); self; end }
+      mod = Module.new { include Representable; def from_hash(*); self; end }
       representer! do
         property :name, :extend => mod, :instance => lambda { |name| obj }
       end
@@ -607,7 +609,7 @@ class RepresentableTest < MiniTest::Spec
 
         describe "when :class lambda returns nil" do
           representer! do
-            property :name, :extend => lambda { |name| Module.new { def from_hash(data, *args); data; end } },
+            property :name, :extend => lambda { |name| Module.new { include Representable; def from_hash(data, *args); data; end } },
                             :class  => nil
           end
 
@@ -674,7 +676,6 @@ class RepresentableTest < MiniTest::Spec
 
     describe "decorator" do
       # TODO: Move to global place since it's used twice.
-      require 'representable/decorator'
       class SongRepresentation < Representable::Decorator
         include Representable::JSON
         property :name
@@ -682,6 +683,7 @@ class RepresentableTest < MiniTest::Spec
 
       class AlbumRepresentation < Representable::Decorator
         include Representable::JSON
+
         collection :songs, :class => Song, :extend => SongRepresentation
       end
 
@@ -708,18 +710,20 @@ class RepresentableTest < MiniTest::Spec
       let (:song) { Song.new("Still Friends In The End") }
       let (:album) { Album.new([song]) }
 
-      it "uses :extend strategy" do
-        album_rpr = Module.new { include Representable::Hash; collection :songs, :class => Song, :extend => SongRepresenter}
+      describe "module including Representable" do
+        it "uses :extend strategy" do
+          album_rpr = Module.new { include Representable::Hash; collection :songs, :class => Song, :extend => SongRepresenter}
 
-        Representable.prepare(album, album_rpr, :extend).to_hash.must_equal({"songs"=>[{"name"=>"Still Friends In The End"}]})
-        album.must_respond_to :to_hash
+          album_rpr.prepare(album).to_hash.must_equal({"songs"=>[{"name"=>"Still Friends In The End"}]})
+          album.must_respond_to :to_hash
+        end
       end
 
-      it "uses :decorate strategy" do
-        album_rpr = AlbumRepresentation
-
-        Representable.prepare(album, album_rpr, :decorate).to_hash.must_equal({"songs"=>[{"name"=>"Still Friends In The End"}]})
-        album.wont_respond_to :to_hash
+      describe "Decorator subclass" do
+        it "uses :decorate strategy" do
+          AlbumRepresentation.prepare(album).to_hash.must_equal({"songs"=>[{"name"=>"Still Friends In The End"}]})
+          album.wont_respond_to :to_hash
+        end
       end
     end
   end

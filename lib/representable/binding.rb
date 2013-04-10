@@ -6,20 +6,6 @@ module Representable
     class FragmentNotFound
     end
 
-    module PrepareStrategy
-      class Decorate
-        def prepare(object, mod)
-          mod.new(object)
-        end
-      end
-
-      class Extend
-        def prepare(object, mod)
-          object.extend(*mod)
-        end
-      end
-    end
-
     def self.build(definition, *args)
       # DISCUSS: move #create_binding to this class?
       return definition.create_binding(*args) if definition.binding
@@ -30,14 +16,13 @@ module Representable
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
     end
 
-    def initialize(definition, represented, user_options={}, preparer=PrepareStrategy::Extend.new)  # TODO: remove default arg.
+    def initialize(definition, represented, user_options={})  # TODO: remove default arg.
       super(definition)
       @represented  = represented
       @user_options = user_options
-      @preparer     = preparer
     end
 
-    attr_reader :user_options, :represented, :preparer # TODO: make private/remove.
+    attr_reader :user_options, :represented # TODO: make private/remove.
 
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -123,7 +108,8 @@ module Representable
       def prepare(object)
         return object unless mod = representer_module_for(object) # :extend.
 
-        preparer.prepare(object, mod)
+        mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
+        mod.prepare(object)
       end
 
     private
