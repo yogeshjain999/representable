@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Nick Sutterer"]
   s.email       = ["apotonick@gmail.com"]
-  s.homepage    = "http://representable.apotomo.de"
+  s.homepage    = "https://github.com/apotonick/representable/"
   s.summary     = %q{Maps representation documents from and to Ruby objects. Includes XML and JSON support, plain properties, collections and compositions.}
   s.description = %q{Maps representation documents from and to Ruby objects. Includes XML and JSON support, plain properties, collections and compositions.}
 
