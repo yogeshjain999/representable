@@ -560,10 +560,12 @@ Use the `:type` option to specify the conversion target. Note that `:default` st
 
 * If you need a special binding for a property you're free to create it using the `:binding` option.
 
+<!-- here comes some code -->
     property :title, :binding => lambda { |*args| JSON::TitleBinding.new(*args) }
 
 * Lambdas are usually executed in the represented object's context. If your writing a `Decorator` representer and you need to execute lambdas in its context use the `:representer_exec` option.
 
+<!-- and some more in a beautiful cuddle -->
     class SongRepresenter < Representable::Decorator
       property :title, :representer_exec => true, :getter => lambda {..}
     end
