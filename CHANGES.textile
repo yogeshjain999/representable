@@ -1,3 +1,7 @@
+h2. 1.4.1
+
+* Added `:representer_exec` to have lambdas be executed in decorator instance context.
+
 h2. 1.4.0
 
 * We now have two strategies for representing: the old extend approach and the brand-new decorator which leaves represented objects untouched. See "README":https://github.com/apotonick/representable#decorator-vs-extend for details.
