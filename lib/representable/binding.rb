@@ -16,13 +16,14 @@ module Representable
       raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
     end
 
-    def initialize(definition, represented, user_options={})  # TODO: remove default arg.
+    def initialize(definition, represented, user_options={}, lambda_context=represented)  # TODO: remove default arg for user options. # DISCUSS: make lambda_context an options hash?
       super(definition)
-      @represented  = represented
-      @user_options = user_options
+      @represented    = represented
+      @user_options   = user_options
+      @lambda_context = lambda_context
     end
 
-    attr_reader :user_options, :represented # TODO: make private/remove.
+    attr_reader :user_options, :represented, :lambda_context # TODO: make private/remove.
 
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -89,7 +90,7 @@ module Representable
     # Execute the block for +option_name+ on the represented object.
     def represented_exec_for(option_name, *args)
       return unless options[option_name]
-      represented.instance_exec(*args+[user_options], &options[option_name])
+      lambda_context.instance_exec(*args+[user_options], &options[option_name])
     end
 
 

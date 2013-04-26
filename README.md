@@ -558,10 +558,17 @@ Use the `:type` option to specify the conversion target. Note that `:default` st
 
 (Please don't read this section!)
 
-If you need a special binding for a property you're free to create it using the `:binding` option.
+* If you need a special binding for a property you're free to create it using the `:binding` option.
 
     property :title, :binding => lambda { |*args| JSON::TitleBinding.new(*args) }
 
+* Lambdas are usually executed in the represented object's context. If your writing a `Decorator` representer and you need to execute lambdas in its context use the `:representer_exec` option.
+
+    class SongRepresenter < Representable::Decorator
+      property :title, :representer_exec => true, :getter => lambda {..}
+    end
+
+You can still access the represented object in the lambda using `represented`. In a module representer this option is ignored.
 
 ## Copyright
 

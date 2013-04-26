@@ -674,6 +674,45 @@ class RepresentableTest < MiniTest::Spec
       end
     end
 
+    describe ":representer_exec" do
+      representer! do
+        property :title, :getter => lambda { |*| title_from_representer }, :representer_exec => true
+      end
+
+      it "executes lambdas in represented context" do
+        Class.new do
+          def title_from_representer
+            "Sounds Of Silence"
+          end
+        end.new.extend(representer).to_hash.must_equal({"title"=>"Sounds Of Silence"})
+      end
+
+      describe "with decorator" do
+
+        it "executes lambdas in representer context" do
+          rpr = representer
+          Class.new(Representable::Decorator) do
+            include rpr
+
+            def title_from_representer
+              "Sounds Of Silence"
+            end
+          end.new(Object.new).to_hash().must_equal({"title"=>"Sounds Of Silence"})
+        end
+
+        it "still allows accessing the represented object" do
+          Class.new(Representable::Decorator) do
+            include Representable::Hash
+            property :title, :getter => lambda { |*| represented.title }, :representer_exec => true
+
+            def title
+              "Sounds Of Silence"
+            end
+          end.new(OpenStruct.new(:title => "Secret")).to_hash.must_equal({"title"=>"Secret"})
+        end
+      end
+    end
+
     describe "decorator" do
       # TODO: Move to global place since it's used twice.
       class SongRepresentation < Representable::Decorator
