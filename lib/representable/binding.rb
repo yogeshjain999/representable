@@ -82,7 +82,7 @@ module Representable
     end
 
     def set(value)
-      value = represented_exec_for(:setter, value) if options[:setter]
+      return represented_exec_for(:setter, value) if options[:setter]
       represented.send(setter, value)
     end
 

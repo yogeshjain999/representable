@@ -1,3 +1,7 @@
+h2. 1.4.2
+
+* Fix the processing of `:setter`, we called both the setter lambda and the setter method.
+
 h2. 1.4.1
 
 * Added `:representer_exec` to have lambdas be executed in decorator instance context.
