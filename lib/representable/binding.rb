@@ -100,7 +100,7 @@ module Representable
     def call_proc_for(proc, *args)
       return proc unless proc.is_a?(Proc)
       # TODO: call method when proc is sympbol.
-      args << user_options #if user_options  # TODO: test this! # FIXME: we assume user_options is a Hash!
+      args << user_options # DISCUSS: we assume user_options is a Hash!
       lambda_context.instance_exec(*args, &proc)
     end
 

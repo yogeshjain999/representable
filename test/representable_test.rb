@@ -558,7 +558,7 @@ class RepresentableTest < MiniTest::Spec
 
     describe "lambda blocks" do
       representer! do
-        property :name, :extend => lambda { |name| compute_representer(name) }
+        property :name, :extend => lambda { |name, *| compute_representer(name) }
       end
 
       it "executes lambda in represented instance context" do
@@ -575,7 +575,7 @@ class RepresentableTest < MiniTest::Spec
       obj = String.new("Fate")
       mod = Module.new { include Representable; def from_hash(*); self; end }
       representer! do
-        property :name, :extend => mod, :instance => lambda { |name| obj }
+        property :name, :extend => mod, :instance => lambda { |*| obj }
       end
 
       it "uses object from :instance but still extends it" do
@@ -587,7 +587,7 @@ class RepresentableTest < MiniTest::Spec
 
     describe "property with :extend" do
       representer! do
-        property :name, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+        property :name, :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
       end
 
       it "uses lambda when rendering" do
@@ -602,8 +602,8 @@ class RepresentableTest < MiniTest::Spec
 
       describe "with :class lambda" do
         representer! do
-          property :name, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
-                          :class  => lambda { |fragment| fragment == "Still Failing?" ? String : UpcaseString }
+          property :name, :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
+                          :class  => lambda { |fragment, *| fragment == "Still Failing?" ? String : UpcaseString }
         end
 
         it "creates instance from :class lambda when parsing" do
@@ -618,7 +618,7 @@ class RepresentableTest < MiniTest::Spec
 
         describe "when :class lambda returns nil" do
           representer! do
-            property :name, :extend => lambda { |name| Module.new { include Representable; def from_hash(data, *args); data; end } },
+            property :name, :extend => lambda { |*| Module.new { include Representable; def from_hash(data, *args); data; end } },
                             :class  => nil
           end
 
@@ -633,7 +633,7 @@ class RepresentableTest < MiniTest::Spec
 
     describe "collection with :extend" do
       representer! do
-        collection :songs, :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+        collection :songs, :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
       end
 
       it "uses lambda for each item when rendering" do
@@ -647,8 +647,8 @@ class RepresentableTest < MiniTest::Spec
 
       describe "with :class lambda" do
         representer! do
-          collection :songs,  :extend => lambda { |name| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
-                              :class  => lambda { |fragment| fragment == "Still Failing?" ? String : UpcaseString }
+          collection :songs,  :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
+                              :class  => lambda { |fragment, *| fragment == "Still Failing?" ? String : UpcaseString }
         end
 
         it "creates instance from :class lambda for each item when parsing" do

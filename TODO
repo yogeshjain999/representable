@@ -25,4 +25,4 @@ module ReaderWriter
   end
 => do that for all "features" (what parts would that be?: getter/setter, reader/writer, readable/writeable )?
 
-* alias :extend with :decorator
+* make lambda options optional (arity == 0)
