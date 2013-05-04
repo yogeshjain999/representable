@@ -36,17 +36,17 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
-      return represented_exec_for(:writer, doc) if options[:writer]
-
-      write_fragment(doc, get)
+      represented_exec_for(:writer, doc) do
+        write_fragment(doc, get)
+      end
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
-      return represented_exec_for(:reader, doc) if options[:reader]
-
-      read_fragment(doc) do |value|
-        set(value)
+      represented_exec_for(:reader, doc) do
+        read_fragment(doc) do |value|
+          set(value)
+        end
       end
     end
 
@@ -77,20 +77,31 @@ module Representable
     end
 
     def get
-      return represented_exec_for(:getter) if options[:getter]
-      represented.send(getter)
+      represented_exec_for(:getter) do
+        represented.send(getter)
+      end
     end
 
     def set(value)
-      return represented_exec_for(:setter, value) if options[:setter]
-      represented.send(setter, value)
+      represented_exec_for(:setter, value) do
+        represented.send(setter, value)
+      end
     end
 
   private
     # Execute the block for +option_name+ on the represented object.
+    # Executes passed block when there's no lambda for option.
     def represented_exec_for(option_name, *args)
-      return unless options[option_name]
-      lambda_context.instance_exec(*args+[user_options], &options[option_name])
+      return yield unless options[option_name]
+      call_proc_for(options[option_name], *args)
+    end
+
+    # All lambdas are executed on lambda_context which is either represented or the decorator instance.
+    def call_proc_for(proc, *args)
+      return proc unless proc.is_a?(Proc)
+      # TODO: call method when proc is sympbol.
+      args << user_options #if user_options  # TODO: test this! # FIXME: we assume user_options is a Hash!
+      lambda_context.instance_exec(*args, &proc)
     end
 
 
@@ -116,12 +127,6 @@ module Representable
     private
       def representer_module_for(object, *args)
         call_proc_for(representer_module, object)   # TODO: how to pass additional data to the computing block?`
-      end
-
-      def call_proc_for(proc, *args)
-        return proc unless proc.is_a?(Proc)
-        # DISCUSS: use represented_exec_for here?
-        @represented.instance_exec(*args, &proc)
       end
     end
 
