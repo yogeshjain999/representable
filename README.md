@@ -352,7 +352,7 @@ module AlbumRepresenter
   include Representable::JSON
 
   property :name
-  collection :songs, :extend => lambda { |song| song.is_a?(CoverSong) ? CoverSongRepresenter : SongRepresenter }
+  collection :songs, :extend => lambda { |song, *| song.is_a?(CoverSong) ? CoverSongRepresenter : SongRepresenter }
 end
 ```
 
@@ -370,7 +370,7 @@ module AlbumRepresenter
   property :name
   collection :songs,
     :extend => ...,
-    :class  => lambda { |hsh| hsh.has_key?("copyright") ? CoverSong : Song }
+    :class  => lambda { |hsh, *| hsh.has_key?("copyright") ? CoverSong : Song }
 end
 ```
 
@@ -385,7 +385,7 @@ module AlbumRepresenter
   property :name
   collection :songs,
     :extend   => ...,
-    :instance => lambda { |hsh| hsh.has_key?("copyright") ? CoverSong.new : Song.new(original: true) }
+    :instance => lambda { |hsh, *| hsh.has_key?("copyright") ? CoverSong.new : Song.new(original: true) }
 end
 ```
 
