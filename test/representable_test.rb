@@ -752,6 +752,12 @@ class RepresentableTest < MiniTest::Spec
         album.wont_respond_to :to_hash
         song.wont_respond_to :to_hash # DISCUSS: weak test, how to assert blank slate?
       end
+
+      describe "#decorated" do
+        it "is aliased to #represented" do
+          AlbumRepresentation.prepare(album).decorated.must_equal album
+        end
+      end
     end
 
     describe "::prepare" do

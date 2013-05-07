@@ -1,6 +1,7 @@
 module Representable
   class Decorator
     attr_reader :represented
+    alias_method :decorated, :represented
 
     def self.prepare(represented)
       new(represented)  # was: PrepareStrategy::Decorate.
