@@ -12,10 +12,6 @@ module Representable
       build_for(definition, *args)
     end
 
-    def definition  # TODO: remove in 1.4.
-      raise "Binding#definition is no longer supported as all Definition methods are now delegated automatically."
-    end
-
     def initialize(definition, represented, user_options={}, lambda_context=represented)  # TODO: remove default arg for user options. # DISCUSS: make lambda_context an options hash?
       super(definition)
       @represented    = represented
