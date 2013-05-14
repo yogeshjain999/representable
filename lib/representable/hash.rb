@@ -1,6 +1,5 @@
 require 'representable'
 require 'representable/bindings/hash_bindings'
-require 'json'
 
 module Representable
   # The generic representer. Brings #to_hash and #from_hash to your object.
@@ -13,28 +12,28 @@ module Representable
         extend ClassMethods # DISCUSS: do that only for classes?
       end
     end
-    
-    
+
+
     module ClassMethods
       def from_hash(*args, &block)
         create_represented(*args, &block).from_hash(*args)
       end
     end
-    
-    
+
+
     def from_hash(data, options={}, binding_builder=PropertyBinding)
       if wrap = options[:wrap] || representation_wrap
         data = data[wrap.to_s]
       end
-      
+
       update_properties_from(data, options, binding_builder)
     end
-    
+
     def to_hash(options={}, binding_builder=PropertyBinding)
       hash = create_representation_with({}, options, binding_builder)
-      
+
       return hash unless wrap = options[:wrap] || representation_wrap
-      
+
       {wrap => hash}
     end
   end
