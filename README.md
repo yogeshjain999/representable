@@ -64,7 +64,7 @@ song = Song.new.extend(SongRepresenter).from_json(%{ {"title":"Roxanne"} })
 
 ## Extend vs. Decorator
 
-If you don't want representer modules to be mixed into your objects (using `#extend`) you can use the `Decorator` strategy [described below](https://github.com/apotonick/representable#decorator-vs-extend). Decorating instead of extending was introduced in 1.4.
+If you don't want representer modules to be mixed into your objects (using `#extend`) you can use the `Decorator` strategy [described below](#decorator-vs-extend). Decorating instead of extending was introduced in 1.4.
 
 
 ## Aliasing
@@ -204,6 +204,29 @@ class AlbumRepresentation < Representable::Decorator
   collection :songs, :class => Song, :decorator => SongRepresentation
 end
 ```
+
+### Helpers In Decorators
+
+In module representers you can add methods for properties.
+
+```ruby
+module SongRepresenter
+  property :title
+
+  def title
+    @name
+  end
+```
+
+That works as the method is mixed into the represented object. Of course, this doesn't work with decorators.
+
+Use :getter` or `:setter` to dynamically add a method for the represented object.
+
+```ruby
+class SongRepresenter < Representable::Decorator
+  property :title, getter: lambda { |*| @name }
+```
+As always, the block is executed in the represented object's context.
 
 ## XML Support
 

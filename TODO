@@ -26,3 +26,6 @@ module ReaderWriter
 => do that for all "features" (what parts would that be?: getter/setter, reader/writer, readable/writeable )?
 
 * make lambda options optional (arity == 0)
+
+* use `representer_exec` not only for lambdas, but also for methods
+	property :title # => calls decorator.title
