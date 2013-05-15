@@ -220,7 +220,7 @@ module SongRepresenter
 
 That works as the method is mixed into the represented object. Of course, this doesn't work with decorators.
 
-Use :getter` or `:setter` to dynamically add a method for the represented object.
+Use `:getter` or `:setter` to dynamically add a method for the represented object.
 
 ```ruby
 class SongRepresenter < Representable::Decorator
