@@ -1,3 +1,7 @@
+h2. 1.5.1
+
+* Make lonely collections and hashes work with decorators.
+
 h2. 1.5.0
 
 * All lambdas now receive user options, too. Note that this might break your existing lambdas (especially with `:extend` or `:class`) raising an `ArgumentError: wrong number of arguments (2 for 1)`. Fix this by declaring your block params correctly, e.g. `lambda { |name, *|`. Internally, this happens by running all lambdas through the new `Binding#represented_exec_for`.
