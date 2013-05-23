@@ -1,33 +1,33 @@
 module Representable::JSON
   module Collection
     include Representable::JSON
-    
+
     def self.included(base)
       base.class_eval do
         include Representable
         extend ClassMethods
       end
     end
-    
-    
+
+
     module ClassMethods
       def items(options)
         collection :_self, options
       end
     end
-    
-    
+
+
     def create_representation_with(doc, options, format)
       bin   = representable_bindings_for(format, options).first
-      bin.serialize_for(self)
+      bin.serialize_for(represented)
     end
-    
+
     def update_properties_from(doc, options, format)
       bin   = representable_bindings_for(format, options).first
       value = bin.deserialize_from(doc)
-      replace(value)
+      represented.replace(value)
     end
-    
+
     # FIXME: refactor Definition so we can simply add options in #items to existing definition.
     def representable_attrs
       attrs = super

@@ -478,90 +478,107 @@ end
 
 
   require 'representable/json/collection'
-  class CollectionRepresenterTest < MiniTest::Spec
+  require 'representable/json/hash'
+  class LonelyRepresenterTest < MiniTest::Spec
     module SongRepresenter
       include Representable::JSON
       property :name
     end
 
+    let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include rpr } }
+
     describe "JSON::Collection" do
       describe "with contained objects" do
-        before do
-          @songs_representer = Module.new do
+        let (:representer) {
+          Module.new do
             include Representable::JSON::Collection
             items :class => Song, :extend => SongRepresenter
           end
+        }
+        let (:songs) { [Song.new("Days Go By"), Song.new("Can't Take Them All")] }
+        let (:json)  { "[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]" }
+
+        it "renders array" do
+          assert_json json, songs.extend(representer).to_json
         end
 
-        it "renders objects with #to_json" do
-          assert_json "[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]", [Song.new("Days Go By"), Song.new("Can't Take Them All")].extend(@songs_representer).to_json
+        it "renders array with decorator" do
+          assert_json json, decorator.new(songs).to_json
         end
 
-        it "returns objects array from #from_json" do
-          assert_equal [Song.new("Days Go By"), Song.new("Can't Take Them All")], [].extend(@songs_representer).from_json("[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]")
+        it "parses array" do
+          [].extend(representer).from_json(json).must_equal songs
+        end
+
+        it "parses array with decorator" do
+          decorator.new([]).from_json(json).must_equal songs
         end
       end
 
       describe "with contained text" do
-        before do
-          @songs_representer = Module.new do
+        let (:representer) {
+          Module.new do
             include Representable::JSON::Collection
           end
-        end
+        }
+        let (:songs) { ["Days Go By", "Can't Take Them All"] }
+        let (:json)  { "[\"Days Go By\",\"Can't Take Them All\"]" }
 
         it "renders contained items #to_json" do
-          assert_json "[\"Days Go By\",\"Can't Take Them All\"]", ["Days Go By", "Can't Take Them All"].extend(@songs_representer).to_json
+          assert_json json, songs.extend(representer).to_json
         end
 
         it "returns objects array from #from_json" do
-          assert_equal ["Days Go By", "Can't Take Them All"], [].extend(@songs_representer).from_json("[\"Days Go By\",\"Can't Take Them All\"]")
+          [].extend(representer).from_json(json).must_equal songs
         end
       end
     end
-  end
 
-
-  require 'representable/json/hash'
-  class HashRepresenterTest < MiniTest::Spec
-    module SongRepresenter
-      include Representable::JSON
-      property :name
-    end
 
     describe "JSON::Hash" do  # TODO: move to HashTest.
       describe "with contained objects" do
-        before do
-          @songs_representer = Module.new do
+        let (:representer) {
+          Module.new do
             include Representable::JSON::Hash
             values :class => Song, :extend => SongRepresenter
           end
-        end
+        }
+        let (:json)  { "{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}" }
+        let (:songs) { {"one" => Song.new("Days Go By"), "two" => Song.new("Can't Take Them All")} }
 
         describe "#to_json" do
-          it "renders objects" do
-            assert_json "{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json
+          it "renders hash" do
+            songs.extend(representer).to_json.must_equal json
+          end
+
+          it "renders hash with decorator" do
+            decorator.new(songs).to_json.must_equal json
           end
 
           it "respects :exclude" do
-            assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:exclude => [:one])
+            assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(representer).to_json(:exclude => [:one])
           end
 
           it "respects :include" do
-            assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(@songs_representer).to_json(:include => [:two])
+            assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(representer).to_json(:include => [:two])
           end
         end
 
         describe "#from_json" do
           it "returns objects array" do
-            assert_equal({"one" => Song.new("Days Go By"), "two" => Song.new("Can't Take Them All")}, {}.extend(@songs_representer).from_json("{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}"))
+            {}.extend(representer).from_json(json).must_equal songs
+          end
+
+          it "parses hash with decorator" do
+            decorator.new({}).from_json(json).must_equal songs
           end
 
           it "respects :exclude" do
-            assert_equal({"two" => Song.new("Can't Take Them All")}, {}.extend(@songs_representer).from_json("{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", :exclude => [:one]))
+            assert_equal({"two" => Song.new("Can't Take Them All")}, {}.extend(representer).from_json(json, :exclude => [:one]))
           end
 
           it "respects :include" do
-            assert_equal({"one" => Song.new("Days Go By")}, {}.extend(@songs_representer).from_json("{\"one\":{\"name\":\"Days Go By\"},\"two\":{\"name\":\"Can't Take Them All\"}}", :include => [:one]))
+            assert_equal({"one" => Song.new("Days Go By")}, {}.extend(representer).from_json(json, :include => [:one]))
           end
         end
       end

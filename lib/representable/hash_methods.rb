@@ -6,21 +6,20 @@ module Representable
       attrs << Definition.new(*definition_opts) if attrs.size == 0
       attrs
     end
-    
+
     def create_representation_with(doc, options, format)
       bin   = representable_bindings_for(format, options).first
-      hash  = filter_keys_for(self, options)
+      hash  = filter_keys_for(represented, options)
       bin.write(doc, hash)
     end
-    
+
     def update_properties_from(doc, options, format)
       bin   = representable_bindings_for(format, options).first
       hash  = filter_keys_for(doc, options)
       value = bin.deserialize_from(hash)
-      replace(value)
-      self
+      represented.replace(value)
     end
-    
+
   private
     def filter_keys_for(hash, options)
       return hash unless props = options[:exclude] || options[:include]
