@@ -14,25 +14,25 @@ module Representable
         extend Representable::Hash::ClassMethods  # DISCUSS: this is only for .from_hash, remove in 2.3?
       end
     end
-    
-    
+
+
     module ClassMethods
       # Creates a new object from the passed JSON document.
       def from_json(*args, &block)
         create_represented(*args, &block).from_json(*args)
       end
     end
-    
-    
+
+
     # Parses the body as JSON and delegates to #from_hash.
     def from_json(data, *args)
-      data = ::JSON[data]
+      data = MultiJson.load(data)
       from_hash(data, *args)
     end
-    
+
     # Returns a JSON string representing this object.
     def to_json(*args)
-      to_hash(*args).to_json
+      MultiJson.dump to_hash(*args)
     end
   end
 end
