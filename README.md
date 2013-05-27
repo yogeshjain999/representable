@@ -667,6 +667,17 @@ module SongRepresenter
 end
 ```
 
+When using a decorator representer, use the `Representable::Decorator::Coercion` module.
+
+```ruby
+module SongRepresenter < Representable::Decorator
+  include Representable::JSON
+  include Representable::Decorator::Coercion
+
+  property :recorded_at, :type => DateTime
+end
+```
+
 ## Undocumented Features
 
 (Please don't read this section!)
