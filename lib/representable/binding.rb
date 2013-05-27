@@ -12,14 +12,14 @@ module Representable
       build_for(definition, *args)
     end
 
-    def initialize(definition, represented, user_options={}, lambda_context=represented)  # TODO: remove default arg for user options. # DISCUSS: make lambda_context an options hash?
+    def initialize(definition, represented, user_options={}, exec_context=represented)  # TODO: remove default arg for user options. # DISCUSS: make exec_context an options hash?
       super(definition)
-      @represented    = represented
-      @user_options   = user_options
-      @lambda_context = lambda_context
+      @represented  = represented
+      @user_options = user_options
+      @exec_context = exec_context
     end
 
-    attr_reader :user_options, :represented, :lambda_context # TODO: make private/remove.
+    attr_reader :user_options, :represented # TODO: make private/remove.
 
     # Main entry point for rendering/parsing a property object.
     def serialize(value)
@@ -85,6 +85,8 @@ module Representable
     end
 
   private
+    attr_reader :exec_context
+
     # Execute the block for +option_name+ on the represented object.
     # Executes passed block when there's no lambda for option.
     def represented_exec_for(option_name, *args)
@@ -92,12 +94,12 @@ module Representable
       call_proc_for(options[option_name], *args)
     end
 
-    # All lambdas are executed on lambda_context which is either represented or the decorator instance.
+    # All lambdas are executed on exec_context which is either represented or the decorator instance.
     def call_proc_for(proc, *args)
       return proc unless proc.is_a?(Proc)
       # TODO: call method when proc is sympbol.
       args << user_options # DISCUSS: we assume user_options is a Hash!
-      lambda_context.instance_exec(*args, &proc)
+      exec_context.instance_exec(*args, &proc)
     end
 
 
