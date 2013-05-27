@@ -74,13 +74,13 @@ module Representable
 
     def get
       represented_exec_for(:getter) do
-        represented.send(getter)
+        exec_context.send(getter)
       end
     end
 
     def set(value)
       represented_exec_for(:setter, value) do
-        represented.send(setter, value)
+        exec_context.send(setter, value)
       end
     end
 

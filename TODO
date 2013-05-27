@@ -27,5 +27,4 @@ module ReaderWriter
 
 * make lambda options optional (arity == 0)
 
-* use `representer_exec` not only for lambdas, but also for methods
-	property :title # => calls decorator.title
+* pass args to methods when arity matches

@@ -688,12 +688,24 @@ class RepresentableTest < MiniTest::Spec
         property :title, :getter => lambda { |*| title_from_representer }, :representer_exec => true
       end
 
+      let (:representer_with_method) {
+        Module.new do
+          include Representable::Hash
+          property :title, :representer_exec => true
+          def title; "Crystal Planet"; end
+        end
+       }
+
       it "executes lambdas in represented context" do
         Class.new do
           def title_from_representer
             "Sounds Of Silence"
           end
         end.new.extend(representer).to_hash.must_equal({"title"=>"Sounds Of Silence"})
+      end
+
+      it "executes method in represented context" do
+        Object.new.extend(representer_with_method).to_hash.must_equal({"title"=>"Crystal Planet"})
       end
 
       describe "with decorator" do
@@ -706,7 +718,14 @@ class RepresentableTest < MiniTest::Spec
             def title_from_representer
               "Sounds Of Silence"
             end
-          end.new(Object.new).to_hash().must_equal({"title"=>"Sounds Of Silence"})
+          end.new(Object.new).to_hash.must_equal({"title"=>"Sounds Of Silence"})
+        end
+
+        it "executes method in representer context" do
+          rpr = representer_with_method
+          Class.new(Representable::Decorator) do
+            include rpr # mixes in #title.
+          end.new(Object.new).to_hash.must_equal({"title"=>"Crystal Planet"})
         end
 
         it "still allows accessing the represented object" do
