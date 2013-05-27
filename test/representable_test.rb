@@ -683,15 +683,15 @@ class RepresentableTest < MiniTest::Spec
       end
     end
 
-    describe ":representer_exec" do
+    describe ":decorator_scope" do
       representer! do
-        property :title, :getter => lambda { |*| title_from_representer }, :representer_exec => true
+        property :title, :getter => lambda { |*| title_from_representer }, :decorator_scope => true
       end
 
       let (:representer_with_method) {
         Module.new do
           include Representable::Hash
-          property :title, :representer_exec => true
+          property :title, :decorator_scope => true
           def title; "Crystal Planet"; end
         end
        }
@@ -709,7 +709,6 @@ class RepresentableTest < MiniTest::Spec
       end
 
       describe "with decorator" do
-
         it "executes lambdas in representer context" do
           rpr = representer
           Class.new(Representable::Decorator) do
@@ -731,7 +730,7 @@ class RepresentableTest < MiniTest::Spec
         it "still allows accessing the represented object" do
           Class.new(Representable::Decorator) do
             include Representable::Hash
-            property :title, :getter => lambda { |*| represented.title }, :representer_exec => true
+            property :title, :getter => lambda { |*| represented.title }, :decorator_scope => true
 
             def title
               "Sounds Of Silence"

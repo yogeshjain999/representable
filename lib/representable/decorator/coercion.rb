@@ -15,7 +15,7 @@ class Representable::Decorator
     module ClassMethods
       def property(name, options={})
         if options[:type]
-          options[:representer_exec] = true # call setter on decorator so coercion kicks in.
+          options[:decorator_scope] = true # call setter on decorator so coercion kicks in.
           create_writer(name)
           create_reader(name)
         end

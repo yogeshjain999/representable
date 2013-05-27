@@ -14,7 +14,7 @@ module Representable
     end
 
     def representable_binding_for(attr, format, options)
-      context = attr.options[:representer_exec] ? self : represented  # DISCUSS: should Decorator know this kinda stuff?
+      context = attr.options[:decorator_scope] ? self : represented  # DISCUSS: should Decorator know this kinda stuff?
 
       format.build(attr, represented, options, context)
     end

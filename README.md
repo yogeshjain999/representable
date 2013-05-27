@@ -218,9 +218,21 @@ module SongRepresenter
   end
 ```
 
-That works as the method is mixed into the represented object. Of course, this doesn't work with decorators.
+That works as the method is mixed into the represented object. When adding a helper method to a decorator, representable will still invoke accessors on the represented instance - unless you tell it the scope.
 
-Use `:getter` or `:setter` to dynamically add a method for the represented object.
+```ruby
+class SongRepresenter < Representable::Decorator
+  property :title, :decorator_scope => true
+
+  def title
+    represented.name
+  end
+end
+```
+
+This will call `title` getter and setter on the decorator instance, not on the represented object. You can still access the represented object in the decorator method using `represented`. BTW, in a module representer this option is ignored.
+
+Or use `:getter` or `:setter` to dynamically add a method for the represented object.
 
 ```ruby
 class SongRepresenter < Representable::Decorator
@@ -688,17 +700,6 @@ end
 ```ruby
 property :title, :binding => lambda { |*args| JSON::TitleBinding.new(*args) }
 ```
-
-* Lambdas are usually executed in the represented object's context. If your writing a `Decorator` representer and you need to execute lambdas in its context use the `:representer_exec` option.
-
-<!-- and some more in a beautiful cuddle -->
-```ruby
-class SongRepresenter < Representable::Decorator
-  property :title, :representer_exec => true, :getter => lambda {..}
-end
-```
-
-You can still access the represented object in the lambda using `represented`. In a module representer this option is ignored.
 
 ## Copyright
 
