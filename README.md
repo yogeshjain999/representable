@@ -222,7 +222,7 @@ That works as the method is mixed into the represented object. When adding a hel
 
 ```ruby
 class SongRepresenter < Representable::Decorator
-  property :title, :decorator_scope => true
+  property :title, decorator_scope: true
 
   def title
     represented.name

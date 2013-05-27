@@ -1,3 +1,10 @@
+h2. 1.5.2
+
+* Rename `:representer_exec` to `:decorator_scope` and make it a documented (!) feature.
+* Accessors for properties defined with `decorator_scope: true` will now be invoked on the decorator, not on the represented instance anymore. This allows having decorators with helper methods.
+* Use `MultiJson` instead of `JSON` when parsing and rendering.
+* Make `Representable::Decorator::Coercion` work.
+
 h2. 1.5.1
 
 * Make lonely collections and hashes work with decorators.
