@@ -1,3 +1,9 @@
+h2. 1.5.3
+
+* `Representable#update_properties_from` now always returns `represented`, which is `self` in a module representer and the decorated object in a decorator (only the latter changed).
+* Coercion in decorators should work now as expected.
+* Fixed a require bug.
+
 h2. 1.5.2
 
 * Rename `:representer_exec` to `:decorator_scope` and make it a documented (!) feature.
