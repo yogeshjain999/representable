@@ -45,7 +45,7 @@ module Representable
     representable_bindings_for(format, options).each do |bin|
       deserialize_property(bin, doc, options)
     end
-    self
+    represented
   end
 
 private

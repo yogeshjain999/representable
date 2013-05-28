@@ -52,11 +52,14 @@ class VirtusCoercionTest < MiniTest::Spec
         include Representable::Decorator::Coercion
 
         property :composed_at, :type => DateTime
+        property :title
       end
 
       it "coerces when parsing" do
-        song = SongRepresentation.new(OpenStruct.new).from_json("{\"composed_at\":\"November 18th, 1983\"}")
+        song = SongRepresentation.new(OpenStruct.new).from_json("{\"composed_at\":\"November 18th, 1983\", \"title\": \"Scarified\"}")
+        song.must_be_kind_of OpenStruct
         song.composed_at.must_equal DateTime.parse("Fri, 18 Nov 1983")
+        song.title.must_equal "Scarified"
       end
 
       it "coerces when rendering" do
