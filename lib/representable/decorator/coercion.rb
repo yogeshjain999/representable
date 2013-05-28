@@ -4,12 +4,24 @@ class Representable::Decorator
   module Coercion
     def self.included(base)
       base.class_eval do
+        # DISCUSS: this assumes we have a Representer included, yet.
+        alias_method :representable_initialize, :initialize
+        alias_method :representable_to_hash,    :to_hash
+
+        # FIXME: allow including coercion only from virtus.
         include Virtus
+        undef_method(:initialize)
+        undef_method(:to_hash)
+
         extend Representable::Coercion::ClassMethods
         extend ClassMethods
 
-        def initialize(represented) # override Virtus' #initialize.
-          @represented = represented
+        def initialize(*args) # override Virtus' #initialize.
+          representable_initialize(*args)
+        end
+
+        def to_hash(*args) # override Virtus' #to_hash.
+          representable_to_hash(*args)
         end
       end
     end

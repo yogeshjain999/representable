@@ -1,8 +1,10 @@
 require 'test_helper'
 require 'representable/coercion'
+require 'representable/decorator/coercion'
 
 class VirtusCoercionTest < MiniTest::Spec
   class Song  # note that we don't define accessors for the properties here.
+    attr_accessor :title
   end
 
   describe "Coercion with Virtus" do
@@ -12,14 +14,22 @@ class VirtusCoercionTest < MiniTest::Spec
         include Representable::Coercion
         property :composed_at,  :type => DateTime
         property :track,        :type => Integer
+        property :title # no coercion.
       end
 
       it "coerces properties in #from_json" do
-        song = Song.new.extend(SongRepresenter).from_json("{\"composed_at\":\"November 18th, 1983\",\"track\":\"18\"}")
+        song = Song.new.extend(SongRepresenter).from_json('{"composed_at":"November 18th, 1983","track":"18","title":"Scarified"}')
         assert_kind_of DateTime, song.composed_at
-        assert_equal 18, song.track
         assert_equal DateTime.parse("Fri, 18 Nov 1983 00:00:00 +0000"), song.composed_at
+        assert_equal 18, song.track
+        song.title.must_equal "Scarified"
       end
+
+      # it "coerces when rendering" do
+      #   song = Song.new
+      #   song.title = "Scarified"
+      #   song.to_json.must_equal ''
+      # end
     end
 
 
@@ -45,7 +55,6 @@ class VirtusCoercionTest < MiniTest::Spec
       end
     end
 
-    require 'representable/decorator/coercion'
     describe "on decorator" do
       class SongRepresentation < Representable::Decorator
         include Representable::JSON
@@ -63,7 +72,12 @@ class VirtusCoercionTest < MiniTest::Spec
       end
 
       it "coerces when rendering" do
-        SongRepresentation.new(OpenStruct.new(:composed_at => "November 18th, 1983")).to_json.must_equal "{\"composed_at\":\"1983-11-18T00:00:00+00:00\"}"
+        SongRepresentation.new(
+          OpenStruct.new(
+            :composed_at  => "November 18th, 1983",
+            :title        => "Scarified"
+          )
+        ).to_hash.must_equal({"composed_at"=>DateTime.parse("Fri, 18 Nov 1983"), "title"=>"Scarified"})
       end
     end
   end
