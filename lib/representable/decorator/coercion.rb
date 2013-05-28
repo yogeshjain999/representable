@@ -1,3 +1,5 @@
+require 'representable/coercion'
+
 class Representable::Decorator
   module Coercion
     def self.included(base)
