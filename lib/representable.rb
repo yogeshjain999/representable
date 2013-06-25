@@ -109,7 +109,6 @@ private
     representable_attrs.wrap_for(self.class.name)
   end
 
-private
   def representable_bindings_for(format, options)
     options = cleanup_options(options)  # FIXME: make representable-options and user-options two different hashes.
     representable_attrs.map {|attr| representable_binding_for(attr, format, options) }
