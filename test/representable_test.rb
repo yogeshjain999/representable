@@ -242,36 +242,36 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "copies values from document to object" do
-      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {}, Representable::Hash::PropertyBinding)
+      @band.from_hash({"name"=>"No One's Choice", "groupies"=>2})
       assert_equal "No One's Choice", @band.name
       assert_equal 2, @band.groupies
     end
 
     it "accepts :exclude option" do
-      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]}, Representable::Hash::PropertyBinding)
+      @band.from_hash({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]})
       assert_equal "No One's Choice", @band.name
       assert_equal nil, @band.groupies
     end
 
     it "accepts :include option" do
-      @band.update_properties_from({"name"=>"No One's Choice", "groupies"=>2}, {:include => [:groupies]}, Representable::Hash::PropertyBinding)
+      @band.from_hash({"name"=>"No One's Choice", "groupies"=>2})
       assert_equal 2, @band.groupies
       assert_equal nil, @band.name
     end
 
     it "ignores non-writeable properties" do
       @band = Class.new(Band) { property :name; collection :founders, :writeable => false; attr_accessor :founders }.new
-      @band.update_properties_from({"name" => "Iron Maiden", "groupies" => 2, "founders" => [{ "name" => "Steve Harris" }] }, {}, Representable::Hash::PropertyBinding)
+      @band.from_hash({"name" => "Iron Maiden", "groupies" => 2, "founders" => [{ "name" => "Steve Harris" }] })
       assert_equal "Iron Maiden", @band.name
       assert_equal nil, @band.founders
     end
 
     it "always returns the represented" do
-      assert_equal @band, @band.update_properties_from({"name"=>"Nofx"}, {}, Representable::Hash::PropertyBinding)
+      assert_equal @band, @band.from_hash({"name"=>"Nofx"})
     end
 
     it "includes false attributes" do
-      @band.update_properties_from({"groupies"=>false}, {}, Representable::Hash::PropertyBinding)
+      @band.from_hash({"groupies"=>false})
       assert_equal false, @band.groupies
     end
 
@@ -279,13 +279,12 @@ class RepresentableTest < MiniTest::Spec
       @band.instance_eval do
         def name=(*); raise "I should never be called!"; end
       end
-      @band.update_properties_from({}, {}, Representable::Hash::PropertyBinding)
+      @band.from_hash({})
     end
 
     it "ignores (no-default) properties not present in the incoming document" do
-      { Representable::JSON => [{}, Representable::Hash::PropertyBinding],
-        Representable::XML  => [xml(%{<band/>}), Representable::XML::PropertyBinding]
-      }.each do |format, config|
+      [ Representable::JSON,
+        Representable::XML ].each do |format, config|
         nested_repr = Module.new do # this module is never applied.
           include format
           property :created_at
@@ -297,7 +296,7 @@ class RepresentableTest < MiniTest::Spec
         end
 
         @band = Band.new.extend(repr)
-        @band.update_properties_from(config.first, {}, config.last)
+        @band.from_hash(config)
         assert_equal nil, @band.name, "Failed in #{format}"
       end
     end
@@ -348,16 +347,16 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "compiles document from properties in object" do
-      assert_equal({"name"=>"No One's Choice", "groupies"=>2}, @band.send(:create_representation_with, {}, {}, Representable::Hash::PropertyBinding))
+      assert_equal({"name"=>"No One's Choice", "groupies"=>2}, @band.to_hash)
     end
 
     it "accepts :exclude option" do
-      hash = @band.send(:create_representation_with, {}, {:exclude => [:groupies]}, Representable::Hash::PropertyBinding)
+      hash = @band.to_hash({:exclude => [:groupies]})
       assert_equal({"name"=>"No One's Choice"}, hash)
     end
 
     it "accepts :include option" do
-      hash = @band.send(:create_representation_with, {}, {:include => [:groupies]}, Representable::Hash::PropertyBinding)
+      hash = @band.to_hash({:include => [:groupies]})
       assert_equal({"groupies"=>2}, hash)
     end
 
@@ -366,18 +365,18 @@ class RepresentableTest < MiniTest::Spec
       @band.name = "Iron Maiden"
       @band.founder_ids = [1,2,3]
 
-      hash = @band.send(:create_representation_with, {}, {}, Representable::Hash::PropertyBinding)
+      hash = @band.to_hash
       assert_equal({"name" => "Iron Maiden"}, hash)
     end
 
     it "does not write nil attributes" do
       @band.groupies = nil
-      assert_equal({"name"=>"No One's Choice"}, @band.send(:create_representation_with, {}, {}, Representable::Hash::PropertyBinding))
+      assert_equal({"name"=>"No One's Choice"}, @band.to_hash)
     end
 
     it "writes false attributes" do
       @band.groupies = false
-      assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.send(:create_representation_with, {}, {}, Representable::Hash::PropertyBinding))
+      assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.to_hash)
     end
 
     describe "when :render_nil is true" do
@@ -390,7 +389,7 @@ class RepresentableTest < MiniTest::Spec
 
         @band.extend(mod) # FIXME: use clean object.
         @band.groupies = nil
-        hash = @band.send(:create_representation_with, {}, {}, Representable::Hash::PropertyBinding)
+        hash = @band.to_hash
         assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
       end
 
@@ -403,7 +402,7 @@ class RepresentableTest < MiniTest::Spec
 
         @band.extend(mod) # FIXME: use clean object.
         @band.groupies = nil
-        hash = @band.send(:create_representation_with, {}, {}, Representable::Hash::PropertyBinding)
+        hash = @band.to_hash
         assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
       end
     end
@@ -430,21 +429,21 @@ class RepresentableTest < MiniTest::Spec
     it "respects property when condition true" do
       @pop.class_eval { property :fame, :if => lambda { true } }
       band = @pop.new
-      band.update_properties_from({"fame"=>"oh yes"}, {}, Representable::Hash::PropertyBinding)
+      band.from_hash({"fame"=>"oh yes"})
       assert_equal "oh yes", band.fame
     end
 
     it "ignores property when condition false" do
       @pop.class_eval { property :fame, :if => lambda { false } }
       band = @pop.new
-      band.update_properties_from({"fame"=>"oh yes"}, {}, Representable::Hash::PropertyBinding)
+      band.from_hash({"fame"=>"oh yes"})
       assert_equal nil, band.fame
     end
 
     it "ignores property when :exclude'ed even when condition is true" do
       @pop.class_eval { property :fame, :if => lambda { true } }
       band = @pop.new
-      band.update_properties_from({"fame"=>"oh yes"}, {:exclude => [:fame]}, Representable::Hash::PropertyBinding)
+      band.from_hash({"fame"=>"oh yes"}, {:exclude => [:fame]})
       assert_equal nil, band.fame
     end
 
@@ -452,7 +451,7 @@ class RepresentableTest < MiniTest::Spec
       @pop.class_eval { property :fame, :if => lambda { groupies } }
       band = @pop.new
       band.groupies = true
-      band.update_properties_from({"fame"=>"oh yes"}, {}, Representable::Hash::PropertyBinding)
+      band.from_hash({"fame"=>"oh yes"})
       assert_equal "oh yes", band.fame
     end
 
