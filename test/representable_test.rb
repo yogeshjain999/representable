@@ -2,7 +2,7 @@ require 'test_helper'
 
 class RepresentableTest < MiniTest::Spec
   class Band
-    include Representable
+    include Representable::Hash
     property :name
     attr_accessor :name
   end
@@ -254,14 +254,14 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "accepts :include option" do
-      @band.from_hash({"name"=>"No One's Choice", "groupies"=>2})
+      @band.from_hash({"name"=>"No One's Choice", "groupies"=>2}, :include => [:groupies])
       assert_equal 2, @band.groupies
       assert_equal nil, @band.name
     end
 
     it "ignores non-writeable properties" do
       @band = Class.new(Band) { property :name; collection :founders, :writeable => false; attr_accessor :founders }.new
-      @band.from_hash({"name" => "Iron Maiden", "groupies" => 2, "founders" => [{ "name" => "Steve Harris" }] })
+      @band.from_hash("name" => "Iron Maiden", "groupies" => 2, "founders" => ["Steve Harris"])
       assert_equal "Iron Maiden", @band.name
       assert_equal nil, @band.founders
     end
@@ -282,10 +282,12 @@ class RepresentableTest < MiniTest::Spec
       @band.from_hash({})
     end
 
+    # FIXME: do we need this test with XML _and_ JSON?
     it "ignores (no-default) properties not present in the incoming document" do
-      [ Representable::JSON,
-        Representable::XML ].each do |format, config|
-        nested_repr = Module.new do # this module is never applied.
+      { Representable::Hash => [:from_hash, {}],
+        Representable::XML  => [:from_xml,  xml(%{<band/>}).to_s]
+      }.each do |format, config|
+        nested_repr = Module.new do # this module is never applied. # FIXME: can we make that a simpler test?
           include format
           property :created_at
         end
@@ -296,7 +298,7 @@ class RepresentableTest < MiniTest::Spec
         end
 
         @band = Band.new.extend(repr)
-        @band.from_hash(config)
+        @band.send(config.first, config.last)
         assert_equal nil, @band.name, "Failed in #{format}"
       end
     end
