@@ -14,7 +14,7 @@ module Representable
   end
 
   # TODO: i hate monkey-patching Definition here since it globally adds this options. However, for now this should be ok :-)
-  class Definition
+  Definition.class_eval do
     # Checks and returns if the property is writeable
     def writeable?
       return options[:writeable] if options.has_key?(:writeable)

@@ -1,6 +1,6 @@
 require 'representable/deprecations'
 require 'representable/definition'
-require 'representable/feature/readable_writeable'
+require 'representable/mapper'
 
 # Representable can be used in two ways.
 #
@@ -36,95 +36,55 @@ module Representable
       extend ClassMethods::Declarations
 
       include Deprecations
-      include Feature::ReadableWriteable
+
     end
   end
 
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
-    representable_bindings_for(format, options).each do |bin|
-      deserialize_property(bin, doc, options)
-    end
-    represented
+    bindings = representable_bindings_for(format, options)
+
+    mapper(bindings).deserialize(doc, options)
   end
 
 private
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    representable_bindings_for(format, options).each do |bin|
-      serialize_property(bin, doc, options)
-    end
-    doc
-  end
+    bindings = representable_bindings_for(format, options)
 
-  def serialize_property(binding, doc, options)
-    return if skip_property?(binding, options)
-    compile_fragment(binding, doc)
-  end
-
-  def deserialize_property(binding, doc, options)
-    return if skip_property?(binding, options)
-    uncompile_fragment(binding, doc)
-  end
-
-  # Checks and returns if the property should be included.
-  def skip_property?(binding, options)
-    return true if skip_excluded_property?(binding, options)  # no need for further evaluation when :exclude'ed
-
-    skip_conditional_property?(binding)
-  end
-
-  def skip_excluded_property?(binding, options)
-    return unless props = options[:exclude] || options[:include]
-    res   = props.include?(binding.name.to_sym)
-    options[:include] ? !res : res
-  end
-
-  def skip_conditional_property?(binding)
-    # TODO: move to Binding.
-    return unless condition = binding.options[:if]
-
-    args = []
-    args << binding.user_options if condition.arity > 0 # TODO: remove arity check. users should know whether they pass options or not.
-
-    not represented.instance_exec(*args, &condition)
-  end
-
-  # TODO: remove in 1.4.
-  def compile_fragment(bin, doc)
-    bin.compile_fragment(doc)
-  end
-
-  # TODO: remove in 1.4.
-  def uncompile_fragment(bin, doc)
-    bin.uncompile_fragment(doc)
+    mapper(bindings).serialize(doc, options)
   end
 
   def representable_attrs
     @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
   end
 
-  # Returns the wrapper for the representation. Mostly used in XML.
-  def representation_wrap
-    representable_attrs.wrap_for(self.class.name)
+  def mapper(bindings)
+    Mapper.new(bindings, represented, self)
   end
 
   def representable_bindings_for(format, options)
-    options = cleanup_options(options)  # FIXME: make representable-options and user-options two different hashes.
+    options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
     representable_attrs.map {|attr| representable_binding_for(attr, format, options) }
   end
 
   def representable_binding_for(attribute, format, options)
-    # DISCUSS: shouldn't this happen in Binding?
-    format.build(attribute, represented, options)
-  end
+    # TODO: remove. or change API.
+    context = attribute.options[:decorator_scope] ? self : represented
 
-  def represented
-    self
+    format.build(attribute, represented, options, context)
   end
 
   def cleanup_options(options) # TODO: remove me.
     options.reject { |k,v| [:include, :exclude].include?(k) }
+  end
+
+  def representation_wrap
+    representable_attrs.wrap_for(self.class.name)
+  end
+
+  def represented
+    self
   end
 
   module ClassInclusions
