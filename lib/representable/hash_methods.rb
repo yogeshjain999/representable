@@ -8,13 +8,13 @@ module Representable
     end
 
     def create_representation_with(doc, options, format)
-      bin   = representable_bindings_for(format, options).first
+      bin   = representable_mapper(format, options).bindings.first
       hash  = filter_keys_for(represented, options)
       bin.write(doc, hash)
     end
 
     def update_properties_from(doc, options, format)
-      bin   = representable_bindings_for(format, options).first
+      bin   = representable_mapper(format, options).bindings.first
       hash  = filter_keys_for(doc, options)
       value = bin.deserialize_from(hash)
       represented.replace(value)

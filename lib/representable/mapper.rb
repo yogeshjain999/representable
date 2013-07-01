@@ -5,11 +5,32 @@ module Representable
   # Conditionals are handled here, too.
   class Mapper
     module Methods
-      def initialize(bindings, represented, representer)
-        @bindings     = bindings
+      def initialize(representable_attrs, represented, representer, format, options)  # TODO: less arguments.
+
         @represented  = represented # the (extended) model.
-        @representer  = representer # this is used as the Binding#exec_context. should be called decorator.
+        @representer  = representer # this is used as the Binding#exec_context in decorators. alias to decorator.
+
+        # TODO: this will soon be done outside of Mapper.
+        @bindings     = bindings_for(representable_attrs, format, options) # TODO: do that differently.
       end
+
+      attr_reader :bindings
+      def bindings_for(representable_attrs, format, options)
+        options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
+        representable_attrs.map {|attr| representable_binding_for(attr, format, options) }
+      end
+
+      def representable_binding_for(attribute, format, options)
+        # TODO: remove. or change API.
+        context = attribute.options[:decorator_scope] ? representer : represented # FIXME: represented is a method call and sucks.
+
+        format.build(attribute, represented, options, context)
+      end
+
+      def cleanup_options(options) # TODO: remove me.
+        options.reject { |k,v| [:include, :exclude].include?(k) }
+      end
+
 
       def deserialize(doc, options)
         bindings.each do |bin|
@@ -26,7 +47,7 @@ module Representable
       end
 
     private
-      attr_reader :bindings, :represented, :representer
+      attr_reader :represented, :representer
 
       def serialize_property(binding, doc, options)
         return if skip_property?(binding, options)

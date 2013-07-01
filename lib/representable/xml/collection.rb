@@ -1,7 +1,7 @@
 module Representable::XML
   module Collection
     include Representable::XML
-
+    # TODO: merge with JSON::Collection
     def self.included(base)
       base.class_eval do
         include Representable
@@ -18,12 +18,12 @@ module Representable::XML
 
 
     def create_representation_with(doc, options, format)
-      bin   = representable_bindings_for(format, options).first
+      bin   = representable_mapper(format, options).bindings.first
       bin.write(doc, represented)
     end
 
     def update_properties_from(doc, options, format)
-      bin   = representable_bindings_for(format, options).first
+      bin   = representable_mapper(format, options).bindings.first
       value = bin.deserialize_from(doc.search("./*")) # FIXME: use Binding#read.
       represented.replace(value)
     end

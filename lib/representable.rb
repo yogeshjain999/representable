@@ -42,42 +42,25 @@ module Representable
 
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
-    bindings = representable_bindings_for(format, options)
-
-    mapper(bindings).deserialize(doc, options)
+    representable_mapper(format, options).deserialize(doc, options)
   end
 
 private
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    bindings = representable_bindings_for(format, options)
-
-    mapper(bindings).serialize(doc, options)
+    representable_mapper(format, options).serialize(doc, options)
   end
 
   def representable_attrs
     @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
   end
 
-  def mapper(bindings)
-    Mapper.new(bindings, represented, self)
+  def representable_mapper(format, options)
+    # DISCUSS: passing all those options by intention: i want to point out that there's still lots of dependencies.
+    Mapper.new(representable_attrs, represented, self, format, options)
   end
 
-  def representable_bindings_for(format, options)
-    options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
-    representable_attrs.map {|attr| representable_binding_for(attr, format, options) }
-  end
 
-  def representable_binding_for(attribute, format, options)
-    # TODO: remove. or change API.
-    context = attribute.options[:decorator_scope] ? self : represented
-
-    format.build(attribute, represented, options, context)
-  end
-
-  def cleanup_options(options) # TODO: remove me.
-    options.reject { |k,v| [:include, :exclude].include?(k) }
-  end
 
   def representation_wrap
     representable_attrs.wrap_for(self.class.name)
