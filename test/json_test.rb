@@ -144,13 +144,13 @@ module JsonTest
         end
       end
 
-      describe "#representable_bindings_for" do
-        it "returns bindings for each property" do
-          bins = @band.send(:representable_bindings_for, Representable::JSON::PropertyBinding, {})
-          assert_equal 2, bins.size
-          assert_equal "name", bins.first.name
-        end
-      end
+      # describe "#representable_bindings_for" do
+      #   it "returns bindings for each property" do
+      #     bins = @band.send(:representable_bindings_for, Representable::JSON::PropertyBinding, {})
+      #     assert_equal 2, bins.size
+      #     assert_equal "name", bins.first.name
+      #   end
+      # end
     end
 
 
