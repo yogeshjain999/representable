@@ -93,6 +93,7 @@ class RepresentableTest < MiniTest::Spec
         assert parent.representable_attrs.first != child.representable_attrs.first, "definitions shouldn't be identical"
       end
 
+      # TODO: test Decorator.new.representable_attrs != Decorator.representable_attrs ? (performance?)
     end
   end
 
@@ -794,7 +795,7 @@ class RepresentableTest < MiniTest::Spec
       end
     end
 
-    describe "clone" do
+    describe "#clone" do
       it "clones all definitions" do
         subject << Object.new
         assert subject.first != subject.clone.first
