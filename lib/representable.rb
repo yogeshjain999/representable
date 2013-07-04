@@ -75,6 +75,11 @@ private
       super
       base.representable_attrs.inherit(representable_attrs)
     end
+
+    def inherited(base) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
+      super
+      base.representable_attrs.inherit(representable_attrs)
+    end
   end
 
   module ModuleExtensions

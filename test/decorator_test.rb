@@ -17,6 +17,12 @@ class DecoratorTest < MiniTest::Spec
   let (:album) { Album.new([song]) }
   let (:decorator) { AlbumRepresentation.new(album) }
 
+  let (:inherited_decorator) { Class.new(Class.new(AlbumRepresentation)).new(album) }
+
+  it "renders with inherited decorator" do
+    inherited_decorator.to_hash.must_equal({"songs"=>[{"name"=>"Mama, I'm Coming Home"}]})
+  end
+
   it "renders" do
     decorator.to_hash.must_equal({"songs"=>[{"name"=>"Mama, I'm Coming Home"}]})
     album.wont_respond_to :to_hash
