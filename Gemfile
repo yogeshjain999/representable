@@ -3,4 +3,4 @@ source 'https://rubygems.org'
 gemspec
 
 #gem "virtus", :path => "../virtus"
-gem 'rake', "10.1.0.beta3"
+gem 'rake', "10.1.0"
