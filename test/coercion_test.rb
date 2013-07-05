@@ -75,6 +75,11 @@ class VirtusCoercionTest < MiniTest::Spec
          song.title.must_equal "Scarified"
        end
 
+       it "coerses with inherited decorator" do
+         song = Class.new(SongRepresentation).new(OpenStruct.new).from_json("{\"composed_at\":\"November 18th, 1983\", \"title\": \"Scarified\"}")
+         song.composed_at.must_equal date
+       end
+
       it "coerces when rendering" do
         SongRepresentation.new(
           OpenStruct.new(
