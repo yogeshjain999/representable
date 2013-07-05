@@ -1,6 +1,7 @@
 require 'representable/deprecations'
 require 'representable/definition'
 require 'representable/mapper'
+require 'representable/config'
 
 # Representable can be used in two ways.
 #
@@ -155,35 +156,6 @@ private
       def build_config
         Config.new
       end
-    end
-  end
-
-
-  # NOTE: the API of Config is subject to change so don't rely too much on this private object.
-  class Config < Array
-    attr_accessor :wrap
-
-    # Computes the wrap string or returns false.
-    def wrap_for(name)
-      return unless wrap
-      return infer_name_for(name) if wrap === true
-      wrap
-    end
-
-    def clone
-      self.class.new(collect { |d| d.clone })
-    end
-
-    def inherit(parent)
-      push(*parent.clone)
-    end
-
-  private
-    def infer_name_for(name)
-      name.to_s.split('::').last.
-       gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-       gsub(/([a-z\d])([A-Z])/,'\1_\2').
-       downcase
     end
   end
 end
