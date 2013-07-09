@@ -4,7 +4,14 @@ module Representable
     alias_method :decorated, :represented
 
     def self.prepare(represented)
-      new(represented)  # was: PrepareStrategy::Decorate.
+      new(represented)
+    end
+
+    def self.inline_representer(base_module, &block) # DISCUSS: separate module?
+      Class.new(self) do
+        include base_module
+        instance_exec &block
+      end
     end
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.

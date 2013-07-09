@@ -18,6 +18,11 @@ module Representable
       def from_hash(*args, &block)
         create_represented(*args, &block).from_hash(*args)
       end
+
+    private
+      def representer_engine
+        Representable::Hash
+      end
     end
 
 

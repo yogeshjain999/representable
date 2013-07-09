@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'representable/yaml'
 
 class YamlTest < MiniTest::Spec
   def self.yaml_representer(&block)
@@ -125,7 +124,7 @@ songs: [Off Key Melody, Sinking]").must_equal Album.new(["Off Key Melody", "Sink
 
 
     describe "with :class and :extend" do
-      yaml_song = yaml_representer do 
+      yaml_song = yaml_representer do
         property :name
         property :track
       end

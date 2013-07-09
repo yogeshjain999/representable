@@ -28,6 +28,11 @@ module Representable
       def from_node(*args, &block)
         create_represented(*args, &block).from_node(*args)
       end
+
+    private
+      def representer_engine
+        Representable::XML
+      end
     end
 
 

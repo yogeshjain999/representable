@@ -21,6 +21,11 @@ module Representable
       def from_json(*args, &block)
         create_represented(*args, &block).from_json(*args)
       end
+
+    private
+      def representer_engine
+        Representable::JSON
+      end
     end
 
 

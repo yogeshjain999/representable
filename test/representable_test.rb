@@ -92,8 +92,6 @@ class RepresentableTest < MiniTest::Spec
 
         assert parent.representable_attrs.first != child.representable_attrs.first, "definitions shouldn't be identical"
       end
-
-      # TODO: test Decorator.new.representable_attrs != Decorator.representable_attrs ? (performance?)
     end
   end
 
@@ -421,6 +419,65 @@ class RepresentableTest < MiniTest::Spec
 
       Class.new(OpenStruct).new(:title => "Roxanne", :original => Class.new(OpenStruct).new(:title => "Roxanne (Don't Put On The Red Light)")).extend(cover_rpr).
         to_hash(:include => [:original]).must_equal({"original"=>{"title"=>"Roxanne (Don't Put On The Red Light)"}})
+    end
+  end
+
+  describe "inline representers" do
+    let (:song)    { Song.new("Alive") }
+    let (:request) { representer.prepare(OpenStruct.new(:song => song)) }
+
+    {
+      :hash => [Representable::Hash, {"song"=>{"name"=>"Alive"}}, {"song"=>{"name"=>"You've Taken Everything"}}],
+      :json => [Representable::JSON, "{\"song\":{\"name\":\"Alive\"}}", "{\"song\":{\"name\":\"You've Taken Everything\"}}"],
+      :xml  => [Representable::XML, "<open_struct>\n  <song>\n    <name>Alive</name>\n  </song>\n</open_struct>", "<open_struct><song><name>You've Taken Everything</name></song>/open_struct>"],
+      :yaml => [Representable::YAML, "---\nsong:\n  name: Alive\n", "---\nsong:\n  name: You've Taken Everything\n"],
+    }.each do |format, cfg|
+      mod, output, input = cfg
+
+      describe "[#{format}] with :class" do
+        representer!(mod) do
+          property :song, :class => Song do
+            property :name
+          end
+        end
+
+        let (:format) { format }
+
+        it { request.send("to_#{format}").must_equal output }
+        it { request.send("from_#{format}", input).song.name.must_equal "You've Taken Everything"}
+      end
+    end
+
+    describe "without :class" do
+      representer! do
+        property :song do
+          property :name
+        end
+      end
+
+      it { request.to_hash.must_equal({"song"=>{"name"=>"Alive"}}) }
+    end
+
+    describe "decorator" do
+      let (:representer) do
+        Class.new(Representable::Decorator) do
+          include Representable::Hash
+
+          property :song, :class => Song do
+            property :name
+          end
+
+          self
+        end
+      end
+
+      it { request.to_hash.must_equal({"song"=>{"name"=>"Alive"}}) }
+      it { request.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name.must_equal "You've Taken Everything"}
+
+      it "uses an inline decorator" do
+        request.to_hash
+        song.wont_be_kind_of Representable
+      end
     end
   end
 

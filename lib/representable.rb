@@ -125,7 +125,11 @@ private
       #   property :name, :render_nil => true
       #   property :name, :readable => false
       #   property :name, :writeable => false
-      def property(name, options={})
+      def property(name, options={}, &block)
+        if block_given? # DISCUSS: separate module?
+          options[:extend] = inline_representer(representer_engine, &block)
+        end
+
         representable_attrs << definition_class.new(name, options)
       end
 
@@ -155,6 +159,13 @@ private
 
       def build_config
         Config.new
+      end
+
+      def inline_representer(base_module, &block) # DISCUSS: separate module?
+        Module.new do
+          include base_module
+          instance_exec &block
+        end
       end
     end
   end
