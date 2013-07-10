@@ -36,6 +36,7 @@ module Representable
     end
 
     def from
+      # TODO: deprecate :from.
       (options[:from] || options[:as] || name).to_s
     end
 

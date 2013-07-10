@@ -171,6 +171,12 @@ class RepresentableTest < MiniTest::Spec
         assert_equal "friends", band.representable_attrs.last.from
       end
     end
+
+    representer! {}
+
+    it "returns the Definition instance" do
+      representer.property(:name).must_be_kind_of Representable::Definition
+    end
   end
 
   describe "#collection" do
@@ -440,8 +446,6 @@ class RepresentableTest < MiniTest::Spec
             property :name
           end
         end
-
-        let (:format) { format }
 
         it { request.send("to_#{format}").must_equal output }
         it { request.send("from_#{format}", input).song.name.must_equal "You've Taken Everything"}

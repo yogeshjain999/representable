@@ -130,7 +130,7 @@ private
           options[:extend] = inline_representer(representer_engine, &block)
         end
 
-        representable_attrs << definition_class.new(name, options)
+        (representable_attrs << definition_class.new(name, options)).last
       end
 
       # Declares a represented document node collection.
