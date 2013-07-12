@@ -22,21 +22,15 @@ module Representable::Coercion
   end
 
   module ClassMethods
-    def property(name, args={})
-      return super unless args[:type]
+    def property(name, options={})
+      return super unless options[:type]
 
-      representable_attrs.inheritable_array(:coercer_class).first.attribute(name, args[:type])
+      representable_attrs.inheritable_array(:coercer_class).first.attribute(name, options[:type])
 
-      # DISCUSS: we add accessors here, basically to provide the same API as before. also, we don't wanna override :getter here, do we?
-      # TODO: deprecate these accessors for 1.7 and use coercer.coerce here, too.
-
-      # FIXME: does that actually store the new value in the represented ?
-      define_method(name) do
-        coercer.send(name)
-      end
-      define_method("#{name}=") do |v|
-        coercer.send("#{name}=", v)
-      end
+      # By using :getter we "pre-occupy" this directive, but we avoid creating accessors, which i find is the cleaner way.
+      options[:decorator_scope] = true
+      options[:getter] = lambda { |*| coercer.coerce(name, represented.send(name)) }
+      options[:setter] = lambda { |v,*| represented.send("#{name}=", coercer.coerce(name, v)) }
 
       super
     end
