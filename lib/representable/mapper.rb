@@ -4,33 +4,14 @@ module Representable
   # Render and parse by looping over the representer's properties and dispatching to bindings.
   # Conditionals are handled here, too.
   class Mapper
+  # DISCUSS: we need @represented here for evaluating the :if blocks. this could be done in the bindings_for asset.
     module Methods
-      def initialize(representable_attrs, represented, representer, format, options)  # TODO: less arguments.
-
+      def initialize(bindings, represented, options)
         @represented  = represented # the (extended) model.
-        @representer  = representer # this is used as the Binding#exec_context in decorators. alias to decorator.
-
-        # TODO: this will soon be done outside of Mapper.
-        @bindings     = bindings_for(representable_attrs, format, options) # TODO: do that differently.
+        @bindings     = bindings
       end
 
       attr_reader :bindings
-      def bindings_for(representable_attrs, format, options)
-        options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
-        representable_attrs.map {|attr| representable_binding_for(attr, format, options) }
-      end
-
-      def representable_binding_for(attribute, format, options)
-        # TODO: remove. or change API.
-        context = attribute.options[:decorator_scope] ? representer : represented # FIXME: represented is a method call and sucks.
-
-        format.build(attribute, represented, options, context)
-      end
-
-      def cleanup_options(options) # TODO: remove me.
-        options.reject { |k,v| [:include, :exclude].include?(k) }
-      end
-
 
       def deserialize(doc, options)
         bindings.each do |bin|
@@ -47,7 +28,7 @@ module Representable
       end
 
     private
-      attr_reader :represented, :representer
+      attr_reader :represented
 
       def serialize_property(binding, doc, options)
         return if skip_property?(binding, options)

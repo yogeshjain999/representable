@@ -13,12 +13,12 @@ module Representable
       extend ClassMethods::Declarations
 
       include Deprecations
-
     end
   end
 
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
+    # deserialize_for(bindings, mapper ? , options)
     representable_mapper(format, options).deserialize(doc, options)
   end
 
@@ -28,19 +28,33 @@ private
     representable_mapper(format, options).serialize(doc, options)
   end
 
+  def representable_bindings_for(format, options)
+    options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
+    representable_attrs.collect {|attr| representable_binding_for(attr, format, options) }
+  end
+
+  def representable_binding_for(attribute, format, options)
+    context = attribute.options[:decorator_scope] ? self : represented # DISCUSS: pass both represented and representer into Binding and do it there?
+
+    format.build(attribute, represented, options, context)
+  end
+
+  def cleanup_options(options) # TODO: remove me. this clearly belongs in Representable.
+    options.reject { |k,v| [:include, :exclude].include?(k) }
+  end
+
   def representable_attrs
     @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
   end
 
   def representable_mapper(format, options)
-    # DISCUSS: passing all those options by intention: i want to point out that there's still lots of dependencies.
-    Mapper.new(representable_attrs, represented, self, format, options)
+    bindings = representable_bindings_for(format, options)
+    Mapper.new(bindings, represented, options) # TODO: remove self, or do we need it? and also represented!
   end
 
 
-
   def representation_wrap
-    representable_attrs.wrap_for(self.class.name)
+    representable_attrs.wrap_for(self.class.name) # FIXME: where is this needed?
   end
 
   def represented
