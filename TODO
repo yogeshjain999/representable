@@ -6,7 +6,6 @@ class: |key, hsh|
 
 document `XML::AttributeHash` etc
 
-* deprecate :from, make :a(lia)s authorative.
 * cleanup ReadableWriteable
 * deprecate Representable::*::ClassMethods (::from_hash and friends)
 
@@ -30,3 +29,9 @@ module ReaderWriter
 * pass args to methods when arity matches
 
 * DISCUSS if Decorator.new.representable_attrs != Decorator.representable_attrs ? (what about performance?)
+* REMOVE :from, make :a(lia)s authorative.
+
+* does :instance not work with :decorator ?
+* make it easy to override Binding#options via #to_hash(whatever: {hit: {decorator: HitDecorator}})
+
+* DISCUSS: should inline representers be created at runtime, so we don't need ::representer_engine?
