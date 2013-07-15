@@ -174,6 +174,25 @@ Album.new.extend(AlbumRepresenter).
 #=> #<Album name="Offspring", songs=[#<Song title="Genocide">, #<Song title="Nitro", composers=["Offspring"]>]>
 ```
 
+## Inline Representers
+
+If you don't want to maintain two separate modules when nesting representations you can define the `SongRepresenter` inline.
+
+```ruby
+module AlbumRepresenter
+  include Representable::JSON
+
+  property :name
+
+  collection :songs, class: Song do
+    property :title
+    property :track
+    collection :composers
+  end
+```
+
+This works both for representer modules and decorators.
+
 ## Decorator vs. Extend
 
 People who dislike `:extend` go use the `Decorator` strategy!
@@ -576,7 +595,7 @@ class Song < OpenStruct
 end
 ```
 
-I do not recommend this approach as it bloats your domain classes with representation logic that is barely needed elsewhere.
+I do not recommend this approach as it bloats your domain classes with representation logic that is barely needed elsewhere. Use [decorators](#decorator-vs-extend) instead.
 
 
 ## More Options
@@ -679,16 +698,18 @@ module SongRepresenter
 end
 ```
 
-When using a decorator representer, use the `Representable::Decorator::Coercion` module.
+In a decorator it works alike.
 
 ```ruby
 module SongRepresenter < Representable::Decorator
   include Representable::JSON
-  include Representable::Decorator::Coercion
+  include Representable::Coercion
 
   property :recorded_at, :type => DateTime
 end
 ```
+
+Coercing values only happens when rendering or parsing a document. Representable does not create accessors in your model as `virtus` does.
 
 ## Undocumented Features
 
