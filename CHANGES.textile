@@ -1,3 +1,20 @@
+h2. 1.6.0
+
+* You can define inline representers now if you don't wanna use multiple modules and files.
+<!-- here comes some code -->
+```ruby
+property :song, class: Song do
+  property :title
+end
+```
+
+This supersedes the use for `:extend` or `:decorator`, which still works, of course.
+
+* Coercion now happens in a dedicated coercion object. This means that in your models virtus no longer creates accessors for coerced properties and thus values get coerced when rendering or parsing a document, only. If you want the old behavior, include `Virtus` into your model class and do the coercion yourself.
+* `Decorator::Coercion` is deprecated, just use `include Representable::Coercion`.
+* Introducing `Mapper` which does most of the rendering/parsing process. Be careful, if you used to override private methods like  `#compile_fragment` this no longer works, you have to override that in `Mapper` now.
+* Fixed a bug where inheriting from Decorator wouldn't inherit properties correctly.
+
 h2. 1.5.3
 
 * `Representable#update_properties_from` now always returns `represented`, which is `self` in a module representer and the decorated object in a decorator (only the latter changed).

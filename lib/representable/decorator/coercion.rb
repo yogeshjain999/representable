@@ -1,11 +1,4 @@
 require 'representable/coercion'
 
-class Representable::Decorator
-  module Coercion
-    def self.included(base)
-      base.class_eval do
-        include Representable::Coercion
-      end
-    end
-  end
-end
+# TODO: deprecate for 1.7.
+Representable::Decorator::Coercion = Representable::Coercion

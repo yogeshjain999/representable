@@ -35,3 +35,4 @@ module ReaderWriter
 * make it easy to override Binding#options via #to_hash(whatever: {hit: {decorator: HitDecorator}})
 
 * DISCUSS: should inline representers be created at runtime, so we don't need ::representer_engine?
+* deprecate `Decorator::Coercion`.

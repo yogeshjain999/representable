@@ -60,7 +60,7 @@ class VirtusCoercionTest < MiniTest::Spec
   describe "on decorator" do
     class SongRepresentation < Representable::Decorator
       include Representable::JSON
-      include Representable::Decorator::Coercion
+      include Representable::Coercion
 
       property :composed_at, :type => DateTime
       property :title
