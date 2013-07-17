@@ -193,6 +193,17 @@ module AlbumRepresenter
 
 This works both for representer modules and decorators.
 
+You can use an inline representer along with `:extend`. The latter will automatically be included in the inline representer. This is handy if you want to inline-extend a base decorator.
+
+```ruby
+module AlbumRepresenter
+  include Representable::JSON
+
+  property :hit, extend: SongRepresenter do
+    property :numbers_sold
+  end
+```
+
 ## Decorator vs. Extend
 
 People who dislike `:extend` go use the `Decorator` strategy!

@@ -1,6 +1,7 @@
 h2. 1.6.1
 
 * Using `instance: lambda { nil }` will now treat the property as a representable object without trying to extend it. It simply calls `to_*/from_*` on the property.
+* You can use an inline representer and still have a `:extend` which will be automatically included in the inline representer. This is handy if you want to "extend" a base representer with an inline block. Thanks to @pixelvitamina for requesting that.
 
 h2. 1.6.0
 

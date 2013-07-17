@@ -11,6 +11,7 @@ module Representable
       extend ClassInclusions, ModuleExtensions
       extend ClassMethods
       extend ClassMethods::Declarations
+      extend DSLAdditions
 
       include Deprecations
     end
@@ -77,7 +78,7 @@ private
     # Copies the representable_attrs to the extended object.
     def extended(object)
       super
-      object.representable_attrs=(representable_attrs)
+      object.representable_attrs=(representable_attrs) # yes, we want a hard overwrite here and no inheritance.
     end
   end
 
@@ -116,10 +117,6 @@ private
       #   property :name, :readable => false
       #   property :name, :writeable => false
       def property(name, options={}, &block)
-        if block_given? # DISCUSS: separate module?
-          options[:extend] = inline_representer(representer_engine, &block)
-        end
-
         (representable_attrs << definition_class.new(name, options)).last
       end
 
@@ -150,15 +147,29 @@ private
       def build_config
         Config.new
       end
+    end # Declarations
+  end
 
-      def inline_representer(base_module, &block) # DISCUSS: separate module?
-        Module.new do
-          include base_module
-          instance_exec &block
-        end
+  # Internal module for DSL sugar that should not go into the core library.
+  module DSLAdditions
+    def property(name, options={}, &block)
+      return super unless block_given?
+
+      inline = inline_representer(representer_engine, &block)
+      inline.module_eval { include options[:extend] } if options[:extend]
+
+      options[:extend] = inline
+      super
+    end
+
+  private
+    def inline_representer(base_module, &block) # DISCUSS: separate module?
+      Module.new do
+        include base_module
+        instance_exec &block
       end
     end
-  end
+  end # DSLAdditions
 end
 
 require 'representable/decorator'
