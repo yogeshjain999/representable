@@ -398,7 +398,7 @@ end
         end
 
         it "creates emtpy array from default if configured" do
-          cd = Compilation.from_json({}.to_json)
+          cd = Compilation.from_json("{}")
           assert_equal [], cd.bands
         end
       end
