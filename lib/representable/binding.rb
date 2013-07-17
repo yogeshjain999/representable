@@ -162,7 +162,7 @@ module Representable
 
       def instance_for(fragment, *args)
         return unless options[:instance]
-        call_proc_for(options[:instance], fragment)
+        call_proc_for(options[:instance], fragment) or get
       end
     end
   end

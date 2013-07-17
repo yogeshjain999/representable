@@ -722,6 +722,38 @@ Coercing values only happens when rendering or parsing a document. Representable
 property :title, :binding => lambda { |*args| JSON::TitleBinding.new(*args) }
 ```
 
+* You can use the parsed document fragment directly as a representable instance by returning `nil` in `:class`.
+
+<!-- here comes some code -->
+```ruby
+property :song, :class => lambda { |*| nil }
+```
+
+This makes sense when your parsing looks like this.
+
+<!-- here comes some code -->
+```ruby
+hit.from_hash(song: <#Song ..>)
+```
+
+Representable will not attempt to create a `Song` instance for you but use the provided from the document.
+
+* The same goes the other way when rendering. Just provide an empty `:instance` block.
+
+<!-- here comes some code -->
+```ruby
+property :song, :instance => lambda { |*| nil }
+```
+
+This will treat the `song` property instance as a representable object.
+
+<!-- here comes some code -->
+```ruby
+hit.to_json # this will call hit.song.to_json
+```
+
+Rendering `collection`s works the same. Parsing doesn't work out-of-the-box, currently, as we're still unsure how to map items to fragments.
+
 ## Copyright
 
 Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his inspiring work.

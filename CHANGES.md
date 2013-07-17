@@ -1,3 +1,7 @@
+h2. 1.6.1
+
+* Using `instance: lambda { nil }` will now treat the property as a representable object without trying to extend it. It simply calls `to_*/from_*` on the property.
+
 h2. 1.6.0
 
 * You can define inline representers now if you don't wanna use multiple modules and files.

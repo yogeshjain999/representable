@@ -51,7 +51,7 @@ module Representable
     class CollectionBinding < PropertyBinding
       def serialize_for(value)
         # value.enum_for(:each_with_index).collect { |obj, i| serialize(obj, i) } # DISCUSS: provide ary index/hash key for representer_module_for?
-        value.collect { |obj| serialize(obj) }
+        value.collect { |item| serialize(item) }
       end
 
       def deserialize_from(fragment)
