@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'representable/hash'
 
-class YamlTest < MiniTest::Spec
+class HashTest < MiniTest::Spec
   def self.hash_representer(&block)
     Module.new do
       include Representable::Hash
@@ -86,7 +86,7 @@ class YamlTest < MiniTest::Spec
 
 
     describe "with :class and :extend" do
-      hash_song = hash_representer do 
+      hash_song = hash_representer do
         property :name
         property :track
       end
@@ -119,7 +119,7 @@ class YamlTest < MiniTest::Spec
   class DefinitionTest < MiniTest::Spec
     it "what" do
       class Representable::Hash::Binding < SimpleDelegator
-        
+
       end
 
       definition  = Representable::Definition.new(:name)
