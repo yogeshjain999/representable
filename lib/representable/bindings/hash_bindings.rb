@@ -47,11 +47,25 @@ module Representable
       end
     end
 
+    class CollectionRepresenter < Array
+      def serialize
+        collect do |obj|
+          yield obj
+        end
+      end
+
+      # in deserialize, we should get the original object?
+    end
+
 
     class CollectionBinding < PropertyBinding
       def serialize_for(value)
         # value.enum_for(:each_with_index).collect { |obj, i| serialize(obj, i) } # DISCUSS: provide ary index/hash key for representer_module_for?
-        value.collect { |item| serialize(item) }
+
+        #value.collect { |item| serialize(item) }
+        CollectionRepresenter.new(value).serialize do |obj|
+          serialize(obj)
+        end
       end
 
       def deserialize_from(fragment)
