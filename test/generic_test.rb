@@ -4,7 +4,7 @@ class GenericTest < MiniTest::Spec
 # one day, this file will contain all engine-independent test cases. one day...
   let (:new_album)  { OpenStruct.new.extend(representer) }
   let (:album)      { OpenStruct.new(:songs => ["Fuck Armageddon"]).extend(representer) }
-  let (:song) { OpenStruct.new(:title => "Resist Stance").extend(song_representer) }
+  let (:song) { OpenStruct.new(:title => "Resist Stance") }
   let (:song_representer) { Module.new do include Representable::Hash; property :title end  }
 
 
@@ -25,9 +25,9 @@ class GenericTest < MiniTest::Spec
   end
 
 
-  describe ":representable with property" do # TODO: introduce :representable option?
-    representer! do
-      property :song, :instance => lambda { |*| nil }
+  describe "property with instance: { nil }" do # TODO: introduce :representable option?
+    representer!(:song_representer) do
+      property :song, :instance => lambda { |*| nil }, :extend => song_representer
     end
 
     let (:hit) { hit = OpenStruct.new(:song => song).extend(representer) } # note that song is already representable.
@@ -45,9 +45,31 @@ class GenericTest < MiniTest::Spec
   end
 
 
-  describe ":representable with collection" do # TODO: introduce :representable option?
-    representer! do
-      collection :songs, :instance => lambda { |*| nil }
+  describe "property with parse_strategy: :sync" do # TODO: introduce :representable option?
+    representer!(:song_representer) do
+      property :song, :parse_strategy => :sync, :extend => song_representer
+    end
+
+    let (:hit) { hit = OpenStruct.new(:song => song).extend(representer) } # note that song is already representable.
+
+    it "calls #to_hash on song instance, nothing else" do
+      hit.to_hash.must_equal("song"=>{"title"=>"Resist Stance"})
+    end
+
+    it "calls #from_hash on the existing song instance, nothing else" do
+      song_id = hit.song.object_id
+
+      hit.from_hash("song"=>{"title"=>"Suffer"})
+
+      hit.song.title.must_equal "Suffer"
+      hit.song.object_id.must_equal song_id
+    end
+  end
+
+
+  describe "collection with :parse_strategy: :sync" do # TODO: introduce :representable option?
+    representer!(:song_representer) do
+      collection :songs, :parse_strategy => :sync, :extend => song_representer
     end
     let (:album) { OpenStruct.new(:songs => [song]).extend(representer) }
 
@@ -56,12 +78,12 @@ class GenericTest < MiniTest::Spec
     end
 
     it "calls #from_hash on the existing song instance, nothing else" do
-      album.songs.instance_eval do
-        def from_hash(items, *args)
-          #puts items #=> {"title"=>"Suffer"}
-          first.from_hash(items)  # example how you can use this.
-        end
-      end
+      # album.songs.instance_eval do
+      #   def from_hash(items, *args)
+      #     #puts items #=> {"title"=>"Suffer"}
+      #     first.from_hash(items)  # example how you can use this.
+      #   end
+      # end
 
       song = album.songs.first
       song_id = song.object_id

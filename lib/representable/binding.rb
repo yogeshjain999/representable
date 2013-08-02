@@ -26,7 +26,7 @@ module Representable
       value
     end
 
-    def deserialize(fragment)
+    def deserialize(fragment, *args)
       fragment
     end
 
@@ -139,11 +139,34 @@ module Representable
         super.send(serialize_method, @user_options.merge!({:wrap => false}))  # TODO: pass :binding => self
       end
 
-      def deserialize(data)
-        # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        create_object(data).tap do |obj|
-          super(obj).send(deserialize_method, data, @user_options)
+      def deserialize(data, object=nil)
+        unless object
+          object = options[:parse_strategy] == :sync ? get : nil
         end
+        # DISCUSS: does it make sense to skip deserialization of nil-values here?
+        ObjectDeserializer.new(self, object).call(data) do |obj|
+          super(obj).send(deserialize_method, data, @user_options) # move into ObjectD?
+        end
+      end
+
+      class ObjectDeserializer
+        # dependencies: Def#options, Def#create_object, Def#get
+        def initialize(binding, object)
+          @binding = binding
+          @object  = object
+        end
+
+        def call(*args)
+          if @binding.options[:parse_strategy] == :sync
+            #object = @binding.get # TODO: this is also done when instance: { nil }
+          else
+            @object = @binding.create_object(*args)
+          end
+
+          # DISCUSS: what parts should be in this class, what in Binding?
+          yield @object
+        end
+        # in deserialize, we should get the original object?
       end
 
       def create_object(fragment)
