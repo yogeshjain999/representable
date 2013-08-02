@@ -50,11 +50,26 @@ MiniTest::Spec.class_eval do
   include XmlHelper
 
   def self.representer!(format=Representable::Hash, name=:representer, &block)
+    fmt = format # we need that so the 2nd call to ::let (within a ::describe) remembers the right format.
+
     let(name) do
-      Module.new do
+      mod = Module.new
+
+      if fmt.is_a?(Symbol)
+        injected = send(fmt) # song_representer
+        mod.singleton_class.instance_eval do
+          define_method(fmt) { injected }
+        end
+
+        format = Representable::Hash
+      end
+
+      mod.module_eval do
         include format
         instance_exec(&block)
       end
+
+      mod
     end
   end
 
