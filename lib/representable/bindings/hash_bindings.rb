@@ -57,7 +57,7 @@ module Representable
         # fragment.collect { |item_fragment| deserialize(item_fragment) }
         fragment.enum_for(:each_with_index).collect { |item_fragment, i|
           #serialize(item_fragment, i)
-          deserialize(item_fragment, options[:parse_strategy] == :sync ? get[i] : nil)
+          deserialize(item_fragment, lambda { get[i] })
         }
       end
     end

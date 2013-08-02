@@ -139,10 +139,7 @@ module Representable
         super.send(serialize_method, @user_options.merge!({:wrap => false}))  # TODO: pass :binding => self
       end
 
-      def deserialize(data, object=nil)
-        unless object
-          object = options[:parse_strategy] == :sync ? get : nil
-        end
+      def deserialize(data, object=lambda { get })
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
         ObjectDeserializer.new(self, object).call(data) do |obj|
           super(obj).send(deserialize_method, data, @user_options) # move into ObjectD?
@@ -159,6 +156,7 @@ module Representable
         def call(*args)
           if @binding.options[:parse_strategy] == :sync
             #object = @binding.get # TODO: this is also done when instance: { nil }
+            @object = @object.call
           else
             @object = @binding.create_object(*args)
           end
