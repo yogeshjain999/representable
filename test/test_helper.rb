@@ -52,16 +52,16 @@ MiniTest::Spec.class_eval do
   def self.representer!(format=Representable::Hash, name=:representer, &block)
     fmt = format # we need that so the 2nd call to ::let (within a ::describe) remembers the right format.
 
+    if fmt.is_a?(Hash)
+      name   = fmt[:name] || :representer
+      format = fmt[:module] || Representable::Hash
+    end
+
     let(name) do
       mod = Module.new
 
-      if fmt.is_a?(Symbol)
-        injected = send(fmt) # song_representer
-        mod.singleton_class.instance_eval do
-          define_method(fmt) { injected }
-        end
-
-        format = Representable::Hash
+      if fmt.is_a?(Hash)
+        inject_representer(mod, fmt)
       end
 
       mod.module_eval do
@@ -70,6 +70,16 @@ MiniTest::Spec.class_eval do
       end
 
       mod
+    end
+
+    def inject_representer(mod, options)
+      return unless options[:inject]
+
+      injected_name = options[:inject]
+      injected = send(injected_name) # song_representer
+      mod.singleton_class.instance_eval do
+        define_method(injected_name) { injected }
+      end
     end
   end
 
