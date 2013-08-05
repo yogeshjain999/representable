@@ -26,7 +26,7 @@ class GenericTest < MiniTest::Spec
 
 
   describe "property with instance: { nil }" do # TODO: introduce :representable option?
-    representer!(:song_representer) do
+    representer!(:inject => :song_representer) do
       property :song, :instance => lambda { |*| nil }, :extend => song_representer
     end
 
@@ -46,7 +46,7 @@ class GenericTest < MiniTest::Spec
 
 
   describe "property with parse_strategy: :sync" do # TODO: introduce :representable option?
-    representer!(:song_representer) do
+    representer!(:inject => :song_representer) do
       property :song, :parse_strategy => :sync, :extend => song_representer
     end
 
@@ -66,30 +66,66 @@ class GenericTest < MiniTest::Spec
     end
   end
 
+  # FIXME: there's a bug with XML and the collection name!
+  {
+    :hash => [Representable::Hash, {"songs"=>[{"title"=>"Resist Stance"}]}, {"songs"=>[{"title"=>"Suffer"}]}],
+    #:json => [Representable::JSON, "{\"song\":{\"name\":\"Alive\"}}", "{\"song\":{\"name\":\"You've Taken Everything\"}}"],
+    :xml  => [Representable::XML, "<open_struct><song><title>Resist Stance</title></song></open_struct>", "<open_struct><songs><title>Suffer</title></songs></open_struct>"],
+    #:yaml => [Representable::YAML, "---\nsong:\n  name: Alive\n", "---\nsong:\n  name: You've Taken Everything\n"],
+  }.each do |format, cfg|
+    mod, output, input = cfg
 
-  describe "collection with :parse_strategy: :sync" do # TODO: introduce :representable option?
-    representer!(:song_representer) do
-      collection :songs, :parse_strategy => :sync, :extend => song_representer
+
+    describe "[#{format}] collection with :parse_strategy: :sync" do # TODO: introduce :representable option?
+      let (:format) { format }
+      representer!(:module => mod, :name => :song_representer) do
+        property :title
+        self.representation_wrap = :song if format == :xml
+      end
+
+      representer!(:inject => :song_representer, :module => mod) do
+        collection :songs, :parse_strategy => :sync, :extend => song_representer
+      end
+
+      let (:album) { OpenStruct.new(:songs => [song]).extend(representer) }
+
+      it "calls #to_hash on song instances, nothing else" do
+        render(album).must_equal_document(output)
+      end
+
+      it "calls #from_hash on the existing song instance, nothing else" do
+        collection_id = album.songs.object_id
+        song          = album.songs.first
+        song_id       = song.object_id
+
+        parse(album, input)
+
+        album.songs.first.title.must_equal "Suffer"
+        song.title.must_equal "Suffer"
+        #album.songs.object_id.must_equal collection_id # TODO: don't replace!
+        song.object_id.must_equal song_id
+      end
     end
-    let (:album) { OpenStruct.new(:songs => [song]).extend(representer) }
+  end
 
-    it "calls #to_hash on song instances, nothing else" do
-      album.to_hash.must_equal("songs"=>[{"title"=>"Resist Stance"}])
+  def render(object)
+    AssertableDocument.new(object.send("to_#{format}"), format)
+  end
+
+  def parse(object, input)
+    object.send("from_#{format}", input)
+  end
+
+  class AssertableDocument
+    attr_reader :document
+
+    def initialize(document, format)
+      @document, @format = document, format
     end
 
-    it "calls #from_hash on the existing song instance, nothing else" do
-      # album.songs.instance_eval do
-      #   def from_hash(items, *args)
-      #     #puts items #=> {"title"=>"Suffer"}
-      #     first.from_hash(items)  # example how you can use this.
-      #   end
-      # end
-
-      song = album.songs.first
-      song_id = song.object_id
-      album.from_hash("songs"=>[{"title"=>"Suffer"}])
-      song.title.must_equal "Suffer"
-      song.object_id.must_equal song_id
+    def must_equal_document(*args)
+      return document.must_equal_xml(*args) if @format == :xml
+      document.must_equal(*args)
     end
   end
 
