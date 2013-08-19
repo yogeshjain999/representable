@@ -155,8 +155,8 @@ module Representable
 
         def call(*args)
           if @binding.options[:parse_strategy] == :sync
-            #object = @binding.get # TODO: this is also done when instance: { nil }
-            @object = @object.call
+            # TODO: this is also done when instance: { nil }
+            @object = @object.call # call Binding#get or Binding#get[i]
           else
             @object = @binding.create_object(*args)
           end
