@@ -146,10 +146,10 @@ module Representable
         end
       end
 
+      # next step: don't call binding.deserialize anymore but ObjectDeserializer#deserialize. which in turn gets prepared object?
       class CollectionDeserializer < Array # always is the targeted collection, already.
-        def initialize(binding, binding_deserialize_method_remove_me=:deserialize) # TODO: get rid of binding dependency
+        def initialize(binding) # TODO: get rid of binding dependency
           # next step: use #get always.
-          @binding_deserialize_method_remove_me=binding_deserialize_method_remove_me
           @binding = binding
           collection = []
           # should be call to #default:
@@ -160,7 +160,7 @@ module Representable
         def deserialize(fragment)
           # next step: get rid of collect.
           fragment.enum_for(:each_with_index).collect { |item_fragment, i|
-            @binding.send(@binding_deserialize_method_remove_me, item_fragment, lambda { self[i] }) # FIXME: what if obj nil?
+            @binding.deserialize(item_fragment, lambda { self[i] }) # FIXME: what if obj nil?
           }
         end
       end
