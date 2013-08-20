@@ -14,8 +14,8 @@ module Representable
         :from_node
       end
 
-      def deserialize_node(node, *args)
-        deserialize(node, *args)
+      def content_for(node) # TODO: move to ScalarDecorator.
+        node
       end
 
       def serialize_node(node, value)
@@ -68,13 +68,8 @@ module Representable
       end
 
       def deserialize_from(nodes)
-        deserialize_node(nodes.first)
+        content_for deserialize(nodes.first)
         #deserialize(nodes.first)
-      end
-
-      # DISCUSS: rename to #read_from ?
-      def deserialize_node(node, *args)
-        deserialize(node.content, *args)
       end
 
     private
@@ -91,6 +86,10 @@ module Representable
       def node_for(parent, name)
         Nokogiri::XML::Node.new(name.to_s, parent.document)
       end
+
+      def content_for(node) # TODO: move this into a ScalarDecorator.
+        node.content
+      end
     end
 
     class CollectionBinding < PropertyBinding
@@ -100,12 +99,13 @@ module Representable
       end
 
       def deserialize_from(nodes)
-        return Representable::Binding::Object::CollectionDeserializer.new(self,
-          :deserialize_node).deserialize(nodes)
-
-        nodes.collect do |item|
-          deserialize_node(item)
+        content_nodes = nodes.collect do |item| # TODO: move this to Node?
+          content_for(item)
         end
+
+        # *Deserializer doesn't want anything format specific!
+        Representable::Binding::Object::CollectionDeserializer.
+          new(self).deserialize(content_nodes)
       end
 
     private
@@ -126,7 +126,7 @@ module Representable
       def deserialize_from(nodes)
         {}.tap do |hash|
           nodes.children.each do |node|
-            hash[node.name] = deserialize_node(node)
+            hash[node.name] = deserialize(content_for node)
           end
         end
       end
