@@ -141,9 +141,7 @@ module Representable
 
       def deserialize(data, object=lambda { get })
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        ObjectDeserializer.new(self, object).call(data) do |obj|
-          super(obj).send(deserialize_method, data, @user_options) # move into ObjectD?
-        end
+        ObjectDeserializer.new(self, object).call(data)
       end
 
       # next step: don't call binding.deserialize anymore but ObjectDeserializer#deserialize. which in turn gets prepared object?
@@ -171,16 +169,27 @@ module Representable
           @object  = object
         end
 
-        def call(*args)
+        def call(fragment)
           if @binding.options[:parse_strategy] == :sync
             # TODO: this is also done when instance: { nil }
             @object = @object.call # call Binding#get or Binding#get[i]
           else
-            @object = @binding.create_object(*args)
+            @object = @binding.create_object(fragment)
           end
 
           # DISCUSS: what parts should be in this class, what in Binding?
-          yield @object
+          representable = prepare(@object)
+          deserialize(representable, fragment, @binding.user_options)
+          #yield @object
+        end
+
+      private
+        def deserialize(object, fragment, options)
+          object.send(@binding.deserialize_method, fragment, options)
+        end
+
+        def prepare(object)
+          @binding.prepare(object)
         end
         # in deserialize, we should get the original object?
       end
