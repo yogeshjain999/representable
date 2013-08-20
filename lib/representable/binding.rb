@@ -146,6 +146,24 @@ module Representable
         end
       end
 
+      class CollectionDeserializer < Array # always is the targeted collection, already.
+        def initialize(binding, binding_deserialize_method_remove_me=:deserialize) # TODO: get rid of binding dependency
+          # next step: use #get always.
+          @binding_deserialize_method_remove_me=binding_deserialize_method_remove_me
+          @binding = binding
+          collection = []
+          # should be call to #default:
+          collection = binding.get if binding.options[:parse_strategy]==:sync
+          super collection
+        end
+
+        def deserialize(fragment)
+          # next step: get rid of collect.
+          fragment.enum_for(:each_with_index).collect { |item_fragment, i|
+            @binding.send(@binding_deserialize_method_remove_me, item_fragment, lambda { self[i] }) # FIXME: what if obj nil?
+          }
+        end
+      end
       class ObjectDeserializer
         # dependencies: Def#options, Def#create_object, Def#get
         def initialize(binding, object)

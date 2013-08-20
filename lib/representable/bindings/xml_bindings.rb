@@ -69,6 +69,7 @@ module Representable
 
       def deserialize_from(nodes)
         deserialize_node(nodes.first)
+        #deserialize(nodes.first)
       end
 
       # DISCUSS: rename to #read_from ?
@@ -84,7 +85,6 @@ module Representable
       def find_nodes(doc)
         selector  = xpath
         selector  = "#{options[:wrap]}/#{xpath}" if options[:wrap]
-        puts "find: #{selector}"
         nodes     = doc.xpath(selector)
       end
 
@@ -100,7 +100,8 @@ module Representable
       end
 
       def deserialize_from(nodes)
-        return Representable::Hash::CollectionBinding::Collection.new(self, :deserialize_node).deserialize(nodes)
+        return Representable::Binding::Object::CollectionDeserializer.new(self,
+          :deserialize_node).deserialize(nodes)
 
         nodes.collect do |item|
           deserialize_node(item)
