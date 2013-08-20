@@ -111,10 +111,6 @@ module Representable
         prepare(super)
       end
 
-      def deserialize(*)
-        prepare(super)
-      end
-
       def prepare(object)
         return object unless mod = representer_module_for(object) # :extend.
 
