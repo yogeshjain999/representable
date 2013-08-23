@@ -148,13 +148,17 @@ module Representable
           collection = []
           # should be call to #default:
           collection = binding.get if binding.options[:parse_strategy]==:sync
+
           super collection
         end
 
         def deserialize(fragment)
+
           # next step: get rid of collect.
           fragment.enum_for(:each_with_index).collect { |item_fragment, i|
-            @binding.deserialize(item_fragment, lambda { self[i] }) # FIXME: what if obj nil?
+            @deserializer = ObjectDeserializer.new(@binding, lambda { self[i] })
+
+            @deserializer.call(item_fragment) # FIXME: what if obj nil?
           }
         end
       end
@@ -166,6 +170,9 @@ module Representable
         end
 
         def call(fragment)
+          # TODO: this used to be handled in #serialize where Object added it's behaviour. treat scalars as objects to remove this switch:
+          return fragment unless @binding.typed?
+
           if @binding.options[:parse_strategy] == :sync
             # TODO: this is also done when instance: { nil }
             @object = @object.call # call Binding#get or Binding#get[i]
