@@ -71,7 +71,7 @@ class GenericTest < MiniTest::Spec
     :hash => [Representable::Hash, {"songs"=>[{"title"=>"Resist Stance"}]}, {"songs"=>[{"title"=>"Suffer"}]}],
     #:json => [Representable::JSON, "{\"song\":{\"name\":\"Alive\"}}", "{\"song\":{\"name\":\"You've Taken Everything\"}}"],
     :xml  => [Representable::XML, "<open_struct><song><title>Resist Stance</title></song></open_struct>", "<open_struct><songs><title>Suffer</title></songs></open_struct>"],
-    #:yaml => [Representable::YAML, "---\nsong:\n  name: Alive\n", "---\nsong:\n  name: You've Taken Everything\n"],
+    :yaml => [Representable::YAML, "---\nsongs:\n- title: Resist Stance\n", "---\nsongs:\n- title: Suffer\n"],
   }.each do |format, cfg|
     mod, output, input = cfg
 
