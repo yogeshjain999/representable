@@ -4,11 +4,11 @@ module Representable
   module YAML
     module ObjectBinding
       include Binding::Object
-      
+
       def serialize_method
         :to_ast
       end
-      
+
       def deserialize_method
         :from_hash
       end
@@ -28,7 +28,7 @@ module Representable
         super
         extend ObjectBinding if typed?
       end
-      
+
       def write(map, value)
         map.children << Psych::Nodes::Scalar.new(from)
         map.children << serialize_for(value)  # FIXME: should be serialize.
@@ -42,8 +42,8 @@ module Representable
         Psych::Nodes::Scalar.new(value.to_s)
       end
     end
-    
-    
+
+
     class CollectionBinding < PropertyBinding
       def serialize_for(value)
         Psych::Nodes::Sequence.new.tap do |seq|
@@ -51,9 +51,10 @@ module Representable
           value.each { |obj| seq.children << super(obj) }
         end
       end
-      
+
       def deserialize_from(fragment)  # FIXME: redundant from Hash::Bindings
-        fragment.collect { |item_fragment| deserialize(item_fragment) }
+        Representable::Binding::Object::CollectionDeserializer.
+          new(self).deserialize(fragment)
       end
     end
   end
