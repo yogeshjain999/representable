@@ -150,6 +150,67 @@ class GenericTest < MiniTest::Spec
   end
 
 
+  # Lonely Collection
+  require "representable/hash/collection"
+
+  for_formats(
+    :hash => [Representable::Hash::Collection, [{"title"=>"Resist Stance"}], [{"title"=>"Suffer"}]],
+    # :xml  => [Representable::XML, "<open_struct><song><title>Resist Stance</title></song></open_struct>", "<open_struct><songs><title>Suffer</title></songs></open_struct>"],
+  ) do |format, mod, output, input|
+
+    describe "[#{format}] lonely collection with :parse_strategy: :sync" do # TODO: introduce :representable option?
+      let (:format) { format }
+      representer!(:module => Representable::Hash, :name => :song_representer) do
+        property :title
+        self.representation_wrap = :song if format == :xml
+      end
+
+      representer!(:inject => :song_representer, :module => mod) do
+        items :parse_strategy => :sync, :extend => song_representer
+      end
+
+      let (:album) { [song].extend(representer) }
+
+      it "calls #to_hash on song instances, nothing else" do
+        render(album).must_equal_document(output)
+      end
+
+      it "calls #from_hash on the existing song instance, nothing else" do
+        #collection_id = album.object_id
+        song          = album.first
+        song_id       = song.object_id
+
+        parse(album, input)
+
+        album.first.title.must_equal "Suffer"
+        song.title.must_equal "Suffer"
+        song.object_id.must_equal song_id
+      end
+    end
+  end
+
+  def render(object)
+    AssertableDocument.new(object.send("to_#{format}"), format)
+  end
+
+  def parse(object, input)
+    object.send("from_#{format}", input)
+  end
+
+  class AssertableDocument
+    attr_reader :document
+
+    def initialize(document, format)
+      @document, @format = document, format
+    end
+
+    def must_equal_document(*args)
+      return document.must_equal_xml(*args) if @format == :xml
+      document.must_equal(*args)
+    end
+  end
+
+
   describe "mix :extend and inline representers" do
     representer! do
       rpr_module = Module.new do
