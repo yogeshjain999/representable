@@ -12,7 +12,7 @@ module Representable::Hash
 
     module ClassMethods
       def items(options)
-        collection :_self, options
+        collection :_self, options.merge(:getter => lambda { |*| self })
       end
     end
 
