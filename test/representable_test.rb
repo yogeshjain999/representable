@@ -96,26 +96,26 @@ class RepresentableTest < MiniTest::Spec
   end
 
 
-  describe "Representable" do
-    describe "inheritance" do
-      class CoverSong < OpenStruct
-      end
-      module SongRepresenter
-        include Representable::Hash
-        property :name
-      end
-      module CoverSongRepresenter
-        include Representable::Hash
-        include SongRepresenter
-        property :by
-      end
-
-      it "merges properties from all ancestors" do
-        props = {"name"=>"The Brews", "by"=>"Nofx"}
-        assert_equal(props, CoverSong.new(props).extend(CoverSongRepresenter).to_hash)
-
-      end
+  describe "inheritance" do
+    class CoverSong < OpenStruct
     end
+
+    module SongRepresenter
+      include Representable::Hash
+      property :name
+    end
+
+    module CoverSongRepresenter
+      include Representable::Hash
+      include SongRepresenter
+      property :by
+    end
+
+    it "merges properties from all ancestors" do
+      props = {"name"=>"The Brews", "by"=>"Nofx"}
+      assert_equal(props, CoverSong.new(props).extend(CoverSongRepresenter).to_hash)
+    end
+
     it "allows mixing in multiple representers" do
       require 'representable/json'
       require 'representable/xml'
