@@ -91,6 +91,8 @@ MiniTest::Spec.class_eval do
         module_exec(&block)
       end
     end
+
+    alias_method :representer!, :representer_for
   end
   include TestMethods
 end
