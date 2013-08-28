@@ -104,8 +104,7 @@ module Representable
         end
 
         # *Deserializer doesn't want anything format specific!
-        Representable::Binding::Object::CollectionDeserializer.
-          new(self).deserialize(content_nodes)
+        CollectionDeserializer.new(self).deserialize(content_nodes)
       end
 
     private

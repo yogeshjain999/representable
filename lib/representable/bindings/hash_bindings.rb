@@ -50,15 +50,11 @@ module Representable
     class CollectionBinding < PropertyBinding
       def serialize_for(value)
         # value.enum_for(:each_with_index).collect { |obj, i| serialize(obj, i) } # DISCUSS: provide ary index/hash key for representer_module_for?
-        value.collect { |item| serialize(item) }
+        value.collect { |item| serialize(item) } # TODO: i don't want Array but Forms here - what now?
       end
 
       def deserialize_from(fragment)
-        # if :sync, #get original collection,
-        #  ( iterate, i.from)->Collection#deserialize
-        # if not: #get original (Array, LinkArray, ..)
-        #  ( create obj )
-        Representable::Binding::Object::CollectionDeserializer.new(self).deserialize(fragment)
+        CollectionDeserializer.new(self).deserialize(fragment)
       end
     end
 

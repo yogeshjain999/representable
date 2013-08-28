@@ -53,8 +53,7 @@ module Representable
       end
 
       def deserialize_from(fragment)  # FIXME: redundant from Hash::Bindings
-        Representable::Binding::Object::CollectionDeserializer.
-          new(self).deserialize(fragment)
+        CollectionDeserializer.new(self).deserialize(fragment)
       end
     end
   end
