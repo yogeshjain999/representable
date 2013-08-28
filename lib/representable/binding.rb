@@ -86,6 +86,8 @@ module Representable
       end
     end
 
+    # the remaining methods in this class are format-independent and should be in Definition.
+
   private
     attr_reader :exec_context
 
@@ -105,19 +107,16 @@ module Representable
     end
 
 
-    # Hooks into #serialize and #deserialize to setup (extend/decorate) typed properties
-    # at runtime.
     module Prepare
       def representer_module_for(object, *args)
         call_proc_for(representer_module, object)   # TODO: how to pass additional data to the computing block?`
       end
     end
+    include Prepare
 
-    # Overrides #serialize/#deserialize to call #to_*/from_*.
-    # Computes :class in #deserialize. # TODO: shouldn't this be in a separate module? ObjectSerialize/ObjectDeserialize?
+
+    # Delegates to call #to_*/from_*.
     module Object
-      include Binding::Prepare
-
       def serialize(object)
         ObjectSerializer.new(self, object).call
       end
@@ -133,7 +132,7 @@ module Representable
 
     private
       def class_for(fragment, *args)
-        item_class = class_from(fragment) or return fragment # DISCUSS: is it legal to return the very fragment here?
+        item_class = class_from(fragment) or return fragment
         item_class.new
       end
 
