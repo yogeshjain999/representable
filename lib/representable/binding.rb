@@ -108,15 +108,6 @@ module Representable
     # Hooks into #serialize and #deserialize to setup (extend/decorate) typed properties
     # at runtime.
     module Prepare
-      # Extends the object with its representer before serialization.
-      def prepare(object)
-        return object unless mod = representer_module_for(object) # :extend.
-
-        mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
-        mod.prepare(object)
-      end
-
-    private
       def representer_module_for(object, *args)
         call_proc_for(representer_module, object)   # TODO: how to pass additional data to the computing block?`
       end
