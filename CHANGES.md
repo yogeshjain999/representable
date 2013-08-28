@@ -1,3 +1,8 @@
+h2. 1.7.0
+
+* The actual serialization and deserialization (that is, calling `to_hash` etc on the object) now happens in dedicated classes: `ObjectDeserializer` and friends. If you used to override stuff in `Binding`, I'm sorry.
+* A new option `parse_strategy: :sync`. Instead of creating a new object using the `:class` option when parsing, it uses the original object found in the represented instance. This works for property and collections.
+
 h2. 1.6.1
 
 * Using `instance: lambda { nil }` will now treat the property as a representable object without trying to extend it. It simply calls `to_*/from_*` on the property.
