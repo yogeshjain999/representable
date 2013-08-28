@@ -1,5 +1,6 @@
 require "delegate"
 require "representable/deserializer"
+require "representable/serializer"
 
 module Representable
   # The Binding wraps the Definition instance for this property and provides methods to read/write fragments.
@@ -108,10 +109,6 @@ module Representable
     # at runtime.
     module Prepare
       # Extends the object with its representer before serialization.
-      def serialize(*)
-        prepare(super)
-      end
-
       def prepare(object)
         return object unless mod = representer_module_for(object) # :extend.
 
@@ -131,9 +128,7 @@ module Representable
       include Binding::Prepare
 
       def serialize(object)
-        return object if object.nil?
-
-        super.send(serialize_method, @user_options.merge!({:wrap => false}))  # TODO: pass :binding => self
+        ObjectSerializer.new(self, object).call
       end
 
       def deserialize(data, object=lambda { get })
