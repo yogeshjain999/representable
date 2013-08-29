@@ -154,6 +154,35 @@ class RepresentableTest < MiniTest::Spec
 
 
   describe "#property" do
+    describe "overriding" do
+      representer! do
+        property :title, :as => :name
+      end
+
+      it { representer.representable_attrs.size.must_equal 1 }
+      it { representer.representable_attrs.last.options.must_equal({:as => :name}) }
+
+      it "overrides property when called again" do
+        representer.class_eval do
+          property :title, :representable => true
+        end
+
+        representer.representable_attrs.size.must_equal 1
+        representer.representable_attrs.last.options.must_equal({:representable => true})
+      end
+
+      it "overrides when inheriting same property" do
+        overriding = representer! { property :title, :representable => true }
+
+        representer.class_eval do
+          include overriding
+        end
+
+        representer.representable_attrs.size.must_equal 1
+        representer.representable_attrs.last.options.must_equal({:representable => true})
+      end
+    end
+
     describe ":from" do
       # TODO: do this with all options.
       it "can be set explicitly" do
