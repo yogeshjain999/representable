@@ -5,7 +5,7 @@ module Representable
       @binding = binding
       collection = []
       # should be call to #default:
-      collection = binding.get if binding.options[:parse_strategy]==:sync
+      collection = binding.get if binding.sync?
 
       super collection
     end
@@ -32,7 +32,7 @@ module Representable
       # TODO: this used to be handled in #serialize where Object added it's behaviour. treat scalars as objects to remove this switch:
       return fragment unless @binding.typed?
 
-      if @binding.options[:parse_strategy] == :sync
+      if @binding.sync?
         # TODO: this is also done when instance: { nil }
         @object = @object.call # call Binding#get or Binding#get[i]
       else

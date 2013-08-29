@@ -72,5 +72,9 @@ module Representable
     def create_binding(*args)
       binding.call(self, *args)
     end
+
+    def sync?
+      options[:parse_strategy] == :sync
+    end
   end
 end
