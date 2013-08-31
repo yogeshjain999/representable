@@ -40,8 +40,8 @@ class RepresentableTest < MiniTest::Spec
 
       it "inherits to including modules xxx " do
         assert_equal 2,  PunkBandRepresentation.representable_attrs.size
-        assert_equal "name", PunkBandRepresentation.representable_attrs.first.name
-        assert_equal "street_cred", PunkBandRepresentation.representable_attrs.last.name
+        assert_equal "name", PunkBandRepresentation.representable_attrs[:name].name
+        assert_equal "street_cred", PunkBandRepresentation.representable_attrs[:street_cred].name
       end
 
       it "inherits to including class" do
@@ -51,8 +51,8 @@ class RepresentableTest < MiniTest::Spec
         end
 
         assert_equal 2,  band.representable_attrs.size
-        assert_equal "name", band.representable_attrs.first.name
-        assert_equal "street_cred", band.representable_attrs.last.name
+        assert_equal "name", band.representable_attrs[:name].name
+        assert_equal "street_cred", band.representable_attrs[:street_cred].name
       end
 
       it "allows including the concrete representer module later" do
@@ -160,7 +160,7 @@ class RepresentableTest < MiniTest::Spec
       end
 
       it { representer.representable_attrs.size.must_equal 1 }
-      it { representer.representable_attrs.last.options.must_equal({:as => :name}) }
+      it { representer.representable_attrs[:title].options.must_equal({:as => :name}) }
 
       it "overrides property when called again" do
         representer.class_eval do
@@ -168,7 +168,7 @@ class RepresentableTest < MiniTest::Spec
         end
 
         representer.representable_attrs.size.must_equal 1
-        representer.representable_attrs.last.options.must_equal({:representable => true})
+        representer.representable_attrs[:title].options.must_equal({:representable => true})
       end
 
       it "overrides when inheriting same property" do
@@ -179,7 +179,7 @@ class RepresentableTest < MiniTest::Spec
         end
 
         representer.representable_attrs.size.must_equal 1
-        representer.representable_attrs.last.options.must_equal({:representable => true})
+        representer.representable_attrs[:title].options.must_equal({:representable => true})
       end
     end
 
@@ -187,17 +187,17 @@ class RepresentableTest < MiniTest::Spec
       # TODO: do this with all options.
       it "can be set explicitly" do
         band = Class.new(Band) { property :friends, :from => :friend }
-        assert_equal "friend", band.representable_attrs.last.from
+        assert_equal "friend", band.representable_attrs[:friends].from
       end
 
       it "can be set explicitly with as" do
         band = Class.new(Band) { property :friends, :as => :friend }
-        assert_equal "friend", band.representable_attrs.last.from
+        assert_equal "friend", band.representable_attrs[:friends].from
       end
 
       it "is infered from the name implicitly" do
         band = Class.new(Band) { property :friends }
-        assert_equal "friends", band.representable_attrs.last.from
+        assert_equal "friends", band.representable_attrs[:friends].from
       end
     end
 
@@ -214,8 +214,8 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "creates correct Definition" do
-      assert_equal "albums", RockBand.representable_attrs.last.name
-      assert RockBand.representable_attrs.last.array?
+      assert_equal "albums", RockBand.representable_attrs[:albums].name
+      assert RockBand.representable_attrs[:albums].array?
     end
   end
 
@@ -883,93 +883,6 @@ class RepresentableTest < MiniTest::Spec
         it "uses :decorate strategy" do
           AlbumRepresentation.prepare(album).to_hash.must_equal({"songs"=>[{"name"=>"Still Friends In The End"}]})
           album.wont_respond_to :to_hash
-        end
-      end
-    end
-  end
-
-  describe "Config" do
-    subject { Representable::Config.new }
-    PunkRock = Class.new
-
-    describe "wrapping" do
-      it "returns false per default" do
-        assert_equal nil, subject.wrap_for("Punk")
-      end
-
-      it "infers a printable class name if set to true" do
-        subject.wrap = true
-        assert_equal "punk_rock", subject.wrap_for(PunkRock)
-      end
-
-      it "can be set explicitely" do
-        subject.wrap = "Descendents"
-        assert_equal "Descendents", subject.wrap_for(PunkRock)
-      end
-    end
-
-    describe "#cloned" do
-      it "clones all definitions" do
-        subject << obj = Representable::Definition.new(:title)
-
-        subject.cloned.map(&:name).must_equal ["title"]
-        subject.cloned.first.object_id.wont_equal obj.object_id
-      end
-    end
-
-    describe "Config inheritance" do
-      # TODO: this section will soon be moved to uber.
-      describe "inheritance when including" do
-        # TODO: test all the below issues AND if cloning works.
-        module TestMethods
-          def representer_for(modules=[Representable], &block)
-            Module.new do
-              extend TestMethods
-              include *modules
-              module_exec(&block)
-            end
-          end
-        end
-        include TestMethods
-
-        it "inherits to uninitialized child" do
-          representer_for do # child
-            include(representer_for do # parent
-              representable_attrs.inheritable_array(:links) << "bar"
-            end)
-          end.representable_attrs.inheritable_array(:links).must_equal(["bar"])
-        end
-
-        it "works with uninitialized parent" do
-          representer_for do # child
-            representable_attrs.inheritable_array(:links) << "bar"
-
-            include(representer_for do # parent
-            end)
-          end.representable_attrs.inheritable_array(:links).must_equal(["bar"])
-        end
-
-        it "inherits when both are initialized" do
-          representer_for do # child
-            representable_attrs.inheritable_array(:links) << "bar"
-
-            include(representer_for do # parent
-              representable_attrs.inheritable_array(:links) << "stadium"
-            end)
-          end.representable_attrs.inheritable_array(:links).must_equal(["bar", "stadium"])
-        end
-
-        it "clones parent inheritables" do # FIXME: actually we don't clone here!
-          representer_for do # child
-            representable_attrs.inheritable_array(:links) << "bar"
-
-            include(parent = representer_for do # parent
-              representable_attrs.inheritable_array(:links) << "stadium"
-            end)
-
-            parent.representable_attrs.inheritable_array(:links) << "park"  # modify parent array.
-
-          end.representable_attrs.inheritable_array(:links).must_equal(["bar", "stadium"])
         end
       end
     end

@@ -21,11 +21,10 @@ module Representable
 
     def <<(definition)
       self[definition.name] = definition
-      self
     end
 
-    def last # TODO: remove me
-      self.values.last
+    def [](name)
+      fetch(name.to_s, nil)
     end
 
     def each(*args, &block)

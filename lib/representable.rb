@@ -117,7 +117,7 @@ private
       #   property :name, :readable => false
       #   property :name, :writeable => false
       def property(name, options={}, &block)
-        (representable_attrs << definition_class.new(name, options)).last
+        representable_attrs << definition_class.new(name, options)
       end
 
       # Declares a represented document node collection.
