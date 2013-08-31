@@ -1,6 +1,6 @@
 module Representable
   # NOTE: the API of Config is subject to change so don't rely too much on this private object.
-  class Config < Array # TODO: change to Hash.
+  class Config < Hash
     # DISCUSS: experimental. this will soon be moved to a separate gem
     module InheritableArray
       def inheritable_array(name)
@@ -19,30 +19,18 @@ module Representable
       end
     end
 
-    # def <<(definition)
-    #   self[definition.name] = definition
-    #   self
-    # end
-    # def last
-    #   self.values.last
-    # end
-    # def push(config={}) # FIXME: why do we need a default arg here?
-    #   puts "merging: #{config.inspect} with self: #{self.inspect}"
-    #   merge!(config)
-    # end
-    # def each(&block)
-    #   values.each(&block)
-    # end
-
     def <<(definition)
-      if overridden = find { |d| d.name == definition.name }
-        self[index(overridden)] = definition
-        return self
-      end
-
-      super(definition)
+      self[definition.name] = definition
+      self
     end
 
+    def last # TODO: remove me
+      self.values.last
+    end
+
+    def each(&block)
+      values.each(&block)
+    end
 
     attr_accessor :wrap
 

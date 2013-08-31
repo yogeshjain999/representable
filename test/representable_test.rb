@@ -20,9 +20,7 @@ class RepresentableTest < MiniTest::Spec
 
   module PunkBandRepresentation
     include Representable
-    puts "inheriting"
     include BandRepresentation
-    puts "+++++++++ done!"
 
     property :street_cred
   end
@@ -912,9 +910,9 @@ class RepresentableTest < MiniTest::Spec
 
     describe "#cloned" do
       it "clones all definitions" do
-        subject << obj = "Definition"
+        subject << obj = Representable::Definition.new(:title)
 
-        subject.cloned.must_equal ["Definition"]
+        subject.cloned.map(&:name).must_equal ["title"]
         subject.cloned.first.object_id.wont_equal obj.object_id
       end
     end
