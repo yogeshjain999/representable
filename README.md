@@ -174,6 +174,35 @@ Album.new.extend(AlbumRepresenter).
 #=> #<Album name="Offspring", songs=[#<Song title="Genocide">, #<Song title="Nitro", composers=["Offspring"]>]>
 ```
 
+## Syncing Objects
+
+Usually, representable creates a new nested object when parsing. If you want to update an existing object, use the `parse_strategy` option.
+
+```ruby
+module AlbumRepresenter
+  include Representable::JSON
+
+  collection :songs, extend: SongRepresenter, parse_strategy: :sync
+```
+
+When parsing an album, it will now call `from_json` on the existing songs in the collection.
+
+```ruby
+album = Album.find(1)
+album.songs.first #=> #<Song:0x999 title: "Panama">
+```
+
+Note that the album already contains a song instance.
+
+```ruby
+album.extend(AlbumRepresenter).
+  from_json('{songs: [{title: "Eruption"}]}')
+
+album.songs.first #=> #<Song:0x999 title: "Eruption">
+```
+
+Now, representable didn't create a new `Song` instance but updated the existing, resulting in renaming the song.
+
 ## Inline Representers
 
 If you don't want to maintain two separate modules when nesting representations you can define the `SongRepresenter` inline.
