@@ -28,8 +28,8 @@ module Representable
       self.values.last
     end
 
-    def each(&block)
-      values.each(&block)
+    def each(*args, &block)
+      values.each(*args, &block)
     end
 
     attr_accessor :wrap
@@ -47,14 +47,14 @@ module Representable
       end
 
       def inherit(parent)
-        push(*parent.cloned)
+        push(parent.cloned)
       end
     end
     include InheritMethods
     include InheritableArray # overrides #inherit.
 
   private
-    def push(*defs)
+    def push(defs)
       defs.each { |d| self << d }
     end
 
