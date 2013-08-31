@@ -20,7 +20,9 @@ class RepresentableTest < MiniTest::Spec
 
   module PunkBandRepresentation
     include Representable
+    puts "inheriting"
     include BandRepresentation
+    puts "+++++++++ done!"
 
     property :street_cred
   end
@@ -38,7 +40,7 @@ class RepresentableTest < MiniTest::Spec
         assert_equal "name", BandRepresentation.representable_attrs.first.name
       end
 
-      it "inherits to including modules" do
+      it "inherits to including modules xxx " do
         assert_equal 2,  PunkBandRepresentation.representable_attrs.size
         assert_equal "name", PunkBandRepresentation.representable_attrs.first.name
         assert_equal "street_cred", PunkBandRepresentation.representable_attrs.last.name
@@ -908,10 +910,12 @@ class RepresentableTest < MiniTest::Spec
       end
     end
 
-    describe "#clone" do
+    describe "#cloned" do
       it "clones all definitions" do
-        subject << Object.new
-        assert subject.first != subject.clone.first
+        subject << obj = "Definition"
+
+        subject.cloned.must_equal ["Definition"]
+        subject.cloned.first.object_id.wont_equal obj.object_id
       end
     end
 

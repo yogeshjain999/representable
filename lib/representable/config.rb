@@ -54,12 +54,12 @@ module Representable
     end
 
     module InheritMethods
-      def clone
-        self.class.new(collect { |d| d.clone })
+      def cloned
+        collect { |d| d.clone }
       end
 
       def inherit(parent)
-        push(*parent.clone)
+        push(*parent.cloned)
       end
     end
     include InheritMethods
