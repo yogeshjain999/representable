@@ -418,6 +418,21 @@ Song.new(:title => "Truth Hits Everybody", :copyright => "The Police").
 #=> {"title":"Truth Hits Everybody","copyright":"The Police"}
 ```
 
+## Overriding Properties
+
+You might want to override a particular property in an inheriting representer. Successively calling `property(name)` will override the former definition for `name` just as you know it from overriding methods.
+
+```ruby
+module CoverSongRepresenter
+  include Representable::JSON
+
+  include SongRepresenter        # defines property :title
+  property :title, as: :known_as # overrides that definition.
+end
+```
+
+This behaviour was added in 1.7.
+
 
 ## Polymorphic Extend
 
