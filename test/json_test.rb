@@ -127,10 +127,6 @@ module JsonTest
       end
 
       describe "#build_for" do
-        it "returns ObjectBinding" do
-          assert_kind_of Representable::Hash::ObjectBinding, Representable::Hash::PropertyBinding.build_for(Def.new(:band, :class => Hash), nil)
-        end
-
         it "returns TextBinding" do
           assert_kind_of Representable::Hash::PropertyBinding, Representable::Hash::PropertyBinding.build_for(Def.new(:band), nil)
         end
