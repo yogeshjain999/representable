@@ -15,15 +15,11 @@ module Representable
         return FragmentNotFound unless hash.has_key?(from) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
 
         fragment = hash[from]
-        deserialize_from(fragment)
+        deserialize(fragment)
       end
 
       def write(hash, value)
-        hash[from] = serialize_for(value)
-      end
-
-      def serialize_for(value)
-        serialize(value)
+        hash[from] = serialize(value)
       end
 
       def deserialize_from(fragment)
@@ -40,28 +36,28 @@ module Representable
     end
 
     class CollectionBinding < PropertyBinding
-      def serialize_for(value)
+      def serialize(value)
         # value.enum_for(:each_with_index).collect { |obj, i| serialize(obj, i) } # DISCUSS: provide ary index/hash key for representer_module_for?
-        value.collect { |item| serialize(item) } # TODO: i don't want Array but Forms here - what now?
+        value.collect { |item| super(item) } # TODO: i don't want Array but Forms here - what now?
       end
 
-      def deserialize_from(fragment)
+      def deserialize(fragment)
         CollectionDeserializer.new(self).deserialize(fragment)
       end
     end
 
 
     class HashBinding < PropertyBinding
-      def serialize_for(value)
+      def serialize(value)
         # requires value to respond to #each with two block parameters.
         {}.tap do |hsh|
-          value.each { |key, obj| hsh[key] = serialize(obj) }
+          value.each { |key, obj| hsh[key] = super(obj) }
         end
       end
 
-      def deserialize_from(fragment)
+      def deserialize(fragment)
         {}.tap do |hsh|
-          fragment.each { |key, item_fragment| hsh[key] = deserialize(item_fragment) }
+          fragment.each { |key, item_fragment| hsh[key] = super(item_fragment) }
         end
       end
     end

@@ -3,8 +3,6 @@ require 'representable/binding'
 module Representable
   module YAML
     class PropertyBinding < Representable::Hash::PropertyBinding
-      include Binding::Object
-
       def self.build_for(definition, *args)
         return CollectionBinding.new(definition, *args) if definition.array?
         new(definition, *args)
@@ -12,11 +10,11 @@ module Representable
 
       def write(map, value)
         map.children << Psych::Nodes::Scalar.new(from)
-        map.children << serialize_for(value)  # FIXME: should be serialize.
+        map.children << serialize(value)  # FIXME: should be serialize.
       end
 
-      def serialize_for(value)
-        write_scalar serialize(value)
+      def serialize(value)
+        write_scalar super(value)
       end
 
       def write_scalar(value)
@@ -36,14 +34,14 @@ module Representable
 
 
     class CollectionBinding < PropertyBinding
-      def serialize_for(value)
+      def serialize(value)
         Psych::Nodes::Sequence.new.tap do |seq|
           seq.style = Psych::Nodes::Sequence::FLOW if options[:style] == :flow
           value.each { |obj| seq.children << super(obj) }
         end
       end
 
-      def deserialize_from(fragment)  # FIXME: redundant from Hash::Bindings
+      def deserialize(fragment)  # FIXME: redundant from Hash::Bindings
         CollectionDeserializer.new(self).deserialize(fragment)
       end
     end
