@@ -3,39 +3,15 @@ require 'representable/bindings/hash_bindings.rb'
 
 module Representable
   module XML
-    module ObjectBinding
+    class PropertyBinding < Binding
       include Binding::Object
 
-      def serialize_method
-        :to_node
-      end
-
-      def deserialize_method
-        :from_node
-      end
-
-      def content_for(node) # TODO: move to ScalarDecorator.
-        node
-      end
-
-      def serialize_node(node, value)
-        serialize(value)
-      end
-    end
-
-
-    class PropertyBinding < Binding
       def self.build_for(definition, *args)
         return CollectionBinding.new(definition, *args)      if definition.array?
         return HashBinding.new(definition, *args)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
         return AttributeHashBinding.new(definition, *args)   if definition.hash? and definition.options[:use_attributes]
         return AttributeBinding.new(definition, *args)       if definition.attribute
         new(definition, *args)
-      end
-
-      def initialize(*args)
-        super
-        extend ObjectBinding if typed? # FIXME.
       end
 
       def write(parent, value)
@@ -63,6 +39,8 @@ module Representable
       end
 
       def serialize_node(node, value)
+        return serialize(value) if typed?
+
         node.content = serialize(value)
         node
       end
@@ -70,6 +48,15 @@ module Representable
       def deserialize_from(nodes)
         content_for deserialize(nodes.first)
         #deserialize(nodes.first)
+      end
+
+      # DISCUSS: why is this public?
+      def serialize_method
+        :to_node
+      end
+
+      def deserialize_method
+        :from_node
       end
 
     private
@@ -88,6 +75,8 @@ module Representable
       end
 
       def content_for(node) # TODO: move this into a ScalarDecorator.
+        return node if typed?
+
         node.content
       end
     end

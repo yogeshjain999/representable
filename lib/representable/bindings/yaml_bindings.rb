@@ -2,31 +2,12 @@ require 'representable/binding'
 
 module Representable
   module YAML
-    module ObjectBinding
+    class PropertyBinding < Representable::Hash::PropertyBinding
       include Binding::Object
 
-      def serialize_method
-        :to_ast
-      end
-
-      def deserialize_method
-        :from_hash
-      end
-
-      def write_scalar(value)
-        value
-      end
-    end
-
-    class PropertyBinding < Representable::Hash::PropertyBinding
       def self.build_for(definition, *args)
         return CollectionBinding.new(definition, *args) if definition.array?
         new(definition, *args)
-      end
-
-      def initialize(*args) # FIXME. make generic.
-        super
-        extend ObjectBinding if typed?
       end
 
       def write(map, value)
@@ -39,7 +20,17 @@ module Representable
       end
 
       def write_scalar(value)
+        return value if typed?
+
         Psych::Nodes::Scalar.new(value.to_s)
+      end
+
+      def serialize_method
+        :to_ast
+      end
+
+      def deserialize_method
+        :from_hash
       end
     end
 
