@@ -23,15 +23,6 @@ module Representable
 
     attr_reader :user_options, :represented # TODO: make private/remove.
 
-    # Main entry point for rendering/parsing a property object.
-    def serialize(value)
-      value
-    end
-
-    def deserialize(fragment, *args)
-      fragment
-    end
-
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
       represented_exec_for(:writer, doc) do
