@@ -36,3 +36,5 @@ module ReaderWriter
 
 * DISCUSS: should inline representers be created at runtime, so we don't need ::representer_engine?
 * deprecate `Decorator::Coercion`.
+
+* cleanup XML so it matches the current #serialize standard.
