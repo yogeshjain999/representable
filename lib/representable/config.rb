@@ -32,13 +32,17 @@ module Representable
     end
 
     attr_accessor :wrap
-    attr_accessor :remove_namespaces
 
     # Computes the wrap string or returns false.
     def wrap_for(name)
       return unless wrap
       return infer_name_for(name) if wrap === true
       wrap
+    end
+
+    # Write representer configuration into this hash.
+    def options
+      @options ||= {}
     end
 
     module InheritMethods

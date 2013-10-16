@@ -45,6 +45,14 @@ class ConfigTest < MiniTest::Spec
     it { subject["title"].must_equal definition }
   end
 
+  describe "#options" do
+    it { subject.options.must_equal({}) }
+    it do
+      subject.options[:namespacing] = true
+      subject.options[:namespacing].must_equal true
+    end
+  end
+
   describe "Config inheritance" do
     # TODO: this section will soon be moved to uber.
     describe "inheritance when including" do
