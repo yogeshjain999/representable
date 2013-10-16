@@ -1,3 +1,8 @@
+h2. 1.7.1
+
+* Introduce `Config#options` hash to store per-representer configuration.
+* The XML representer can now automatically remove namespaces when parsing. Use `XML::remove_namespaces!` in your representer. This is a work-around until namespaces are properly implemented in representable.
+
 h2. 1.7.0
 
 * The actual serialization and deserialization (that is, calling `to_hash` etc on the object) now happens in dedicated classes: `ObjectDeserializer` and friends. If you used to override stuff in `Binding`, I'm sorry.
