@@ -638,6 +638,17 @@ Album.new.to_xml #=>
 </album>
 ```
 
+### Namespaces
+
+Support for namespaces are not yet implemented. However, if an incoming parsed document contains namespaces, you can automatically remove them.
+
+```ruby
+module AlbumRepresenter
+  include Representable::XML
+
+  remove_namespaces!
+```
+
 ## Avoiding Modules
 
 There's been a rough discussion whether or not to use `extend` in Ruby. If you want to save that particular step when representing objects, define the representers right in your classes.

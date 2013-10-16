@@ -14,6 +14,10 @@ module Representable
 
 
     module ClassMethods
+      def remove_namespaces!
+        representable_attrs.options[:remove_namespaces] = true
+      end
+
       # Creates a new Ruby object from XML using mapping information declared in the class.
       #
       # Accepts a block yielding the currently iterated Definition. If the block returns false
@@ -33,10 +37,6 @@ module Representable
       def representer_engine
         Representable::XML
       end
-    end
-
-    def remove_namespaces?
-      representable_attrs.remove_namespaces
     end
 
     def from_xml(doc, *args)
@@ -59,6 +59,12 @@ module Representable
 
     def to_xml(*args)
       to_node(*args).to_s
+    end
+
+  private
+    def remove_namespaces?
+      # TODO: make local Config easily extendable so you get Config#remove_ns? etc.
+      representable_attrs.options[:remove_namespaces]
     end
   end
 end
