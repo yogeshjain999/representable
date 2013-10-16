@@ -40,9 +40,8 @@ module Representable
     end
 
     def from_xml(doc, *args)
-      node = remove_namespaces? ?
-        Nokogiri::XML(doc).remove_namespaces!.root :
-        Nokogiri::XML(doc).root
+      node = parse_xml(doc, *args)
+
       from_node(node, *args)
     end
 
@@ -65,6 +64,13 @@ module Representable
     def remove_namespaces?
       # TODO: make local Config easily extendable so you get Config#remove_ns? etc.
       representable_attrs.options[:remove_namespaces]
+    end
+
+    def parse_xml(doc, *args)
+      node = Nokogiri::XML(doc)
+
+      node.remove_namespaces! if remove_namespaces?
+      node.root
     end
   end
 end
