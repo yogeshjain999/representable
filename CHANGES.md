@@ -1,3 +1,7 @@
+h2. 1.7.2
+
+* `Representable#update_properties_from` is private now.
+
 h2. 1.7.1
 
 * Introduce `Config#options` hash to store per-representer configuration.
