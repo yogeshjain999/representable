@@ -153,7 +153,7 @@ class XMLBindingTest < MiniTest::Spec
 
   describe "ContentBinding" do
     before do
-      @property = Representable::XML::ContentBinding.new(Representable::Definition.new(:name, :value => true), nil)
+      @property = Representable::XML::ContentBinding.new(Representable::Definition.new(:name, :content => true), nil)
     end
     
     it "extracts with #read" do
