@@ -13,14 +13,15 @@ class GenericTest < MiniTest::Spec
       collection :songs
     end
 
-    it "initializes property with empty array" do
+    it "doesn't initialize property" do
       new_album.from_hash({})
-      new_album.songs.must_equal [] # DISCUSS: do we really want this?
+      new_album.songs.must_equal nil
     end
 
-    it "overrides property with empty array" do
+    it "leaves properties untouched" do
       album.from_hash({})
-      album.songs.must_equal [] # DISCUSS: do we really want this?
+      # TODO: test property.
+      album.songs.must_equal ["Fuck Armageddon"] # DISCUSS: do we really want this?
     end
   end
 
@@ -188,7 +189,6 @@ class GenericTest < MiniTest::Spec
       end
     end
   end
-
 
   describe "mix :extend and inline representers" do
     representer! do

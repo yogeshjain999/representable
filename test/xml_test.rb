@@ -310,14 +310,6 @@ class CollectionTest < MiniTest::Spec
         })
         assert_equal ["Cobra Skulls", "Diesel Boy"], cd.bands.map(&:name).sort
       end
-
-      it "collections can be empty when default set" do
-        cd = Compilation.from_xml(%{
-          <compilation>
-          </compilation>
-        })
-        assert_equal [], cd.bands
-      end
     end
 
     it "responds to #to_xml" do

@@ -392,11 +392,6 @@ end
             {:name => "Diesel Boy"}]}.to_json)
           assert_equal ["Cobra Skulls", "Diesel Boy"], cd.bands.map(&:name).sort
         end
-
-        it "creates emtpy array from default if configured" do
-          cd = Compilation.from_json("{}")
-          assert_equal [], cd.bands
-        end
       end
 
       it "responds to #to_json" do
