@@ -1,6 +1,7 @@
 h2. 1.7.2
 
 * `Representable#update_properties_from` is private now.
+* Added the `:content` option in XML to map top-level node's content to a property.
 
 h2. 1.7.1
 

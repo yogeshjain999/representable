@@ -595,9 +595,9 @@ composers: [Steward Copeland, Sting]
 
 ## More on XML
 
-### Mapping tag attributes
+### Mapping Tag Attributes
 
-You can also map properties to tag attributes in representable.
+You can also map properties to tag attributes in representable. This works only for the top-level node, thou (seen from the representer's perspective).
 
 ```ruby
 module SongRepresenter
@@ -613,7 +613,24 @@ Song.new(title: "American Idle").to_xml
 
 Naturally, this works for both ways.
 
-### Wrapping collections
+
+### Mapping Content
+
+The same concept can also be applied to content. If you need to map a property to the top-level node's content, use the `:content` option. Again, _top-level_ refers to the document fragment that maps to the representer.
+
+```ruby
+module SongRepresenter
+  include Representable::XML
+
+  property :title, content: true
+end
+
+Song.new(title: "American Idle").to_xml
+#=> <song>American Idle</song>
+```
+
+
+### Wrapping Collections
 
 It is sometimes unavoidable to wrap tag lists in a container tag.
 
