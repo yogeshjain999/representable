@@ -17,13 +17,13 @@ module Representable
     end
   end
 
+private
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
     # deserialize_for(bindings, mapper ? , options)
     representable_mapper(format, options).deserialize(doc, options)
   end
 
-private
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
     representable_mapper(format, options).serialize(doc, options)
