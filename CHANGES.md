@@ -1,3 +1,12 @@
+h2. 1.8.0
+
+* Major API change: Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
+* Minor API change: Rename `Definition#sought_type` to `#deserialize_class`.
+-> constantize :class etc (requires AS)
+-> make all options lambda-able
+-> make major steps lambda-able
+-> strategies for deserialization (lambda-able!)
+
 h2. 1.7.2
 
 * `Representable#update_properties_from` is private now.
