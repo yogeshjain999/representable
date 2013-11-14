@@ -128,7 +128,7 @@ module Representable
       end
 
       def class_from(fragment, *args)
-        call_proc_for(sought_type, fragment)
+        call_proc_for(deserialize_class, fragment)
       end
 
       def instance_for(fragment, *args)

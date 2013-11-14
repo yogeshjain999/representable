@@ -18,7 +18,7 @@ module Representable
     end
 
     def typed?
-      sought_type.is_a?(Class) or representer_module or options[:instance]  # also true if only :extend is set, for people who want solely rendering.
+      deserialize_class.is_a?(Class) or representer_module or options[:instance]  # also true if only :extend is set, for people who want solely rendering.
     end
 
     def array?
@@ -29,7 +29,7 @@ module Representable
       options[:hash]
     end
 
-    def sought_type
+    def deserialize_class
       options[:class]
     end
 

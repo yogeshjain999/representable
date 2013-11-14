@@ -43,8 +43,8 @@ class DefinitionTest < MiniTest::Spec
       assert_equal :"songs=", @def.setter
     end
 
-    it "responds to #sought_type" do
-      assert_equal nil, @def.sought_type
+    it "responds to #deserialize_class" do
+      assert_equal nil, @def.deserialize_class
     end
 
     describe "#clone" do
@@ -203,8 +203,8 @@ class DefinitionTest < MiniTest::Spec
       assert @def.array?
     end
 
-    it "responds to #sought_type" do
-      assert_equal nil, @def.sought_type
+    it "responds to #deserialize_class" do
+      assert_equal nil, @def.deserialize_class
     end
 
     it "responds to #default" do
@@ -217,8 +217,8 @@ class DefinitionTest < MiniTest::Spec
       @def = Representable::Definition.new(:songs, :class => Hash)
     end
 
-    it "responds to #sought_type" do
-      assert_equal Hash, @def.sought_type
+    it "responds to #deserialize_class" do
+      assert_equal Hash, @def.deserialize_class
     end
   end
 
