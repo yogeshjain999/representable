@@ -1,3 +1,7 @@
+h2. 17.3
+
+* Fix segfaulting with XML by passing the document to nested objects. Reported by @timoschilling and fixed by @canadaduane.
+
 h2. 1.7.2
 
 * `Representable#update_properties_from` is private now.
