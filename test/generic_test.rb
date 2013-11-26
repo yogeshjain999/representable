@@ -1,6 +1,13 @@
 require 'test_helper'
 
 class GenericTest < MiniTest::Spec
+  def self.for_formats(formats)
+    formats.each do |format, cfg|
+      mod, output, input = cfg
+      yield format, mod, output, input
+    end
+  end
+
 # one day, this file will contain all engine-independent test cases. one day...
   let (:new_album)  { OpenStruct.new.extend(representer) }
   let (:album)      { OpenStruct.new(:songs => ["Fuck Armageddon"]).extend(representer) }
@@ -23,6 +30,31 @@ class GenericTest < MiniTest::Spec
       # TODO: test property.
       album.songs.must_equal ["Fuck Armageddon"] # DISCUSS: do we really want this?
     end
+
+
+    for_formats(
+      :hash => [Representable::Hash, {}],
+      :xml  => [Representable::XML, "<open_struct></open_struct>", "<open_struct><songs><title>Suffer</title></songs></open_struct>"],
+      :yaml => [Representable::YAML, "--- {}\n"], # FIXME: this doesn't look right.
+    ) do |format, mod, output, input|
+
+      describe "empty collections" do
+        let (:format) { format }
+
+        representer!(:module => mod) do
+          collection :songs
+          self.representation_wrap = :album if format == :xml
+        end
+
+        let (:album) { Album.new.extend(representer) }
+
+        it "doesn't render collection in #{format}" do
+
+  #          raise album.to_hash.inspect
+          render(album).must_equal_document output
+        end
+      end
+    end
   end
 
 
@@ -42,13 +74,6 @@ class GenericTest < MiniTest::Spec
       hit.from_hash("song"=>{"title"=>"Suffer"})
       hit.song.title.must_equal "Suffer"
       hit.song.object_id.must_equal song_id
-    end
-  end
-
-  def self.for_formats(formats)
-    formats.each do |format, cfg|
-      mod, output, input = cfg
-      yield format, mod, output, input
     end
   end
 
