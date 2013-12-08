@@ -798,39 +798,42 @@ Coercing values only happens when rendering or parsing a document. Representable
 
 *(Please don't read this section!)*
 
-#### If you need a special binding for a property you're free to create it using the `:binding` option.
+### Custom Binding
 
-<!-- here comes some code -->
+If you need a special binding for a property you're free to create it using the `:binding` option.
+
 ```ruby
 property :title, :binding => lambda { |*args| JSON::TitleBinding.new(*args) }
 ```
 
-#### You can use the parsed document fragment directly as a representable instance by returning `nil` in `:class`.
+### Syncing Parsing
 
-<!-- here comes some code -->
+You can use the parsed document fragment directly as a representable instance by returning `nil` in `:class`.
+
 ```ruby
 property :song, :class => lambda { |*| nil }
 ```
 
 This makes sense when your parsing looks like this.
 
-<!-- here comes some code -->
 ```ruby
 hit.from_hash(song: <#Song ..>)
 ```
 
 Representable will not attempt to create a `Song` instance for you but use the provided from the document.
 
-#### The same goes the other way when rendering. Just provide an empty `:instance` block.
+Note that this is now the [official option](#syncing-objects) `:parse_strategy`.
 
-<!-- here comes some code -->
+### Rendering Without Extend
+
+The same goes the other way when rendering. Just provide an empty `:instance` block.
+
 ```ruby
 property :song, :instance => lambda { |*| nil }
 ```
 
 This will treat the `song` property instance as a representable object.
 
-<!-- here comes some code -->
 ```ruby
 hit.to_json # this will call hit.song.to_json
 ```
