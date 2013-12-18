@@ -7,7 +7,7 @@ module Representable
       new(represented)
     end
 
-    def self.inline_representer(base_module, &block) # DISCUSS: separate module?
+    def self.inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
       Class.new(self) do
         include base_module
         instance_exec &block
