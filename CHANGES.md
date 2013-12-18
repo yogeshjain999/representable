@@ -7,7 +7,7 @@ h2. 1.8.0
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
 
-h2. 1.7.4
+h2. 1.7.5
 
 * propagate all options for ::property to ::inline_representer.
 
