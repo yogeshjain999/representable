@@ -155,7 +155,7 @@ private
     def property(name, options={}, &block)
       return super unless block_given?
 
-      inline = inline_representer(representer_engine, &block)
+      inline = inline_representer(representer_engine, name, options, &block)
       inline.module_eval { include options[:extend] } if options[:extend]
 
       options[:extend] = inline
@@ -163,7 +163,7 @@ private
     end
 
   private
-    def inline_representer(base_module, &block) # DISCUSS: separate module?
+    def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
       Module.new do
         include base_module
         instance_exec &block
