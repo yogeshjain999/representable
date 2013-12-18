@@ -7,6 +7,10 @@ h2. 1.8.0
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
 
+h2. 1.7.4
+
+* propagate all options for ::property to ::inline_representer.
+
 h2. 1.7.3
 
 * Fix segfaulting with XML by passing the document to nested objects. Reported by @timoschilling and fixed by @canadaduane.
