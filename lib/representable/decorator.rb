@@ -7,6 +7,22 @@ module Representable
       new(represented)
     end
 
+    def self.property(name, options={}, &block)
+      attr = representable_attrs[name]
+
+      if attr && block_given? && options[:inherit] == true
+        # if there is an existing representer for the given
+        # attribute, create a new subclass of the representer and extend
+        attr.options[:extend] = Class.new(attr.options[:extend]) do
+          instance_exec(&block)
+        end
+
+        return attr
+      end
+      
+      super
+    end
+
     def self.inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
       Class.new(self) do
         include base_module
