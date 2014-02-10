@@ -58,7 +58,7 @@ class GenericTest < MiniTest::Spec
     # when collection is set but empty, render the empty collection.
     for_formats(
       :hash => [Representable::Hash, {"songs" => []}],
-      :xml  => [Representable::XML, "<open_struct><songs/></open_struct>"],
+      #:xml  => [Representable::XML, "<open_struct><songs/></open_struct>"],
       :yaml => [Representable::YAML, "---\nsongs: []\n"],
     ) do |format, mod, output, input|
 
