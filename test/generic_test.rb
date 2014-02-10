@@ -28,17 +28,18 @@ class GenericTest < MiniTest::Spec
     it "leaves properties untouched" do
       album.from_hash({})
       # TODO: test property.
-      album.songs.must_equal ["Fuck Armageddon"] # DISCUSS: do we really want this?
+      album.songs.must_equal ["Fuck Armageddon"] # when the collection is not present in the incoming hash, this propery stays untouched.
     end
 
 
+    # when collection is nil, it doesn't get rendered:
     for_formats(
       :hash => [Representable::Hash, {}],
-      :xml  => [Representable::XML, "<open_struct></open_struct>", "<open_struct><songs><title>Suffer</title></songs></open_struct>"],
+      :xml  => [Representable::XML, "<open_struct></open_struct>"],
       :yaml => [Representable::YAML, "--- {}\n"], # FIXME: this doesn't look right.
     ) do |format, mod, output, input|
 
-      describe "empty collections" do
+      describe "nil collections" do
         let (:format) { format }
 
         representer!(:module => mod) do
@@ -49,8 +50,29 @@ class GenericTest < MiniTest::Spec
         let (:album) { Album.new.extend(representer) }
 
         it "doesn't render collection in #{format}" do
+          render(album).must_equal_document output
+        end
+      end
+    end
 
-  #          raise album.to_hash.inspect
+    # when collection is set but empty, render the empty collection.
+    for_formats(
+      :hash => [Representable::Hash, {"songs" => []}],
+      :xml  => [Representable::XML, "<open_struct><songs/></open_struct>"],
+      :yaml => [Representable::YAML, "---\nsongs: []\n"],
+    ) do |format, mod, output, input|
+
+      describe "empty collections" do
+        let (:format) { format }
+
+        representer!(:module => mod) do
+          collection :songs
+          self.representation_wrap = :album if format == :xml
+        end
+
+        let (:album) { OpenStruct.new(:songs => []).extend(representer) }
+
+        it "renders empty collection in #{format}" do
           render(album).must_equal_document output
         end
       end
