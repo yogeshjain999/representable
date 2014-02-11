@@ -128,7 +128,19 @@ private
       #   collection :products, :from => :item
       #   collection :products, :class => Product
       def collection(name, options={}, &block)
-        options[:collection] = true
+        options[:collection] = true # FIXME: don't override original.
+        property(name, options, &block)
+      end
+
+      # Allows you to nest a block of properties in a separate section while still mapping them to the outer object.
+      def nested(name, options={}, &block)
+        options = options.merge(
+          :nested   => true,
+          :getter   => lambda { |*| represented },
+          :setter   => lambda { |*| },
+          :instance => lambda { |*| represented }
+        )
+
         property(name, options, &block)
       end
 
