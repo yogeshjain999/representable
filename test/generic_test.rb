@@ -1,13 +1,6 @@
 require 'test_helper'
 
 class GenericTest < MiniTest::Spec
-  def self.for_formats(formats)
-    formats.each do |format, cfg|
-      mod, output, input = cfg
-      yield format, mod, output, input
-    end
-  end
-
 # one day, this file will contain all engine-independent test cases. one day...
   let (:new_album)  { OpenStruct.new.extend(representer) }
   let (:album)      { OpenStruct.new(:songs => ["Fuck Armageddon"]).extend(representer) }

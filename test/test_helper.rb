@@ -49,6 +49,13 @@ MiniTest::Spec.class_eval do
   include AssertJson::Assertions
   include XmlHelper
 
+  def self.for_formats(formats)
+    formats.each do |format, cfg|
+      mod, output, input = cfg
+      yield format, mod, output, input
+    end
+  end
+
   def self.representer!(format=Representable::Hash, name=:representer, &block)
     fmt = format # we need that so the 2nd call to ::let (within a ::describe) remembers the right format.
 
