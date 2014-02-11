@@ -9,7 +9,7 @@ Representable is helpful for all kind of rendering and parsing workflows. Howeve
 
 ## Installation
 
-The representable gem is almost dependency-free. Almost.
+The representable gem runs with all Ruby versions >= 1.8.7.
 
 ```ruby
 gem 'representable'
