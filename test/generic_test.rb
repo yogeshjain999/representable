@@ -169,27 +169,6 @@ class GenericTest < MiniTest::Spec
     end
   end
 
-  def render(object)
-    AssertableDocument.new(object.send("to_#{format}"), format)
-  end
-
-  def parse(object, input)
-    object.send("from_#{format}", input)
-  end
-
-  class AssertableDocument
-    attr_reader :document
-
-    def initialize(document, format)
-      @document, @format = document, format
-    end
-
-    def must_equal_document(*args)
-      return document.must_equal_xml(*args) if @format == :xml
-      document.must_equal(*args)
-    end
-  end
-
 
   # Lonely Collection
   require "representable/hash/collection"
