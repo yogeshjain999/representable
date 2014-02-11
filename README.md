@@ -233,6 +233,38 @@ module AlbumRepresenter
   end
 ```
 
+## Document Nesting
+
+Not always does the structure of the desired document map to your objects. The `::nested` method allows you to structure properties in a separate section while still mapping the properties to the outer object.
+
+Imagine the following document.
+
+```json
+{"title": "Roxanne",
+ "details":
+   {"track": 3,
+    "length": "4:10"}
+}
+```
+
+However, both `track` and `length` are properties of the song object `<Song#0x999 title: "Roxanne", track: 3 ...>`, there is no such concept as `details` in the `Song` class. Representable gives you `::nested` to achieve this.
+
+```ruby
+module SongRepresenter
+  include Representable::JSON
+
+  property :title
+
+  nested :details do
+    property :track
+    property :length
+  end
+end
+```
+
+Just use an inline representer or the `extend:` option to define nested properties. And as always, this works both ways for rendering and parsing.
+
+
 ## Decorator vs. Extend
 
 People who dislike `:extend` go use the `Decorator` strategy!
