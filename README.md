@@ -262,7 +262,7 @@ module SongRepresenter
 end
 ```
 
-Just use an inline representer or the `extend:` option to define nested properties. And as always, this works both ways for rendering and parsing.
+Just use an inline representer or the `extend:` option to define nested properties. Accessors for nested properties will still be called on the outer object (here, `song`). And as always, this works both ways for rendering and parsing.
 
 
 ## Decorator vs. Extend
