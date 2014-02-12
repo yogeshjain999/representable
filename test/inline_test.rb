@@ -108,24 +108,26 @@ class InlineTest < MiniTest::Spec
   #     end
   #   end
   # end
+
+
   for_formats(
     :hash => [Representable::Hash, {"album" => {"artist" => {"label"=>"Epitaph"}}}],
     # :xml  => [Representable::XML, "<open_struct></open_struct>"],
     #:yaml => [Representable::YAML, "---\nlabel:\n  label: Epitaph\n  owner: Brett Gurewitz\n"]
   ) do |format, mod, output, input|
 
-    class ArtistRepresenter < Representable::Decorator
+    class ArtistDecorator < Representable::Decorator
       include Representable::JSON
       property :label
     end
 
-    describe ":getter with inline representer" do
+    describe ":getter with :decorator" do
       let (:format) { format }
 
       representer!(:module => mod) do
         self.representation_wrap = "album"
 
-        property :artist, :getter => lambda { |args| represented }, :decorator => ArtistRepresenter
+        property :artist, :getter => lambda { |args| represented }, :decorator => ArtistDecorator
       end
 
       let (:album) { OpenStruct.new(:label => "Epitaph").extend(representer) }
