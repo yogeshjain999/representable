@@ -62,6 +62,8 @@ class InlineTest < MiniTest::Spec
       Class.new(Representable::Decorator) do
         include Representable::Hash
 
+        property :who
+
         property :song, :class => Song do
           property :name
         end
@@ -70,7 +72,7 @@ class InlineTest < MiniTest::Spec
       end
     end
 
-    it { request.to_hash.must_equal({"song"=>{"name"=>"Alive"}}) }
+    it { request.to_hash.must_equal({"song"=>{"who"=>"Josephine", "name"=>"Alive"}}) }
     it { request.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name.must_equal "You've Taken Everything"}
 
     it "uses an inline decorator" do
