@@ -4,7 +4,7 @@ class NestedTest < MiniTest::Spec
 	Album = Struct.new(:label, :owner)
 
 	for_formats(
-    :hash => [Representable::Hash, hsh={"label" => {"label"=>"Epitaph", "owner"=>"Brett Gurewitz"}}, hsh],
+    :hash => [Representable::Hash, {"label" => {"label"=>"Epitaph", "owner"=>"Brett Gurewitz"}}],
     # :xml  => [Representable::XML, "<open_struct></open_struct>"],
     :yaml => [Representable::YAML, "---\nlabel:\n  label: Epitaph\n  owner: Brett Gurewitz\n"]
   ) do |format, mod, output, input|
