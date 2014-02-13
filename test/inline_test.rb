@@ -114,11 +114,11 @@ class InlineTest < MiniTest::Spec
   # end
 
 
-  for_formats(
-    :hash => [Representable::Hash, {"album" => {"artist" => {"label"=>"Epitaph"}}}],
-    # :xml  => [Representable::XML, "<open_struct></open_struct>"],
-    #:yaml => [Representable::YAML, "---\nlabel:\n  label: Epitaph\n  owner: Brett Gurewitz\n"]
-  ) do |format, mod, output, input|
+  for_formats({
+      :hash => [Representable::Hash, {"album" => {"artist" => {"label"=>"Epitaph"}}}],
+      # :xml  => [Representable::XML, "<open_struct></open_struct>"],
+      #:yaml => [Representable::YAML, "---\nlabel:\n  label: Epitaph\n  owner: Brett Gurewitz\n"]
+    }) do |format, mod, output, input|
 
     class ArtistDecorator < Representable::Decorator
       include Representable::JSON

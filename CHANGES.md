@@ -10,6 +10,7 @@ h2. 1.8.0
 h2. 1.7.6
 
 * `::nested`
+* Fixing a bug (thanks @rsutphin) where inline decorators would inherit the properties from the outer decorator.
 
 h2. 1.7.5
 
