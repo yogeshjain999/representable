@@ -65,5 +65,33 @@ class NestedTest < MiniTest::Spec
       	album.owner.must_equal "Brett Gurewitz"
       end
     end
+
+    describe "::nested with decorator" do
+      let (:format) { format }
+
+      representer!(:module => mod, :decorator => true) do
+        nested :label do
+          property :label
+          property :owner
+
+          # self.representation_wrap = nil if format == :xml
+        end
+
+
+        self.representation_wrap = :album if format == :xml
+      end
+
+      let (:album) { representer.prepare(Album.new("Epitaph", "Brett Gurewitz")) }
+
+      it "renders nested Album-properties in separate section" do
+        render(album).must_equal_document output
+      end
+
+      it "parses nested properties to Album instance" do
+        album = parse(representer.prepare(Album.new), output)
+        album.label.must_equal "Epitaph"
+        album.owner.must_equal "Brett Gurewitz"
+      end
+    end
   end
 end

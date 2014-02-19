@@ -136,9 +136,9 @@ private
       def nested(name, options={}, &block)
         options = options.merge(
           :nested   => true,
-          :getter   => lambda { |*| represented },
+          :getter   => lambda { |*| self },
           :setter   => lambda { |*| },
-          :instance => lambda { |*| represented }
+          :instance => lambda { |*| self }
         )
 
         property(name, options, &block)
