@@ -9,7 +9,7 @@ h2. 1.8.0
 
 h2. 1.7.6
 
-* `::nested`
+* Add `::nested` to nest blocks in the document whilst still using the same represented object. Use with `Decorator` only.
 * Fixing a bug (thanks @rsutphin) where inline decorators would inherit the properties from the outer decorator.
 
 h2. 1.7.5
