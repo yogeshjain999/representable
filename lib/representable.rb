@@ -132,18 +132,6 @@ private
         property(name, options, &block)
       end
 
-      # Allows you to nest a block of properties in a separate section while still mapping them to the outer object.
-      def nested(name, options={}, &block)
-        options = options.merge(
-          :nested   => true,
-          :getter   => lambda { |*| self },
-          :setter   => lambda { |*| },
-          :instance => lambda { |*| self }
-        )
-
-        property(name, options, &block)
-      end
-
       def hash(name=nil, options={})
         return super() unless name  # allow Object.hash.
 

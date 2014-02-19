@@ -250,7 +250,7 @@ Imagine the following document.
 However, both `track` and `length` are properties of the song object `<Song#0x999 title: "Roxanne", track: 3 ...>`, there is no such concept as `details` in the `Song` class. Representable gives you `::nested` to achieve this.
 
 ```ruby
-module SongRepresenter
+class SongRepresenter < Representable::Decorator
   include Representable::JSON
 
   property :title
@@ -263,6 +263,8 @@ end
 ```
 
 Just use an inline representer or the `extend:` option to define nested properties. Accessors for nested properties will still be called on the outer object (here, `song`). And as always, this works both ways for rendering and parsing.
+
+Note that `nested` works with decorators, only. We might add it for modules soon.
 
 
 ## Decorator vs. Extend
