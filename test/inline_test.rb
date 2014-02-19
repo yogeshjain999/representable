@@ -13,7 +13,7 @@ class InlineTest < MiniTest::Spec
     mod, output, input = cfg
 
     describe "[#{format}] with :class" do
-      representer!(mod) do
+      representer!(:module => mod) do
         property :song, :class => Song do
           property :name
         end
@@ -36,7 +36,7 @@ class InlineTest < MiniTest::Spec
     describe "[#{format}] collection with :class" do
       let (:request) { representer.prepare(OpenStruct.new(:songs => [song])) }
 
-      representer!(mod) do
+      representer!(:module => mod) do
         collection :songs, collection_options.merge(:class => Song) do
           property :name
         end

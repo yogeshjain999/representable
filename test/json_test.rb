@@ -426,7 +426,7 @@ end
 
   class HashTest < MiniTest::Spec
     describe "hash :songs" do
-      representer!(Representable::JSON) do
+      representer!(:module => Representable::JSON) do
         hash :songs
       end
 
@@ -443,7 +443,7 @@ end
     end
 
     describe "hash :songs, :class => Song" do
-      representer!(Representable::JSON) do
+      representer!(:module => Representable::JSON) do
         hash :songs, :extend => Module.new { include Representable::JSON; property :name }, :class => Song
       end
 

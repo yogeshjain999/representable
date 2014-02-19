@@ -80,18 +80,13 @@ MiniTest::Spec.class_eval do
   def self.representer!(options={}, &block)
     fmt = options # we need that so the 2nd call to ::let (within a ::describe) remembers the right format.
 
-    if fmt.is_a?(Hash)
-      name   = fmt[:name] || :representer
-      format = fmt[:module] || Representable::Hash
-      is_decorator = fmt[:decorator] || false
-    end
+    name   = options[:name]   || :representer
+    format = options[:module] || Representable::Hash
 
     let(name) do
-      mod = is_decorator ? Class.new(Representable::Decorator) : Module.new
+      mod = options[:decorator] ? Class.new(Representable::Decorator) : Module.new
 
-      if fmt.is_a?(Hash)
-        inject_representer(mod, fmt)
-      end
+      inject_representer(mod, fmt)
 
       mod.module_eval do
         include format

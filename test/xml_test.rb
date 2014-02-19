@@ -396,7 +396,7 @@ class CollectionTest < MiniTest::Spec
 
     describe "XML::Collection" do
       describe "with contained objects" do
-        representer!(Representable::XML::Collection)  do
+        representer!(:module => Representable::XML::Collection)  do
           items :class => Song, :extend => SongRepresenter
           self.representation_wrap= :songs
         end
@@ -423,7 +423,7 @@ class CollectionTest < MiniTest::Spec
     end
 
     describe "XML::AttributeHash" do  # TODO: move to HashTest.
-      representer!(Representable::XML::AttributeHash) do
+      representer!(:module => Representable::XML::AttributeHash) do
         self.representation_wrap= :songs
       end
 
