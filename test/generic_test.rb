@@ -225,4 +225,25 @@ class GenericTest < MiniTest::Spec
       must_equal({"song"=>{"artist"=>"Strung Out", "title"=>"The Fever And The Sound"}})
     end
   end
+
+
+  # wrap_test
+  for_formats(
+    :hash => [Representable::Hash, {}],
+    # :xml  => [Representable::XML, "<open_struct>\n  <song>\n    <name>Alive</name>\n  </song>\n</open_struct>", "<open_struct><song><name>You've Taken Everything</name></song>/open_struct>"],
+    # :yaml => [Representable::YAML, "---\nsong:\n  name: Alive\n", "---\nsong:\n  name: You've Taken Everything\n"],
+  ) do |format, mod, input|
+
+    describe "parsing [#{format}] with wrap where wrap is missing" do
+      representer!(:module => mod) do
+        self.representation_wrap = :song
+
+        property :title
+      end
+
+      it "doesn't change represented object" do
+        song.extend(representer).send("from_#{format}", input).title.must_equal "Resist Stance"
+      end
+    end
+  end
 end

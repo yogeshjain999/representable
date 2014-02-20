@@ -28,7 +28,7 @@ module Representable
 
     def from_hash(data, options={}, binding_builder=PropertyBinding)
       if wrap = options[:wrap] || representation_wrap
-        data = data[wrap.to_s]
+        data = data[wrap.to_s] || {} # DISCUSS: don't initialize this more than once. # TODO: this should be done with #read.
       end
 
       update_properties_from(data, options, binding_builder)
