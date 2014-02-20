@@ -57,6 +57,27 @@ class InlineTest < MiniTest::Spec
     it { request.to_hash.must_equal({"song"=>{"name"=>"Alive"}}) }
   end
 
+
+  for_formats(
+    :hash => [Representable::Hash, {}],
+    # :xml  => [Representable::XML, "<open_struct>\n  <song>\n    <name>Alive</name>\n  </song>\n</open_struct>", "<open_struct><song><name>You've Taken Everything</name></song>/open_struct>"],
+    # :yaml => [Representable::YAML, "---\nsong:\n  name: Alive\n", "---\nsong:\n  name: You've Taken Everything\n"],
+  ) do |format, mod, input|
+
+    describe "parsing [#{format}] where nested property missing" do
+      representer!(:module => mod) do
+        property :song do
+          property :name
+        end
+      end
+
+      it "doesn't change represented object" do
+        request.send("from_#{format}", input).song.must_equal song
+      end
+    end
+  end
+
+
   describe "decorator" do
     let (:request) { representer.prepare(OpenStruct.new(:song => song, :who => "Josephine")) }
 
