@@ -7,6 +7,10 @@ h2. 1.8.0
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
 
+h2. 1.7.7
+
+* Parsing an empty hash with a representer having a wrap does no longer throw an exception.
+
 h2. 1.7.6
 
 * Add `::nested` to nest blocks in the document whilst still using the same represented object. Use with `Decorator` only.
