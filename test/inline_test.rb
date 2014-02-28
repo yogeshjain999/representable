@@ -78,24 +78,34 @@ class InlineTest < MiniTest::Spec
   end
 
 
-  describe "decorator" do
+  describe "inheriting from outer representer" do
     let (:request) { Struct.new(:song, :requester).new(song, "Josephine") }
 
-    representer!(:decorator => true) do
-      property :requester
+    [false, true].each do |is_decorator| # test for module and decorator.
+      representer!(:decorator => is_decorator) do
+        property :requester
 
-      property :song, :class => Song do
+        property :song, :class => Song do
+          property :name
+        end
+      end
+
+      let (:decorator) { representer.prepare(request) }
+
+      it { decorator.to_hash.must_equal({"requester"=>"Josephine", "song"=>{"name"=>"Alive"}}) }
+      it { decorator.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name.must_equal "You've Taken Everything"}
+    end
+  end
+
+  describe "object pollution" do
+    representer!(:decorator => true) do
+      property :song do
         property :name
       end
     end
 
-    let (:decorator) { representer.prepare(request) }
-
-    it { decorator.to_hash.must_equal({"requester"=>"Josephine", "song"=>{"name"=>"Alive"}}) }
-    it { decorator.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name.must_equal "You've Taken Everything"}
-
-    it "uses an inline decorator" do
-      decorator.to_hash
+    it "uses an inline decorator and doesn't alter represented" do
+      representer.prepare(Struct.new(:song).new(song)).to_hash
       song.wont_be_kind_of Representable
     end
   end
