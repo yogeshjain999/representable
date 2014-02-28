@@ -21,18 +21,6 @@ module Representable
       end
     end
 
-    # Allows you to nest a block of properties in a separate section while still mapping them to the outer object.
-    def self.nested(name, options={}, &block)
-      options = options.merge(
-        :nested   => true,
-        :getter   => lambda { |*| self },
-        :setter   => lambda { |*| },
-        :instance => lambda { |*| self }
-      )
-
-      property(name, options, &block)
-    end
-
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
 
     def initialize(represented)

@@ -152,17 +152,29 @@ private
 
   # Internal module for DSL sugar that should not go into the core library.
   module DSLAdditions
+    # Allows you to nest a block of properties in a separate section while still mapping them to the outer object.
+    def nested(name, options={}, &block)
+      options = options.merge(
+        :decorator  => true,
+        :getter     => lambda { |*| self },
+        :setter     => lambda { |*| },
+        :instance   => lambda { |*| self }
+      )
+
+      property(name, options, &block)
+    end
+
     def property(name, options={}, &block)
       return super unless block_given?
 
-      inline = inline_representer(representer_engine, name, options, &block)
+      representer = options[:decorator] ? Decorator : self
+      inline = representer.inline_representer(representer_engine, name, options, &block)
       inline.module_eval { include options[:extend] } if options[:extend]
 
       options[:extend] = inline
       super
     end
 
-  private
     def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
       Module.new do
         include base_module

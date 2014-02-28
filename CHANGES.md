@@ -10,6 +10,7 @@ h2. 1.8.0
 h2. 1.7.7
 
 * Parsing an empty hash with a representer having a wrap does no longer throw an exception.
+* `::nested` now works in modules, too! Nests are implemented as decorator representer, not as modules, so they don't pollute the represented object.
 
 h2. 1.7.6
 
