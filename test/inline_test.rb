@@ -79,27 +79,23 @@ class InlineTest < MiniTest::Spec
 
 
   describe "decorator" do
-    let (:request) { representer.prepare(OpenStruct.new(:song => song, :who => "Josephine")) }
+    let (:request) { Struct.new(:song, :requester).new(song, "Josephine") }
 
-    let (:representer) do
-      Class.new(Representable::Decorator) do
-        include Representable::Hash
+    representer!(:decorator => true) do
+      property :requester
 
-        property :who
-
-        property :song, :class => Song do
-          property :name
-        end
-
-        self
+      property :song, :class => Song do
+        property :name
       end
     end
 
-    it { request.to_hash.must_equal({"who"=>"Josephine", "song"=>{"name"=>"Alive"}}) }
-    it { request.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name.must_equal "You've Taken Everything"}
+    let (:decorator) { representer.prepare(request) }
+
+    it { decorator.to_hash.must_equal({"requester"=>"Josephine", "song"=>{"name"=>"Alive"}}) }
+    it { decorator.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name.must_equal "You've Taken Everything"}
 
     it "uses an inline decorator" do
-      request.to_hash
+      decorator.to_hash
       song.wont_be_kind_of Representable
     end
   end
