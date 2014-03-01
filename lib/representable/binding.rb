@@ -65,6 +65,8 @@ module Representable
       read(doc)
     end
 
+    # concept: Option#call(*args) => send(string)/lambda()
+    #   dynamic string
     def get
       represented_exec_for(:getter) do
         exec_context.send(getter)
