@@ -20,7 +20,11 @@ module Representable
     end
 
     def <<(definition)
-      self[definition.name] = definition
+      if definition.options[:inherit] and parent = self[definition.name] # TODO: Move me somewhere else :) FIXME: i don't like the access to options[definition] here.
+        definition.options.merge!(parent.options)
+      end
+
+      self[definition.name] = definition # FIXME: assure that the position remains the same.
     end
 
     def [](name)

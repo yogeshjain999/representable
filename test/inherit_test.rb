@@ -1,42 +1,21 @@
+require 'test_helper'
 
-  class NestedInheritanceTest < MiniTest::Spec
-    class UserDecorator < Representable::Decorator
-      include Representable::Hash
-      property :contact do
-        property :first_name
-        property :last_name
-      end
-    end
-
-    class CompanyDecorator < UserDecorator
-      property :contact, :inherit => true do
-        property :fax_number
-      end
-    end
-
-    let (:user) do
-      OpenStruct.new({
-        :contact => OpenStruct.new(
-          :first_name => "Jane"
-        )
-      })
-    end
-
-    let (:user_decorator) do
-      UserDecorator.new(user)
-    end
-
-    let (:company_decorator) do
-      CompanyDecorator.new(user)
-    end
-
-    it "should inherit nested properties" do
-      company_contact = company_decorator.send(:representable_attrs)['contact'].representer_module
-      company_contact.send(:representable_attrs).keys.must_include 'first_name'
-    end
-
-    it "should not interfere with superclass attributes" do
-      user_contact = user_decorator.send(:representable_attrs)['contact'].representer_module
-      user_contact.send(:representable_attrs).keys.wont_include 'fax_number'
-    end
+class InheritTest < MiniTest::Spec
+  module SongRepresenter
+    include Representable::Hash
+    property :name, :as => :title
+    property :track
   end
+
+  module HitRepresenter
+    include Representable::Hash
+    include SongRepresenter
+
+    property :title, :inherit => true, :getter => lambda { |*| "Creeping Out Sara" }
+  end
+  let (:song) { Song.new("Roxanne", 1) }
+
+  it { SongRepresenter.prepare(song).to_hash.must_equal({"title"=>"Roxanne", "track"=>1}) }
+  it { HitRepresenter.prepare(song).to_hash.must_equal({"title"=>"Creeping Out Sara", "track"=>1}) } # as: inherited.
+
+end
