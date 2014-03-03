@@ -168,4 +168,38 @@ class InlineTest < MiniTest::Spec
       end
     end
   end
+
+
+  # test helper methods within inline representer
+  for_formats({
+    :hash => [Representable::Hash, {"song"=>{"name"=>"ALIVE"}}],
+    :xml  => [Representable::XML, "<request>\n  <song>\n    <name>ALIVE</name>\n  </song>\n</request>"],
+    :yaml => [Representable::YAML, "---\nsong:\n  name: ALIVE\n"],
+  }) do |format, mod, output|
+
+    describe "helper method within inline representer [#{format}]" do
+      let (:format) { format }
+
+      representer!(:module => mod, :decorator => true) do
+        self.representation_wrap = :request if format == :xml
+
+        property :requester
+        property :song do
+          property :name, :decorator_scope => true
+
+          define_method :name do
+            represented.name.upcase
+          end
+
+          self.representation_wrap = :song if format == :xml
+        end
+      end
+
+      let (:request) { representer.prepare(OpenStruct.new(:song => Song.new("Alive"))) }
+
+      it do
+        render(request).must_equal_document output
+      end
+    end
+  end
 end
