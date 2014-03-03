@@ -1,10 +1,10 @@
 # Representable
 
-Representable maps ruby objects to documents and back.
+Representable maps Ruby objects to documents and back.
 
 In other words: Take an object and decorate it with a representer module. This will allow you to render a JSON, XML or YAML document from that object. But that's only half of it! You can also use representers to parse a document and create or populate an object.
 
-Representable is helpful for all kind of rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
+Representable is helpful for all kind of rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [Roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
 
 
 ## Installation
@@ -264,7 +264,7 @@ end
 
 Just use an inline representer or the `extend:` option to define nested properties. Accessors for nested properties will still be called on the outer object (here, `song`). And as always, this works both ways for rendering and parsing.
 
-Note that `nested` works with decorators, only. We might add it for modules soon.
+Note that `::nested` internally is implemented using `Decorator`. When adding methods inside the `nested` block, make sure to use `represented` (`self` will point to the decorator instance).
 
 
 ## Decorator vs. Extend
@@ -873,6 +873,16 @@ hit.to_json # this will call hit.song.to_json
 ```
 
 Rendering `collection`s works the same. Parsing doesn't work out-of-the-box, currently, as we're still unsure how to map items to fragments.
+
+### Decorator In Module
+
+Inline representers defined in a module can be implemented as a decorator, thus wrapping the represented object without pollution.
+
+```ruby
+property :label, decorator: true do
+  ...
+end
+```
 
 ## Copyright
 
