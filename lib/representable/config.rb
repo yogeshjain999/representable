@@ -20,6 +20,7 @@ module Representable
     end
 
     def <<(definition)
+      # this happens when a property is overridden, after inheriting.
       if definition.options[:inherit] and parent = self[definition.name] # TODO: Move me somewhere else :) FIXME: i don't like the access to options[definition] here.
         definition.options.merge!(parent.options)
       end

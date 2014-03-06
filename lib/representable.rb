@@ -168,8 +168,14 @@ private
       return super unless block_given?
 
       representer = options[:decorator] ? Decorator : self
-      inline = representer.inline_representer(representer_engine, name, options, &block)
-      inline.module_eval { include options[:extend] } if options[:extend]
+
+      modules = [representer_engine]
+
+      modules << representable_attrs[name].representer_module if options[:inherit]
+      modules << options[:extend]
+      puts modules.inspect
+
+      inline = representer.inline_representer(modules.compact.reverse, name, options, &block)
 
       options[:extend] = inline
       super
@@ -177,7 +183,7 @@ private
 
     def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
       Module.new do
-        include base_module
+        include *base_module # Representable::JSON or similar.
         instance_exec &block
       end
     end

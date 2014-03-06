@@ -15,20 +15,11 @@ module Representable
           representable_attrs.clear
           representable_attrs.inheritable_arrays.clear
 
-          include base_module
+          include *base_module
           instance_exec &block
         end
       end
     end
-
-    def self.superclass_for_inline_representer(name, options)
-      # look for existing representable attribute with given name
-      attr = representable_attrs[name]
-
-      superclass = attr.representer_module if attr && options[:inherit]
-      superclass ||= self
-    end
-
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
 
