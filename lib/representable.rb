@@ -165,20 +165,26 @@ private
     end
 
     def property(name, options={}, &block)
-      return super unless block_given?
+      if block_given?
 
-      representer = options[:decorator] ? Decorator : self
+        representer = options[:decorator] ? Decorator : self
 
-      modules = [representer_engine]
+        modules = [representer_engine]
 
-      modules << representable_attrs[name].representer_module if options[:inherit]
-      modules << options[:extend]
-      puts modules.inspect
+        modules << representable_attrs[name].representer_module if options[:inherit]
+        modules << options[:extend]
+        puts modules.inspect
 
-      inline = representer.inline_representer(modules.compact.reverse, name, options, &block)
+        inline = representer.inline_representer(modules.compact.reverse, name, options, &block)
 
-      options[:extend] = inline
-      super
+        options[:extend] = inline
+      end
+
+      if options[:inherit]
+        representable_attrs[name].options.merge!(options)
+      end
+
+      super # unless options[:inherit]
     end
 
     def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
