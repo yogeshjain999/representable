@@ -18,4 +18,5 @@ class InheritanceTest < MiniTest::Spec
 
   # TODO:  ? (performance?)
   #  more tests on cloning
+  #
 end

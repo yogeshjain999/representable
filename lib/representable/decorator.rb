@@ -15,7 +15,7 @@ module Representable
           representable_attrs.clear
           representable_attrs.inheritable_arrays.clear
 
-          include base_module
+          include *base_module
           instance_exec &block
         end
       end

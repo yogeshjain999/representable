@@ -165,21 +165,35 @@ private
     end
 
     def property(name, options={}, &block)
-      return super unless block_given?
+      parent = representable_attrs[name]
 
-      representer = options[:decorator] ? Decorator : self
-      inline = representer.inline_representer(representer_engine, name, options, &block)
-      inline.module_eval { include options[:extend] } if options[:extend]
+      if block_given?
+        options[:extend] = inline_representer_for(parent, name, options, &block) # FIXME: passing parent sucks since we don't use it all the time.
+      end
 
-      options[:extend] = inline
+      if options[:inherit]
+        parent.options.merge!(options) and return parent
+      end # FIXME: can we handle this in super/Definition.new ?
+
       super
     end
 
     def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
       Module.new do
-        include base_module
+        include *base_module # Representable::JSON or similar.
         instance_exec &block
       end
+    end
+
+  private
+    def inline_representer_for(parent, name, options, &block)
+      representer = options[:decorator] ? Decorator : self
+
+      modules =  [representer_engine]
+      modules << parent.representer_module if options[:inherit]
+      modules << options[:extend]
+
+      representer.inline_representer(modules.compact.reverse, name, options, &block)
     end
   end # DSLAdditions
 end
