@@ -172,7 +172,7 @@ private
       end
 
       if options[:inherit]
-        parent.options.merge!(options) and return parent # DISCUSS: why does this work without the return? shouldn't super override?
+        parent.options.merge!(options) and return parent
       end # FIXME: can we handle this in super/Definition.new ?
 
       super
