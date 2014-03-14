@@ -168,7 +168,7 @@ private
       parent = representable_attrs[name]
 
       if block_given?
-        options[:extend] = inline_representer_for(parent, name, options, &block)
+        options[:extend] = inline_representer_for(parent, name, options, &block) # FIXME: passing parent sucks since we don't use it all the time.
       end
 
       if options[:inherit]
