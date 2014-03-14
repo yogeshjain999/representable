@@ -165,26 +165,17 @@ private
     end
 
     def property(name, options={}, &block)
+      parent = representable_attrs[name]
+
       if block_given?
-
-        representer = options[:decorator] ? Decorator : self
-
-        modules = [representer_engine]
-
-        modules << representable_attrs[name].representer_module if options[:inherit]
-        modules << options[:extend]
-        puts modules.inspect
-
-        inline = representer.inline_representer(modules.compact.reverse, name, options, &block)
-
-        options[:extend] = inline
+        options[:extend] = inline_representer_for(parent, name, options, &block)
       end
 
       if options[:inherit]
-        representable_attrs[name].options.merge!(options)
-      end
+        parent.options.merge!(options) and return parent # DISCUSS: why does this work without the return? shouldn't super override?
+      end # FIXME: can we handle this in super/Definition.new ?
 
-      super # unless options[:inherit]
+      super
     end
 
     def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
@@ -192,6 +183,17 @@ private
         include *base_module # Representable::JSON or similar.
         instance_exec &block
       end
+    end
+
+  private
+    def inline_representer_for(parent, name, options, &block)
+      representer = options[:decorator] ? Decorator : self
+
+      modules =  [representer_engine]
+      modules << parent.representer_module if options[:inherit]
+      modules << options[:extend]
+
+      representer.inline_representer(modules.compact.reverse, name, options, &block)
     end
   end # DSLAdditions
 end
