@@ -43,20 +43,30 @@ class InheritTest < MiniTest::Spec
       property :name, :inherit => true do # inherit as: title
         property :string, :as => :s
         property :length
-        puts "block exec"
       end
     end
 
     it { representer.prepare( Song.new(Struct.new(:string, :length).new("Believe It", 10), 1)).to_hash.must_equal({"title"=>{"s"=>"Believe It","length"=>10}, "no"=>1}) }
   end
 
-  describe ":inherit with inline and options" do
+  describe ":inherit with empty inline and options" do
     representer! do
       include SongRepresenter
 
       property :name, :inherit => true, :as => :name do # inherit module, only.
         # that doesn't make sense.
       end
+    end
+
+    it { SongRepresenter.prepare(Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"title"=>{"str"=>"Believe It"}, "no"=>1}) }
+    it { representer.prepare( Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"name"=>{"str"=>"Believe It"}, "no"=>1}) }
+  end
+
+  describe ":inherit with inline without block but options" do
+    representer! do
+      include SongRepresenter
+
+      property :name, :inherit => true, :as => :name
     end
 
     it { SongRepresenter.prepare(Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"title"=>{"str"=>"Believe It"}, "no"=>1}) }
