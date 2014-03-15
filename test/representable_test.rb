@@ -90,7 +90,7 @@ class RepresentableTest < MiniTest::Spec
           include parent
         end
 
-        assert parent.representable_attrs.first != child.representable_attrs.first, "definitions shouldn't be identical"
+        assert parent.representable_attrs.first.object_id != child.representable_attrs.first.object_id, "definitions shouldn't be identical"
       end
     end
   end
@@ -138,7 +138,7 @@ class RepresentableTest < MiniTest::Spec
     it "allows extending with different representers subsequentially" do
       module SongXmlRepresenter
         include Representable::XML
-        property :name, :from => "name", :attribute => true
+        property :name, :as => "name", :attribute => true
       end
 
       module SongJsonRepresenter
@@ -186,7 +186,7 @@ class RepresentableTest < MiniTest::Spec
     describe ":from" do
       # TODO: do this with all options.
       it "can be set explicitly" do
-        band = Class.new(Band) { property :friends, :from => :friend }
+        band = Class.new(Band) { property :friends, :as => :friend }
         assert_equal "friend", band.representable_attrs[:friends].from
       end
 

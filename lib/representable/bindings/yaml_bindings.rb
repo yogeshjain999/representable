@@ -9,7 +9,7 @@ module Representable
       end
 
       def write(map, value)
-        map.children << Psych::Nodes::Scalar.new(from)
+        map.children << Psych::Nodes::Scalar.new(as)
         map.children << serialize(value)  # FIXME: should be serialize.
       end
 

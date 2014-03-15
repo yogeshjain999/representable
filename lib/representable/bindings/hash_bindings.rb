@@ -12,14 +12,14 @@ module Representable
       end
 
       def read(hash)
-        return FragmentNotFound unless hash.has_key?(from) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
+        return FragmentNotFound unless hash.has_key?(as) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
 
-        fragment = hash[from]
+        fragment = hash[as]
         deserialize(fragment)
       end
 
       def write(hash, value)
-        hash[from] = serialize(value)
+        hash[as] = serialize(value)
       end
 
       def deserialize_from(fragment)

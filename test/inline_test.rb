@@ -27,7 +27,7 @@ class InlineTest < MiniTest::Spec
   {
     :hash => [Representable::Hash, {"songs"=>[{"name"=>"Alive"}]}, {"songs"=>[{"name"=>"You've Taken Everything"}]}],
     :json => [Representable::JSON, "{\"songs\":[{\"name\":\"Alive\"}]}", "{\"songs\":[{\"name\":\"You've Taken Everything\"}]}"],
-    :xml  => [Representable::XML, "<open_struct>\n  <song>\n    <name>Alive</name>\n  </song>\n</open_struct>", "<open_struct><song><name>You've Taken Everything</name></song></open_struct>", { :from => :song }],
+    :xml  => [Representable::XML, "<open_struct>\n  <song>\n    <name>Alive</name>\n  </song>\n</open_struct>", "<open_struct><song><name>You've Taken Everything</name></song></open_struct>", { :as => :song }],
     :yaml => [Representable::YAML, "---\nsongs:\n- name: Alive\n", "---\nsongs:\n- name: You've Taken Everything\n"],
   }.each do |format, cfg|
     mod, output, input, collection_options = cfg

@@ -35,7 +35,7 @@ module Representable
       # Creates wrapped node for the property.
       def serialize_for(value, parent)
       #def serialize_for(value, parent, tag_name=definition.from)
-        node = node_for(parent, from)
+        node = node_for(parent, as)
         serialize_node(node, value)
       end
 
@@ -62,7 +62,7 @@ module Representable
 
     private
       def xpath
-        from
+        as
       end
 
       def find_nodes(doc)
@@ -143,11 +143,11 @@ module Representable
     # Represents a tag attribute. Currently this only works on the top-level tag.
     class AttributeBinding < PropertyBinding
       def read(node)
-        deserialize(node[from])
+        deserialize(node[as])
       end
 
       def serialize_for(value, parent)
-        parent[from] = serialize(value.to_s)
+        parent[as] = serialize(value.to_s)
       end
 
       def write(parent, value)

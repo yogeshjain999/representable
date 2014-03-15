@@ -138,12 +138,12 @@ class XmlTest < MiniTest::Spec
 
     describe "XML::Binding#build_for" do
       it "returns AttributeBinding" do
-        assert_kind_of XML::AttributeBinding, XML::PropertyBinding.build_for(Def.new(:band, :from => "band", :attribute => true), nil)
+        assert_kind_of XML::AttributeBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => "band", :attribute => true), nil)
       end
 
       it "returns PropertyBinding" do
         assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :class => Hash), nil)
-        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :from => :content), nil)
+        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => :content), nil)
       end
 
       it "returns CollectionBinding" do
@@ -166,7 +166,7 @@ class XmlTest < MiniTest::Spec
       module AlbumRepresenter
         include Representable::XML
         property :best_song, :class => Song, :extend => SongRepresenter
-        collection :songs, :class => Song, :from => :song, :extend => SongRepresenter
+        collection :songs, :class => Song, :as => :song, :extend => SongRepresenter
         representation_wrap = :album
       end
 
@@ -213,11 +213,11 @@ end
 
 
 class AttributesTest < MiniTest::Spec
-  describe ":from => rel, :attribute => true" do
+  describe ":as => rel, :attribute => true" do
     class Link
       include Representable::XML
-      property :href,   :from => "href",  :attribute => true
-      property :title,  :from => "title", :attribute => true
+      property :href,   :as => "href",  :attribute => true
+      property :title,  :as => "title", :attribute => true
       attr_accessor :href, :title
     end
 
@@ -293,10 +293,10 @@ end
 
 
 class CollectionTest < MiniTest::Spec
-  describe ":class => Band, :from => :band, :collection => true" do
+  describe ":class => Band, :as => :band, :collection => true" do
     class Compilation
       include Representable::XML
-      collection :bands, :class => Band, :from => :band
+      collection :bands, :class => Band, :as => :band
       attr_accessor :bands
     end
 
@@ -324,11 +324,11 @@ class CollectionTest < MiniTest::Spec
   end
 
 
-  describe ":from" do
+  describe ":as" do
     let(:xml) {
       Module.new do
         include Representable::XML
-        collection :songs, :from => :song
+        collection :songs, :as => :song
       end }
 
     it "collects untyped items" do
@@ -349,7 +349,7 @@ class CollectionTest < MiniTest::Spec
     let (:xml) {
       Module.new do
         include Representable::XML
-        collection :songs, :from => :song, :wrap => :songs
+        collection :songs, :as => :song, :wrap => :songs
       end }
 
     describe "#from_xml" do
