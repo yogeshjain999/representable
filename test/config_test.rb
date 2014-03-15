@@ -1,5 +1,7 @@
 require 'test_helper'
 
+# tested feature: ::property
+
 class ConfigTest < MiniTest::Spec
   subject { Representable::Config.new }
   PunkRock = Class.new
@@ -34,6 +36,14 @@ class ConfigTest < MiniTest::Spec
   describe "#<<" do
     it "returns Definition" do
       (subject << definition).must_equal definition
+    end
+
+    it "overwrites old property" do
+      subject << definition
+      subject << overrider = Representable::Definition.new(:title)
+
+      subject.size.must_equal 1
+      subject.first.must_equal overrider
     end
   end
 
