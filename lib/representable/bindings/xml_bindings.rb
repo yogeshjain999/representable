@@ -8,10 +8,10 @@ module Representable
 
       def self.build_for(definition, *args)
         return CollectionBinding.new(definition, *args)      if definition.array?
-        return HashBinding.new(definition, *args)            if definition.hash? and not definition.options[:use_attributes] # FIXME: hate this.
-        return AttributeHashBinding.new(definition, *args)   if definition.hash? and definition.options[:use_attributes]
-        return AttributeBinding.new(definition, *args)       if definition.attribute
-        return ContentBinding.new(definition, *args)         if definition.content
+        return HashBinding.new(definition, *args)            if definition.hash? and not definition[:use_attributes] # FIXME: hate this.
+        return AttributeHashBinding.new(definition, *args)   if definition.hash? and definition[:use_attributes]
+        return AttributeBinding.new(definition, *args)       if definition[:attribute]
+        return ContentBinding.new(definition, *args)         if definition[:content]
         new(definition, *args)
       end
 
