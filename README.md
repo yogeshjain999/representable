@@ -432,7 +432,9 @@ end
 
 ## Inheritance
 
-To reuse existing representers you can inherit from those modules.
+To reuse existing representers use inheritance.
+
+Inheritance works by `include`ing already defined representers.
 
 ```ruby
 module CoverSongRepresenter
@@ -443,13 +445,14 @@ module CoverSongRepresenter
 end
 ```
 
-Inheritance works by `include`ing already defined representers.
+This results in a representer with the following properties.
+
+
+
 
 ```ruby
-Song.new(:title => "Truth Hits Everybody", :copyright => "The Police").
-  extend(CoverSongRepresenter).to_json
-
-#=> {"title":"Truth Hits Everybody","copyright":"The Police"}
+property :title     # inherited from SongRepresenter.
+property :copyright
 ```
 
 With decorators, you - surprisingly - use class inheritance.
@@ -458,7 +461,6 @@ With decorators, you - surprisingly - use class inheritance.
 class HitRepresenter < SongRepresenter
   collection :airplays
 ```
-
 
 
 ## Overriding Properties
@@ -489,7 +491,7 @@ module SongRepresenter
 end
 ```
 
-You can now inherit but still override or add options.
+You can now inherit properties but still override or add options.
 
 ```ruby
 module CoverSongRepresenter
@@ -500,13 +502,12 @@ module CoverSongRepresenter
 end
 ```
 
-This will result in a property having the following options.
+Using the `:inherit`, this will result in a property having the following options.
 
 ```ruby
-  property :title,
-    as:     :known_as,    # inherited from SongRepresenter
-    getter: lambda { .. } # added in inheriting representer.
-end
+property :title,
+  as:     :known_as,    # inherited from SongRepresenter.
+  getter: lambda { .. } # added in inheriting representer.
 ```
 
 ## Inheritance With Inline Representers
@@ -546,6 +547,8 @@ property :label do
 end
 ```
 
+Naturally, `:inherit` can be used within the inline representer block.
+
 Note that the following also works.
 
 ```ruby
@@ -559,7 +562,7 @@ end
 
 This renames the property but still inherits all the inlined configuration.
 
-Basically, `:inherit` copies the configuration from the parent property, then merges it your options from the inheriting representer. It exposes the same behaviour as `super` in Ruby - when using `:inherit` the property must exist in the parent representer.
+Basically, `:inherit` copies the configuration from the parent property, then merges in your options from the inheriting representer. It exposes the same behaviour as `super` in Ruby - when using `:inherit` the property must exist in the parent representer.
 
 ## Polymorphic Extend
 
