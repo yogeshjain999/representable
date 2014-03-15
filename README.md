@@ -452,6 +452,15 @@ Song.new(:title => "Truth Hits Everybody", :copyright => "The Police").
 #=> {"title":"Truth Hits Everybody","copyright":"The Police"}
 ```
 
+With decorators, you - surprisingly - use class inheritance.
+
+```ruby
+class HitRepresenter < SongRepresenter
+  collection :airplays
+```
+
+
+
 ## Overriding Properties
 
 You might want to override a particular property in an inheriting representer. Successively calling `property(name)` will override the former definition for `name` just as you know it from overriding methods.
@@ -467,6 +476,90 @@ end
 
 This behaviour was added in 1.7.
 
+
+## Partly Overriding Properties
+
+If you wanna override only certain options of the property, use `:inherit`.
+
+```ruby
+module SongRepresenter
+  include Representable::JSON
+
+  property :title, as: :known_as
+end
+```
+
+You can now inherit but still override or add options.
+
+```ruby
+module CoverSongRepresenter
+  include Representable::JSON
+  include SongRepresenter
+
+  property :title, getter: lambda { Title.random }, inherit: true
+end
+```
+
+This will result in a property having the following options.
+
+```ruby
+  property :title,
+    as:     :known_as,    # inherited from SongRepresenter
+    getter: lambda { .. } # added in inheriting representer.
+end
+```
+
+## Inheritance With Inline Representers
+
+Inheriting also works for inline representers.
+
+```ruby
+module SongRepresenter
+  include Representable::JSON
+
+  property :title
+  property :label do
+    property :name
+  end
+end
+```
+
+You can now override or add properties with the inline representer.
+
+```ruby
+module HitRepresenter
+  include Representable::JSON
+  include SongRepresenter
+
+  property :label, inherit: true do
+    property :country
+  end
+end
+```
+
+Results in a combined inline representer as it inherits.
+
+```ruby
+property :label do
+  property :name
+  property :country
+end
+```
+
+Note that the following also works.
+
+```ruby
+module HitRepresenter
+  include Representable::JSON
+  include SongRepresenter
+
+  property :label, as: :company, inherit: true
+end
+```
+
+This renames the property but still inherits all the inlined configuration.
+
+Basically, `:inherit` copies the configuration from the parent property, then merges it your options from the inheriting representer. It exposes the same behaviour as `super` in Ruby - when using `:inherit` the property must exist in the parent representer.
 
 ## Polymorphic Extend
 
