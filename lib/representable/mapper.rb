@@ -55,7 +55,7 @@ module Representable
 
       def skip_conditional_property?(binding)
         # TODO: move to Binding.
-        return unless condition = binding.options[:if]
+        return unless condition = binding[:if]
 
         args = []
         args << binding.user_options if condition.arity > 0 # TODO: remove arity check. users should know whether they pass options or not.

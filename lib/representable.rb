@@ -120,13 +120,6 @@ private
         representable_attrs << definition_class.new(name, options)
       end
 
-      # Declares a represented document node collection.
-      #
-      # Examples:
-      #
-      #   collection :products
-      #   collection :products, :from => :item
-      #   collection :products, :class => Product
       def collection(name, options={}, &block)
         options[:collection] = true # FIXME: don't override original.
         property(name, options, &block)
@@ -165,15 +158,17 @@ private
     end
 
     def property(name, options={}, &block)
-      parent = representable_attrs[name]
-
-      if block_given?
-        options[:extend] = inline_representer_for(parent, name, options, &block) # FIXME: passing parent sucks since we don't use it all the time.
-      end
+      modules = []
 
       if options[:inherit]
-        parent.options.merge!(options) and return parent
+        parent  = representable_attrs[name]
+        options = parent.merge(options)
+        modules << parent.representer_module
       end # FIXME: can we handle this in super/Definition.new ?
+
+      if block_given?
+        options[:extend] = inline_representer_for(modules, name, options, &block) # FIXME: passing parent sucks since we don't use it all the time.
+      end
 
       super
     end
@@ -186,12 +181,12 @@ private
     end
 
   private
-    def inline_representer_for(parent, name, options, &block)
+    def inline_representer_for(modules, name, options, &block)
       representer = options[:decorator] ? Decorator : self
 
       modules =  [representer_engine]
-      modules << parent.representer_module if options[:inherit]
-      modules << options[:extend]
+      modules += modules
+      modules << options[:extend] # DISCUSS: make :extend array and merge with modules?
 
       representer.inline_representer(modules.compact.reverse, name, options, &block)
     end

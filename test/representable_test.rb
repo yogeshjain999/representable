@@ -160,7 +160,7 @@ class RepresentableTest < MiniTest::Spec
       end
 
       it { representer.representable_attrs.size.must_equal 1 }
-      it { representer.representable_attrs[:title].options.must_equal({:as => :name}) }
+      it { representer.representable_attrs[:title].must_equal({:as => "name"}) }
 
       it "overrides property when called again" do
         representer.class_eval do
@@ -168,18 +168,7 @@ class RepresentableTest < MiniTest::Spec
         end
 
         representer.representable_attrs.size.must_equal 1
-        representer.representable_attrs[:title].options.must_equal({:representable => true})
-      end
-
-      it "overrides when inheriting same property" do
-        overriding = representer! { property :title, :representable => true }
-
-        representer.class_eval do
-          include overriding
-        end
-
-        representer.representable_attrs.size.must_equal 1
-        representer.representable_attrs[:title].options.must_equal({:representable => true})
+        representer.representable_attrs[:title][:representable].must_equal true
       end
     end
 
@@ -187,17 +176,17 @@ class RepresentableTest < MiniTest::Spec
       # TODO: do this with all options.
       it "can be set explicitly" do
         band = Class.new(Band) { property :friends, :as => :friend }
-        assert_equal "friend", band.representable_attrs[:friends].from
+        assert_equal "friend", band.representable_attrs[:friends].as
       end
 
       it "can be set explicitly with as" do
         band = Class.new(Band) { property :friends, :as => :friend }
-        assert_equal "friend", band.representable_attrs[:friends].from
+        assert_equal "friend", band.representable_attrs[:friends].as
       end
 
       it "is infered from the name implicitly" do
         band = Class.new(Band) { property :friends }
-        assert_equal "friends", band.representable_attrs[:friends].from
+        assert_equal "friends", band.representable_attrs[:friends].as
       end
     end
 
@@ -714,7 +703,7 @@ class RepresentableTest < MiniTest::Spec
       end
 
       it "uses the specified binding instance" do
-        OpenStruct.new(:title => "Affliction").extend(representer).to_hash.must_equal({:title => "Affliction"})
+        OpenStruct.new(:title => "Affliction").extend(representer).to_hash.must_equal({"title" => "Affliction"})
       end
     end
 

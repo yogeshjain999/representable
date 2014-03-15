@@ -178,11 +178,11 @@ class DefinitionTest < MiniTest::Spec
 
   describe "#binding" do
     it "returns true when :binding is set" do
-      assert Representable::Definition.new(:songs, :binding => Object).binding
+      assert Representable::Definition.new(:songs, :binding => Object)[:binding]
     end
 
     it "returns false when :binding is not set" do
-      assert !Representable::Definition.new(:songs).binding
+      assert !Representable::Definition.new(:songs)[:binding]
     end
   end
 
@@ -225,12 +225,12 @@ class DefinitionTest < MiniTest::Spec
   describe ":default => value" do
     it "responds to #default" do
       @def = Representable::Definition.new(:song)
-      assert_equal nil, @def.send(:default)
+      assert_equal nil, @def[:default]
     end
 
     it "accepts a default value" do
       @def = Representable::Definition.new(:song, :default => "Atheist Peace")
-      assert_equal "Atheist Peace", @def.send(:default)
+      assert_equal "Atheist Peace", @def[:default]
     end
   end
 
@@ -251,7 +251,7 @@ class DefinitionTest < MiniTest::Spec
     end
 
     it "responds to #binding" do
-      assert_equal subject.binding, Object
+      assert_equal subject[:binding], Object
     end
   end
 

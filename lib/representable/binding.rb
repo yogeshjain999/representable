@@ -10,7 +10,7 @@ module Representable
 
     def self.build(definition, *args)
       # DISCUSS: move #create_binding to this class?
-      return definition.create_binding(*args) if definition.binding
+      return definition.create_binding(*args) if definition[:binding]
       build_for(definition, *args)
     end
 
@@ -55,7 +55,7 @@ module Representable
 
       if value == FragmentNotFound
         return unless has_default?
-        value = default
+        value = self[:default]
       end
 
       yield value
