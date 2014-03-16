@@ -67,7 +67,6 @@ class InheritTest < MiniTest::Spec
       include SongRepresenter
 
       property :name, :inherit => true, :as => :name
-      puts representable_attrs.inspect
     end
 
     it { SongRepresenter.prepare(Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"title"=>{"str"=>"Believe It"}, "no"=>1}) }
@@ -85,8 +84,8 @@ class InheritTest < MiniTest::Spec
     end
 
     it "replaces inherited property" do
-      representer.representable_attrs.size.must_equal 1
-      representer.representable_attrs[:title].must_equal({:representable => true, :as => :track})
+      representer.representable_attrs.size.must_equal 2
+      representer.representable_attrs[:track].must_equal({:representable => true, :as => "track"})
     end
   end
 

@@ -703,7 +703,7 @@ class RepresentableTest < MiniTest::Spec
       end
 
       it "uses the specified binding instance" do
-        OpenStruct.new(:title => "Affliction").extend(representer).to_hash.must_equal({"title" => "Affliction"})
+        OpenStruct.new(:title => "Affliction").extend(representer).to_hash.must_equal({:title => "Affliction"})
       end
     end
 
