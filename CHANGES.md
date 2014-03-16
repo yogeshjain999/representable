@@ -1,7 +1,7 @@
 # 1.8.0
 
 * Major API change: Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
-
+* Using `:extend` in combination with an inline representer is deprecated. Include the module in the inline block instead.
 
 
 ## Definition
@@ -13,6 +13,8 @@
 * Removed `#default`, `#attribute`, `#content`.
 * `#from` is replaced by `#as` and hardcore deprecated.
 * `#name` and `#as` are _always_ strings.
+
+
 
 
 -> constantize :class etc (requires AS)

@@ -167,7 +167,9 @@ private
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
-        options[:extend] = inline_representer_for(modules, name, options, &block) # FIXME: passing parent sucks since we don't use it all the time.
+        handle_deprecated_inline_extend!(modules, options)
+
+        options[:extend] = inline_representer_for(modules, name, options, &block)
       end
 
       super
@@ -183,11 +185,16 @@ private
   private
     def inline_representer_for(modules, name, options, &block)
       representer = options[:decorator] ? Decorator : self
-
-      modules = [representer_engine] + modules
-      modules << options[:extend] # DISCUSS: make :extend array and merge with modules?
+      modules     = [representer_engine] + modules
 
       representer.inline_representer(modules.compact.reverse, name, options, &block)
+    end
+
+    def handle_deprecated_inline_extend!(modules, options) # TODO: remove in 2.0.
+      return unless include_module = options.delete(:extend) and not options[:inherit]
+
+      warn "[Representable] Using :extend with an inline representer is deprecated. Include the module in the inline block."
+      modules << include_module
     end
   end # DSLAdditions
 end

@@ -204,13 +204,32 @@ class InlineTest < MiniTest::Spec
   end
 
 
-  describe "mix :extend and inline representers" do
+  describe "deprecate mixing :extend and inline representers" do # TODO: remove in 2.0.
     representer! do
       rpr_module = Module.new do
         include Representable::Hash
         property :title
       end
       property :song, :extend => rpr_module do
+        property :artist
+      end
+    end
+
+    it do OpenStruct.new(:song => OpenStruct.new(:title => "The Fever And The Sound", :artist => "Strung Out")).extend(representer).
+      to_hash.
+      must_equal({"song"=>{"artist"=>"Strung Out", "title"=>"The Fever And The Sound"}})
+    end
+  end
+
+  describe "include module in inline representers" do
+    representer! do
+      extension = Module.new do
+        include Representable::Hash
+        property :title
+      end
+
+      property :song do
+        include extension
         property :artist
       end
     end
