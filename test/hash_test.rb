@@ -147,23 +147,4 @@ class HashTest < MiniTest::Spec
       end
     end
   end
-
-
-  class DefinitionTest < MiniTest::Spec
-    it "what" do
-      class Representable::Hash::Binding < SimpleDelegator
-
-      end
-
-      definition  = Representable::Definition.new(:name)
-      wrapped     = Representable::Hash::Binding.new(definition)
-
-      wrapped.name.must_equal "name"
-      wrapped.hash?.must_equal nil
-      wrapped.array?.must_equal nil
-      wrapped.options.must_equal({})
-
-      #wrapped.
-    end
-  end
 end
