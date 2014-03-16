@@ -1,15 +1,25 @@
-h2. 1.8.0
+# 1.8.0
 
 * Major API change: Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
-Definition:
-* Minor API change: Rename `Definition#sought_type` to `#deserialize_class`.
-* Removed #default, #attribute, #content. #from is replaced by #as
+
+
+
+## Definition
+
+* Make `Definition < Hash`, all options can/should now be accessed with `Definition#[]`.
+* Make `Definition::new` the only entry point so that a `Definition` becomes a *immutual* object.
+* Deprecated `#options` as the definition itself is a hash (e.g. `definition[:default]`).
+* Rename `#sought_type` to `#deserialize_class`.
+* Removed `#default`, `#attribute`, `#content`.
+* `#from` is replaced by `#as` and hardcore deprecated.
+* `#name` and `#as` are _always_ strings.
+
+
 -> constantize :class etc (requires AS)
 -> make all options lambda-able
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
 
-* Definition#name and #as are _always_ strings.
 
 h2. 1.7.7
 
