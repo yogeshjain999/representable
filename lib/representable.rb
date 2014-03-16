@@ -35,7 +35,7 @@ private
   end
 
   def representable_binding_for(attribute, format, options)
-    context = attribute.options[:decorator_scope] ? self : represented # DISCUSS: pass both represented and representer into Binding and do it there?
+    context = attribute[:decorator_scope] ? self : represented # DISCUSS: pass both represented and representer into Binding and do it there?
 
     format.build(attribute, represented, options, context)
   end

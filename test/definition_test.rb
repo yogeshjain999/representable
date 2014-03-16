@@ -49,12 +49,12 @@ class DefinitionTest < MiniTest::Spec
 
     describe "#clone" do
       it "clones @options" do
-        @def.options[:volume] = 9
+        @def[:volume] = 9
         cloned = @def.clone
-        cloned.options[:volume] = 8
+        cloned[:volume] = 8
 
-        assert_equal @def.options[:volume], 9
-        assert_equal cloned.options[:volume], 8
+        assert_equal @def[:volume], 9
+        assert_equal cloned[:volume], 8
       end
     end
   end

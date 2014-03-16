@@ -27,8 +27,8 @@ module Representable
       self[:as]
     end
 
-    def options
-      # TODO: deprecate.
+    def options # TODO: remove in 1.9.
+      warn "Representable::Definition#option is deprecated, use #[] directly."
       self
     end
 

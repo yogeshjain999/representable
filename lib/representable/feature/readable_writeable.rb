@@ -17,13 +17,13 @@ module Representable
   Definition.class_eval do
     # Checks and returns if the property is writeable
     def writeable?
-      return options[:writeable] if options.has_key?(:writeable)
+      return self[:writeable] if self.has_key?(:writeable)
       true
     end
 
     # Checks and returns if the property is readable
     def readable?
-      return options[:readable] if options.has_key?(:readable)
+      return self[:readable] if self.has_key?(:readable)
       true
     end
   end

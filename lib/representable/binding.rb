@@ -87,8 +87,8 @@ module Representable
     # Execute the block for +option_name+ on the represented object.
     # Executes passed block when there's no lambda for option.
     def represented_exec_for(option_name, *args)
-      return yield unless options[option_name]
-      call_proc_for(options[option_name], *args)
+      return yield unless self[option_name]
+      call_proc_for(self[option_name], *args)
     end
 
     # All lambdas are executed on exec_context which is either represented or the decorator instance.
@@ -134,8 +134,8 @@ module Representable
       end
 
       def instance_for(fragment, *args)
-        return unless options[:instance]
-        call_proc_for(options[:instance], fragment) or get
+        return unless self[:instance]
+        call_proc_for(self[:instance], fragment) or get
       end
     end
   end

@@ -36,7 +36,7 @@ module Representable
     class CollectionBinding < PropertyBinding
       def serialize(value)
         Psych::Nodes::Sequence.new.tap do |seq|
-          seq.style = Psych::Nodes::Sequence::FLOW if options[:style] == :flow
+          seq.style = Psych::Nodes::Sequence::FLOW if self[:style] == :flow
           value.each { |obj| seq.children << super(obj) }
         end
       end
