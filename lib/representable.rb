@@ -184,8 +184,7 @@ private
     def inline_representer_for(modules, name, options, &block)
       representer = options[:decorator] ? Decorator : self
 
-      modules =  [representer_engine]
-      modules += modules
+      modules = [representer_engine] + modules
       modules << options[:extend] # DISCUSS: make :extend array and merge with modules?
 
       representer.inline_representer(modules.compact.reverse, name, options, &block)
