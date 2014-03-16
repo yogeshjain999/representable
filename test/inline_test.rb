@@ -202,4 +202,22 @@ class InlineTest < MiniTest::Spec
       end
     end
   end
+
+
+  describe "mix :extend and inline representers" do
+    representer! do
+      rpr_module = Module.new do
+        include Representable::Hash
+        property :title
+      end
+      property :song, :extend => rpr_module do
+        property :artist
+      end
+    end
+
+    it do OpenStruct.new(:song => OpenStruct.new(:title => "The Fever And The Sound", :artist => "Strung Out")).extend(representer).
+      to_hash.
+      must_equal({"song"=>{"artist"=>"Strung Out", "title"=>"The Fever And The Sound"}})
+    end
+  end
 end
