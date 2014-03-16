@@ -1,16 +1,17 @@
+require 'uber/options'
+
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
   class Definition < Hash
-    attr_reader :name, :options
+    attr_reader :name
     alias_method :getter, :name
 
     def initialize(sym, options={})
-      @name     = sym.to_s
-
       # deprecations:
       raise "The :from option got replaced by :as in Representable 1.8!" if options[:from]
 
       super()
+      @name     = sym.to_s
 
       self[:as]  = (options.delete(:as) || @name).to_s
 
@@ -18,10 +19,6 @@ module Representable
     end
 
     private :merge!, :default
-
-    def clone
-      self.class.new(name, super) # DISCUSS: make generic Definition.cloned_attribute that passes list to constructor.
-    end
 
     def as
       self[:as]
