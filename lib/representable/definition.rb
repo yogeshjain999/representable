@@ -16,6 +16,15 @@ module Representable
       self[:as]  = (options.delete(:as) || @name).to_s
 
       options.each { |k,v| self[k] = v }
+
+      # todo: test
+      for option in [:getter, :setter,
+      # :extend, :class, :instance, :reader, :writer,
+      #  :as
+      ]
+        puts self[option]
+        self[option] = Uber::Options::Value.new(self[option]) if self[option]
+      end
     end
 
     private :merge!, :default

@@ -7,7 +7,7 @@
 ## Definition
 
 * Make `Definition < Hash`, all options can/should now be accessed with `Definition#[]`.
-* Make `Definition::new` the only entry point so that a `Definition` becomes a *immutual* object.
+* Make `Definition::new` the only entry point so that a `Definition` becomes an *immutual* object.
 * Deprecated `#options` as the definition itself is a hash (e.g. `definition[:default]`).
 * Rename `#sought_type` to `#deserialize_class`.
 * Removed `#default`, `#attribute`, `#content`.

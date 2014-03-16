@@ -65,8 +65,6 @@ module Representable
       read(doc)
     end
 
-    # concept: Option#call(*args) => send(string)/lambda()
-    #   dynamic string
     def get
       represented_exec_for(:getter) do
         exec_context.send(getter)
@@ -87,7 +85,10 @@ module Representable
     # Execute the block for +option_name+ on the represented object.
     # Executes passed block when there's no lambda for option.
     def represented_exec_for(option_name, *args)
-      return yield unless self[option_name]
+      return yield unless proc = self[option_name]
+
+      return proc.evaluate(exec_context, *args<<user_options) if proc.kind_of?(Uber::Options::Value)
+
       call_proc_for(self[option_name], *args)
     end
 
