@@ -729,7 +729,7 @@ composers: [Steward Copeland, Sting]
 
 ### Mapping Tag Attributes
 
-You can also map properties to tag attributes in representable. This works only for the top-level node, thou (seen from the representer's perspective).
+You can also map properties to tag attributes in representable. This works only for the top-level node, though (seen from the representer's perspective).
 
 ```ruby
 module SongRepresenter
