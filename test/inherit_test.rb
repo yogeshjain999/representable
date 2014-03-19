@@ -66,7 +66,7 @@ class InheritTest < MiniTest::Spec
     representer! do
       include SongRepresenter
 
-      property :name, :inherit => true, :as => :name
+      property :name, :inherit => true, :as => :name # FIXME: add :getter or something else dynamic since this is double-wrapped.
     end
 
     it { SongRepresenter.prepare(Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"title"=>{"str"=>"Believe It"}, "no"=>1}) }

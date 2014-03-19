@@ -92,6 +92,7 @@ module Representable
 
     # All lambdas are executed on exec_context which is either represented or the decorator instance.
     def call_proc_for(proc, *args)
+      raise
       return proc unless proc.is_a?(Proc)
       # TODO: call method when proc is sympbol.
       args << user_options # DISCUSS: we assume user_options is a Hash!
@@ -107,6 +108,10 @@ module Representable
 
     module Prepare
       def representer_module_for(object, *args)
+        return unless self[:extend]
+        args << user_options
+        puts args.inspect
+        return self[:extend].evaluate(exec_context, object, *args) # FIXME: evaluate_option
         call_proc_for(representer_module, object)   # TODO: how to pass additional data to the computing block?`
       end
     end

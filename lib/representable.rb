@@ -160,10 +160,11 @@ private
     def property(name, options={}, &block)
       modules = []
 
-      if options[:inherit]
+      if options[:inherit] # TODO: move this to Definition.
         parent  = representable_attrs[name]
         options = parent.merge(options)
-        modules << parent.representer_module
+        puts options.inspect
+        modules << parent[:extend].evaluate(nil) #if parent[:extend]# we can savely assume this is _not_ a lambda. # DISCUSS: leave that in #representer_module?
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?

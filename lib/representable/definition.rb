@@ -15,18 +15,32 @@ module Representable
 
       # defaults:
       self[:as]       = (options.delete(:as) || @name).to_s
-      self[:extend] ||= options.delete(:decorator)
+      #raise options[:decorator] if options[:decorator]
+      r = options.delete(:extend) || options.delete(:decorator)
+      self[:extend]  = r if r
 
       options.each { |k,v| self[k] = v }
 
       # todo: test
-      for option in [:getter, :setter, :class, :instance, :reader, :writer,
-        # :extend,
-        #
+      for option in [:getter, :setter, :class, :instance, :reader, :writer, :extend
       #  :as
       ]
-        self[option] = Uber::Options::Value.new(self[option]) if options.has_key?(option)#self[option] # FIXME: get rid of this test.
+        self[option] = Uber::Options::Value.new(self[option]) if self.has_key?(option) # FIXME: get rid of this test.
       end
+    end
+
+    # TODO: move inherit stuff into here.
+    def merge(hash)
+      unwrapped = super
+
+      for option in [:getter, :setter, :class, :instance, :reader, :writer, :extend
+      #  :as
+      ]
+      puts unwrapped[option].inspect
+        unwrapped[option] = unwrapped[option].instance_variable_get(:@value) if unwrapped[option]
+    end
+puts "unwrapped: #{unwrapped.inspect}"
+      unwrapped
     end
 
     private :merge!, :default
