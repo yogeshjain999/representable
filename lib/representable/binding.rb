@@ -87,9 +87,7 @@ module Representable
     def represented_exec_for(option_name, *args)
       return yield unless proc = self[option_name]
 
-      return proc.evaluate(exec_context, *args<<user_options) if proc.kind_of?(Uber::Options::Value)
-
-      call_proc_for(self[option_name], *args)
+      proc.evaluate(exec_context, *args<<user_options)
     end
 
     # All lambdas are executed on exec_context which is either represented or the decorator instance.
