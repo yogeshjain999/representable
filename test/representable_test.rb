@@ -687,6 +687,23 @@ class RepresentableTest < MiniTest::Spec
         song.name.must_equal "Captured"
       end
     end
+    describe "class: implementing #from_hash" do
+      let(:parser) do
+        Class.new do
+          def from_hash(*)
+            [1,2,3,4]
+          end
+        end
+      end
+
+      representer!(:inject => :parser) do
+        property :song, :class => parser # supposed this class exposes #from_hash itself.
+      end
+
+      it "allows returning arbitrary objects in #from_hash" do
+        representer.prepare(OpenStruct.new).from_hash({"song" => 1}).song.must_equal [1,2,3,4]
+      end
+    end
 
 
     describe "collection with :extend" do
