@@ -13,13 +13,16 @@ module Representable
       super()
       @name     = sym.to_s
 
-      self[:as]  = (options.delete(:as) || @name).to_s
+      # defaults:
+      self[:as]       = (options.delete(:as) || @name).to_s
+      self[:extend] ||= options.delete(:decorator)
 
       options.each { |k,v| self[k] = v }
 
       # todo: test
       for option in [:getter, :setter,
-      # :extend, :class, :instance, :reader, :writer,
+        # :extend,
+        # :class, :instance, :reader, :writer,
       #  :as
       ]
         puts self[option]
@@ -43,7 +46,7 @@ module Representable
     end
 
     def typed?
-      deserialize_class.is_a?(Class) or representer_module or self[:instance]  # also true if only :extend is set, for people who want solely rendering.
+      self[:class] or self[:extend] or self[:instance]  # also true if only :extend is set, for people who want solely rendering.
     end
 
     def array?
@@ -68,7 +71,7 @@ module Representable
     end
 
     def representer_module
-      self[:extend] or self[:decorator]
+      self[:extend]
     end
 
     def skipable_nil_value?(value)
