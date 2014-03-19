@@ -14,8 +14,7 @@
 * `#from` is replaced by `#as` and hardcore deprecated.
 * `#name` and `#as` are _always_ strings.
 
-
-
+* A Definition is considered typed as soon as [`:extend`|`:class`|`:instance`] is set. In earlier versions, `property :song, class: Song` was considered typed, whereas `property :song, class: lambda { Song }` was static.
 
 -> constantize :class etc (requires AS)
 -> make all options lambda-able
