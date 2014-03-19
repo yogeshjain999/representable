@@ -137,12 +137,12 @@ module Representable
       end
 
       def class_from(fragment, *args)
-        self[:class].evaluate(self, fragment)
+        self[:class].evaluate(exec_context, fragment) # TODO: hand in all arguments!
       end
 
       def instance_for(fragment, *args)
         return unless self[:instance]
-        call_proc_for(self[:instance], fragment) or get
+        self[:instance].evaluate(exec_context, fragment) or get # TODO: hand in all arguments! # DISCUSS: what is this #get call here?
       end
     end
   end

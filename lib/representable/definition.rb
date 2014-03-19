@@ -20,9 +20,9 @@ module Representable
       options.each { |k,v| self[k] = v }
 
       # todo: test
-      for option in [:getter, :setter, :class,
+      for option in [:getter, :setter, :class, :instance,
         # :extend,
-        # :class, :instance, :reader, :writer,
+        # :reader, :writer,
       #  :as
       ]
         self[option] = Uber::Options::Value.new(self[option]) if options.has_key?(option)#self[option] # FIXME: get rid of this test.
