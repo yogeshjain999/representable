@@ -100,6 +100,12 @@ module Representable
       exec_context.instance_exec(*args, &proc)
     end
 
+    def evaluate_option(name, *args)
+      return unless proc = self[name]
+
+      return proc.evaluate(exec_context, *args<<user_options)
+    end
+
 
     module Prepare
       def representer_module_for(object, *args)
@@ -131,7 +137,7 @@ module Representable
       end
 
       def class_from(fragment, *args)
-        call_proc_for(deserialize_class, fragment)
+        self[:class].evaluate(self, fragment)
       end
 
       def instance_for(fragment, *args)
