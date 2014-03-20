@@ -23,7 +23,7 @@ module Representable
 
     attr_reader :user_options, :represented # TODO: make private/remove.
 
-    def as
+    def as # DISCUSS: private?
       evaluate_option(:as)
     end
 
@@ -81,6 +81,11 @@ module Representable
       end
     end
 
+    # DISCUSS: do we really need that?
+    def representer_module_for(object, *args)
+      evaluate_option(:extend, object) # TODO: pass args? do we actually have args at the time this is called (compile-time)?
+    end
+
   private
     attr_reader :exec_context
 
@@ -94,14 +99,6 @@ module Representable
 
       proc.evaluate(exec_context, *args<<user_options)
     end
-
-
-    module Prepare
-      def representer_module_for(object, *args)
-        evaluate_option(:extend, object) # TODO: pass args? do we actually have args at the time this is called (compile-time)?
-      end
-    end
-    include Prepare
 
 
     # Delegates to call #to_*/from_*.
