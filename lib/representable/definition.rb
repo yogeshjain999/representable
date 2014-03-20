@@ -41,7 +41,7 @@ module Representable
     end
 
     def typed?
-      self[:class] or self[:extend] or self[:instance]  # also true if only :extend is set, for people who want solely rendering.
+      self[:class] or self[:extend] or self[:instance]
     end
 
     def array?
@@ -87,7 +87,7 @@ module Representable
       options[:extend]  = r if r
 
       # todo: aS:
-      for name,value in options
+      for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
         self[name] = value
       end

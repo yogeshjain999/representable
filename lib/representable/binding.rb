@@ -25,14 +25,14 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
-      represented_exec_for(:writer, doc) do
+      evaluate_option(:writer, doc) do
         write_fragment(doc, get)
       end
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
-      represented_exec_for(:reader, doc) do
+      evaluate_option(:reader, doc) do
         read_fragment(doc) do |value|
           set(value)
         end
@@ -66,44 +66,41 @@ module Representable
     end
 
     def get
-      represented_exec_for(:getter) do
+      evaluate_option(:getter) do
         exec_context.send(getter)
       end
     end
 
     def set(value)
-      represented_exec_for(:setter, value) do
+      evaluate_option(:setter, value) do
         exec_context.send(setter, value)
       end
     end
-
-    # the remaining methods in this class are format-independent and should be in Definition.
 
   private
     attr_reader :exec_context
 
     # Execute the block for +option_name+ on the represented object.
     # Executes passed block when there's no lambda for option.
-    def represented_exec_for(option_name, *args)
+    def evaluate_option(option_name, *args)
       return yield unless proc = self[option_name]
 
       proc.evaluate(exec_context, *args<<user_options)
     end
 
     def evaluate_option(name, *args)
-      return unless proc = self[name]
+      unless proc = self[name]
+        return yield if block_given?
+        return
+      end
 
-      return proc.evaluate(exec_context, *args<<user_options)
+      proc.evaluate(exec_context, *args<<user_options)
     end
 
 
     module Prepare
       def representer_module_for(object, *args)
-        return unless self[:extend]
-        args << user_options
-        puts args.inspect
-        return self[:extend].evaluate(exec_context, object, *args) # FIXME: evaluate_option
-        call_proc_for(representer_module, object)   # TODO: how to pass additional data to the computing block?`
+        evaluate_option(:extend, object) # TODO: pass args? do we actually have args at the time this is called (compile-time)?
       end
     end
     include Prepare
