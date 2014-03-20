@@ -8,11 +8,9 @@ class DefinitionTest < MiniTest::Spec
       @def = Representable::Definition.new(:songs)
     end
 
-    describe "DCI" do
-      it "responds to #representer_module" do
-        assert_equal nil, Representable::Definition.new(:song).representer_module
-        assert_equal Hash, Representable::Definition.new(:song, :extend => Hash).representer_module
-      end
+    it "responds to #representer_module" do
+      assert_equal nil, Representable::Definition.new(:song).representer_module
+      assert_equal Hash, Representable::Definition.new(:song, :extend => Hash).representer_module.evaluate(nil)
     end
 
     describe "#typed?" do
@@ -220,7 +218,7 @@ class DefinitionTest < MiniTest::Spec
     end
 
     it "responds to #deserialize_class" do
-      assert_equal Hash, @def.deserialize_class
+      assert_equal Hash, @def.deserialize_class.evaluate(nil)
     end
   end
 
