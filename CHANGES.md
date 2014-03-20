@@ -21,6 +21,7 @@
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
 
+* introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
 
 h2. 1.7.7
 

@@ -847,4 +847,21 @@ class RepresentableTest < MiniTest::Spec
       end
     end
   end
+
+
+  describe "#use_decorator" do
+    representer! do
+      property :title, :use_decorator => true do
+        property :lower
+      end
+    end
+
+    it "uses a Decorator for inline representer" do
+      outer = Struct.new(:title, :lower, :band, :bla).new(inner = Struct.new(:lower).new("paper wings"))
+
+      outer.extend(representer).to_hash.must_equal({"title"=>{"lower"=>"paper wings"}})
+      outer.must_be_kind_of Representable::Hash
+      inner.wont_be_kind_of Representable::Hash
+    end
+  end
 end

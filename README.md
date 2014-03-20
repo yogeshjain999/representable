@@ -1022,7 +1022,7 @@ Rendering `collection`s works the same. Parsing doesn't work out-of-the-box, cur
 Inline representers defined in a module can be implemented as a decorator, thus wrapping the represented object without pollution.
 
 ```ruby
-property :label, decorator: true do
+property :label, is_decorator: true do
   ...
 end
 ```

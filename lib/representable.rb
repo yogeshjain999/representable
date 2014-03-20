@@ -148,10 +148,10 @@ private
     # Allows you to nest a block of properties in a separate section while still mapping them to the outer object.
     def nested(name, options={}, &block)
       options = options.merge(
-        :decorator  => true,
-        :getter     => lambda { |*| self },
-        :setter     => lambda { |*| },
-        :instance   => lambda { |*| self }
+        :use_decorator => true,
+        :getter        => lambda { |*| self },
+        :setter        => lambda { |*| },
+        :instance      => lambda { |*| self }
       )
 
       property(name, options, &block)
@@ -185,7 +185,7 @@ private
 
   private
     def inline_representer_for(modules, name, options, &block)
-      representer = options[:decorator] ? Decorator : self
+      representer = options[:use_decorator] ? Decorator : self
       modules     = [representer_engine] + modules
 
       representer.inline_representer(modules.compact.reverse, name, options, &block)
