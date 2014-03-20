@@ -80,14 +80,8 @@ module Representable
   private
     attr_reader :exec_context
 
-    # Execute the block for +option_name+ on the represented object.
-    # Executes passed block when there's no lambda for option.
-    def evaluate_option(option_name, *args)
-      return yield unless proc = self[option_name]
-
-      proc.evaluate(exec_context, *args<<user_options)
-    end
-
+    # Evaluate the option (either nil, static, a block or an instance method call) or
+    # executes passed block when option not defined.
     def evaluate_option(name, *args)
       unless proc = self[name]
         return yield if block_given?
