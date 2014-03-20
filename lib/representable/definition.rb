@@ -25,7 +25,7 @@ module Representable
       self
     end
 
-    private :default
+    private :default, :[]=
 
     def as
       self[:as]

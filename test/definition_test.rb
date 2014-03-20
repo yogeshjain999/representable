@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class DefinitionTest < MiniTest::Spec
+  Definition = Representable::Definition
+
   describe "generic API" do
     before do
       @def = Representable::Definition.new(:songs)
@@ -49,9 +51,9 @@ class DefinitionTest < MiniTest::Spec
 
     describe "#clone" do
       it "clones @options" do
-        @def[:volume] = 9
+        @def.merge!(:volume => 9)
         cloned = @def.clone
-        cloned[:volume] = 8
+        cloned.merge!(:volume => 8)
 
         assert_equal @def[:volume], 9
         assert_equal cloned[:volume], 8
@@ -258,5 +260,13 @@ class DefinitionTest < MiniTest::Spec
   describe "#sync?" do
     it { Representable::Definition.new(:song).sync?.must_equal false }
     it { Representable::Definition.new(:song, :parse_strategy => :sync).sync?.must_equal true }
+  end
+
+  describe "#[]=" do
+    it "raises exception since it's deprecated" do
+      assert_raises NoMethodError do
+        Definition.new(:title)[:extend] = Module.new # use merge! after initialize.
+      end
+    end
   end
 end
