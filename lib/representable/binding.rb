@@ -90,15 +90,6 @@ module Representable
       proc.evaluate(exec_context, *args<<user_options)
     end
 
-    # All lambdas are executed on exec_context which is either represented or the decorator instance.
-    def call_proc_for(proc, *args)
-      raise
-      return proc unless proc.is_a?(Proc)
-      # TODO: call method when proc is sympbol.
-      args << user_options # DISCUSS: we assume user_options is a Hash!
-      exec_context.instance_exec(*args, &proc)
-    end
-
     def evaluate_option(name, *args)
       return unless proc = self[name]
 
