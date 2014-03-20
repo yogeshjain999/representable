@@ -12,6 +12,7 @@ module Representable
 
       super()
       @name     = sym.to_s
+
       # defaults:
       self[:as]       = options.delete(:as) || @name
 
@@ -19,7 +20,6 @@ module Representable
     end
 
     # TODO: test merge!.
-    # TODO: make clear that this is the only writer method after #initialize.
     def merge!(options)
       setup!(options)
       self
@@ -83,8 +83,7 @@ module Representable
 
   private
     def setup!(options)
-      r = options.delete(:extend) || options.delete(:decorator)
-      options[:extend]  = r if r
+      handle_extend!(options)
 
       # todo: aS:
       for name, value in options
@@ -97,6 +96,10 @@ module Representable
 
     def dynamic_options
       [:getter, :setter, :class, :instance, :reader, :writer, :extend]
+    end
+
+    def handle_extend!(options)
+      mod = options.delete(:extend) || options.delete(:decorator) and options[:extend] = mod
     end
   end
 end
