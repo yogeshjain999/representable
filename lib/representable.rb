@@ -171,7 +171,7 @@ private
         options[:extend] = inline_representer_for(modules, name, options, &block)
       end
 
-      return parent.merge!(options) if options[:inherit]
+      return parent.merge!(options) if options.delete(:inherit)
 
       super
     end

@@ -18,11 +18,11 @@ module Representable
       setup!(options)
     end
 
+    # TODO: test merge!.
     # TODO: make clear that this is the only writer method after #initialize.
     def merge!(options)
-      puts "merging #{options.inspect}"
       setup!(options)
-      puts self.inspect
+      self
     end
 
     private :default
@@ -83,11 +83,8 @@ module Representable
 
   private
     def setup!(options)
-
-      #raise options[:decorator] if options[:decorator]
       r = options.delete(:extend) || options.delete(:decorator)
       options[:extend]  = r if r
-
 
       # todo: aS:
       for name,value in options
