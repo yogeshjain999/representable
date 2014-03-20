@@ -23,6 +23,10 @@ module Representable
 
     attr_reader :user_options, :represented # TODO: make private/remove.
 
+    def as
+      evaluate_option(:as)
+    end
+
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
       evaluate_option(:writer, doc) do

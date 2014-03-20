@@ -154,42 +154,6 @@ class RepresentableTest < MiniTest::Spec
 
 
   describe "#property" do
-    describe "overriding" do
-      representer! do
-        property :title, :as => :name
-      end
-
-      it { representer.representable_attrs.size.must_equal 1 }
-      it { representer.representable_attrs[:title].must_equal({:as => "name"}) }
-
-      it "overrides property when called again" do
-        representer.class_eval do
-          property :title, :representable => true
-        end
-
-        representer.representable_attrs.size.must_equal 1
-        representer.representable_attrs[:title][:representable].must_equal true
-      end
-    end
-
-    describe ":from" do
-      # TODO: do this with all options.
-      it "can be set explicitly" do
-        band = Class.new(Band) { property :friends, :as => :friend }
-        assert_equal "friend", band.representable_attrs[:friends].as
-      end
-
-      it "can be set explicitly with as" do
-        band = Class.new(Band) { property :friends, :as => :friend }
-        assert_equal "friend", band.representable_attrs[:friends].as
-      end
-
-      it "is infered from the name implicitly" do
-        band = Class.new(Band) { property :friends }
-        assert_equal "friends", band.representable_attrs[:friends].as
-      end
-    end
-
     representer! {}
 
     it "returns the Definition instance" do

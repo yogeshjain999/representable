@@ -14,7 +14,7 @@ module Representable
       @name     = sym.to_s
 
       # defaults:
-      self[:as]       = options.delete(:as) || @name
+      options[:as] ||= @name
 
       setup!(options)
     end
@@ -26,10 +26,6 @@ module Representable
     end
 
     private :default, :[]=
-
-    def as
-      self[:as]
-    end
 
     def options # TODO: remove in 1.9.
       warn "Representable::Definition#option is deprecated, use #[] directly."
@@ -84,22 +80,25 @@ module Representable
   private
     def setup!(options)
       handle_extend!(options)
+      handle_as!(options)
 
       # todo: aS:
       for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
         self[name] = value
       end
-
-      self[:as] = self[:as].to_s
     end
 
     def dynamic_options
-      [:getter, :setter, :class, :instance, :reader, :writer, :extend]
+      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend]
     end
 
     def handle_extend!(options)
       mod = options.delete(:extend) || options.delete(:decorator) and options[:extend] = mod
+    end
+
+    def handle_as!(options)
+      options[:as] = options[:as].to_s if options[:as].is_a?(Symbol) # Allow symbols for as:
     end
   end
 end
