@@ -7,7 +7,7 @@
 ## Definition
 
 * Make `Definition < Hash`, all options can/should now be accessed with `Definition#[]`.
-* Make `Definition::new` the only entry point so that a `Definition` becomes an *immutual* object.
+* Make `Definition::new` and`#merge!` the only entry points so that a `Definition` becomes an almost *immutual* object. If you happened to modify a definition using `options[..]=` this will break now. Use `definition.merge!(..)` to change it after creation.
 * Deprecated `#options` as the definition itself is a hash (e.g. `definition[:default]`).
 * Rename `#sought_type` to `#deserialize_class`.
 * Removed `#default`, `#attribute`, `#content`.
@@ -21,7 +21,7 @@
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
 
-* introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
+* Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
 
 h2. 1.7.7
 
