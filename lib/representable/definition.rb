@@ -12,38 +12,20 @@ module Representable
 
       super()
       @name     = sym.to_s
-
       # defaults:
-      self[:as]       = (options.delete(:as) || @name).to_s
-      #raise options[:decorator] if options[:decorator]
-      r = options.delete(:extend) || options.delete(:decorator)
-      self[:extend]  = r if r
+      self[:as]       = options.delete(:as) || @name
 
-      options.each { |k,v| self[k] = v }
-
-      # todo: test
-      for option in [:getter, :setter, :class, :instance, :reader, :writer, :extend
-      #  :as
-      ]
-        self[option] = Uber::Options::Value.new(self[option]) if self.has_key?(option) # FIXME: get rid of this test.
-      end
+      setup!(options)
     end
 
-    # TODO: move inherit stuff into here.
-    def merge(hash)
-      unwrapped = super
-
-      for option in [:getter, :setter, :class, :instance, :reader, :writer, :extend
-      #  :as
-      ]
-      puts unwrapped[option].inspect
-        unwrapped[option] = unwrapped[option].instance_variable_get(:@value) if unwrapped[option]
-    end
-puts "unwrapped: #{unwrapped.inspect}"
-      unwrapped
+    # TODO: make clear that this is the only writer method after #initialize.
+    def merge!(options)
+      puts "merging #{options.inspect}"
+      setup!(options)
+      puts self.inspect
     end
 
-    private :merge!, :default
+    private :default
 
     def as
       self[:as]
@@ -97,6 +79,27 @@ puts "unwrapped: #{unwrapped.inspect}"
 
     def sync?
       self[:parse_strategy] == :sync
+    end
+
+  private
+    def setup!(options)
+
+      #raise options[:decorator] if options[:decorator]
+      r = options.delete(:extend) || options.delete(:decorator)
+      options[:extend]  = r if r
+
+
+      # todo: aS:
+      for name,value in options
+        value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
+        self[name] = value
+      end
+
+      self[:as] = self[:as].to_s
+    end
+
+    def dynamic_options
+      [:getter, :setter, :class, :instance, :reader, :writer, :extend]
     end
   end
 end

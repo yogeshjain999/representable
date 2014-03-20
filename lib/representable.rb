@@ -162,9 +162,7 @@ private
 
       if options[:inherit] # TODO: move this to Definition.
         parent  = representable_attrs[name]
-        options = parent.merge(options)
-        puts options.inspect
-        modules << parent[:extend].evaluate(nil) #if parent[:extend]# we can savely assume this is _not_ a lambda. # DISCUSS: leave that in #representer_module?
+        modules << parent[:extend].evaluate(nil) if parent[:extend]# we can savely assume this is _not_ a lambda. # DISCUSS: leave that in #representer_module?
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
@@ -172,6 +170,8 @@ private
 
         options[:extend] = inline_representer_for(modules, name, options, &block)
       end
+
+      return parent.merge!(options) if options[:inherit]
 
       super
     end
