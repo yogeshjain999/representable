@@ -112,8 +112,8 @@ module Representable
         ObjectDeserializer.new(self, object).call(data)
       end
 
-      def create_object(fragment, object)
-        instance_for(fragment, object) or class_for(fragment)
+      def create_object(fragment, object, *args)
+        instance_for(fragment, object, *args) or class_for(fragment)
       end
 
     private
@@ -127,9 +127,12 @@ module Representable
       end
 
       def instance_for(fragment, object, *args)
+
         return unless self[:instance]
         # TODO: hand in all arguments!
-        self[:instance].evaluate(exec_context, fragment) or object.call # calls get
+        puts "instance: #{fragment}... #{self[:instance].evaluate(exec_context, fragment, *args).inspect} | #{object.call}"
+
+        self[:instance].evaluate(exec_context, fragment, *args) or object.call # calls #get. (this handles instance: {nil} atm)
       end
     end
   end

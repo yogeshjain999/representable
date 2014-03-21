@@ -4,7 +4,7 @@ class InstanceTest < GenericTest
   Song = Struct.new(:id, :title)
   Song.class_eval do
     def self.find(id)
-      Song.new(2, "Invincible")
+      new(id, "Invincible")
     end
   end
 
@@ -23,6 +23,35 @@ class InstanceTest < GenericTest
     it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
       from_hash("song" => {"id" => 2}).song.must_equal Song.new(2, "Invincible") }
   end
+
+
+  describe "collection with :instance" do
+    representer!(:inject => :song_representer) do
+      collection :songs,
+        :instance => lambda { |fragment, i|
+
+          puts "#{fragment}: #{i.inspect} => #{songs[i].inspect}"
+
+        fragment["id"] == songs[i].id ? nil : Song.find(fragment["id"]) }, # DISCUSS: the index would be great, here.
+        :extend => song_representer
+    end
+    # TODO: create object when list[i] nil!
+    # TODO: check object_id.
+    # TODO: make sure instance{nil} works in collection.
+
+    it {
+puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
+      Struct.new(:songs).new([
+      Song.new(1, "The Answer Is Still No"),
+      Song.new(2, "")]).
+        extend(representer).
+        from_hash("songs" => [{"id" => 2},{"id" => 2, "title"=>"Invincible"}]).songs.must_equal [
+          Song.new(2, "Invincible"), Song.new(2, "Invincible")] }
+
+    # it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
+    #   from_hash("song" => {"id" => 2}).song.must_equal Song.new(2, "Invincible") }
+  end
+
 
   describe "property with instance: { nil }" do # TODO: introduce :representable option?
     representer!(:inject => :song_representer) do

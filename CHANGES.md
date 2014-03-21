@@ -17,9 +17,10 @@
 * A Definition is considered typed as soon as [`:extend`|`:class`|`:instance`] is set. In earlier versions, `property :song, class: Song` was considered typed, whereas `property :song, class: lambda { Song }` was static.
 
 -> constantize :class etc (requires AS)
--> make all options lambda-able (:as, too!)
+-> make all options lambda-able (:as, too!) [DONE]
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
+-> pass *args to all lambdas
 
 * Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
 
