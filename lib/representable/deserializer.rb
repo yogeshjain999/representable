@@ -36,7 +36,7 @@ module Representable
         # TODO: this is also done when instance: { nil }
         @object = @object.call # call Binding#get or Binding#get[i]
       else
-        @object = @binding.create_object(fragment)
+        @object = @binding.create_object(fragment, @object)
       end
 
       # DISCUSS: what parts should be in this class, what in Binding?

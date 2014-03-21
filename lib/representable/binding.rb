@@ -97,7 +97,7 @@ module Representable
         return
       end
 
-      proc.evaluate(exec_context, *args<<user_options)
+      proc.evaluate(exec_context, *args<<user_options) # from Uber::Options::Value.
     end
 
 
@@ -112,8 +112,8 @@ module Representable
         ObjectDeserializer.new(self, object).call(data)
       end
 
-      def create_object(fragment)
-        instance_for(fragment) or class_for(fragment)
+      def create_object(fragment, object)
+        instance_for(fragment, object) or class_for(fragment)
       end
 
     private
@@ -126,9 +126,10 @@ module Representable
         self[:class].evaluate(exec_context, fragment) # TODO: hand in all arguments!
       end
 
-      def instance_for(fragment, *args)
+      def instance_for(fragment, object, *args)
         return unless self[:instance]
-        self[:instance].evaluate(exec_context, fragment) or get # TODO: hand in all arguments! # DISCUSS: what is this #get call here?
+        # TODO: hand in all arguments!
+        self[:instance].evaluate(exec_context, fragment) or object.call # calls get
       end
     end
   end
