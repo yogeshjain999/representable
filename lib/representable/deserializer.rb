@@ -4,7 +4,9 @@ module Representable
       # next step: use #get always.
       @binding = binding
       # should be call to #default:
-      collection = binding.get || [] #if binding.sync?
+      collection = []
+      collection = binding.get if binding.sync?
+      # collection = binding.get || [] #if binding.sync?
 
       super collection
     end

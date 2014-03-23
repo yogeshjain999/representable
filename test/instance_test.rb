@@ -32,13 +32,15 @@ class InstanceTest < GenericTest
 
           puts "#{fragment}: #{i.inspect} => #{songs[i].inspect}"
 
-        fragment["id"] == songs[i].id ? nil : Song.find(fragment["id"]) }, # DISCUSS: the index would be great, here.
-        :extend => song_representer
+        fragment["id"] == songs[i].id ? nil : Song.find(fragment["id"]) },
+        :extend => song_representer,
+        :parse_strategy => :sync
     end
     # TODO: create object when list[i] nil!
     # TODO: check object_id.
     # TODO: make sure instance{nil} works in collection.
 
+# problem: when returning nil in this lambda WITHOUT parse: true, the original model's collection is empty and object.call in #instance_for doesn't work, so we still try to create a brand-new object.
     it {
 puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
       Struct.new(:songs).new([
