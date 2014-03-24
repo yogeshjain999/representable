@@ -34,6 +34,9 @@ module Representable
       # TODO: this used to be handled in #serialize where Object added it's behaviour. treat scalars as objects to remove this switch:
       return fragment unless @binding.typed?
 
+      # what if create_object is responsible for providing the deserialize-to object?
+      # parse_strategy: sync could provide a :instance block, since :instance{nil} never worked with collections we don't break anything.
+      # let's deprecate :instance{nil}, blocks have to return the object.
       if @binding.sync?
         # TODO: this is also done when instance: { nil }
         @object = @object.call # call Binding#get or Binding#get[i]
