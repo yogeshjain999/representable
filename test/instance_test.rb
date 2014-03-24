@@ -30,25 +30,25 @@ class InstanceTest < GenericTest
       collection :songs,
         :instance => lambda { |fragment, i|
 
-          puts "#{fragment}: #{i.inspect} => #{songs[i].inspect}"
+          puts "====  ==========#{fragment}: #{i.inspect} => #{songs[i].inspect}"
 
-        fragment["id"] == songs[i].id ? nil : Song.find(fragment["id"]) },
-        :extend => song_representer,
-        :parse_strategy => :sync
+        fragment["id"] == songs[i].id ? songs[i] : Song.find(fragment["id"]) }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
+        :extend => song_representer
+        #:parse_strategy => :sync
     end
     # TODO: create object when list[i] nil!
     # TODO: check object_id.
     # TODO: make sure instance{nil} works in collection.
 
 # problem: when returning nil in this lambda WITHOUT parse: true, the original model's collection is empty and object.call in #instance_for doesn't work, so we still try to create a brand-new object.
-    it {
+    it( "sds") {
 puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
       Struct.new(:songs).new([
       Song.new(1, "The Answer Is Still No"),
       Song.new(2, "")]).
         extend(representer).
-        from_hash("songs" => [{"id" => 2},{"id" => 2, "title"=>"Invincible"}]).songs.must_equal [
-          Song.new(2, "Invincible"), Song.new(2, "Invincible")] }
+        from_hash("songs" => [{"id" => 2},{"id" => 2, "title"=>"The Answer Is Still No"}]).songs.must_equal [
+          Song.new(2, "Invincible"), Song.new(2, "The Answer Is Still No")] }
 
     # it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
     #   from_hash("song" => {"id" => 2}).song.must_equal Song.new(2, "Invincible") }
