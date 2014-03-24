@@ -7,21 +7,22 @@
 ## Definition
 
 * Make `Definition < Hash`, all options can/should now be accessed with `Definition#[]`.
-* Make `Definition::new` the only entry point so that a `Definition` becomes a *immutual* object.
+* Make `Definition::new` and`#merge!` the only entry points so that a `Definition` becomes an almost *immutual* object. If you happened to modify a definition using `options[..]=` this will break now. Use `definition.merge!(..)` to change it after creation.
 * Deprecated `#options` as the definition itself is a hash (e.g. `definition[:default]`).
 * Rename `#sought_type` to `#deserialize_class`.
 * Removed `#default`, `#attribute`, `#content`.
 * `#from` is replaced by `#as` and hardcore deprecated.
 * `#name` and `#as` are _always_ strings.
 
-
-
+* A Definition is considered typed as soon as [`:extend`|`:class`|`:instance`] is set. In earlier versions, `property :song, class: Song` was considered typed, whereas `property :song, class: lambda { Song }` was static.
 
 -> constantize :class etc (requires AS)
--> make all options lambda-able
+-> make all options lambda-able (:as, too!) [DONE]
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
+-> pass *args to all lambdas
 
+* Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
 
 h2. 1.7.7
 

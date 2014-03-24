@@ -956,6 +956,50 @@ Representable will not attempt to create a `Song` instance for you but use the p
 
 Note that this is now the [official option](#syncing-objects) `:parse_strategy`.
 
+
+### Parsing Without Extend
+
+When parsing you might not want your parsed/created object to be extended, since it already exposes a `#from_hash` method.
+
+```ruby
+class ParsingSong
+  def from_hash(hash, *args)
+    # do whatever
+
+    self
+  end
+end
+```
+
+This would work with a representer as the following.
+
+```ruby
+module AlbumRepresenter
+  include Representable::Hash
+  property :song, :class => ParsingSong
+end
+```
+
+When parsing, representable will simply instantiate a `ParsingSong` without trying to extend it.
+
+
+### Returning Arbitrary Objects When Parsing
+
+This goes even further. When representable parses the `song` attribute, it calls `ParsingSong#from_hash`. This method could return any object, which will then be assigned as the `song` property.
+
+```ruby
+class ParsingSong
+  def from_hash(hash, *args)
+    [1,2,3,4]
+  end
+end
+```
+
+Album.extend(AlbumRepresenter).from_hash(..).song #=> [1,2,3,4]
+
+This also works with `:extend` where the specified module overwrites the parsing method (e.g. `#from_hash`).
+
+
 ### Rendering Without Extend
 
 The same goes the other way when rendering. Just provide an empty `:instance` block.
@@ -972,12 +1016,13 @@ hit.to_json # this will call hit.song.to_json
 
 Rendering `collection`s works the same. Parsing doesn't work out-of-the-box, currently, as we're still unsure how to map items to fragments.
 
+
 ### Decorator In Module
 
 Inline representers defined in a module can be implemented as a decorator, thus wrapping the represented object without pollution.
 
 ```ruby
-property :label, decorator: true do
+property :label, is_decorator: true do
   ...
 end
 ```

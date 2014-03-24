@@ -18,7 +18,7 @@ module Representable
       def write(parent, value)
         wrap_node = parent
 
-        if wrap = options[:wrap]
+        if wrap = self[:wrap]
           parent << wrap_node = node_for(parent, wrap)
         end
 
@@ -67,7 +67,7 @@ module Representable
 
       def find_nodes(doc)
         selector  = xpath
-        selector  = "#{options[:wrap]}/#{xpath}" if options[:wrap]
+        selector  = "#{self[:wrap]}/#{xpath}" if self[:wrap]
         nodes     = doc.xpath(selector)
       end
 

@@ -35,7 +35,7 @@ private
   end
 
   def representable_binding_for(attribute, format, options)
-    context = attribute.options[:decorator_scope] ? self : represented # DISCUSS: pass both represented and representer into Binding and do it there?
+    context = attribute[:decorator_scope] ? self : represented # DISCUSS: pass both represented and representer into Binding and do it there?
 
     format.build(attribute, represented, options, context)
   end
@@ -148,10 +148,10 @@ private
     # Allows you to nest a block of properties in a separate section while still mapping them to the outer object.
     def nested(name, options={}, &block)
       options = options.merge(
-        :decorator  => true,
-        :getter     => lambda { |*| self },
-        :setter     => lambda { |*| },
-        :instance   => lambda { |*| self }
+        :use_decorator => true,
+        :getter        => lambda { |*| self },
+        :setter        => lambda { |*| },
+        :instance      => lambda { |*| self }
       )
 
       property(name, options, &block)
@@ -160,10 +160,9 @@ private
     def property(name, options={}, &block)
       modules = []
 
-      if options[:inherit]
+      if options[:inherit] # TODO: move this to Definition.
         parent  = representable_attrs[name]
-        options = parent.merge(options)
-        modules << parent.representer_module
+        modules << parent[:extend].evaluate(nil) if parent[:extend]# we can savely assume this is _not_ a lambda. # DISCUSS: leave that in #representer_module?
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
@@ -171,6 +170,8 @@ private
 
         options[:extend] = inline_representer_for(modules, name, options, &block)
       end
+
+      return parent.merge!(options) if options.delete(:inherit)
 
       super
     end
@@ -184,7 +185,7 @@ private
 
   private
     def inline_representer_for(modules, name, options, &block)
-      representer = options[:decorator] ? Decorator : self
+      representer = options[:use_decorator] ? Decorator : self
       modules     = [representer_engine] + modules
 
       representer.inline_representer(modules.compact.reverse, name, options, &block)

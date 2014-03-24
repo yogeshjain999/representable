@@ -1,34 +1,34 @@
+require 'uber/options'
+
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
   class Definition < Hash
-    attr_reader :name, :options
+    attr_reader :name
     alias_method :getter, :name
 
     def initialize(sym, options={})
-      @name     = sym.to_s
-
       # deprecations:
       raise "The :from option got replaced by :as in Representable 1.8!" if options[:from]
 
       super()
+      @name     = sym.to_s
 
-      self[:as]  = (options.delete(:as) || @name).to_s
+      # defaults:
+      options[:as] ||= @name
 
-      options.each { |k,v| self[k] = v }
+      setup!(options)
     end
 
-    private :merge!, :default
-
-    def clone
-      self.class.new(name, super) # DISCUSS: make generic Definition.cloned_attribute that passes list to constructor.
+    # TODO: test merge!.
+    def merge!(options)
+      setup!(options)
+      self
     end
 
-    def as
-      self[:as]
-    end
+    private :default, :[]=
 
-    def options
-      # TODO: deprecate.
+    def options # TODO: remove in 1.9.
+      warn "Representable::Definition#option is deprecated, use #[] directly."
       self
     end
 
@@ -37,7 +37,7 @@ module Representable
     end
 
     def typed?
-      deserialize_class.is_a?(Class) or representer_module or self[:instance]  # also true if only :extend is set, for people who want solely rendering.
+      self[:class] or self[:extend] or self[:instance]
     end
 
     def array?
@@ -62,7 +62,7 @@ module Representable
     end
 
     def representer_module
-      self[:extend] or self[:decorator]
+      self[:extend]
     end
 
     def skipable_nil_value?(value)
@@ -75,6 +75,30 @@ module Representable
 
     def sync?
       self[:parse_strategy] == :sync
+    end
+
+  private
+    def setup!(options)
+      handle_extend!(options)
+      handle_as!(options)
+
+      # todo: aS:
+      for name, value in options
+        value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
+        self[name] = value
+      end
+    end
+
+    def dynamic_options
+      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend]
+    end
+
+    def handle_extend!(options)
+      mod = options.delete(:extend) || options.delete(:decorator) and options[:extend] = mod
+    end
+
+    def handle_as!(options)
+      options[:as] = options[:as].to_s if options[:as].is_a?(Symbol) # Allow symbols for as:
     end
   end
 end

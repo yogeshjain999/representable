@@ -3,40 +3,45 @@ module Representable
     def initialize(binding) # TODO: get rid of binding dependency
       # next step: use #get always.
       @binding = binding
-      collection = []
       # should be call to #default:
+      collection = []
       collection = binding.get if binding.sync?
+      # collection = binding.get || [] #if binding.sync?
 
       super collection
     end
 
     def deserialize(fragment)
       # next step: get rid of collect.
-      fragment.enum_for(:each_with_index).collect { |item_fragment, i|
+      fragment.enum_for(:each_with_index).collect do |item_fragment, i|
+        puts "thero: #{self[i].inspect}"
         @deserializer = ObjectDeserializer.new(@binding, lambda { self[i] })
 
-        @deserializer.call(item_fragment) # FIXME: what if obj nil?
-      }
+        @deserializer.call(item_fragment, i) # FIXME: what if obj nil?
+      end
     end
   end
 
 
   class ObjectDeserializer
-    # dependencies: Def#options, Def#create_object, Def#get
+    # dependencies: Def#options, Def#create_object
     def initialize(binding, object)
       @binding = binding
       @object  = object
     end
 
-    def call(fragment)
+    def call(fragment, *args)
       # TODO: this used to be handled in #serialize where Object added it's behaviour. treat scalars as objects to remove this switch:
       return fragment unless @binding.typed?
 
+      # what if create_object is responsible for providing the deserialize-to object?
+      # parse_strategy: sync could provide a :instance block, since :instance{nil} never worked with collections we don't break anything.
+      # let's deprecate :instance{nil}, blocks have to return the object.
       if @binding.sync?
         # TODO: this is also done when instance: { nil }
         @object = @object.call # call Binding#get or Binding#get[i]
       else
-        @object = @binding.create_object(fragment)
+        @object = @binding.create_object(fragment, @object, *args)
       end
 
       # DISCUSS: what parts should be in this class, what in Binding?

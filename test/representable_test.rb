@@ -154,42 +154,6 @@ class RepresentableTest < MiniTest::Spec
 
 
   describe "#property" do
-    describe "overriding" do
-      representer! do
-        property :title, :as => :name
-      end
-
-      it { representer.representable_attrs.size.must_equal 1 }
-      it { representer.representable_attrs[:title].must_equal({:as => "name"}) }
-
-      it "overrides property when called again" do
-        representer.class_eval do
-          property :title, :representable => true
-        end
-
-        representer.representable_attrs.size.must_equal 1
-        representer.representable_attrs[:title][:representable].must_equal true
-      end
-    end
-
-    describe ":from" do
-      # TODO: do this with all options.
-      it "can be set explicitly" do
-        band = Class.new(Band) { property :friends, :as => :friend }
-        assert_equal "friend", band.representable_attrs[:friends].as
-      end
-
-      it "can be set explicitly with as" do
-        band = Class.new(Band) { property :friends, :as => :friend }
-        assert_equal "friend", band.representable_attrs[:friends].as
-      end
-
-      it "is infered from the name implicitly" do
-        band = Class.new(Band) { property :friends }
-        assert_equal "friends", band.representable_attrs[:friends].as
-      end
-    end
-
     representer! {}
 
     it "returns the Definition instance" do
@@ -655,6 +619,57 @@ class RepresentableTest < MiniTest::Spec
     end
 
 
+    # `class: Song` only, no :extend.
+    class RepresentingSong
+      attr_reader :name
+
+      def from_hash(doc, *args)
+        @name = doc["__name__"]
+
+        self # DISCUSS: do we wanna be able to return whatever we want here? this is a trick to replace the actual object
+      end
+    end
+    describe "class: ClassName, only" do
+      representer! do
+        property :song, :class => RepresentingSong # supposed this class exposes #from_hash itself.
+      end
+
+      it "creates fresh instance and doesn't extend" do
+        song = representer.prepare(OpenStruct.new).from_hash({"song" => {"__name__" => "Captured"}}).song
+        song.must_be_instance_of RepresentingSong
+        song.name.must_equal "Captured"
+      end
+    end
+    describe "class: lambda, only" do
+      representer! do
+        property :song, :class => lambda { |*| RepresentingSong }
+      end
+
+      it "creates fresh instance and doesn't extend" do
+        song = representer.prepare(OpenStruct.new).from_hash({"song" => {"__name__" => "Captured"}}).song
+        song.must_be_instance_of RepresentingSong
+        song.name.must_equal "Captured"
+      end
+    end
+    describe "class: implementing #from_hash" do
+      let(:parser) do
+        Class.new do
+          def from_hash(*)
+            [1,2,3,4]
+          end
+        end
+      end
+
+      representer!(:inject => :parser) do
+        property :song, :class => parser # supposed this class exposes #from_hash itself.
+      end
+
+      it "allows returning arbitrary objects in #from_hash" do
+        representer.prepare(OpenStruct.new).from_hash({"song" => 1}).song.must_equal [1,2,3,4]
+      end
+    end
+
+
     describe "collection with :extend" do
       representer! do
         collection :songs, :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
@@ -794,6 +809,23 @@ class RepresentableTest < MiniTest::Spec
           album.wont_respond_to :to_hash
         end
       end
+    end
+  end
+
+
+  describe "#use_decorator" do
+    representer! do
+      property :title, :use_decorator => true do
+        property :lower
+      end
+    end
+
+    it "uses a Decorator for inline representer" do
+      outer = Struct.new(:title, :lower, :band, :bla).new(inner = Struct.new(:lower).new("paper wings"))
+
+      outer.extend(representer).to_hash.must_equal({"title"=>{"lower"=>"paper wings"}})
+      outer.must_be_kind_of Representable::Hash
+      inner.wont_be_kind_of Representable::Hash
     end
   end
 end

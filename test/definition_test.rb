@@ -1,16 +1,16 @@
 require 'test_helper'
 
 class DefinitionTest < MiniTest::Spec
+  Definition = Representable::Definition
+
   describe "generic API" do
     before do
       @def = Representable::Definition.new(:songs)
     end
 
-    describe "DCI" do
-      it "responds to #representer_module" do
-        assert_equal nil, Representable::Definition.new(:song).representer_module
-        assert_equal Hash, Representable::Definition.new(:song, :extend => Hash).representer_module
-      end
+    it "responds to #representer_module" do
+      assert_equal nil, Representable::Definition.new(:song).representer_module
+      assert_equal Hash, Representable::Definition.new(:song, :extend => Hash).representer_module.evaluate(nil)
     end
 
     describe "#typed?" do
@@ -49,12 +49,12 @@ class DefinitionTest < MiniTest::Spec
 
     describe "#clone" do
       it "clones @options" do
-        @def.options[:volume] = 9
+        @def.merge!(:volume => 9)
         cloned = @def.clone
-        cloned.options[:volume] = 8
+        cloned.merge!(:volume => 8)
 
-        assert_equal @def.options[:volume], 9
-        assert_equal cloned.options[:volume], 8
+        assert_equal @def[:volume], 9
+        assert_equal cloned[:volume], 8
       end
     end
   end
@@ -218,7 +218,7 @@ class DefinitionTest < MiniTest::Spec
     end
 
     it "responds to #deserialize_class" do
-      assert_equal Hash, @def.deserialize_class
+      assert_equal Hash, @def.deserialize_class.evaluate(nil)
     end
   end
 
@@ -258,5 +258,13 @@ class DefinitionTest < MiniTest::Spec
   describe "#sync?" do
     it { Representable::Definition.new(:song).sync?.must_equal false }
     it { Representable::Definition.new(:song, :parse_strategy => :sync).sync?.must_equal true }
+  end
+
+  describe "#[]=" do
+    it "raises exception since it's deprecated" do
+      assert_raises NoMethodError do
+        Definition.new(:title)[:extend] = Module.new # use merge! after initialize.
+      end
+    end
   end
 end

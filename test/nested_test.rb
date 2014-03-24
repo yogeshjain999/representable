@@ -76,4 +76,34 @@ class NestedTest < MiniTest::Spec
       end
     end
   end
+
+
+  describe "::nested without block but with inherit:" do
+
+    representer!(:name => :parent) do
+      include Representable::Hash
+
+      nested :label do
+        property :owner
+      end
+    end
+
+    representer!(:module => Representable::Hash, :inject => :parent) do
+      include parent
+      nested :label, :inherit => true, :as => "Label"
+    end
+
+    let (:album) { representer.prepare(Album.new("Epitaph", "Brett Gurewitz", 19)) }
+
+    it "renders nested Album-properties in separate section" do
+      representer.prepare(album).to_hash.must_equal({"Label"=>{"owner"=>"Brett Gurewitz"}})
+    end
+
+    # it "parses nested properties to Album instance" do
+    #   album = parse(representer.prepare(Album.new), output)
+    #   album.label.must_equal "Epitaph"
+    #   album.owner.must_equal "Brett Gurewitz"
+    #   album.amount.must_equal 19
+    # end
+  end
 end

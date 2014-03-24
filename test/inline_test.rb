@@ -221,6 +221,7 @@ class InlineTest < MiniTest::Spec
     end
   end
 
+
   describe "include module in inline representers" do
     representer! do
       extension = Module.new do

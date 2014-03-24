@@ -66,7 +66,7 @@ class InheritTest < MiniTest::Spec
     representer! do
       include SongRepresenter
 
-      property :name, :inherit => true, :as => :name
+      property :name, :inherit => true, :as => :name # FIXME: add :getter or something else dynamic since this is double-wrapped.
     end
 
     it { SongRepresenter.prepare(Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"title"=>{"str"=>"Believe It"}, "no"=>1}) }
@@ -85,7 +85,11 @@ class InheritTest < MiniTest::Spec
 
     it "replaces inherited property" do
       representer.representable_attrs.size.must_equal 2
-      representer.representable_attrs[:track].must_equal({:representable => true, :as => "track"})
+
+      definition = representer.representable_attrs[:track] # TODO: find a better way to assert Definition identity.
+      definition.keys.size.must_equal 2
+      definition[:representable].   must_equal true
+      definition[:as].evaluate(nil).must_equal "track" # was "no".
     end
   end
 
