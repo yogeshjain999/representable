@@ -1,12 +1,9 @@
 module Representable
   class CollectionDeserializer < Array # always is the targeted collection, already.
     def initialize(binding) # TODO: get rid of binding dependency
-      # next step: use #get always.
       @binding = binding
       # should be call to #default:
       collection = []
-      collection = binding.get if binding.sync?
-      # collection = binding.get || [] #if binding.sync?
 
       super collection
     end
@@ -14,7 +11,7 @@ module Representable
     def deserialize(fragment)
       # next step: get rid of collect.
       fragment.enum_for(:each_with_index).collect do |item_fragment, i|
-        @deserializer = ObjectDeserializer.new(@binding, lambda { self[i] })
+        @deserializer = ObjectDeserializer.new(@binding)
 
         @deserializer.call(item_fragment, i) # FIXME: what if obj nil?
       end
@@ -24,9 +21,8 @@ module Representable
 
   class ObjectDeserializer
     # dependencies: Def#options, Def#create_object
-    def initialize(binding, object)
+    def initialize(binding)
       @binding = binding
-      @object  = object
     end
 
     def call(fragment, *args)
@@ -36,17 +32,11 @@ module Representable
       # what if create_object is responsible for providing the deserialize-to object?
       # parse_strategy: sync could provide a :instance block, since :instance{nil} never worked with collections we don't break anything.
       # let's deprecate :instance{nil}, blocks have to return the object.
-      # if @binding.sync?
-      #   # TODO: this is also done when instance: { nil }
-      #   @object = @object.call # call Binding#get or Binding#get[i]
-      # else
-        @object = @binding.create_object(fragment, @object, *args)
-      # end
+      object = @binding.create_object(fragment, *args)
 
       # DISCUSS: what parts should be in this class, what in Binding?
-      representable = prepare(@object)
+      representable = prepare(object)
       deserialize(representable, fragment, @binding.user_options)
-      #yield @object
     end
 
   private

@@ -2,6 +2,11 @@ require "representable/deserializer"
 
 module Representable
   class ObjectSerializer < ObjectDeserializer
+    def initialize(binding, object)
+      super(binding)
+      @object = object
+    end
+
     def call # TODO: make typed? switch here!
       return @object if @object.nil?
 

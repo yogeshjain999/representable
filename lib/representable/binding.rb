@@ -107,13 +107,13 @@ module Representable
         ObjectSerializer.new(self, object).call
       end
 
-      def deserialize(data, object=lambda { get })
+      def deserialize(data)
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        ObjectDeserializer.new(self, object).call(data)
+        ObjectDeserializer.new(self).call(data)
       end
 
-      def create_object(fragment, object, *args)
-        instance_for(fragment, object, *args) or class_for(fragment)
+      def create_object(fragment, *args)
+        instance_for(fragment, *args) or class_for(fragment)
       end
 
     private
@@ -126,8 +126,7 @@ module Representable
         self[:class].evaluate(exec_context, fragment) # TODO: hand in all arguments!
       end
 
-      def instance_for(fragment, object, *args)
-
+      def instance_for(fragment, *args)
         return unless self[:instance]
         # TODO: hand in all arguments!
         self[:instance].evaluate(exec_context, fragment, *args) #or object.call # calls #get. (this handles instance: {nil} atm)
