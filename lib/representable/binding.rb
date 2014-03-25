@@ -130,9 +130,7 @@ module Representable
 
         return unless self[:instance]
         # TODO: hand in all arguments!
-        puts "instance: #{fragment}... #{self[:instance].evaluate(exec_context, fragment, *args).inspect} | #{object.call}"
-
-        self[:instance].evaluate(exec_context, fragment, *args) or object.call # calls #get. (this handles instance: {nil} atm)
+        self[:instance].evaluate(exec_context, fragment, *args) #or object.call # calls #get. (this handles instance: {nil} atm)
       end
     end
   end
