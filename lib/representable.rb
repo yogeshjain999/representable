@@ -14,8 +14,6 @@ module Representable
       extend ClassMethods
       extend ClassMethods::Declarations
       extend DSLAdditions
-
-      include Deprecations
     end
   end
 
