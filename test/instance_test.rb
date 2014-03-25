@@ -79,6 +79,8 @@ class InstanceTest < BaseTest
   #   end
   # end
 
+  # lambda { |fragment, i, Context(binding: <..>, args: [..])| }
+
   describe "sync" do
     representer!(:inject => :song_representer) do
       collection :songs,

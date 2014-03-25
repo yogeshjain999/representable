@@ -1,4 +1,3 @@
-require 'representable/deprecations'
 require 'representable/definition'
 require 'representable/mapper'
 require 'representable/config'
@@ -14,6 +13,7 @@ module Representable
       extend ClassMethods
       extend ClassMethods::Declarations
       extend DSLAdditions
+      extend ParseStrategy
     end
   end
 
