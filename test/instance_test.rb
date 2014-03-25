@@ -85,7 +85,7 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
   #   end
   # end
 
-  describe "update from incoming elements, only" do
+  describe "update existing elements, only" do
     representer!(:inject => :song_representer) do
       collection :songs,
         :instance => lambda { |fragment, i|
@@ -121,9 +121,6 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
     representer!(:inject => :song_representer) do
       collection :songs,
         :instance => lambda { |fragment, i|
-
-          #fragment["id"] == songs[i].id ? songs[i] : Song.find(fragment["id"])
-          puts "[[[[[[[[[[[[[[[[[[[[[ run #{songs.inspect}"
           songs << song=Song.new(2)
           song
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
@@ -146,6 +143,62 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
           # TODO: check elements object_id!
 
       songs.object_id.must_equal album.songs.object_id
+    }
+  end
+
+
+  # not sure if this must be a library strategy
+  describe "replace existing element" do
+    representer!(:inject => :song_representer) do
+      collection :songs,
+        :instance => lambda { |fragment, i|
+          id = fragment.delete("replace_id")
+          replaced = songs.find { |s| s.id == id }
+          songs[songs.index(replaced)] = song=Song.new(3)
+          song
+        }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
+
+        :extend => song_representer,
+        # :parse_strategy => :sync
+        :setter => lambda { |*|  }
+    end
+
+    it {
+      album= Struct.new(:songs).new(songs = [
+        Song.new(1, "The Answer Is Still No"),
+        Song.new(2, "Invincible")])
+
+      album.
+        extend(representer).
+        from_hash("songs" => [{"replace_id"=>2, "id" => 3, "title" => "Soulmate"}]).
+        songs.must_equal [
+          Song.new(1, "The Answer Is Still No"),
+          Song.new(3, "Soulmate")]
+          # TODO: check elements object_id!
+
+      songs.object_id.must_equal album.songs.object_id
+    }
+  end
+
+
+  describe "replace collection" do
+    representer!(:inject => :song_representer) do
+      collection :songs,
+        :extend => song_representer, :class => Song
+    end
+
+    it {
+      album= Struct.new(:songs).new(songs = [
+        Song.new(1, "The Answer Is Still No")])
+
+      album.
+        extend(representer).
+        from_hash("songs" => [{"title" => "Invincible"}]).
+        songs.must_equal [
+          Song.new(nil, "Invincible")]
+          # TODO: check elements object_id!
+
+      # songs.object_id.must_equal album.songs.object_id
     }
   end
 end
