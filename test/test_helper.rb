@@ -120,3 +120,11 @@ MiniTest::Spec.class_eval do
   end
   include TestMethods
 end
+
+class BaseTest < MiniTest::Spec
+  let (:new_album)  { OpenStruct.new.extend(representer) }
+  let (:album)      { OpenStruct.new(:songs => ["Fuck Armageddon"]).extend(representer) }
+  let (:song) { OpenStruct.new(:title => "Resist Stance") }
+  let (:song_representer) { Module.new do include Representable::Hash; property :title end  }
+
+end
