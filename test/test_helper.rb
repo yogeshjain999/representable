@@ -56,12 +56,12 @@ MiniTest::Spec.class_eval do
     end
   end
 
-  def render(object)
-    AssertableDocument.new(object.send("to_#{format}"), format)
+  def render(object, *args)
+    AssertableDocument.new(object.send("to_#{format}", *args), format)
   end
 
-  def parse(object, input)
-    object.send("from_#{format}", input)
+  def parse(object, input, *args)
+    object.send("from_#{format}", input, *args)
   end
 
   class AssertableDocument
