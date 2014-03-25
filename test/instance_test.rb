@@ -103,13 +103,15 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
 
       album.
         extend(representer).
-        from_hash("songs" => [{"title" => "The Answer Is Still No"}, {"title" => "Invincible"}]).
-        songs.must_equal [
-          Song.new(1, "The Answer Is Still No"),
-          Song.new(2, "Invincible")]
-          # TODO: check elements object_id!
+        from_hash("songs" => [{"title" => "The Answer Is Still No"}, {"title" => "Invincible"}])
+
+      album.songs.must_equal [
+        Song.new(1, "The Answer Is Still No"),
+        Song.new(2, "Invincible")]
 
       songs.object_id.must_equal album.songs.object_id
+      songs[0].object_id.must_equal album.songs[0].object_id
+      songs[1].object_id.must_equal album.songs[1].object_id
     }
   end
 
@@ -141,6 +143,8 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
           # TODO: check elements object_id!
 
       songs.object_id.must_equal album.songs.object_id
+      songs[0].object_id.must_equal album.songs[0].object_id
+      songs[1].object_id.must_equal album.songs[1].object_id
     }
   end
 
@@ -168,9 +172,9 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
         songs.must_equal [
           Song.new(1, "The Answer Is Still No"),
           Song.new(2, "Invincible")]
-          # TODO: check elements object_id!
 
       songs.object_id.must_equal album.songs.object_id
+      songs[0].object_id.must_equal album.songs[0].object_id
     }
   end
 
@@ -202,9 +206,9 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
         songs.must_equal [
           Song.new(1, "The Answer Is Still No"),
           Song.new(3, "Soulmate")]
-          # TODO: check elements object_id!
 
       songs.object_id.must_equal album.songs.object_id
+      songs[0].object_id.must_equal album.songs[0].object_id
     }
   end
 
@@ -224,9 +228,8 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
         from_hash("songs" => [{"title" => "Invincible"}]).
         songs.must_equal [
           Song.new(nil, "Invincible")]
-          # TODO: check elements object_id!
 
-      # songs.object_id.must_equal album.songs.object_id
+      songs.object_id.wont_equal album.songs.object_id
     }
   end
 end
