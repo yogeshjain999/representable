@@ -85,6 +85,34 @@ puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
   #   end
   # end
 
+  describe "sync" do
+    representer!(:inject => :song_representer) do
+      collection :songs,
+        :instance => lambda { |fragment, i|
+          songs[i]
+        },
+        :extend => song_representer,
+        # :parse_strategy => :sync
+        :setter => lambda { |*|  }
+    end
+
+    it {
+      album= Struct.new(:songs).new(songs = [
+      Song.new(1, "The Answer Is Still No"),
+      Song.new(2, "Invncble")])
+
+      album.
+        extend(representer).
+        from_hash("songs" => [{"title" => "The Answer Is Still No"}, {"title" => "Invincible"}]).
+        songs.must_equal [
+          Song.new(1, "The Answer Is Still No"),
+          Song.new(2, "Invincible")]
+          # TODO: check elements object_id!
+
+      songs.object_id.must_equal album.songs.object_id
+    }
+  end
+
   describe "update existing elements, only" do
     representer!(:inject => :song_representer) do
       collection :songs,
