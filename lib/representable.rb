@@ -2,6 +2,8 @@ require 'representable/deprecations'
 require 'representable/definition'
 require 'representable/mapper'
 require 'representable/config'
+require "representable/parse_strategies"
+
 
 module Representable
   attr_writer :representable_attrs

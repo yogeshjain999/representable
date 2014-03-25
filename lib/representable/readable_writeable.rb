@@ -1,17 +1,16 @@
 module Representable
-  module Feature
-    module ReadableWriteable
-      def deserialize_property(binding, doc, options)
-        return unless binding.writeable?
-        super
-      end
+  module ReadableWriteable
+    def deserialize_property(binding, doc, options)
+      return unless binding.writeable?
+      super
+    end
 
-      def serialize_property(binding, doc, options)
-        return unless binding.readable?
-        super
-      end
+    def serialize_property(binding, doc, options)
+      return unless binding.readable?
+      super
     end
   end
+
 
   # TODO: i hate monkey-patching Definition here since it globally adds this options. However, for now this should be ok :-)
   Definition.class_eval do

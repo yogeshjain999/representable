@@ -1,4 +1,4 @@
-require 'representable/feature/readable_writeable'
+require 'representable/readable_writeable'
 
 module Representable
   # Render and parse by looping over the representer's properties and dispatching to bindings.
@@ -73,6 +73,6 @@ module Representable
     end
 
     include Methods
-    include Feature::ReadableWriteable # DISCUSS: make this pluggable.
+    include ReadableWriteable # DISCUSS: make this pluggable.
   end
 end
