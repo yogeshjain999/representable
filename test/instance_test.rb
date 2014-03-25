@@ -36,15 +36,9 @@ class InstanceTest < BaseTest
         :extend => song_representer
         # :parse_strategy => :sync
     end
-    # TODO: create object when list[i] nil!
-    # TODO: check object_id.
-    # TODO: make sure instance{nil} works in collection.
 
 # problem: when returning nil in this lambda WITHOUT parse: true, the original model's collection is empty and object.call in #instance_for doesn't work, so we still try to create a brand-new object.
-    it( "sds") {
-puts "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\collection"
-
-
+    it {
       album= Struct.new(:songs).new(songs = [
       Song.new(1, "The Answer Is Still No"),
       Song.new(2, "")])
