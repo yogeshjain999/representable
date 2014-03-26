@@ -317,7 +317,7 @@ That works as the method is mixed into the represented object. When adding a hel
 
 ```ruby
 class SongRepresenter < Representable::Decorator
-  property :title, decorator_scope: true
+  property :title, exec_context: :decorator
 
   def title
     represented.name
@@ -325,7 +325,9 @@ class SongRepresenter < Representable::Decorator
 end
 ```
 
-This will call `title` getter and setter on the decorator instance, not on the represented object. You can still access the represented object in the decorator method using `represented`. BTW, in a module representer this option is ignored.
+This will call `title` getter and setter on the decorator instance, not on the represented object. You can still access the represented object in the decorator method using `represented`. BTW, in a module representer this option setting is ignored.
+
+Possible values for this switch (formerly known as `:decorator_scope`) are `:binding`, `:decorator` and `nil`, which is the default setting where lambdas and methods are invoked in the represented context.
 
 Or use `:getter` or `:setter` to dynamically add a method for the represented object.
 
@@ -926,9 +928,22 @@ end
 
 Coercing values only happens when rendering or parsing a document. Representable does not create accessors in your model as `virtus` does.
 
+
 ## Undocumented Features
 
 *(Please don't read this section!)*
+
+
+### Options For Lambdas
+
+If you need to access objects other than the representer in your lambdas, use the `:pass_options` switch.
+
+```ruby
+property :title, :getter => lambda { |opts| send(opts.binding.name) }, pass_options: true
+```
+
+This will pass an `Binding::Options` instance to the lambda exposing the following readers: `#binding`, `#user_options`, `#represented`, `#decorator` giving you access to all possible components.
+
 
 ### Custom Binding
 
@@ -937,6 +952,7 @@ If you need a special binding for a property you're free to create it using the 
 ```ruby
 property :title, :binding => lambda { |*args| JSON::TitleBinding.new(*args) }
 ```
+
 
 ### Syncing Parsing
 

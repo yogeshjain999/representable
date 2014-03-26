@@ -107,8 +107,12 @@ module Representable
         return
       end
 
-      proc.evaluate(exec_context, *args<<user_options) # from Uber::Options::Value.
+      args = self[:pass_options] ? [Options.new(self, user_options, represented, decorator)] : args<<user_options
+
+      proc.evaluate(exec_context, *args) # from Uber::Options::Value.
     end
+
+    Options = Struct.new(:binding, :user_options, :represented, :decorator)
 
 
     # Delegates to call #to_*/from_*.
