@@ -107,9 +107,10 @@ module Representable
         return
       end
 
-      args = self[:pass_options] ? [Options.new(self, user_options, represented, decorator)] : args<<user_options
+      # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
+      options = self[:pass_options] ? Options.new(self, user_options, represented, decorator) : user_options
 
-      proc.evaluate(exec_context, *args) # from Uber::Options::Value.
+      proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
     end
 
     Options = Struct.new(:binding, :user_options, :represented, :decorator)
@@ -141,9 +142,7 @@ module Representable
       end
 
       def instance_for(fragment, *args)
-        return unless self[:instance]
-        # TODO: hand in all arguments!
-        self[:instance].evaluate(exec_context, fragment, *args) #or object.call # calls #get. (this handles instance: {nil} atm)
+        evaluate_option(:instance, fragment, *args)
       end
     end
   end

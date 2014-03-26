@@ -10,8 +10,6 @@ class ExecContextTest < MiniTest::Spec
     let (:song) { representer.prepare(Song.new("Timing")) }
     let (:format) { format }
 
-    # TODO: deprecate decorator_scope.
-
 
     describe "exec_context: nil" do
       representer!(:module => mod) do
@@ -59,7 +57,7 @@ class ExecContextTest < MiniTest::Spec
       end
 
 
-      describe "exec_context: :decorator" do
+      describe "exec_context: :decorator" do # this tests if lambdas are run in the right context, if methods are called in the right context and if we can access the represented object.
         representer!(:module => mod, :decorator => true) do
           property :name, :as => lambda { |*| self.class.superclass }, :exec_context => :decorator
 

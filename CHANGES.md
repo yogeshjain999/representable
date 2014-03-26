@@ -7,6 +7,7 @@
 
 Binding.new changed
 `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead.
+`:pass_options`.
 
 ## Definition
 

@@ -28,5 +28,19 @@ class AsTest < MiniTest::Spec
       it { parse(song, {"Song" => "Wie Es Geht"}).name.must_equal "Wie Es Geht" }
     end
 
+
+
+
+    # describe "#what" do
+
+    #   describe "lambda arguments" do
+    #     representer! do
+    #       property :name, :as => lambda { |*args| args.inspect }
+    #     end
+
+    #     it { render(song, :volume => 1).must_equal_document({"args" => "Revolution"}) }
+    #     # it { parse(song, {"args" => "Wie Es Geht"}).name.must_equal "Wie Es Geht" }
+    #   end
+    # end
   end
 end

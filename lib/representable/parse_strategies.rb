@@ -10,9 +10,10 @@ module Representable
 
     class Sync
       def self.call(name, options)
-        options[:setter] = lambda { |*| }
-        return options[:instance] = lambda { |fragment,i,*| send(name)[i] } if options[:collection]
-        options[:instance] = lambda { |fragment,*| send(name) }
+        options[:setter]          = lambda { |*| }
+        options[:pass_options]    = true
+        return options[:instance] = lambda { |fragment, i, options| options.binding.get[i] } if options[:collection]
+        options[:instance] = lambda { |fragment, options|  options.binding.get }
       end
     end
   end

@@ -13,7 +13,7 @@ class InstanceTest < BaseTest
   describe "property with :instance" do
     representer!(:inject => :song_representer) do
       property :song,
-        :instance => lambda { |fragment| fragment["id"] == song.id ? song : Song.find(fragment["id"]) },
+        :instance => lambda { |fragment, *args| fragment["id"] == song.id ? song : Song.find(fragment["id"]) },
         :extend => song_representer
     end
 
@@ -28,7 +28,7 @@ class InstanceTest < BaseTest
   describe "collection with :instance" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i|
+        :instance => lambda { |fragment, i, *args|
 
           fragment["id"] == songs[i].id ? songs[i] : Song.find(fragment["id"])
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
@@ -84,7 +84,7 @@ class InstanceTest < BaseTest
   describe "sync" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i|
+        :instance => lambda { |fragment, i, *args|
           songs[i]
         },
         :extend => song_representer,
@@ -114,7 +114,7 @@ class InstanceTest < BaseTest
   describe "update existing elements, only" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i|
+        :instance => lambda { |fragment, i, *args|
 
           #fragment["id"] == songs[i].id ? songs[i] : Song.find(fragment["id"])
           songs.find { |s| s.id == fragment["id"] }
@@ -148,7 +148,7 @@ class InstanceTest < BaseTest
   describe "add incoming elements, only" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i|
+        :instance => lambda { |fragment, i, *args|
           songs << song=Song.new(2)
           song
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
@@ -179,7 +179,7 @@ class InstanceTest < BaseTest
   describe "replace existing element" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i|
+        :instance => lambda { |fragment, i, *args|
           id = fragment.delete("replace_id")
           replaced = songs.find { |s| s.id == id }
           songs[songs.index(replaced)] = song=Song.new(3)

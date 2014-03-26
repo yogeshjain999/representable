@@ -500,7 +500,7 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "does not call original reader when rendering" do
-      subject.instance_eval { def name; raise; end; self }.to_hash
+      subject.instance_eval { def name; raise; end; self }.to_hash({})
     end
 
     it "uses :setter when parsing" do
@@ -508,7 +508,7 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "does not call original writer when parsing" do
-      subject.instance_eval { def name=(*); raise; end; self }.from_hash({"name"=>"Dana D And Talle T"})
+      subject.instance_eval { def name=(*); raise; end; self }.from_hash({"name"=>"Dana D And Talle T"}, {})
     end
   end
 
@@ -516,7 +516,7 @@ class RepresentableTest < MiniTest::Spec
     representer! do
       property :name,
         :writer => lambda { |doc, args| doc["title"] = "#{args[:nr]}) #{name}" },
-        :reader => lambda { |doc, args| self.name = doc["title"].split(") ").last }
+        :reader => lambda { |doc, *args| self.name = doc["title"].split(") ").last }
     end
 
     subject { OpenStruct.new(:name => "Disorder And Disarray").extend(representer) }
@@ -745,37 +745,6 @@ class RepresentableTest < MiniTest::Spec
 
       it "executes method in represented context" do
         Object.new.extend(representer_with_method).to_hash.must_equal({"title"=>"Crystal Planet"})
-      end
-
-      describe "with decorator" do
-        it "executes lambdas in representer context" do
-          rpr = representer
-          Class.new(Representable::Decorator) do
-            include rpr
-
-            def title_from_representer
-              "Sounds Of Silence"
-            end
-          end.new(Object.new).to_hash.must_equal({"title"=>"Sounds Of Silence"})
-        end
-
-        it "executes method in representer context" do
-          rpr = representer_with_method
-          Class.new(Representable::Decorator) do
-            include rpr # mixes in #title.
-          end.new(Object.new).to_hash.must_equal({"title"=>"Crystal Planet"})
-        end
-
-        it "still allows accessing the represented object" do
-          Class.new(Representable::Decorator) do
-            include Representable::Hash
-            property :title, :getter => lambda { |*| represented.title }, :decorator_scope => true
-
-            def title
-              "Sounds Of Silence"
-            end
-          end.new(OpenStruct.new(:title => "Secret")).to_hash.must_equal({"title"=>"Secret"})
-        end
       end
     end
 

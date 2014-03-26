@@ -185,7 +185,7 @@ class InlineTest < MiniTest::Spec
 
         property :requester
         property :song do
-          property :name, :decorator_scope => true
+          property :name, :exec_context => :decorator
 
           define_method :name do
             represented.name.upcase
