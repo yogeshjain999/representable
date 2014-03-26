@@ -138,7 +138,7 @@ module Representable
       end
 
       def class_from(fragment, *args)
-        self[:class].evaluate(exec_context, fragment) # TODO: hand in all arguments!
+        evaluate_option(:class, fragment, *args)
       end
 
       def instance_for(fragment, *args)
