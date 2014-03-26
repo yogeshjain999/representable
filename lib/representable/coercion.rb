@@ -28,7 +28,7 @@ module Representable::Coercion
       representable_attrs.inheritable_array(:coercer_class).first.attribute(name, options[:type])
 
       # By using :getter we "pre-occupy" this directive, but we avoid creating accessors, which i find is the cleaner way.
-      options[:decorator_scope] = true
+      options[:exec_context] = :decorator
       options[:getter] = lambda { |*| coercer.coerce(name, represented.send(name)) }
       options[:setter] = lambda { |v,*| represented.send("#{name}=", coercer.coerce(name, v)) }
 
