@@ -15,7 +15,7 @@ class HashBindingTest < MiniTest::Spec
   describe "PropertyBinding" do
     describe "#read" do
       before do
-        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song), nil)
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song), nil, nil)
       end
 
       it "returns fragment if present" do
@@ -32,7 +32,7 @@ class HashBindingTest < MiniTest::Spec
 
     describe "with plain text" do
       before do
-        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song), nil)
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song), nil, nil)
       end
 
       it "extracts with #read" do
@@ -48,7 +48,7 @@ class HashBindingTest < MiniTest::Spec
 
     describe "with an object" do
       before do
-        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song, :class => SongWithRepresenter), nil)
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song, :class => SongWithRepresenter), nil, nil)
         @doc      = {}
       end
 
@@ -64,7 +64,7 @@ class HashBindingTest < MiniTest::Spec
 
     describe "with an object and :extend" do
       before do
-        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song, :class => Song, :extend => SongRepresenter), nil)
+        @property = Representable::Hash::PropertyBinding.new(Representable::Definition.new(:song, :class => Song, :extend => SongRepresenter), nil, nil)
         @doc      = {}
       end
 
@@ -83,7 +83,7 @@ class HashBindingTest < MiniTest::Spec
   describe "CollectionBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::Hash::CollectionBinding.new(Representable::Definition.new(:songs, :collection => true), Album.new)
+        @property = Representable::Hash::CollectionBinding.new(Representable::Definition.new(:songs, :collection => true), Album.new, nil)
       end
 
       it "extracts with #read" do
@@ -104,7 +104,7 @@ class HashBindingTest < MiniTest::Spec
   describe "HashBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::Hash::HashBinding.new(Representable::Definition.new(:songs, :hash => true), nil)
+        @property = Representable::Hash::HashBinding.new(Representable::Definition.new(:songs, :hash => true), nil, nil)
       end
 
       it "extracts with #read" do
@@ -120,7 +120,7 @@ class HashBindingTest < MiniTest::Spec
 
     describe "with objects" do
       before do
-        @property = Representable::Hash::HashBinding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter), nil)
+        @property = Representable::Hash::HashBinding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter), nil, nil)
       end
 
       it "doesn't change the represented hash in #write" do

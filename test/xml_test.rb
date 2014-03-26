@@ -138,20 +138,20 @@ class XmlTest < MiniTest::Spec
 
     describe "XML::Binding#build_for" do
       it "returns AttributeBinding" do
-        assert_kind_of XML::AttributeBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => "band", :attribute => true), nil)
+        assert_kind_of XML::AttributeBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => "band", :attribute => true), nil, nil)
       end
 
       it "returns PropertyBinding" do
-        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :class => Hash), nil)
-        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => :content), nil)
+        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :class => Hash), nil, nil)
+        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => :content), nil, nil)
       end
 
       it "returns CollectionBinding" do
-        assert_kind_of XML::CollectionBinding, XML::PropertyBinding.build_for(Def.new(:band, :collection => :true), nil)
+        assert_kind_of XML::CollectionBinding, XML::PropertyBinding.build_for(Def.new(:band, :collection => :true), nil, nil)
       end
 
       it "returns HashBinding" do
-        assert_kind_of XML::HashBinding, XML::PropertyBinding.build_for(Def.new(:band, :hash => :true), nil)
+        assert_kind_of XML::HashBinding, XML::PropertyBinding.build_for(Def.new(:band, :hash => :true), nil, nil)
       end
     end
 

@@ -189,7 +189,7 @@ class DefinitionTest < MiniTest::Spec
   describe "#create_binding" do
     it "executes the block (without special context)" do
       definition = Representable::Definition.new(:title, :binding => lambda { |*args| @binding = Representable::Binding.new(*args) })
-      definition.create_binding(object=Object.new).must_equal @binding
+      definition.create_binding(object=Object.new, nil, nil).must_equal @binding
       @binding.instance_variable_get(:@represented).must_equal object
     end
   end

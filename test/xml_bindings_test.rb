@@ -26,7 +26,7 @@ class XMLBindingTest < MiniTest::Spec
   describe "PropertyBinding" do
     describe "with plain text" do
       before do
-        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song), nil)
+        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song), nil, nil)
       end
 
       it "extracts with #read" do
@@ -41,7 +41,7 @@ class XMLBindingTest < MiniTest::Spec
 
     describe "with an object" do
       before do
-        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :class => SongWithRepresenter), nil)
+        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :class => SongWithRepresenter), nil, nil)
       end
 
       it "extracts with #read" do
@@ -56,7 +56,7 @@ class XMLBindingTest < MiniTest::Spec
 
     describe "with an object and :extend" do
       before do
-        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :class => Song, :extend => SongRepresenter), nil)
+        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :class => Song, :extend => SongRepresenter), nil, nil)
       end
 
       it "extracts with #read" do
@@ -74,7 +74,7 @@ class XMLBindingTest < MiniTest::Spec
   describe "CollectionBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::XML::CollectionBinding.new(Representable::Definition.new(:song, :collection => true), Struct.new(:song).new)
+        @property = Representable::XML::CollectionBinding.new(Representable::Definition.new(:song, :collection => true), Struct.new(:song).new, nil)
       end
 
       it "extracts with #read" do
@@ -90,7 +90,7 @@ class XMLBindingTest < MiniTest::Spec
 
     describe "with objects" do
       before do
-        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :collection => true, :class => SongWithRepresenter), nil)
+        @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :collection => true, :class => SongWithRepresenter), nil, nil)
       end
 
       it "extracts with #read" do
@@ -111,7 +111,7 @@ class XMLBindingTest < MiniTest::Spec
   describe "HashBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::XML::HashBinding.new(Representable::Definition.new(:songs, :hash => true), nil)
+        @property = Representable::XML::HashBinding.new(Representable::Definition.new(:songs, :hash => true), nil, nil)
       end
 
       it "extracts with #read" do
@@ -136,7 +136,7 @@ class XMLBindingTest < MiniTest::Spec
   describe "AttributeBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::XML::AttributeBinding.new(Representable::Definition.new(:name, :attribute => true), nil)
+        @property = Representable::XML::AttributeBinding.new(Representable::Definition.new(:name, :attribute => true), nil, nil)
       end
 
       it "extracts with #read" do
@@ -153,7 +153,7 @@ class XMLBindingTest < MiniTest::Spec
 
   describe "ContentBinding" do
     before do
-      @property = Representable::XML::ContentBinding.new(Representable::Definition.new(:name, :content => true), nil)
+      @property = Representable::XML::ContentBinding.new(Representable::Definition.new(:name, :content => true), nil, nil)
     end
 
     it "extracts with #read" do
