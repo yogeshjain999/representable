@@ -1,8 +1,12 @@
 # 1.8.0
 
+* the following options are dynamic now (note the changed arguments API)
+
 * Major API change: Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
 * Using `:extend` in combination with an inline representer is deprecated. Include the module in the inline block instead.
 
+Binding.new changed
+`decorator_scope: true` is deprecated, use `exec_context: :decorator` instead.
 
 ## Definition
 

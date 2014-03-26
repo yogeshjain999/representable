@@ -35,9 +35,12 @@ private
   end
 
   def representable_binding_for(attribute, format, options)
-    context = attribute[:decorator_scope] ? self : represented # DISCUSS: pass both represented and representer into Binding and do it there?
+    if attribute[:decorator_scope]
+      warn "[Representable] Deprecation: `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead."
+      attribute.merge!(:exec_context => :decorator)
+    end # TODO: remove in 2.0.
 
-    format.build(attribute, represented, options, context)
+    format.build(attribute, represented, self, options)
   end
 
   def cleanup_options(options) # TODO: remove me. this clearly belongs in Representable.

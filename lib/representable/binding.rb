@@ -14,11 +14,13 @@ module Representable
       build_for(definition, *args)
     end
 
-    def initialize(definition, represented, user_options={}, exec_context=represented)  # TODO: remove default arg for user options. # DISCUSS: make exec_context an options hash?
+    def initialize(definition, represented, decorator, user_options={})  # TODO: remove default arg for user options.
       super(definition)
       @represented  = represented
+      @decorator    = decorator
       @user_options = user_options
-      @exec_context = exec_context
+
+      setup_exec_context!
     end
 
     attr_reader :user_options, :represented # TODO: make private/remove.
@@ -87,7 +89,15 @@ module Representable
     end
 
   private
-    attr_reader :exec_context
+    def setup_exec_context!
+      context = represented
+      context = self        if self[:exec_context] == :binding
+      context = decorator   if self[:exec_context] == :decorator
+
+      @exec_context = context
+    end
+
+    attr_reader :exec_context, :decorator
 
     # Evaluate the option (either nil, static, a block or an instance method call) or
     # executes passed block when option not defined.
