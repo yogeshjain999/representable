@@ -59,6 +59,15 @@ class InstanceTest < BaseTest
     #   from_hash("song" => {"id" => 2}).song.must_equal Song.new(2, "Invincible") }
   end
 
+  describe "lambda receiving fragment and args" do
+    representer!(:inject => :song_representer) do
+      property :song, :instance => lambda { |fragment, args| Struct.new(:args, :id).new([fragment, args]) }, :extend => song_representer
+    end
+
+    it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
+      from_hash({"song" => {"id" => 1}}, {:volume => 1}).song.args.must_equal([{"id"=>1}, {:volume=>1}]) }
+  end
+
   # TODO: raise and test instance:{nil}
   # describe "property with instance: { nil }" do # TODO: introduce :representable option?
   #   representer!(:inject => :song_representer) do

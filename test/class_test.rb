@@ -39,23 +39,17 @@ class ClassTest < BaseTest
   end
 
 
-  describe "lambda receiving fragment" do
+  describe "lambda receiving fragment and args" do
     let (:klass) { Class.new do
-
-      def self.args=(args)
-        @@args = args
-
-        puts self.inspect
-        return self
-      end
-      def self.args
-        @@args
+      class << self
+        attr_accessor :args
       end
 
       def from_hash(*)
         self.class.new
       end
     end }
+
     representer!(:inject => :klass) do
       _klass = klass
       property :song, :class => lambda { |fragment, args| _klass.args=([fragment,args]); _klass }
