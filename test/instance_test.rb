@@ -34,10 +34,8 @@ class InstanceTest < BaseTest
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
 
         :extend => song_representer
-        # :parse_strategy => :sync
     end
 
-# problem: when returning nil in this lambda WITHOUT parse: true, the original model's collection is empty and object.call in #instance_for doesn't work, so we still try to create a brand-new object.
     it {
       album= Struct.new(:songs).new(songs = [
       Song.new(1, "The Answer Is Still No"),
@@ -47,16 +45,7 @@ class InstanceTest < BaseTest
         extend(representer).
         from_hash("songs" => [{"id" => 2},{"id" => 2, "title"=>"The Answer Is Still No"}]).songs.must_equal [
           Song.new(2, "Invincible"), Song.new(2, "The Answer Is Still No")]
-
-
     }
-
-
-
-
-
-    # it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
-    #   from_hash("song" => {"id" => 2}).song.must_equal Song.new(2, "Invincible") }
   end
 
   describe "lambda receiving fragment and args" do
