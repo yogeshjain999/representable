@@ -23,11 +23,16 @@ Binding.new changed
 
 -> constantize :class etc (requires AS)
 -> make all options lambda-able (:as, too!) [DONE]
+representation_wrap is dynamic and executed in represented.
 -> make major steps lambda-able
 -> strategies for deserialization (lambda-able!)
--> pass *args to all lambdas
+-> pass *args to all lambdas [DONE]
+
+
 
 * Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
+
+* Removed `Config#wrap`. Only way to retrieve the evaluated wrap is `Config#wrap_for`.
 
 h2. 1.7.7
 

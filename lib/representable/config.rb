@@ -31,13 +31,19 @@ module Representable
       values.each(*args, &block)
     end
 
-    attr_accessor :wrap
+    def wrap=(value)
+      value = value.to_s if value.is_a?(Symbol)
+      @wrap = Uber::Options::Value.new(value)
+    end
 
     # Computes the wrap string or returns false.
-    def wrap_for(name)
-      return unless wrap
-      return infer_name_for(name) if wrap === true
-      wrap
+    def wrap_for(name, context, *args)
+      return unless @wrap
+
+      value = @wrap.evaluate(context, *args)
+
+      return infer_name_for(name) if value === true
+      value
     end
 
     # Write representer configuration into this hash.

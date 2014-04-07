@@ -1,5 +1,10 @@
 require 'test_helper'
 
+# parse_strategy: :sync
+# parse_strategy: :replace
+# parse_strategy: :find_or_instantiate ("expand" since we don't delete existing unmatched in target)
+
+
 class ParseStrategyTest < BaseTest
   for_formats(
     :hash => [Representable::Hash, {"song"=>{"title"=>"Resist Stance"}}, {"song"=>{"title"=>"Suffer"}}],

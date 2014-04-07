@@ -179,35 +179,6 @@ class RepresentableTest < MiniTest::Spec
   end
 
 
-  describe "#representation_wrap" do
-    class HardcoreBand
-      include Representable
-    end
-
-    class SoftcoreBand < HardcoreBand
-    end
-
-    before do
-      @band = HardcoreBand.new
-    end
-
-
-    it "returns false per default" do
-      assert_equal nil, SoftcoreBand.new.send(:representation_wrap)
-    end
-
-    it "infers a printable class name if set to true" do
-      HardcoreBand.representation_wrap = true
-      assert_equal "hardcore_band", @band.send(:representation_wrap)
-    end
-
-    it "can be set explicitely" do
-      HardcoreBand.representation_wrap = "breach"
-      assert_equal "breach", @band.send(:representation_wrap)
-    end
-  end
-
-
   describe "#definition_class" do
     it "returns Definition class" do
       assert_equal Representable::Definition, Band.send(:definition_class)

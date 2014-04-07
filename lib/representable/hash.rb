@@ -27,7 +27,7 @@ module Representable
 
 
     def from_hash(data, options={}, binding_builder=PropertyBinding)
-      if wrap = options[:wrap] || representation_wrap
+      if wrap = options[:wrap] || representation_wrap(options)
         data = data[wrap.to_s] || {} # DISCUSS: don't initialize this more than once. # TODO: this should be done with #read.
       end
 
@@ -37,7 +37,7 @@ module Representable
     def to_hash(options={}, binding_builder=PropertyBinding)
       hash = create_representation_with({}, options, binding_builder)
 
-      return hash unless wrap = options[:wrap] || representation_wrap
+      return hash unless wrap = options[:wrap] || representation_wrap(options)
 
       {wrap => hash}
     end

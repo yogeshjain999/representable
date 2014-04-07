@@ -57,8 +57,8 @@ private
   end
 
 
-  def representation_wrap
-    representable_attrs.wrap_for(self.class.name) # FIXME: where is this needed?
+  def representation_wrap(*args)
+    representable_attrs.wrap_for(self.class.name, represented, *args)
   end
 
   def represented

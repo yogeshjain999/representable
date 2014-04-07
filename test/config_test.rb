@@ -10,17 +10,17 @@ class ConfigTest < MiniTest::Spec
 
   describe "wrapping" do
     it "returns false per default" do
-      assert_equal nil, subject.wrap_for("Punk")
+      assert_equal nil, subject.wrap_for("Punk", nil)
     end
 
     it "infers a printable class name if set to true" do
       subject.wrap = true
-      assert_equal "punk_rock", subject.wrap_for(PunkRock)
+      assert_equal "punk_rock", subject.wrap_for(PunkRock, nil)
     end
 
     it "can be set explicitely" do
       subject.wrap = "Descendents"
-      assert_equal "Descendents", subject.wrap_for(PunkRock)
+      assert_equal "Descendents", subject.wrap_for(PunkRock, nil)
     end
   end
 

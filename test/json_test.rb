@@ -109,11 +109,6 @@ module JsonTest
           assert_equal({"name"=>"Rise Against"}, hash)
         end
 
-        it "respects #representation_wrap=" do
-          @Band.representation_wrap = :group
-          assert_equal({:group=>{"name"=>"Rise Against"}}, @Band.new("Rise Against").to_hash)
-        end
-
         it "respects :wrap option" do
           assert_equal({:band=>{"name"=>"NOFX"}}, @Band.new("NOFX").to_hash(:wrap => :band))
         end
