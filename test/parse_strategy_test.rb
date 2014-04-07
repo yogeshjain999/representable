@@ -160,7 +160,7 @@ class ParseStrategyFindOrInstantiateTest < BaseTest
 
         parse(album, input)
 
-        album.songs[0].title.must_equal "Resist Stance"
+        album.songs[0].title.must_equal "Resist Stance" # note how title is updated from "Resist Stan"
         album.songs[0].id.must_equal 1
         album.songs[1].title.must_equal "Suffer"
         album.songs[1].id.must_equal nil

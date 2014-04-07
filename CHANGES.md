@@ -14,6 +14,8 @@ Binding.new changed
 `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead.
 `:pass_options`.
 
+parse_strategy: :find_or_instantiate
+
 ## Definition
 
 * Make `Definition < Hash`, all options can/should now be accessed with `Definition#[]`.
