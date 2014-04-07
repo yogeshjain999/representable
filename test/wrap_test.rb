@@ -35,9 +35,7 @@ class WrapTest < MiniTest::Spec
       let (:band) { representer.prepare(Struct.new(:name, :genre).new("Blink", "Pop")) }
       let (:format) { format }
 
-      representer!() do
-        include mod
-
+      representer!(:module => mod) do
         self.representation_wrap = lambda { |args| "#{name}#{args[:number]}" }
         property :genre
       end
