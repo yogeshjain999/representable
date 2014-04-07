@@ -142,7 +142,14 @@ module Representable
       end
 
       def instance_for(fragment, *args)
-        evaluate_option(:instance, fragment, *args)
+        instance = evaluate_option(:instance, fragment, *args)
+
+        if instance === true # TODO: remove in 2.0 and introduce option.
+          warn "[Representable] instance: true is deprecated. Apparently, you know what you're doing, so use `pass_options: true, instance: lambda { |fragment, args| args.binding.get }` instead."
+          return get
+        end
+
+        instance
       end
     end
   end
