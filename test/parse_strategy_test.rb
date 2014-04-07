@@ -122,3 +122,53 @@ class ParseStrategyTest < BaseTest
     end
   end
 end
+
+
+class ParseStrategyFindOrInstantiateTest < BaseTest
+  Song = Struct.new(:id, :title)
+  Song.class_eval do
+    def self.find(id)
+      return new(1, "Resist Stan") if id==1# we should return the same object here
+      new
+    end
+  end
+
+  for_formats(
+    :hash => [Representable::Hash, {"songs"=>[{"id" => 1, "title"=>"Resist Stance"}, {"title"=>"Suffer"}]}],
+    # :xml  => [Representable::XML, "<open_struct><song><title>Resist Stance</title></song></open_struct>", "<open_struct><song><title>Suffer</title></song></open_struct>",],
+    # :yaml => [Representable::YAML, "---\nsong:\n  title: Resist Stance\n", "---\nsong:\n  title: Suffer\n"],
+  ) do |format, mod, input|
+
+    describe "[#{format}] property with parse_strategy: :find_or_instantiate" do
+      let (:format) { format }
+
+      representer!(:module => mod, :name => :song_representer) do
+        property :title
+        # self.representation_wrap = :song if format == :xml
+      end
+
+      representer!(:inject => :song_representer, :module => mod) do
+        collection :songs, :parse_strategy => :find_or_instantiate, :extend => song_representer, :class => Song
+      end
+
+      #let (:existing_song) { Song.new(1, "Resist Stan") }
+      let (:album) { Struct.new(:songs).new([]).extend(representer) }
+
+
+      it "replaces the existing collection with a new consisting of existing items or new items" do
+        songs_id = album.songs.object_id
+
+        parse(album, input)
+
+        album.songs[0].title.must_equal "Resist Stance"
+        album.songs[0].id.must_equal 1
+        album.songs[1].title.must_equal "Suffer"
+        album.songs[1].id.must_equal nil
+
+        album.songs.object_id.wont_equal songs_id
+      end
+
+      # TODO: test with existing collection
+    end
+  end
+end
