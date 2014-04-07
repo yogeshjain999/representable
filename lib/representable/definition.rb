@@ -40,6 +40,11 @@ module Representable
       self[:class] or self[:extend] or self[:instance]
     end
 
+    def representable?
+      return if self[:representable] === false
+      self[:representable] or typed?
+    end
+
     def array?
       self[:collection]
     end

@@ -18,7 +18,7 @@ module Representable
   private
     def serialize(object, user_options)
       # TODO: this used to be handled in #serialize where Object added it's behaviour. treat scalars as objects to remove this switch:
-      return object unless @binding.typed?
+      return object unless @binding.representable?
 
       object.send(@binding.serialize_method, user_options.merge!({:wrap => false}))
     end

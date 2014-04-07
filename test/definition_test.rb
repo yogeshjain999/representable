@@ -31,6 +31,16 @@ class DefinitionTest < MiniTest::Spec
       end
     end
 
+
+    describe "#representable?" do
+      it { assert Definition.new(:song, :representable => true).representable? }
+      it { Definition.new(:song, :representable => true, :extend => Object).representable?.must_equal true }
+      it { refute Definition.new(:song, :representable => false, :extend => Object).representable? }
+      it { assert Definition.new(:song, :extend => Object).representable? }
+      it { refute Definition.new(:song).representable? }
+    end
+
+
     it "responds to #getter and returns string" do
       assert_equal "songs", @def.getter
     end

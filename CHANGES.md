@@ -3,6 +3,7 @@
 instnace true is deprecated. Use `:pass_options => true, :instance => lambda { |fragment, args| args.binding.get }`
 typed geht nur noch wehnn instance class extend weg
 
+:representable allows to .. see is_representable
 
 * the following options are dynamic now (note the changed arguments API)
 
