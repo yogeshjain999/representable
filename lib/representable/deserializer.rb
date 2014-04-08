@@ -42,13 +42,17 @@ module Representable
 
     def prepare(object)
       @binding.send(:evaluate_option, :prepare, object) do
-        mod = @binding.representer_module_for(object)
-
-        return object unless mod
-
-        mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
-        mod.prepare(object)
+        prepare_for(object)
       end
+    end
+
+    def prepare_for(object)
+      mod = @binding.representer_module_for(object)
+
+      return object unless mod
+
+      mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
+      mod.prepare(object)
     end
     # in deserialize, we should get the original object?
   end
