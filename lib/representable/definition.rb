@@ -7,8 +7,7 @@ module Representable
     alias_method :getter, :name
 
     def initialize(sym, options={})
-      # deprecations:
-      raise "The :from option got replaced by :as in Representable 1.8!" if options[:from]
+      handle_deprecations!(options)
 
       super()
       @name     = sym.to_s
@@ -27,7 +26,7 @@ module Representable
 
     private :default, :[]=
 
-    def options # TODO: remove in 1.9.
+    def options # TODO: remove in 2.0.
       warn "Representable::Definition#option is deprecated, use #[] directly."
       self
     end
@@ -103,6 +102,16 @@ module Representable
 
     def handle_as!(options)
       options[:as] = options[:as].to_s if options[:as].is_a?(Symbol) # Allow symbols for as:
+    end
+
+    # TODO: remove in 2.0.
+    def handle_deprecations!(options)
+      raise "The :from option got replaced by :as in Representable 1.8!" if options[:from]
+
+      if options[:decorator_scope]
+        warn "[Representable] Deprecation: `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead."
+        options.merge!(:exec_context => :decorator)
+      end
     end
   end
 end

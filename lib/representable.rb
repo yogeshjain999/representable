@@ -34,11 +34,6 @@ private
   end
 
   def representable_binding_for(attribute, format, options)
-    if attribute[:decorator_scope]
-      warn "[Representable] Deprecation: `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead."
-      attribute.merge!(:exec_context => :decorator)
-    end # TODO: remove in 2.0.
-
     format.build(attribute, represented, self, options)
   end
 
@@ -107,17 +102,6 @@ private
         representable_attrs.wrap = name
       end
 
-      # Declares a represented document node, which is usually a XML tag or a JSON key.
-      #
-      # Examples:
-      #
-      #   property :name
-      #   property :name, :from => :title
-      #   property :name, :class => Name
-      #   property :name, :default => "Mike"
-      #   property :name, :render_nil => true
-      #   property :name, :readable => false
-      #   property :name, :writeable => false
       def property(name, options={}, &block)
         representable_attrs << definition_class.new(name, options)
       end
