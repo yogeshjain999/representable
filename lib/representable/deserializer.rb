@@ -26,31 +26,33 @@ module Representable
     end
 
     def call(fragment, *args)
-      # TODO: this used to be handled in #serialize where Object added it's behaviour. treat scalars as objects to remove this switch:
-      return fragment unless @binding.typed?
+      return fragment unless @binding.typed? # customize with :extend. this is not really straight-forward.
 
       # what if create_object is responsible for providing the deserialize-to object?
-      # parse_strategy: sync could provide a :instance block, since :instance{nil} never worked with collections we don't break anything.
-      # let's deprecate :instance{nil}, blocks have to return the object.
-      object = @binding.create_object(fragment, *args)
+      object = @binding.create_object(fragment, *args) # customize with :instance and :class.
 
       # DISCUSS: what parts should be in this class, what in Binding?
-      representable = prepare(object)
-      deserialize(representable, fragment, @binding.user_options)
+      representable = prepare(object) # customize with :prepare and :extend.
+
+      deserialize(representable, fragment, @binding.user_options) # deactivate-able via :representable => false.
     end
 
   private
-    def deserialize(object, fragment, options)
+    def deserialize(object, fragment, options) # TODO: merge with #serialize.
+      return object unless @binding.representable?
+
       object.send(@binding.deserialize_method, fragment, options)
     end
 
     def prepare(object)
-      mod = @binding.representer_module_for(object)
+      @binding.send( :evaluate_option,:prepare, object) do
+        mod = @binding.representer_module_for(object)
 
-      return object unless mod
+        return object unless mod
 
-      mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
-      mod.prepare(object)
+        mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
+        mod.prepare(object)
+      end
     end
     # in deserialize, we should get the original object?
   end
