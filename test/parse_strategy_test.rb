@@ -187,4 +187,22 @@ class ParseStrategyFindOrInstantiateTest < BaseTest
       album.song.id.must_equal nil
     end
   end
+
+
+  describe "property with dynamic :class" do
+    representer!(:inject => :song_representer) do
+      property :song, :parse_strategy => :find_or_instantiate, :extend => song_representer,
+        :class => lambda { |fragment, *args| fragment["class"] }
+    end
+
+    let (:album) { Struct.new(:song).new.extend(representer) }
+
+
+    it "finds song by id" do
+      album.from_hash({"song"=>{"id" => 1, "title"=>"Resist Stance", "class"=>Song}})
+
+      album.song.title.must_equal "Resist Stance" # note how title is updated from "Resist Stan"
+      album.song.id.must_equal 1
+    end
+  end
 end

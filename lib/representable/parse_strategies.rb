@@ -16,9 +16,9 @@ module Representable
 
     class Sync
       def self.apply!(name, options)
-        options[:setter]          = lambda { |*| }
-        options[:pass_options]    = true
-        options[:instance] = options[:collection] ?
+        options[:setter]       = lambda { |*| }
+        options[:pass_options] = true
+        options[:instance]     = options[:collection] ?
           lambda { |fragment, i, options| options.binding.get[i] } :
           lambda { |fragment, options|    options.binding.get }
       end
@@ -27,10 +27,12 @@ module Representable
 
     class FindOrInstantiate
       def self.apply!(name, options)
-        options[:instance] = lambda { |fragment, *args|
-          # FIXME: currently, class can only be a constant name. use Definition#merge!
-          # instance_class = options[:class].evaluate(self, *args)
-          options[:class].find(fragment["id"]) or options[:class].new
+        options[:pass_options] = true
+        options[:instance]     = lambda { |fragment, *args|
+          args = args.last # TODO: don't pass i as separate block parameter but in Options.
+          object_class = args.binding[:class].evaluate(self, fragment, args)
+
+          object_class.find(fragment["id"]) or object_class.new
         }
       end
     end
