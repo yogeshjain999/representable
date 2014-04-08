@@ -37,4 +37,41 @@ class IsRepresentableTest < BaseTest
   end
 
   # TODO: TEST implement for from_hash.
+
+  describe "representable: false, with class:" do
+    representer!(:inject => :song_representer) do
+      property :song,
+        :representable => false, :class => OpenStruct, :extend => song_representer
+    end
+
+    it "does extend but doesn't call #from_hash" do
+      hit = Struct.new(:song).new.extend(representer).
+        from_hash("song" => 1)
+
+      hit.song.must_equal OpenStruct.new
+      hit.song.must_be_kind_of Representable::Hash
+    end
+  end
+
+
+  describe "representable: true, without extend: but class:" do
+    SongReader = Class.new do
+      def from_hash(*)
+        "Piano?"
+      end
+    end
+
+    representer!(:inject => :song_representer) do
+      property :song,
+        :representable => true, :class => SongReader
+    end
+
+    it "doesn't extend but calls #from_hash" do
+      hit = Struct.new(:song).new.extend(representer).
+        from_hash("song" => "Sonata No.2")
+
+      hit.song.must_equal "Piano?"
+      hit.song.wont_be_kind_of Representable::Hash
+    end
+  end
 end
