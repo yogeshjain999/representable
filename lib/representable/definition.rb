@@ -78,10 +78,6 @@ module Representable
       self[:binding].call(self, *args)
     end
 
-    def sync?
-      self[:parse_strategy] == :sync
-    end
-
   private
     def setup!(options)
       handle_extend!(options)

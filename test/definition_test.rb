@@ -265,11 +265,6 @@ class DefinitionTest < MiniTest::Spec
     end
   end
 
-  describe "#sync?" do
-    it { Representable::Definition.new(:song).sync?.must_equal false }
-    it { Representable::Definition.new(:song, :parse_strategy => :sync).sync?.must_equal true }
-  end
-
   describe "#[]=" do
     it "raises exception since it's deprecated" do
       assert_raises NoMethodError do
