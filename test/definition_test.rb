@@ -3,6 +3,21 @@ require 'test_helper'
 class DefinitionTest < MiniTest::Spec
   Definition = Representable::Definition
 
+  describe "#merge!" do
+    let (:definition) { Definition.new(:song) }
+
+    it "runs macros" do
+      definition[:setter].must_equal nil
+      definition.merge!(:parse_strategy => :sync)
+      definition[:setter].must_respond_to :evaluate
+    end
+
+    # it "what" do
+    #   definition.merge!(:parse_strategy => :sync, :collection => true)
+    #   definition[:bullshit].must_equal true
+    # end
+  end
+
   describe "generic API" do
     before do
       @def = Representable::Definition.new(:songs)

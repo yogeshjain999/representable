@@ -1,22 +1,25 @@
 module Representable
-  module ParseStrategy
-    def parse_strategies
+  class ParseStrategy
+    def self.apply!(options)
+      return unless strategy = options[:parse_strategy]
+
+      parse_strategies[strategy].apply!(name, options)
+    end
+
+    def self.parse_strategies
       {
         :sync                 => Sync,
         :find_or_instantiate  => FindOrInstantiate
       }
     end
 
-    def property(name, *args, &block)
-      if options = args.first and strategy = options[:parse_strategy]
-        parse_strategies[strategy].call(name, options)
-      end
-
-      super
-    end
 
     class Sync
-      def self.call(name, options)
+      def self.apply!(name, options)
+        puts "apply: #{options[:collection].inspect}"
+        # if options[:collection]
+        #   raise
+        # end
         options[:setter]          = lambda { |*| }
         options[:pass_options]    = true
         return options[:instance] = lambda { |fragment, i, options| options.binding.get[i] } if options[:collection]
@@ -24,8 +27,9 @@ module Representable
       end
     end
 
+
     class FindOrInstantiate
-      def self.call(name, options)
+      def self.apply!(name, options)
         options[:instance] = lambda { |fragment, i, *args|
           # FIXME: currently, class can only be a constant name. use Definition#merge!
           # instance_class = options[:class].evaluate(self, *args)

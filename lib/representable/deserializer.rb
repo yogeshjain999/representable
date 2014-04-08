@@ -45,7 +45,7 @@ module Representable
     end
 
     def prepare(object)
-      @binding.send( :evaluate_option,:prepare, object) do
+      @binding.send(:evaluate_option, :prepare, object) do
         mod = @binding.representer_module_for(object)
 
         return object unless mod

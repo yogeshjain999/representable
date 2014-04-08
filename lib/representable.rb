@@ -13,7 +13,6 @@ module Representable
       extend ClassMethods
       extend ClassMethods::Declarations
       extend DSLAdditions
-      extend ParseStrategy
     end
   end
 

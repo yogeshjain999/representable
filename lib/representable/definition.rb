@@ -83,6 +83,9 @@ module Representable
       handle_extend!(options)
       handle_as!(options)
 
+      # DISCUSS: we could call more macros here.
+      Representable::ParseStrategy.apply!(options)
+
       # todo: aS:
       for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
