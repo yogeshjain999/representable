@@ -1,11 +1,7 @@
 module Representable
-  class CollectionDeserializer < Array # always is the targeted collection, already.
+  class CollectionDeserializer
     def initialize(binding) # TODO: get rid of binding dependency
       @binding = binding
-      # should be call to #default:
-      collection = []
-
-      super collection
     end
 
     def deserialize(fragment)
