@@ -113,6 +113,9 @@ module Representable
       proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
     end
 
+
+    # Options instance gets passed to lambdas when pass_options: true.
+    # This is considered the new standard way and should be used everywhere for forward-compat.
     Options = Struct.new(:binding, :user_options, :represented, :decorator)
 
 
@@ -144,8 +147,8 @@ module Representable
       def instance_for(fragment, *args)
         instance = evaluate_option(:instance, fragment, *args)
 
-        if instance === true # TODO: remove in 2.0 and introduce option.
-          warn "[Representable] instance: true is deprecated. Apparently, you know what you're doing, so use `pass_options: true, instance: lambda { |fragment, args| args.binding.get }` instead."
+        if instance === true # TODO: remove in 2.0.
+          warn "[Representable] instance: true is deprecated. Apparently, you know what you're doing, so use `parse_strategy: :sync` instead."
           return get
         end
 

@@ -138,7 +138,7 @@ private
         :getter        => lambda { |*| self },
         :setter        => lambda { |*| },
         :instance      => lambda { |*| self }
-      )
+      ) # DISCUSS: should this be a macro just as :parse_strategy?
 
       property(name, options, &block)
     end

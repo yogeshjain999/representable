@@ -9,7 +9,7 @@ module Representable
     def self.parse_strategies
       {
         :sync                 => Sync,
-        :find_or_instantiate  => FindOrInstantiate
+        :find_or_instantiate  => FindOrInstantiate,
       }
     end
 
@@ -18,8 +18,9 @@ module Representable
       def self.apply!(name, options)
         options[:setter]          = lambda { |*| }
         options[:pass_options]    = true
-        return options[:instance] = lambda { |fragment, i, options| options.binding.get[i] } if options[:collection]
-        options[:instance] = lambda { |fragment, options|  options.binding.get }
+        options[:instance] = options[:collection] ?
+          lambda { |fragment, i, options| options.binding.get[i] } :
+          lambda { |fragment, options|  options.binding.get }
       end
     end
 

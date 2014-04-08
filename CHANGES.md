@@ -14,6 +14,8 @@ Binding.new changed
 `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead.
 `:pass_options`.
 
+* Using `:extend` in combination with an inline representer is deprecated. Include the module in the block.
+
 parse_strategy: :find_or_instantiate
 
 ## Definition
