@@ -1,11 +1,16 @@
 # 1.8.0
 
+
+
 instnace true is deprecated. Use `:pass_options => true, :instance => lambda { |fragment, args| args.binding.get }`
 typed geht nur noch wehnn instance class extend weg
 
 :representable allows to .. see is_representable
 
 * the following options are dynamic now (note the changed arguments API)
+* `:if` receives block arguments just like any other dynamic options.
+
+Generally, if you're not interested, use Proc.new or lambda |*|
 
 * Major API change: Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
 * Using `:extend` in combination with an inline representer is deprecated. Include the module in the inline block instead.

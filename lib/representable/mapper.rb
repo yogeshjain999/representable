@@ -4,9 +4,8 @@ module Representable
   # Render and parse by looping over the representer's properties and dispatching to bindings.
   # Conditionals are handled here, too.
   class Mapper
-  # DISCUSS: we need @represented here for evaluating the :if blocks. this could be done in the bindings_for asset.
     module Methods
-      def initialize(bindings, represented, options)
+      def initialize(bindings, represented, options) # TODO: get rid of represented dependency.
         @represented  = represented # the (extended) model.
         @bindings     = bindings
       end
@@ -17,7 +16,7 @@ module Representable
         bindings.each do |bin|
           deserialize_property(bin, doc, options)
         end
-        represented
+        @represented
       end
 
       def serialize(doc, options)
@@ -28,8 +27,6 @@ module Representable
       end
 
     private
-      attr_reader :represented
-
       def serialize_property(binding, doc, options)
         return if skip_property?(binding, options)
         compile_fragment(binding, doc)
@@ -54,13 +51,9 @@ module Representable
       end
 
       def skip_conditional_property?(binding)
-        # TODO: move to Binding.
         return unless condition = binding[:if]
 
-        args = []
-        args << binding.user_options if condition.arity > 0 # TODO: remove arity check. users should know whether they pass options or not.
-
-        not represented.instance_exec(*args, &condition)
+        not binding.send(:evaluate_option, :if)
       end
 
       def compile_fragment(bin, doc)

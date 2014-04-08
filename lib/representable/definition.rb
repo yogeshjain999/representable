@@ -92,7 +92,7 @@ module Representable
     end
 
     def dynamic_options
-      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend, :prepare]
+      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend, :prepare, :if]
     end
 
     def handle_extend!(options)
