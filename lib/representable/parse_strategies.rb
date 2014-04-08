@@ -16,10 +16,6 @@ module Representable
 
     class Sync
       def self.apply!(name, options)
-        puts "apply: #{options[:collection].inspect}"
-        # if options[:collection]
-        #   raise
-        # end
         options[:setter]          = lambda { |*| }
         options[:pass_options]    = true
         return options[:instance] = lambda { |fragment, i, options| options.binding.get[i] } if options[:collection]
