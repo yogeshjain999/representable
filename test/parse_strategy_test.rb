@@ -125,6 +125,8 @@ end
 
 
 class ParseStrategyFindOrInstantiateTest < BaseTest
+  # parse_strategy: :find_or_instantiate
+
   Song = Struct.new(:id, :title)
   Song.class_eval do
     def self.find(id)
@@ -133,42 +135,56 @@ class ParseStrategyFindOrInstantiateTest < BaseTest
     end
   end
 
-  for_formats(
-    :hash => [Representable::Hash, {"songs"=>[{"id" => 1, "title"=>"Resist Stance"}, {"title"=>"Suffer"}]}],
-    # :xml  => [Representable::XML, "<open_struct><song><title>Resist Stance</title></song></open_struct>", "<open_struct><song><title>Suffer</title></song></open_struct>",],
-    # :yaml => [Representable::YAML, "---\nsong:\n  title: Resist Stance\n", "---\nsong:\n  title: Suffer\n"],
-  ) do |format, mod, input|
-
-    describe "[#{format}] property with parse_strategy: :find_or_instantiate" do
-      let (:format) { format }
-
-      representer!(:module => mod, :name => :song_representer) do
-        property :title
-        # self.representation_wrap = :song if format == :xml
-      end
-
-      representer!(:inject => :song_representer, :module => mod) do
-        collection :songs, :parse_strategy => :find_or_instantiate, :extend => song_representer, :class => Song
-      end
-
-      #let (:existing_song) { Song.new(1, "Resist Stan") }
-      let (:album) { Struct.new(:songs).new([]).extend(representer) }
+  representer!(:name => :song_representer) do
+    property :title
+  end
 
 
-      it "replaces the existing collection with a new consisting of existing items or new items" do
-        songs_id = album.songs.object_id
+  describe "collection" do
+    representer!(:inject => :song_representer) do
+      collection :songs, :parse_strategy => :find_or_instantiate, :extend => song_representer, :class => Song
+    end
 
-        parse(album, input)
+    let (:album) { Struct.new(:songs).new([]).extend(representer) }
 
-        album.songs[0].title.must_equal "Resist Stance" # note how title is updated from "Resist Stan"
-        album.songs[0].id.must_equal 1
-        album.songs[1].title.must_equal "Suffer"
-        album.songs[1].id.must_equal nil
 
-        album.songs.object_id.wont_equal songs_id
-      end
+    it "replaces the existing collection with a new consisting of existing items or new items" do
+      songs_id = album.songs.object_id
 
-      # TODO: test with existing collection
+      album.from_hash({"songs"=>[{"id" => 1, "title"=>"Resist Stance"}, {"title"=>"Suffer"}]})
+
+      album.songs[0].title.must_equal "Resist Stance" # note how title is updated from "Resist Stan"
+      album.songs[0].id.must_equal 1
+      album.songs[1].title.must_equal "Suffer"
+      album.songs[1].id.must_equal nil
+
+      album.songs.object_id.wont_equal songs_id
+    end
+
+    # TODO: test with existing collection
+  end
+
+
+  describe "property" do
+    representer!(:inject => :song_representer) do
+      property :song, :parse_strategy => :find_or_instantiate, :extend => song_representer, :class => Song
+    end
+
+    let (:album) { Struct.new(:song).new.extend(representer) }
+
+
+    it "finds song by id" do
+      album.from_hash({"song"=>{"id" => 1, "title"=>"Resist Stance"}})
+
+      album.song.title.must_equal "Resist Stance" # note how title is updated from "Resist Stan"
+      album.song.id.must_equal 1
+    end
+
+    it "creates song" do
+      album.from_hash({"song"=>{"title"=>"Off The Track"}})
+
+      album.song.title.must_equal "Off The Track"
+      album.song.id.must_equal nil
     end
   end
 end
