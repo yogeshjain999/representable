@@ -7,8 +7,9 @@ module Representable
       @object = object
     end
 
-    def call # TODO: make typed? switch here!
-      return @object if @object.nil?
+    def call
+      # return unless @binding.typed? # FIXME: fix that in XML/YAML.
+      return @object if @object.nil? # DISCUSS: move to Object#serialize ?
 
       representable = prepare(@object)
 

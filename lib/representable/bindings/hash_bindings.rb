@@ -37,7 +37,6 @@ module Representable
 
     class CollectionBinding < PropertyBinding
       def serialize(value)
-        # value.enum_for(:each_with_index).collect { |obj, i| serialize(obj, i) } # DISCUSS: provide ary index/hash key for representer_module_for?
         value.collect { |item| super(item) } # TODO: i don't want Array but Forms here - what now?
       end
 
