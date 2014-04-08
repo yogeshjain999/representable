@@ -1,4 +1,8 @@
 module Representable
+  # Parse strategies are just a combination of representable's options. They save you from memoizing the
+  # necessary parameters.
+  #
+  # Feel free to contribute your strategy if you think it's worth sharing!
   class ParseStrategy
     def self.apply!(options)
       return unless strategy = options[:parse_strategy]
