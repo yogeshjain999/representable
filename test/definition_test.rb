@@ -68,10 +68,6 @@ class DefinitionTest < MiniTest::Spec
       assert_equal :"songs=", @def.setter
     end
 
-    it "responds to #deserialize_class" do
-      assert_equal nil, @def.deserialize_class
-    end
-
     describe "#clone" do
       it "clones @options" do
         @def.merge!(:volume => 9)
@@ -228,24 +224,11 @@ class DefinitionTest < MiniTest::Spec
       assert @def.array?
     end
 
-    it "responds to #deserialize_class" do
-      assert_equal nil, @def.deserialize_class
-    end
-
     it "responds to #default" do
       assert_equal nil, @def.send(:default)
     end
   end
 
-  describe ":class => Item" do
-    before do
-      @def = Representable::Definition.new(:songs, :class => Hash)
-    end
-
-    it "responds to #deserialize_class" do
-      assert_equal Hash, @def.deserialize_class.evaluate(nil)
-    end
-  end
 
   describe ":default => value" do
     it "responds to #default" do

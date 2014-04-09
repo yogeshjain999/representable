@@ -1,4 +1,5 @@
 require 'uber/options'
+require "representable/parse_strategies"
 
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
@@ -50,10 +51,6 @@ module Representable
 
     def hash?
       self[:hash]
-    end
-
-    def deserialize_class
-      self[:class]
     end
 
     def default_for(value)

@@ -26,9 +26,9 @@ parse_strategy: :find_or_instantiate
 ## Definition
 
 * Make `Definition < Hash`, all options can/should now be accessed with `Definition#[]`.
-* Make `Definition::new` and`#merge!` the only entry points so that a `Definition` becomes an almost *immutual* object. If you happened to modify a definition using `options[..]=` this will break now. Use `definition.merge!(..)` to change it after creation.
+* Make `Definition::new` and `#merge!` the only entry points so that a `Definition` becomes an almost *immutual* object. If you happened to modify a definition using `options[..]=` this will break now. Use `definition.merge!(..)` to change it after creation.
 * Deprecated `#options` as the definition itself is a hash (e.g. `definition[:default]`).
-* Rename `#sought_type` to `#deserialize_class`.
+* Removed `#sought_type`.
 * Removed `#default`, `#attribute`, `#content`.
 * `#from` is replaced by `#as` and hardcore deprecated.
 * `#name` and `#as` are _always_ strings.
