@@ -154,6 +154,12 @@ class RepresentableTest < MiniTest::Spec
 
 
   describe "#property" do
+    it "doesn't modify options hash" do
+      options = {}
+      representer.property(:title, options)
+      options.must_equal({})
+    end
+
     representer! {}
 
     it "returns the Definition instance" do

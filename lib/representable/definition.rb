@@ -8,6 +8,8 @@ module Representable
     alias_method :getter, :name
 
     def initialize(sym, options={})
+      options = options.clone
+
       handle_deprecations!(options)
 
       super()
