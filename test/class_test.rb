@@ -60,6 +60,27 @@ class ClassTest < BaseTest
   end
 
 
+  describe "collection: lambda receiving fragment and args" do
+    let (:klass) { Class.new do
+      class << self
+        attr_accessor :args
+      end
+
+      def from_hash(*)
+        self.class.new
+      end
+    end }
+
+    representer!(:inject => :klass) do
+      _klass = klass
+      collection :songs, :class => lambda { |fragment, i, args| _klass.args=([fragment,i,args]); _klass }
+    end
+
+    it { representer.prepare(OpenStruct.new).from_hash({"songs" => [{"name" => "Captured"}]}, :volume => true).songs.first.class.args.
+      must_equal([{"name"=>"Captured"}, 0, {:volume=>true}]) }
+  end
+
+
   describe "class: implementing #from_hash" do
     let(:parser) do
       Class.new do

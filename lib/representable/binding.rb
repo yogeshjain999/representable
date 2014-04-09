@@ -131,12 +131,12 @@ module Representable
       end
 
       def create_object(fragment, *args)
-        instance_for(fragment, *args) or class_for(fragment)
+        instance_for(fragment, *args) or class_for(fragment, *args)
       end
 
     private
       def class_for(fragment, *args)
-        item_class = class_from(fragment) or return fragment
+        item_class = class_from(fragment, *args) or return fragment
         item_class.new
       end
 
@@ -148,7 +148,7 @@ module Representable
         instance = evaluate_option(:instance, fragment, *args)
 
         if instance === true # TODO: remove in 2.0.
-          warn "[Representable] instance: true is deprecated. Apparently, you know what you're doing, so use `parse_strategy: :sync` instead."
+          warn "[Representable] `instance: lambda { true }` is deprecated. Apparently, you know what you're doing, so use `parse_strategy: :sync` instead."
           return get
         end
 
