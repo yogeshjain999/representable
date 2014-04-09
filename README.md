@@ -224,7 +224,7 @@ In `album.from_hash(..)`, representable will try to call `Song.find(1)` for the 
 
 **Note**: the various parsing strategies are a collection of "best practices" people find useful. Such a strategy is basically just a set of configuration options, mainly utilizing the `:instance` option.
 
-Check out the `ParsingStrategy` module to write you own strategy. If you find it useful, please commit it to the core library (with tests).
+Check out the `ParsingStrategy` module to write your own strategy. If you find it useful, please commit it to the core library (with tests).
 
 The current state of the `:find_or_instantiate` strategy is subject to change.
 
@@ -433,7 +433,7 @@ Here's a list of all dynamic options and their argument signature.
 * `reader: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
 * `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
 * `if: lambda { |args| }` ([see Conditions](#conditions))
-* `prepare: lambda { |object, args| }` ([see ](#))
+* `prepare: lambda { |object, args| }` ([see docs](#rendering-and-parsing-without-extend))
 * `representation_wrap` is a dynamic option, too: `self.representation_wrap = lambda do { |args| }` ([see Wrapping](#wrapping))
 
 
