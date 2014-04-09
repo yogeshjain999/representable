@@ -204,6 +204,31 @@ album.songs.first #=> #<Song:0x999 title: "Eruption">
 Now, representable didn't create a new `Song` instance but updated the existing, resulting in renaming the song.
 
 
+## Syncing With Incoming Objects
+
+Representable comes with another strategy called `:find_or_instantiate` which allows creating a property or collection from the incoming document.
+
+Consider the following incoming hash.
+
+```ruby
+{"songs" => [{"id" => 1, "title" => "American Paradox"}, {"title" => "Uncoil"}}
+```
+
+And this representer setup.
+
+```ruby
+collection :songs, class: Song, parse_strategy: :find_or_instantiate
+```
+
+In `album.from_hash(..)`, representable will try to call `Song.find(1)` for the first `songs` collection element and `Song.new` for the second (as it doesn't has any `id`), resulting in an array of two `Song` instances, the first an existing, the second a new object.
+
+**Note**: the various parsing strategies are a collection of "best practices" people find useful. Such a strategy is basically just a set of configuration options, mainly utilizing the `:instance` option.
+
+Check out the `ParsingStrategy` module to write you own strategy. If you find it useful, please commit it to the core library (with tests).
+
+The current state of the `:find_or_instantiate` strategy is subject to change.
+
+
 ## Inline Representers
 
 If you don't want to maintain two separate modules when nesting representations you can define the `SongRepresenter` inline.
