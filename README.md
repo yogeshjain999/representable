@@ -223,7 +223,7 @@ album.songs.first #=> #<Song:0x999 title: "Eruption">
 Now, representable didn't create a new `Song` instance but updated the existing, resulting in renaming the song.
 
 
-## Syncing With Incoming Objects
+## Find-or-Create For Incoming Objects
 
 Representable comes with another strategy called `:find_or_instantiate` which allows creating a property or collection from the incoming document.
 
