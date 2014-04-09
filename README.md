@@ -177,7 +177,7 @@ Album.new.extend(AlbumRepresenter).
 
 ## Parse Strategies
 
-When parsing collections (also applies to single properties), representable usually iterates the incoming list and creates a new object per array item.
+When parsing `collection`s (also applies to single `property`s), representable usually iterates the incoming list and creates a new object per array item.
 
 Parse strategies let you do that manually.
 
