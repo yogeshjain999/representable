@@ -453,25 +453,13 @@ class RepresentableTest < MiniTest::Spec
         end
 
         it "creates instance from :class lambda when parsing" do
-          song = Song.new.extend(representer).from_hash({"name" => "Quitters Never Win"})
+          song = OpenStruct.new.extend(representer).from_hash({"name" => "Quitters Never Win"})
           song.name.must_be_kind_of UpcaseString
           song.name.must_equal "QUITTERS NEVER WIN"
 
-          song = Song.new.extend(representer).from_hash({"name" => "Still Failing?"})
+          song = OpenSong.new.extend(representer).from_hash({"name" => "Still Failing?"})
           song.name.must_be_kind_of String
           song.name.must_equal "still failing?"
-        end
-
-        describe "when :class lambda returns nil" do
-          representer! do
-            property :name, :extend => lambda { |*| Module.new { include Representable; def from_hash(data, *args); data; end } },
-                            :class  => nil
-          end
-
-          it "skips creating new instance" do
-            song = Song.new.extend(representer).from_hash({"name" => string = "Satellite"})
-            song.name.object_id.must_equal string.object_id
-          end
         end
       end
     end

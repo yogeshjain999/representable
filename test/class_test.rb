@@ -39,6 +39,20 @@ class ClassTest < BaseTest
   end
 
 
+  describe "when :class lambda returns nil" do
+    representer! do
+      property :name, :extend => lambda { |*| Module.new { include Representable; def from_hash(data, *args); data; end } },
+                      :class  => nil
+    end
+
+    it "skips creating new instance" do
+      song = Song.new.extend(representer).from_hash({"name" => string = "Satellite"})
+      song.name.object_id.must_equal string.object_id
+    end
+  end
+
+
+
   describe "lambda receiving fragment and args" do
     let (:klass) { Class.new do
       class << self
