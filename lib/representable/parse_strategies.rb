@@ -7,6 +7,8 @@ module Representable
     def self.apply!(options)
       return unless strategy = options[:parse_strategy]
 
+      strategy = :proc if strategy.is_a?(::Proc)
+
       parse_strategies[strategy].apply!(name, options)
     end
 
@@ -14,7 +16,17 @@ module Representable
       {
         :sync                 => Sync,
         :find_or_instantiate  => FindOrInstantiate,
+        :proc                 => Proc
       }
+    end
+
+
+    class Proc
+      def self.apply!(name, options)
+        options[:setter]       = lambda { |*| }
+        options[:pass_options] = true
+        options[:instance]     = options[:parse_strategy]
+      end
     end
 
 
@@ -29,6 +41,7 @@ module Representable
     end
 
 
+    # replaces current collection.
     class FindOrInstantiate
       def self.apply!(name, options)
         options[:pass_options] = true

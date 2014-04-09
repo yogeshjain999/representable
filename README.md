@@ -174,9 +174,28 @@ Album.new.extend(AlbumRepresenter).
 #=> #<Album name="Offspring", songs=[#<Song title="Genocide">, #<Song title="Nitro", composers=["Offspring"]>]>
 ```
 
+
+## Parse Strategies
+
+When parsing collections (also applies to single properties), representable usually iterates the incoming list and creates a new object per array item.
+
+Parse strategies let you do that manually.
+
+```ruby
+collection :songs, :parse_strategy => lambda { |fragment, i, options|
+  songs << song = Song.new
+  song
+}
+```
+
+The above code will *add* a new `Song` per incoming item. Each instance will still be extended and populated with attribues (note that you can [change that](#skipping-rendering-or-parsing) as well).
+
+This gives you all the freedom you need for your nested parsing.
+
+
 ## Syncing Objects
 
-Usually, representable creates a new nested object when parsing. If you want to update an existing object, use the `parse_strategy` option.
+Usually, representable creates a new nested object when parsing. If you want to update an existing object, use the `parse_strategy: :sync` option.
 
 ```ruby
 module AlbumRepresenter

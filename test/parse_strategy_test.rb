@@ -5,7 +5,7 @@ require 'test_helper'
 # parse_strategy: :find_or_instantiate ("expand" since we don't delete existing unmatched in target)
 
 
-class ParseStrategyTest < BaseTest
+class ParseStrategySyncTest < BaseTest
   for_formats(
     :hash => [Representable::Hash, {"song"=>{"title"=>"Resist Stance"}}, {"song"=>{"title"=>"Suffer"}}],
     :xml  => [Representable::XML, "<open_struct><song><title>Resist Stance</title></song></open_struct>", "<open_struct><song><title>Suffer</title></song></open_struct>",],
@@ -204,5 +204,48 @@ class ParseStrategyFindOrInstantiateTest < BaseTest
       album.song.title.must_equal "Resist Stance" # note how title is updated from "Resist Stan"
       album.song.id.must_equal 1
     end
+  end
+end
+
+
+class ParseStrategyLambdaTest < MiniTest::Spec
+  Song = Struct.new(:id, :title)
+  Song.class_eval do
+    def self.find(id)
+      return new(1, "Resist Stan") if id==1# we should return the same object here
+      new
+    end
+  end
+
+  representer!(:name => :song_representer) do
+    property :title
+  end
+
+
+  describe "collection" do
+    representer!(:inject => :song_representer) do
+      collection :songs, :parse_strategy => lambda { |fragment, i, options|
+        songs << song = Song.new
+        song
+      }, :extend => song_representer
+    end
+
+    let (:album) { Struct.new(:songs).new([Song.new(1, "A Walk")]).extend(representer) }
+
+
+    it "adds to existing collection" do
+      songs_id = album.songs.object_id
+
+      album.from_hash({"songs"=>[{"title"=>"Resist Stance"}]})
+
+      album.songs[0].title.must_equal "A Walk" # note how title is updated from "Resist Stan"
+      album.songs[0].id.must_equal 1
+      album.songs[1].title.must_equal "Resist Stance"
+      album.songs[1].id.must_equal nil
+
+      album.songs.object_id.must_equal songs_id
+    end
+
+    # TODO: test with existing collection
   end
 end
