@@ -10,6 +10,7 @@ class AsTest < MiniTest::Spec
     let (:song) { representer.prepare(Song.new("Revolution")) }
     let (:format) { format }
 
+
     describe "as: with :symbol" do
       representer!(:module => mod) do
         property :name, :as => :title
@@ -18,6 +19,7 @@ class AsTest < MiniTest::Spec
       it { render(song).must_equal_document output }
       it { parse(song, input).name.must_equal "Wie Es Geht" }
     end
+
 
     describe "as: with lambda" do
       representer!(:module => mod) do
@@ -29,18 +31,13 @@ class AsTest < MiniTest::Spec
     end
 
 
+    describe "lambda arguments" do
+      representer! do
+        property :name, :as => lambda { |*args| args.inspect }
+      end
 
-
-    # describe "#what" do
-
-    #   describe "lambda arguments" do
-    #     representer! do
-    #       property :name, :as => lambda { |*args| args.inspect }
-    #     end
-
-    #     it { render(song, :volume => 1).must_equal_document({"args" => "Revolution"}) }
-    #     # it { parse(song, {"args" => "Wie Es Geht"}).name.must_equal "Wie Es Geht" }
-    #   end
-    # end
+      it { render(song, :volume => 1).must_equal_document({"[{:volume=>1}]" => "Revolution"}) }
+      it { parse(song, {"[{:volume=>1}]" => "Wie Es Geht"}, :volume => 1).name.must_equal "Wie Es Geht" }
+    end
   end
 end
