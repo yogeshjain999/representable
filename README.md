@@ -341,7 +341,7 @@ As always, the block is executed in the represented object's context.
 
 ## Dynamic Options
 
-Most of `property`'s options are dynamic, meaning the can be either a static value, a lambda or a symbol refering to an instance method to be called.
+Most of `property`'s options are dynamic, meaning the can be either a static value, a lambda or a :symbol refering to an instance method to be called.
 
 All user options are passed to the lambdas, e.g. when you call
 
@@ -352,15 +352,26 @@ song.to_hash(volume: 9)
 the lambda invocation for `:as` would look like this.
 
 ```ruby
-property :name, as: lambda do |opts|
-  opts #=> {:volume=>9}
+property :name, as: lambda do |args|
+  args #=> {:volume=>9}
 end
 ```
 
 Here's a list of all dynamic options and their argument signature.
 
-* `as: lambda { |*args| }` ([see Aliasing](#aliasing))
-*, `:getter`, `:setter`, `:class`, `:instance`, `:reader`, `:writer`, `:extend`, `:prepare`, `:if`
+* `as: lambda { |args| }` ([see Aliasing](#aliasing))
+* `getter: lambda { |args| }` ([see docs](#passing-options))
+* `setter: lambda { |value, args| }` ([see docs](#passing-options))
+* `class: lambda { |fragment, args| }` ([see Nesting](#nesting))
+* `extend: lambda { |object, args| }` ([see Nesting](#nesting))
+* `instance: lambda { |fragment, args| }` ([see Object Creation](#polymorphic-object-creation))
+* `reader: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
+* `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
+* `if: lambda { |args| }` ([see Conditions](#conditions))
+* `prepare: lambda { |object, args| }` ([see ](#))
+* `representation_wrap` is a dynamic option, too: `self.representation_wrap = lambda do { |args| }` ([see Wrapping](#wrapping))
+
+
 
 
 ## Options Argument

@@ -4,7 +4,7 @@ class ReaderWriterTest < BaseTest
   representer! do
     property :name,
       :writer => lambda { |doc, args| doc["title"] = "#{args[:nr]}) #{name}" },
-      :reader => lambda { |doc, *args| self.name = doc["title"].split(") ").last }
+      :reader => lambda { |doc, args| self.name = doc["title"].split(") ").last }
   end
 
   subject { OpenStruct.new(:name => "Disorder And Disarray").extend(representer) }
