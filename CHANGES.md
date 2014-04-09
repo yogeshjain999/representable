@@ -4,13 +4,13 @@
 
 * `:if` receives block arguments just like any other dynamic options. Refer to **Dynamic Options**.
 * Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
+* The number of arguments per block might have changed. Generally, if you're not interested in block arguments, use `Proc.new` or `lambda { |*| }`. See **Dynamic Options**.
 
 
 ## Dynamic Options
 
-* The following options are dynamic now and can either be a static value, a lambda or a instance method symbol: `:as`, `:getter`, `:setter`, `:class`, `:instance`, `:reader`, `:writer`, `:extend`, `:prepare`, `:if`. Please refer to the README to see their signatures.
+* The following options are dynamic now and can either be a static value, a lambda or an instance method symbol: `:as`, `:getter`, `:setter`, `:class`, `:instance`, `:reader`, `:writer`, `:extend`, `:prepare`, `:if`. Please refer to the README to see their signatures.
 * `representation_wrap` is dynamic, too, allowing you to change the wrap per instance.
-* The number of arguments per block might have changed. Generally, if you're not interested in block arguments, use `Proc.new` or `lambda { |*| }`.
 
 
 ## Cool New Stuff
@@ -18,11 +18,13 @@
 * When unsure about the number of arguments passed into an option lambda, use `:pass_options`. This passes all general options in a dedicated `Options` object that responds to `binding`, `representer`, `represented` and `user_options`. It's always the last argument for the block.
 * Added `parse_strategy: :find_or_instantiate`. More to come.
 * Use `representable: false` to prevent calling `to_*/from_*` on a represented object even if the property is `typed?` (`:extend`, `:class` or `:instance` set).
+* Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
 
 ## Deprecations
 * `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead.
 * Using `:extend` in combination with an inline representer is deprecated. Include the module in the block.
 * `instance: lambda { true }` is deprecated. Use `parse_strategy: :sync`.
+* Removed `Config#wrap`. Only way to retrieve the evaluated wrap is `Config#wrap_for`.
 
 
 ## Definition
@@ -34,11 +36,6 @@
 * `#from` is replaced by `#as` and hardcore deprecated.
 * `#name` and `#as` are _always_ strings.
 * A Definition is considered typed as soon as [`:extend`|`:class`|`:instance`] is set. In earlier versions, `property :song, class: Song` was considered typed, whereas `property :song, class: lambda { Song }` was static.
-
-## Various other stuff
-
-* Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
-* Removed `Config#wrap`. Only way to retrieve the evaluated wrap is `Config#wrap_for`.
 
 
 h2. 1.7.7

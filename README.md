@@ -203,6 +203,7 @@ album.songs.first #=> #<Song:0x999 title: "Eruption">
 
 Now, representable didn't create a new `Song` instance but updated the existing, resulting in renaming the song.
 
+
 ## Inline Representers
 
 If you don't want to maintain two separate modules when nesting representations you can define the `SongRepresenter` inline.
@@ -337,33 +338,33 @@ class SongRepresenter < Representable::Decorator
 ```
 As always, the block is executed in the represented object's context.
 
-## XML Support
 
-While representable does a great job with JSON, it also features support for XML, YAML and pure ruby hashes.
+## Dynamic Options
+
+Most of `property`'s options are dynamic, meaning the can be either a static value, a lambda or a symbol refering to an instance method to be called.
+
+All user options are passed to the lambdas, e.g. when you call
 
 ```ruby
-require 'representable/xml'
+song.to_hash(volume: 9)
+```
 
-module SongRepresenter
-  include Representable::XML
+the lambda invocation for `:as` would look like this.
 
-  property :title
-  property :track
-  collection :composers
+```ruby
+property :name, as: lambda do |opts|
+  opts #=> {:volume=>9}
 end
 ```
 
-For XML we just include the `Representable::XML` module.
+Here's a list of all dynamic options and their argument signature.
 
-```xml
-Song.new(title: "Fallout", composers: ["Steward Copeland", "Sting"]).
-     extend(SongRepresenter).to_xml #=>
-<song>
-    <title>Fallout</title>
-    <composers>Steward Copeland</composers>
-    <composers>Sting</composers>
-</song>
-```
+* `as: lambda { |*args| }` ([see Aliasing](#aliasing))
+*, `:getter`, `:setter`, `:class`, `:instance`, `:reader`, `:writer`, `:extend`, `:prepare`, `:if`
+
+
+## Options Argument
+
 
 ## Passing Options
 
@@ -401,6 +402,36 @@ property :title, :getter => lambda { |*| @name }
 ```
 
 This hash will also be available in the `:if` block, documented [here](https://github.com/apotonick/representable/#conditions) and will be passed to nested objects.
+
+
+## XML Support
+
+While representable does a great job with JSON, it also features support for XML, YAML and pure ruby hashes.
+
+```ruby
+require 'representable/xml'
+
+module SongRepresenter
+  include Representable::XML
+
+  property :title
+  property :track
+  collection :composers
+end
+```
+
+For XML we just include the `Representable::XML` module.
+
+```xml
+Song.new(title: "Fallout", composers: ["Steward Copeland", "Sting"]).
+     extend(SongRepresenter).to_xml #=>
+<song>
+    <title>Fallout</title>
+    <composers>Steward Copeland</composers>
+    <composers>Sting</composers>
+</song>
+```
+
 
 ## Using Helpers
 
