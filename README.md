@@ -339,44 +339,6 @@ class SongRepresenter < Representable::Decorator
 As always, the block is executed in the represented object's context.
 
 
-## Dynamic Options
-
-Most of `property`'s options are dynamic, meaning the can be either a static value, a lambda or a :symbol refering to an instance method to be called.
-
-All user options are passed to the lambdas, e.g. when you call
-
-```ruby
-song.to_hash(volume: 9)
-```
-
-the lambda invocation for `:as` would look like this.
-
-```ruby
-property :name, as: lambda do |args|
-  args #=> {:volume=>9}
-end
-```
-
-Here's a list of all dynamic options and their argument signature.
-
-* `as: lambda { |args| }` ([see Aliasing](#aliasing))
-* `getter: lambda { |args| }` ([see docs](#passing-options))
-* `setter: lambda { |value, args| }` ([see docs](#passing-options))
-* `class: lambda { |fragment, args| }` ([see Nesting](#nesting))
-* `extend: lambda { |object, args| }` ([see Nesting](#nesting))
-* `instance: lambda { |fragment, args| }` ([see Object Creation](#polymorphic-object-creation))
-* `reader: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
-* `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
-* `if: lambda { |args| }` ([see Conditions](#conditions))
-* `prepare: lambda { |object, args| }` ([see ](#))
-* `representation_wrap` is a dynamic option, too: `self.representation_wrap = lambda do { |args| }` ([see Wrapping](#wrapping))
-
-
-
-
-## Options Argument
-
-
 ## Passing Options
 
 You're free to pass an options hash into the rendering or parsing.
@@ -413,6 +375,57 @@ property :title, :getter => lambda { |*| @name }
 ```
 
 This hash will also be available in the `:if` block, documented [here](https://github.com/apotonick/representable/#conditions) and will be passed to nested objects.
+
+
+## Dynamic Options
+
+Most of `property`'s options are dynamic, meaning the can be either a static value, a lambda or a :symbol refering to an instance method to be called.
+
+All user options are passed to the lambdas, e.g. when you call
+
+```ruby
+song.to_hash(volume: 9)
+```
+
+the lambda invocation for `:as` would look like this.
+
+```ruby
+property :name, as: lambda do |args|
+  args #=> {:volume=>9}
+end
+```
+
+### Available Options
+
+Here's a list of all dynamic options and their argument signature.
+
+* `as: lambda { |args| }` ([see Aliasing](#aliasing))
+* `getter: lambda { |args| }` ([see docs](#passing-options))
+* `setter: lambda { |value, args| }` ([see docs](#passing-options))
+* `class: lambda { |fragment, args| }` ([see Nesting](#nesting))
+* `extend: lambda { |object, args| }` ([see Nesting](#nesting))
+* `instance: lambda { |fragment, args| }` ([see Object Creation](#polymorphic-object-creation))
+* `reader: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
+* `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
+* `if: lambda { |args| }` ([see Conditions](#conditions))
+* `prepare: lambda { |object, args| }` ([see ](#))
+* `representation_wrap` is a dynamic option, too: `self.representation_wrap = lambda do { |args| }` ([see Wrapping](#wrapping))
+
+
+### Option Arguments
+
+The `pass_options: true` option instructs representable to pass a special `Options` instance into lambdas or methods. This is handy if you need access to the other stakeholder objects involved in representing objects.
+
+```ruby
+property :title, pass_options: true, getter: lambda do |args|
+  args #=> <#Options>
+  args.binding # etc.
+end
+```
+
+The `Options` instance exposes the following readers: `#binding`, `#represented`, `#decorator` and  `#user_options` which is the hash you usually have as `args`.
+
+Option-specific arguments (e.g. `fragment`, [see here](#available-options)) are still prepended, making the `Options` object always the *last* argument.
 
 
 ## XML Support
@@ -975,18 +988,6 @@ Coercing values only happens when rendering or parsing a document. Representable
 
 *(Please don't read this section!)*
 
-
-### Options For Lambdas
-
-If you need to access objects other than the representer in your lambdas, use the `:pass_options` switch.
-
-```ruby
-property :title, :getter => lambda { |opts| send(opts.binding.name) }, pass_options: true
-```
-
-This will pass an `Binding::Options` instance to the lambda exposing the following readers: `#binding`, `#user_options`, `#represented`, `#decorator` giving you access to all possible components.
-
-
 ### Custom Binding
 
 If you need a special binding for a property you're free to create it using the `:binding` option.
@@ -1015,9 +1016,9 @@ Representable will not attempt to create a `Song` instance for you but use the p
 Note that this is now the [official option](#syncing-objects) `:parse_strategy`.
 
 
-### Parsing Without Extend
+### Rendering And Parsing Without Extend
 
-When parsing you might not want your parsed/created object to be extended, since it already exposes a `#from_hash` method.
+Sometimes you wanna skip the preparation step when rendering and parsing, for instance, when the object already exposes a `#to_hash`/`#from_hash` method.
 
 ```ruby
 class ParsingSong
@@ -1026,24 +1027,38 @@ class ParsingSong
 
     self
   end
+
+  def to_hash(*args)
+    {}
+  end
 end
 ```
 
 This would work with a representer as the following.
 
 ```ruby
-module AlbumRepresenter
-  include Representable::Hash
-  property :song, :class => ParsingSong
-end
+property :song, :class => ParsingSong, prepare: lambda { |object| object }
 ```
 
-When parsing, representable will simply instantiate a `ParsingSong` without trying to extend it.
+Instead of automatically extending/decorating the object, the `:prepare` lambda is run. It's up to you to prepare you object - or simply return it, as in the above example.
+
+
+### Skipping Rendering Or Parsing
+
+You can skip to call to `#to_hash`/`#from_hash` on the prepared object by using `:representable`.
+
+```ruby
+property :song, :representable => false
+```
+
+This will run the entire serialization/deserialization _without_ calling the actual representing method on the object.
+
+Extremely helpful if you wanna use representable as a data mapping tool with filtering, aliasing, etc., without the rendering and parsing part.
 
 
 ### Returning Arbitrary Objects When Parsing
 
-This goes even further. When representable parses the `song` attribute, it calls `ParsingSong#from_hash`. This method could return any object, which will then be assigned as the `song` property.
+When representable parses the `song` attribute, it calls `ParsingSong#from_hash`. This method could return any object, which will then be assigned as the `song` property.
 
 ```ruby
 class ParsingSong
@@ -1058,32 +1073,18 @@ Album.extend(AlbumRepresenter).from_hash(..).song #=> [1,2,3,4]
 This also works with `:extend` where the specified module overwrites the parsing method (e.g. `#from_hash`).
 
 
-### Rendering Without Extend
-
-The same goes the other way when rendering. Just provide an empty `:instance` block.
-
-```ruby
-property :song, :instance => lambda { |*| nil }
-```
-
-This will treat the `song` property instance as a representable object.
-
-```ruby
-hit.to_json # this will call hit.song.to_json
-```
-
-Rendering `collection`s works the same. Parsing doesn't work out-of-the-box, currently, as we're still unsure how to map items to fragments.
-
-
 ### Decorator In Module
 
 Inline representers defined in a module can be implemented as a decorator, thus wrapping the represented object without pollution.
 
 ```ruby
-property :label, is_decorator: true do
-  ...
+property :song, use_decorator: true do
+  property :title
 end
 ```
+
+This is an implementation detail most people shouldn't worry about.
+
 
 ## Copyright
 
