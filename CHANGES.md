@@ -1,52 +1,45 @@
 # 1.8.0
 
+## Major Breakage
+
+* `:if` receives block arguments just like any other dynamic options. Refer to **Dynamic Options**.
+* Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
 
 
-instnace true is deprecated. Use `:pass_options => true, :instance => lambda { |fragment, args| args.binding.get }`
-typed geht nur noch wehnn instance class extend weg
+## Dynamic Options
 
-:representable allows to .. see is_representable
+* The following options are dynamic now and can either be a static value, a lambda or a instance method symbol: `:as`, `:getter`, `:setter`, `:class`, `:instance`, `:reader`, `:writer`, `:extend`, `:prepare`, `:if`. Please refer to the README to see their signatures.
+* `representation_wrap` is dynamic, too, allowing you to change the wrap per instance.
+* The number of arguments per block might have changed. Generally, if you're not interested in block arguments, use `Proc.new` or `lambda { |*| }`.
 
-* the following options are dynamic now (note the changed arguments API)
-* `:if` receives block arguments just like any other dynamic options.
 
-Generally, if you're not interested, use Proc.new or lambda |*|
+## Cool New Stuff
 
-* Major API change: Remove defaults for collections. This fixes a major design flaw - when parsing a document a collection would be reset to `[]` even if it is not present in the parsed document.
-* Using `:extend` in combination with an inline representer is deprecated. Include the module in the inline block instead.
+* When unsure about the number of arguments passed into an option lambda, use `:pass_options`. This passes all general options in a dedicated `Options` object that responds to `binding`, `representer`, `represented` and `user_options`. It's always the last argument for the block.
+* Added `parse_strategy: :find_or_instantiate`. More to come.
+* Use `representable: false` to prevent calling `to_*/from_*` on a represented object even if the property is `typed?` (`:extend`, `:class` or `:instance` set).
 
-Binding.new changed
-`decorator_scope: true` is deprecated, use `exec_context: :decorator` instead.
-`:pass_options`.
-
+## Deprecations
+* `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead.
 * Using `:extend` in combination with an inline representer is deprecated. Include the module in the block.
+* `instance: lambda { true }` is deprecated. Use `parse_strategy: :sync`.
 
-parse_strategy: :find_or_instantiate
 
 ## Definition
 
 * Make `Definition < Hash`, all options can/should now be accessed with `Definition#[]`.
 * Make `Definition::new` and `#merge!` the only entry points so that a `Definition` becomes an almost *immutual* object. If you happened to modify a definition using `options[..]=` this will break now. Use `definition.merge!(..)` to change it after creation.
 * Deprecated `#options` as the definition itself is a hash (e.g. `definition[:default]`).
-* Removed `#sought_type`.
-* Removed `#default`, `#attribute`, `#content`.
+* Removed `#sought_type`, `#default`, `#attribute`, `#content`.
 * `#from` is replaced by `#as` and hardcore deprecated.
 * `#name` and `#as` are _always_ strings.
-
 * A Definition is considered typed as soon as [`:extend`|`:class`|`:instance`] is set. In earlier versions, `property :song, class: Song` was considered typed, whereas `property :song, class: lambda { Song }` was static.
 
--> constantize :class etc (requires AS)
--> make all options lambda-able (:as, too!) [DONE]
-representation_wrap is dynamic and executed in represented.
--> make major steps lambda-able
--> strategies for deserialization (lambda-able!)
--> pass *args to all lambdas [DONE]
-
-
+## Various other stuff
 
 * Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
-
 * Removed `Config#wrap`. Only way to retrieve the evaluated wrap is `Config#wrap_for`.
+
 
 h2. 1.7.7
 
