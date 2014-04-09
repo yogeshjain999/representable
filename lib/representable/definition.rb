@@ -8,13 +8,12 @@ module Representable
     alias_method :getter, :name
 
     def initialize(sym, options={})
+      super()
       options = options.clone
 
       handle_deprecations!(options)
 
-      super()
-      @name     = sym.to_s
-
+      @name   = sym.to_s
       # defaults:
       options[:as] ||= @name
 

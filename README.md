@@ -188,7 +188,7 @@ collection :songs, :parse_strategy => lambda { |fragment, i, options|
 }
 ```
 
-The above code will *add* a new `Song` per incoming item. Each instance will still be extended and populated with attribues (note that you can [change that](#skipping-rendering-or-parsing) as well).
+The above code will *add* a new `Song` per incoming item. Each instance will still be extended and populated with attributes (note that you can [change that](#skipping-rendering-or-parsing) as well).
 
 This gives you all the freedom you need for your nested parsing.
 
