@@ -457,7 +457,7 @@ class RepresentableTest < MiniTest::Spec
           song.name.must_be_kind_of UpcaseString
           song.name.must_equal "QUITTERS NEVER WIN"
 
-          song = OpenSong.new.extend(representer).from_hash({"name" => "Still Failing?"})
+          song = OpenStruct.new.extend(representer).from_hash({"name" => "Still Failing?"})
           song.name.must_be_kind_of String
           song.name.must_equal "still failing?"
         end

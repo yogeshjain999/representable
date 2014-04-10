@@ -136,7 +136,7 @@ module Representable
 
     private
       def class_for(fragment, *args)
-        item_class = class_from(fragment, *args) or return fragment
+        item_class = class_from(fragment, *args) or return handle_deprecated_class(fragment)
         item_class.new
       end
 
@@ -153,6 +153,11 @@ module Representable
         end
 
         instance
+      end
+
+      def handle_deprecated_class(fragment) # TODO: remove in 2.0.
+        warn "[Representable] `class: lambda { nil }` is deprecated. To return the fragment from parsing, use `instance: lambda { |fragment, *args| fragment }` instead."
+        fragment
       end
     end
   end

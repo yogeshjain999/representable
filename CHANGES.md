@@ -25,7 +25,7 @@
 * Using `:extend` in combination with an inline representer is deprecated. Include the module in the block.
 * `instance: lambda { true }` is deprecated. Use `parse_strategy: :sync`.
 * Removed `Config#wrap`. Only way to retrieve the evaluated wrap is `Config#wrap_for`.
-
+* `class: lambda { nil }` is deprecated. To return the fragment from parsing, use `instance: lambda { |fragment, *args| fragment }` instead.
 
 ## Definition
 

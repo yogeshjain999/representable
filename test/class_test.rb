@@ -39,18 +39,23 @@ class ClassTest < BaseTest
   end
 
 
-  describe "when :class lambda returns nil" do
+  describe "lambda { nil }" do # TODO: remove in 2.0.
     representer! do
-      property :name, :extend => lambda { |*| Module.new { include Representable; def from_hash(data, *args); data; end } },
-                      :class  => nil
+      property :title, :class  => nil
     end
 
     it "skips creating new instance" do
-      song = Song.new.extend(representer).from_hash({"name" => string = "Satellite"})
-      song.name.object_id.must_equal string.object_id
+      object = Object.new
+      object.instance_eval do
+        def from_hash(hash, *args)
+          hash
+        end
+      end
+
+      song = OpenStruct.new.extend(representer).from_hash(hash = {"title" => object})
+      song.title.must_equal object
     end
   end
-
 
 
   describe "lambda receiving fragment and args" do

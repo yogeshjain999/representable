@@ -8,6 +8,25 @@ class InstanceTest < BaseTest
     end
   end
 
+  describe "lambda { fragment } (new way of class: lambda { nil })" do
+    representer! do
+      property :title, :instance  => lambda { |fragment, args| fragment }
+    end
+
+    it "skips creating new instance" do
+      object = Object.new
+      object.instance_eval do
+        def from_hash(hash, *args)
+          hash
+        end
+      end
+
+      song = OpenStruct.new.extend(representer).from_hash(hash = {"title" => object})
+      song.title.must_equal object
+    end
+  end
+
+
 # TODO: use *args in from_hash.
 # DISCUSS: do we need parse_strategy?
   describe "property with :instance" do
@@ -48,7 +67,7 @@ class InstanceTest < BaseTest
     }
   end
 
-  describe "lambda receiving fragment and args" do
+  describe "property with lambda receiving fragment and args" do
     representer!(:inject => :song_representer) do
       property :song, :instance => lambda { |fragment, args| Struct.new(:args, :id).new([fragment, args]) }, :extend => song_representer
     end
