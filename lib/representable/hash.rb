@@ -30,9 +30,7 @@ module Representable
     # but for any arbitrary data structure. A generic `key.to_s` with non-hash data would result in weird issues.
     # I decided it's more predictable to require the user to provide stringified keys.
     def from_hash(data, options={}, binding_builder=PropertyBinding)
-      if wrap = options[:wrap] || representation_wrap(options)
-        data = data[wrap.to_s] || {} # DISCUSS: don't initialize this more than once. # TODO: this should be done with #read.
-      end
+      data = filter_wrap(data, options)
 
       update_properties_from(data, options, binding_builder)
     end
@@ -43,6 +41,16 @@ module Representable
       return hash unless wrap = options[:wrap] || representation_wrap(options)
 
       {wrap => hash}
+    end
+
+  private
+    def filter_wrap(data, options)
+      return data unless wrap = options[:wrap] || representation_wrap(options)
+      filter_wrap_for(data, wrap)
+    end
+
+    def filter_wrap_for(data, wrap)
+      data[wrap.to_s] || {} # DISCUSS: don't initialize this more than once. # TODO: this should be done with #read.
     end
   end
 end
