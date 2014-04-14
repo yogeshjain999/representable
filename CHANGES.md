@@ -17,6 +17,7 @@
 
 * When unsure about the number of arguments passed into an option lambda, use `:pass_options`. This passes all general options in a dedicated `Options` object that responds to `binding`, `decorator`, `represented` and `user_options`. It's always the last argument for the block.
 * Added `parse_strategy: :find_or_instantiate`. More to come.
+* Added `parse_strategy: lambda { |fragment, i, options| }` to implement your own deserialization.
 * Use `representable: false` to prevent calling `to_*/from_*` on a represented object even if the property is `typed?` (`:extend`, `:class` or `:instance` set).
 * Introduced `:use_decorator` option to force an inline representer to be implemented with a Decorator even in a module. This fixes a bug since we used the `:decorate` option in earlier versions, which was already used for something else.
 * Autoload `Representable::Hash*` and `Representable::Decorator`.
