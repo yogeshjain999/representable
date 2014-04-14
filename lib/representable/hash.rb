@@ -26,6 +26,9 @@ module Representable
     end
 
 
+    # Note: `#from_hash` still does _not_ stringify incoming hashes. This is per design: Representable is not made for hashes, only,
+    # but for any arbitrary data structure. A generic `key.to_s` with non-hash data would result in weird issues.
+    # I decided it's more predictable to require the user to provide stringified keys.
     def from_hash(data, options={}, binding_builder=PropertyBinding)
       if wrap = options[:wrap] || representation_wrap(options)
         data = data[wrap.to_s] || {} # DISCUSS: don't initialize this more than once. # TODO: this should be done with #read.
