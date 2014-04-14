@@ -184,4 +184,12 @@ private
   end # DSLAdditions
 end
 
-require 'representable/decorator'
+
+require 'representable/hash'
+module Representable
+  module Hash
+    autoload :AllowSymbols, 'representable/hash/allow_symbols'
+  end
+
+  autoload :Decorator, 'representable/decorator'
+end
