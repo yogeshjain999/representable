@@ -1,4 +1,3 @@
-require 'representable/hash'
 require 'representable/bindings/yaml_bindings'
 
 module Representable

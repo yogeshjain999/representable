@@ -1,4 +1,3 @@
-require 'representable/hash'
 require 'multi_json'
 
 module Representable

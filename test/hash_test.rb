@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'representable/hash'
 
 class HashTest < MiniTest::Spec
   def self.hash_representer(&block)

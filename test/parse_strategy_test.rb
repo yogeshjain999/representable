@@ -84,8 +84,6 @@ class ParseStrategySyncTest < BaseTest
 
 
   # Lonely Collection
-  require "representable/hash/collection"
-
   for_formats(
     :hash => [Representable::Hash::Collection, [{"title"=>"Resist Stance"}], [{"title"=>"Suffer"}]],
     # :xml  => [Representable::XML, "<open_struct><song><title>Resist Stance</title></song></open_struct>", "<open_struct><songs><title>Suffer</title></songs></open_struct>"],

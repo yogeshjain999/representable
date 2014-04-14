@@ -1,5 +1,3 @@
-require 'representable/hash/collection'
-
 module Representable::XML
   module Collection
     include Representable::XML
