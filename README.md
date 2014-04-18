@@ -125,10 +125,10 @@ end
 Surprisingly, `#collection` lets us define lists of objects to represent.
 
 ```ruby
-Song.new(title: "Fallout", composers: ["Steward Copeland", "Sting"]).
+Song.new(title: "Fallout", composers: ["Stewart Copeland", "Sting"]).
   extend(SongRepresenter).to_json
 
-#=> {"title":"Fallout","composers":["Steward Copeland","Sting"]}
+#=> {"title":"Fallout","composers":["Stewart Copeland","Sting"]}
 ```
 
 And again, this works both ways - in addition to the title it extracts the composers from the document, too.
@@ -162,7 +162,7 @@ When rendering, the `:extend` module is used to extend the attribute(s) with the
 
 ```ruby
 album.extend(AlbumRepresenter).to_json
-#=> {"name":"The Police","songs":[{"title":"Fallout","composers":["Steward Copeland","Sting"]},{"title":"Synchronicity","composers":[]}]}
+#=> {"name":"The Police","songs":[{"title":"Fallout","composers":["Stewart Copeland","Sting"]},{"title":"Synchronicity","composers":[]}]}
 ```
 
 Parsing a documents needs both `:extend` and the `:class` option as the parser requires knowledge what kind of object to create from the nested composition.
@@ -491,11 +491,11 @@ end
 For XML we just include the `Representable::XML` module.
 
 ```xml
-Song.new(title: "Fallout", composers: ["Steward Copeland", "Sting"]).
+Song.new(title: "Fallout", composers: ["Stewart Copeland", "Sting"]).
      extend(SongRepresenter).to_xml #=>
 <song>
     <title>Fallout</title>
-    <composers>Steward Copeland</composers>
+    <composers>Stewart Copeland</composers>
     <composers>Sting</composers>
 </song>
 ```
@@ -823,7 +823,7 @@ song.extend(SongRepresenter).to_yaml
 #=>
 ---
 title: Fallout
-composers: [Steward Copeland, Sting]
+composers: [Stewart Copeland, Sting]
 ```
 
 ## More on XML

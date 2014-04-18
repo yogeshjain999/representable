@@ -56,7 +56,7 @@ module SongRepresenter
 end
 
 
-song = Song.new(:title => "Fallout", :composers => ["Steward Copeland", "Sting"])
+song = Song.new(:title => "Fallout", :composers => ["Stewart Copeland", "Sting"])
 puts song.extend(SongRepresenter).to_json
 
 
@@ -143,7 +143,7 @@ module SongRepresenter
   property :track
   collection :composers
 end
-song = Song.new(:title => "Fallout", :composers => ["Steward Copeland", "Sting"])
+song = Song.new(:title => "Fallout", :composers => ["Stewart Copeland", "Sting"])
 puts song.extend(SongRepresenter).to_xml
 
 reset_representer(SongRepresenter)
