@@ -1,3 +1,7 @@
+# 1.8.1
+
+* Add `:serialize` and `:deserialize` options for overriding those steps.
+
 # 1.8.0
 
 ## Major Breakage
