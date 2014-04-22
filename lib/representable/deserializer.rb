@@ -37,7 +37,9 @@ module Representable
     def deserialize(object, fragment, options) # TODO: merge with #serialize.
       return object unless @binding.representable?
 
-      object.send(@binding.deserialize_method, fragment, options)
+      @binding.send(:evaluate_option, :deserialize, object, fragment) do
+        object.send(@binding.deserialize_method, fragment, options)
+      end
     end
 
     def prepare(object)
