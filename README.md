@@ -453,6 +453,8 @@ Here's a list of all dynamic options and their argument signature.
 * `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
 * `if: lambda { |args| }` ([see Conditions](#conditions))
 * `prepare: lambda { |object, args| }` ([see docs](#rendering-and-parsing-without-extend))
+* `serialize: lambda { |object, args| }` ([see docs](#overriding-serialize-and-deserialize))
+* `deserialize: lambda { |object, fragment, args| }` ([see docs](#overriding-serialize-and-deserialize))
 * `representation_wrap` is a dynamic option, too: `self.representation_wrap = lambda do { |args| }` ([see Wrapping](#wrapping))
 
 
@@ -991,6 +993,26 @@ If you want `nil` values to be included when rendering, use the `:render_nil` op
 ```ruby
 property :track, render_nil: true
 ```
+
+
+### Overriding Serialize And Deserialize
+
+When serializing, the default mechanics after preparing the object are to call `object.to_hash`.
+
+Override this step with `:serialize`.
+
+```ruby
+property :song, extend: SongRepresenter,
+  serialize: lambda { |object, *args| Marshal.dump(object) }
+```
+
+Vice-versa, parsing allows the same.
+
+```ruby
+property :song, extend: SongRepresenter,
+  deserialize: lambda { |object, fragment, *args| Marshal.load(fragment) }
+```
+
 
 ## Coercion
 
