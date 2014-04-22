@@ -135,6 +135,7 @@ module Representable
       end
 
     private
+      # DISCUSS: deprecate :class in favour of :instance and simplicity?
       def class_for(fragment, *args)
         item_class = class_from(fragment, *args) or return handle_deprecated_class(fragment)
         item_class.new
