@@ -29,6 +29,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mocha", ">= 0.13.0"
   s.add_development_dependency "mongoid"
   s.add_development_dependency "virtus", "~> 0.5.0"
-  s.add_development_dependency "yajl-ruby"
   s.add_development_dependency "json", '~> 1.7.7'
 end
