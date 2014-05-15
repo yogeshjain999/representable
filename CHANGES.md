@@ -1,6 +1,8 @@
-# Next
+# 1.8.2
 
+* Remove Virtus deprecations.
 * Add support for Rubinius.
+* `Definition#default` is public now, please don't use it anyway, it's a private concept.
 
 # 1.8.1
 
