@@ -19,8 +19,10 @@ class InlineTest < MiniTest::Spec
         end
       end
 
-      it { request.send("to_#{format}").must_equal output }
-      it { request.send("from_#{format}", input).song.name.must_equal "You've Taken Everything"}
+      let (:format) { format }
+
+      it { render(request).must_equal_document output }
+      it { parse(request, input).song.name.must_equal "You've Taken Everything"}
     end
   end
 
@@ -42,8 +44,10 @@ class InlineTest < MiniTest::Spec
         end
       end
 
-      it { request.send("to_#{format}").must_equal output }
-      it { request.send("from_#{format}", input).songs.first.name.must_equal "You've Taken Everything"}
+      let (:format) { format } # FIXME: why do we have to define this?
+
+      it { render(request).must_equal_document output }
+      it { parse(request, input).songs.first.name.must_equal "You've Taken Everything"}
     end
   end
 
