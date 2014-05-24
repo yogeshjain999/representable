@@ -1,7 +1,6 @@
 require 'test_helper'
 
-class GenericTest < MiniTest::Spec
-# one day, this file will contain all engine-independent test cases. one day...
+class GenericTest < MiniTest::Spec # TODO: rename/restructure to CollectionTest.
   let (:new_album)  { OpenStruct.new.extend(representer) }
   let (:album)      { OpenStruct.new(:songs => ["Fuck Armageddon"]).extend(representer) }
   let (:song) { OpenStruct.new(:title => "Resist Stance") }
@@ -68,6 +67,28 @@ class GenericTest < MiniTest::Spec
         it "renders empty collection in #{format}" do
           render(album).must_equal_document output
         end
+      end
+    end
+
+
+    # when collection is [], suppress rendering when render_empty: false.
+    for_formats(
+      :hash => [Representable::Hash, {}],
+      #:xml  => [Representable::XML, "<open_struct><songs/></open_struct>"],
+      :yaml => [Representable::YAML, "--- {}\n"],
+    ) do |format, mod, output, input|
+
+      describe "render_empty [#{format}]" do
+        let (:format) { format }
+
+        representer!(:module => mod) do
+          collection :songs, :render_empty => false
+          self.representation_wrap = :album if format == :xml
+        end
+
+        let (:album) { OpenStruct.new(:songs => []).extend(representer) }
+
+        it { render(album).must_equal_document output }
       end
     end
   end

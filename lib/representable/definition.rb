@@ -68,6 +68,7 @@ module Representable
     end
 
     def skipable_empty_value?(value)
+      return true if array? and self[:render_empty] == false and value and value.size == 0  # TODO: change in 2.0, don't render emtpy.
       value.nil? and not self[:render_nil]
     end
     alias_method :skipable_nil_value?, :skipable_empty_value? # TODO: remove in 1.9 .
