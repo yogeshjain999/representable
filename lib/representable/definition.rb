@@ -26,7 +26,7 @@ module Representable
       self
     end
 
-    private :default, :[]=
+    private :[]= # TODO: re-privatize #default when this is sorted with Rubinius.
 
     def options # TODO: remove in 2.0.
       warn "Representable::Definition#option is deprecated, use #[] directly."
