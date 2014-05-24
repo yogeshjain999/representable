@@ -52,7 +52,7 @@ module Representable
     end
 
     def write_fragment_for(value, doc)
-      return if skipable_nil_value?(value)
+      return if skipable_empty_value?(value)
       write(doc, value)
     end
 

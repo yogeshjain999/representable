@@ -67,9 +67,10 @@ module Representable
       self[:extend]
     end
 
-    def skipable_nil_value?(value)
+    def skipable_empty_value?(value)
       value.nil? and not self[:render_nil]
     end
+    alias_method :skipable_nil_value?, :skipable_empty_value? # TODO: remove in 1.9 .
 
     def create_binding(*args)
       self[:binding].call(self, *args)
