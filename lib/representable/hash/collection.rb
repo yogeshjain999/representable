@@ -6,13 +6,14 @@ module Representable::Hash
       base.class_eval do
         include Representable
         extend ClassMethods
+        extend Representable::Hash::ClassMethods # ::representer_engine.
       end
     end
 
 
     module ClassMethods
-      def items(options)
-        collection :_self, options.merge(:getter => lambda { |*| self })
+      def items(options, &block)
+        collection(:_self, options.merge(:getter => lambda { |*| self }), &block)
       end
     end
 

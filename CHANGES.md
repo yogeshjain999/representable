@@ -1,3 +1,7 @@
+# 1.8.2
+
+* Fix `JSON::Collection` and `JSON::Hash` (lonely arrays and hashes), they can now use inline representers. Thanks to @jandudulski for reporting.
+
 # 1.8.1
 
 * Add `:serialize` and `:deserialize` options for overriding those steps.

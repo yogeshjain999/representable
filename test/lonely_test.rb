@@ -12,6 +12,9 @@ class LonelyRepresenterTest < MiniTest::Spec
   let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include rpr } }
 
   describe "JSON::Collection" do
+    let (:songs) { [Song.new("Days Go By"), Song.new("Can't Take Them All")] }
+    let (:json)  { "[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]" }
+
     describe "with contained objects" do
       let (:representer) {
         Module.new do
@@ -19,8 +22,7 @@ class LonelyRepresenterTest < MiniTest::Spec
           items :class => Song, :extend => SongRepresenter
         end
       }
-      let (:songs) { [Song.new("Days Go By"), Song.new("Can't Take Them All")] }
-      let (:json)  { "[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]" }
+
 
       it "renders array" do
         assert_json json, songs.extend(representer).to_json
@@ -37,6 +39,17 @@ class LonelyRepresenterTest < MiniTest::Spec
       it "parses array with decorator" do
         decorator.new([]).from_json(json).must_equal songs
       end
+    end
+
+    describe "with inline representer" do
+      representer!(:module => Representable::JSON::Collection) do
+        items :class => Song do
+          property :name
+        end
+      end
+
+      it { songs.extend(representer).to_json.must_equal json }
+      it { [].extend(representer).from_json(json).must_equal songs }
     end
 
     describe "with contained text" do
@@ -105,7 +118,20 @@ class LonelyRepresenterTest < MiniTest::Spec
           assert_equal({"one" => Song.new("Days Go By")}, {}.extend(representer).from_json(json, :include => [:one]))
         end
       end
+
+
+      describe "with inline representer" do
+        representer!(:module => Representable::JSON::Hash) do
+          values :class => Song do
+            property :name
+          end
+        end
+
+        it { songs.extend(representer).to_json.must_equal json }
+        it { {}.extend(representer).from_json(json).must_equal songs }
+      end
     end
+
 
     describe "with contained text" do
       before do

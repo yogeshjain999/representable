@@ -10,13 +10,14 @@ module Representable::JSON
       base.class_eval do
         include Representable
         extend ClassMethods
+        extend Representable::Hash::ClassMethods # ::representer_engine.
       end
     end
 
 
     module ClassMethods
-      def values(options)
-        hash :_self, options
+      def values(options, &block)
+        hash(:_self, options, &block)
       end
     end
 

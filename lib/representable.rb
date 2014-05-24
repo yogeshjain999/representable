@@ -109,11 +109,11 @@ private
         property(name, options, &block)
       end
 
-      def hash(name=nil, options={})
+      def hash(name=nil, options={}, &block)
         return super() unless name  # allow Object.hash.
 
         options[:hash] = true
-        property(name, options)
+        property(name, options, &block)
       end
 
     private
