@@ -1,4 +1,4 @@
-# 1.8.2
+# 1.8.3
 
 * Fix `JSON::Collection` and `JSON::Hash` (lonely arrays and hashes), they can now use inline representers. Thanks to @jandudulski for reporting.
 * Added `:render_empty` option to suppress rendering of empty collections. This will default to true in 2.0.
