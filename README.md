@@ -984,7 +984,7 @@ your `:if` may process the options.
 property :track, if: lambda { |opts| track > opts[:minimum_track] }
 ```
 
-### False and Nil Values
+### False And Nil Values
 
 Since representable-1.2 `false` values _are_ considered when parsing and rendering. That particularly means properties that used to be unset (i.e. `nil`) after parsing might be `false` now. Vice versa, `false` properties that weren't included in the rendered document will be visible now.
 
@@ -993,6 +993,16 @@ If you want `nil` values to be included when rendering, use the `:render_nil` op
 ```ruby
 property :track, render_nil: true
 ```
+
+### Empty Collections
+
+Per default, empty collections are rendered (unless they're `nil`). You can suppress rendering.
+
+```ruby
+collection :songs, render_empty: false
+```
+
+This will be the default behaviour in 2.0.
 
 
 ### Overriding Serialize And Deserialize
