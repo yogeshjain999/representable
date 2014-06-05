@@ -1,3 +1,7 @@
+# 1.8.4
+
+* Make `representable/json` work without having to require `representable/hash`. Thanks to @acuppy!!!
+
 # 1.8.3
 
 * Fix `JSON::Collection` and `JSON::Hash` (lonely arrays and hashes), they can now use inline representers. Thanks to @jandudulski for reporting.
