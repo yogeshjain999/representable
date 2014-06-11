@@ -1,10 +1,9 @@
-require "delegate"
 require "representable/deserializer"
 require "representable/serializer"
 
 module Representable
   # The Binding wraps the Definition instance for this property and provides methods to read/write fragments.
-  class Binding < SimpleDelegator
+  class Binding
     class FragmentNotFound
     end
 
@@ -15,7 +14,7 @@ module Representable
     end
 
     def initialize(definition, represented, decorator, user_options={})  # TODO: remove default arg for user options.
-      super(definition)
+      @definition = definition
       @represented  = represented
       @decorator    = decorator
       @user_options = user_options
@@ -89,6 +88,12 @@ module Representable
     end
 
   private
+    # Apparently, SimpleDelegator is super slow due to a regex, so we do it
+    # ourselves, right, Jimmy?
+    def method_missing(*args, &block)
+      @definition.send(*args, &block)
+    end
+
     def setup_exec_context!
       context = represented
       context = self        if self[:exec_context] == :binding

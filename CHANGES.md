@@ -1,3 +1,7 @@
+# 1.8.5
+
+* Binding now uses `#method_missing` instead of SimpleDelegator for a significant performance boost of many 100%s. Thanks to @0x4a616d6573 for figuring this.
+
 # 1.8.4
 
 * Make `representable/json` work without having to require `representable/hash`. Thanks to @acuppy!!!
