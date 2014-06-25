@@ -7,9 +7,7 @@ module Representable
       new(represented)
     end
 
-    # Inline.build(base, features, name, options, block) where base is always a class
     def self.inline_representer(base, features, name, options, &block)
-      # FIXME: allow setting other base classes, like Roar::Decorator.
       build_inline(base || default_inline_class, features, name, options, &block)
     end
 
