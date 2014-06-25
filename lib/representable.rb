@@ -142,17 +142,16 @@ private
     end
 
     def property(name, options={}, &block)
-      modules = []
+      base     = nil
+      features = []
 
       if options[:inherit] # TODO: move this to Definition.
-        parent  = representable_attrs[name]
-        modules << parent[:extend].evaluate(nil) if parent[:extend]# we can savely assume this is _not_ a lambda. # DISCUSS: leave that in #representer_module?
+        parent = representable_attrs[name]
+        base = parent[:extend].evaluate(nil) if parent[:extend]# we can savely assume this is _not_ a lambda. # DISCUSS: leave that in #representer_module?
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
-        handle_deprecated_inline_extend!(modules, options)
-
-        options[:extend] = inline_representer_for(modules, name, options, &block)
+        options[:extend] = inline_representer_for(base, features, name, options, &block)
       end
 
       return parent.merge!(options) if options.delete(:inherit)
@@ -160,26 +159,21 @@ private
       super
     end
 
-    def inline_representer(base_module, name, options, &block) # DISCUSS: separate module?
+    def inline_representer(base, features, name, options, &block) # DISCUSS: separate module?
       Module.new do
-        include *base_module # Representable::JSON or similar.
+        include *features # Representable::JSON or similar.
+        include base if base
+
         instance_exec &block
       end
     end
 
   private
-    def inline_representer_for(modules, name, options, &block)
+    def inline_representer_for(base, features, name, options, &block)
       representer = options[:use_decorator] ? Decorator : self
-      modules     = [representer_engine] + modules
+      features     = [representer_engine] + features
 
-      representer.inline_representer(modules.compact.reverse, name, options, &block)
-    end
-
-    def handle_deprecated_inline_extend!(modules, options) # TODO: remove in 2.0.
-      return unless include_module = options.delete(:extend) and not options[:inherit]
-
-      warn "[Representable] Using :extend with an inline representer is deprecated. Include the module in the inline block."
-      modules << include_module
+      representer.inline_representer(base, features.reverse, name, options, &block)
     end
   end # DSLAdditions
 end

@@ -7,24 +7,30 @@ module Representable
       new(represented)
     end
 
-    def self.inline_representer(base_module, name, options, &block)
-      # FIXME: it is wrong to inherit from self here as we just want to "inherit" the included modules but nothing else.
-      Class.new(self).tap do |decorator|
-        decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
-          # Remove parent's property definitions before defining the inline ones. #FIXME: don't inherit from self, remove those 2 lines.
-          representable_attrs.clear
-          representable_attrs.inheritable_arrays.clear
+    # Inline.build(base, features, name, options, block) where base is always a class
+    def self.inline_representer(base, features, name, options, &block)
+      # FIXME: allow setting other base classes, like Roar::Decorator.
+      build_inline(base || default_inline_class, features, name, options, &block)
+    end
 
-          include *base_module
-          instance_exec &block
-        end
-      end
+    def self.default_inline_class
+      Representable::Decorator
     end
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
 
     def initialize(represented)
       @represented = represented
+    end
+
+  private
+    def self.build_inline(base, features, name, options, &block)
+      Class.new(base).tap do |decorator|
+        decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
+          include *features
+          instance_exec &block
+        end
+      end
     end
   end
 end

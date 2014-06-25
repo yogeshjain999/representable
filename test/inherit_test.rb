@@ -111,7 +111,7 @@ class InheritTest < MiniTest::Spec
       end
     }
 
-    it { inheriting.new(OpenStruct.new(:hit => OpenStruct.new(:title => "Hole In Your Soul"))).to_hash.must_equal {} }
+    it { inheriting.new(OpenStruct.new(:hit => OpenStruct.new(:title => "Hole In Your Soul"))).to_hash.must_equal({"hit"=>{"title"=>"Hole In Your Soul"}}) }
   end
 
 end

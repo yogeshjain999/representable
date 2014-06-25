@@ -1,3 +1,12 @@
+# 1.9.0
+
+* Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed with **** TODO: how? ****.
+If you need to inherit common methods to all inline decorators, use **** TODO: document features ****.
+* New signature: `inline_representer(base, features, name, options, &block)`.
+
+* Fixed: Inline decorators now work with `inherit: true`.
+* Remove `:extend` in combination with inline representer. The `:extend` option is no longer considered. Include the module directly into the inline block.
+
 # 1.8.5
 
 * Binding now uses `#method_missing` instead of SimpleDelegator for a significant performance boost of many 100%s. Thanks to @0x4a616d6573 for figuring this.
