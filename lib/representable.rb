@@ -159,7 +159,11 @@ private
       super
     end
 
-    def inline_representer(base, features, name, options, &block) # DISCUSS: separate module?
+    def inline_representer(*args, &block) # DISCUSS: separate module?
+      build_inline(*args, &block)
+    end
+
+    def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
       Module.new do
         include *features # Representable::JSON or similar.
         include base if base
