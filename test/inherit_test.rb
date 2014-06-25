@@ -105,13 +105,13 @@ class InheritTest < MiniTest::Spec
     let (:inheriting) {
       class InheritingDecorator < representer
         property :hit, :inherit => true do
-
+          property :length
         end
         self
       end
     }
 
-    it { inheriting.new(OpenStruct.new(:hit => OpenStruct.new(:title => "Hole In Your Soul"))).to_hash.must_equal({"hit"=>{"title"=>"Hole In Your Soul"}}) }
+    it { inheriting.new(OpenStruct.new(:hit => OpenStruct.new(:title => "Hole In Your Soul", :length => "2:59"))).to_hash.must_equal(
+      {"hit"=>{"title"=>"Hole In Your Soul", "length"=>"2:59"}}) }
   end
-
 end
