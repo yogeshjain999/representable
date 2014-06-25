@@ -93,4 +93,25 @@ class InheritTest < MiniTest::Spec
     end
   end
 
+
+  # decorator
+  describe ":inherit with decorator" do
+    representer!(:decorator => true) do
+      property :hit do
+        property :title
+      end
+    end
+
+    let (:inheriting) {
+      class InheritingDecorator < representer
+        property :hit, :inherit => true do
+
+        end
+        self
+      end
+    }
+
+    it { inheriting.new(OpenStruct.new(:hit => OpenStruct.new(:title => "Hole In Your Soul"))).to_hash.must_equal {} }
+  end
+
 end
