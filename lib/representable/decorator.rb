@@ -3,6 +3,7 @@ module Representable
     attr_reader :represented
     alias_method :decorated, :represented
 
+    # TODO: when moving all class methods into ClassMethods, i get a segfault.
     def self.prepare(represented)
       new(represented)
     end
