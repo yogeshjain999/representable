@@ -11,6 +11,16 @@ class Band
   end
 end
 
+class CDataBand
+  include Representable::XML
+  property :name, getter: lambda { |opt| Nokogiri::XML::CDATA.new(opt[:doc], name) }
+  attr_accessor :name
+
+  def initialize(name=nil)
+    name and self.name = name
+  end
+end
+
 class Album
   attr_accessor :songs
 end
@@ -244,7 +254,6 @@ class TypedPropertyTest < MiniTest::Spec
     property :band, :class => Band
   end
 
-
   class Album
     attr_accessor :band
     def initialize(band=nil)
@@ -286,6 +295,19 @@ class TypedPropertyTest < MiniTest::Spec
         end
 
         assert_xml_equal %{<album><band>Baaaad Religion</band></album>}, Album.new(band).extend(AlbumRepresenter).to_xml
+      end
+    end
+
+    describe "#to_xml with CDATA" do
+      it "wraps Band name in CDATA#to_xml" do
+        band = CDataBand.new("Bad Religion")
+        album = Album.new(band).extend(AlbumRepresenter)
+
+        assert_xml_equal %{<album>
+         <c_data_band>
+           <name><![CDATA[Bad Religion]]></name>
+         </c_data_band>
+       </album>}, album.to_xml
       end
     end
   end
