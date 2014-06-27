@@ -119,4 +119,65 @@ class ConfigTest < MiniTest::Spec
       end
     end
   end
+
+
+  # config.arrays[:links] = [1]
+  # base.representable_attrs.inherit(representable_attrs)
+
+  # child.inherit(parent)
+  class InheritableArray < Array
+    def inherit!(parent)
+      push(*parent.clone)
+    end
+  end
+
+  it "what" do
+    parent = InheritableArray.new([1,2,3])
+    child  = InheritableArray.new([4])
+
+    child.inherit!(parent).must_equal([4,1,2,3])
+  end
+
+
+  # child.inherit(parent)
+  class InheritableHash < Hash
+    def inherit!(parent)
+      merge!(parent.clone)
+    end
+  end
+
+  it "whatyx" do
+    parent = InheritableHash[:volume => 9, :genre => "Powermetal"]
+    child  = InheritableHash[:genre => "Metal", :pitch => 99]
+
+    child.inherit!(parent).must_equal(:volume => 9, :genre => "Powermetal", :pitch => 99)
+  end
+
+
+  class Definitions < InheritableArray
+    def clone
+      collect { |d| d.clone }
+    end
+  end
+
+  D = Struct.new(:name)
+
+  let (:title)  { D.new(:title) }
+  let (:length) { D.new(:length) }
+  let (:stars)  { D.new(:stars) }
+
+  it do
+    parent = Definitions.new([title, length])
+
+    child = Definitions.new([stars])
+    child.inherit!(parent)
+
+    # make sure parent's definitions were cloned.
+    child.must_equal([stars, title, length])
+    child[0].object_id.must_equal stars.object_id
+    child[1].object_id.wont_equal title.object_id
+    child[2].object_id.wont_equal length.object_id
+  end
+
+
 end
