@@ -11,16 +11,6 @@ class Band
   end
 end
 
-class CDataBand
-  include Representable::XML
-  property :name, getter: lambda { |opt| Nokogiri::XML::CDATA.new(opt[:doc], name) }
-  attr_accessor :name
-
-  def initialize(name=nil)
-    name and self.name = name
-  end
-end
-
 class Album
   attr_accessor :songs
 end
@@ -245,6 +235,23 @@ class AttributesTest < MiniTest::Spec
 
       assert_xml_equal %{<link href="http://apotomo.de/">}, link.to_xml
     end
+  end
+end
+
+
+class CDataBand
+  class CData < Representable::XML::PropertyBinding
+    def serialize_node(parent, value)
+      parent << Nokogiri::XML::CDATA.new(parent, represented.name)
+    end
+  end
+
+  include Representable::XML
+  property :name, :binding => lambda { |*args| CData.new(*args) }#getter: lambda { |opt| Nokogiri::XML::CDATA.new(opt[:doc], name) }
+  attr_accessor :name
+
+  def initialize(name=nil)
+    name and self.name = name
   end
 end
 

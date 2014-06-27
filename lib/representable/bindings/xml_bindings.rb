@@ -34,15 +34,8 @@ module Representable
 
       # Creates wrapped node for the property.
       def serialize_for(value, parent)
-      #def serialize_for(value, parent, tag_name=definition.from)
         node = node_for(parent, as)
-        # If the user supplies a Nokogiri node, then do not create one
-        # just add it as a child of the current parent node
-        if nokogiri?(value)
-          node << value
-        else
-          serialize_node(node, value)
-        end
+        serialize_node(node, value)
       end
 
       def serialize_node(node, value)
@@ -67,10 +60,6 @@ module Representable
       end
 
     private
-      def nokogiri?(value)
-        value.is_a?(Nokogiri::XML::Node)
-      end
-
       def xpath
         as
       end
