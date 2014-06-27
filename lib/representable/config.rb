@@ -1,35 +1,57 @@
 module Representable
   # NOTE: the API of Config is subject to change so don't rely too much on this private object.
-  class Config < Hash
-    # DISCUSS: experimental. this will soon be moved to a separate gem
-    module InheritableArray
-      def inheritable_array(name)
-        inheritable_arrays[name] ||= []
-      end
-      def inheritable_arrays
-        @inheritable_arrays ||= {}
-      end
-
-      def inherit(parent)
-        super
-
-        parent.inheritable_arrays.keys.each do |k|
-          inheritable_array(k).push *parent.inheritable_array(k).clone
-        end
+  class Config < Array
+    # child.inherit(parent)
+    class InheritableArray < Array
+      def inherit!(parent)
+        push(*parent.clone)
       end
     end
 
+    class InheritableHash < Hash
+      def inherit!(parent)
+        merge!(parent.clone)
+      end
+    end
+
+    class Definitions < InheritableArray
+      def clone
+        collect { |d| d.clone }
+      end
+    end
+
+
+    def initialize
+      @directives = {
+        :features   => InheritableHash.new,
+        :definitions => definitions = Definitions.new,
+        :options    => InheritableHash.new
+      }
+    end
+    attr_reader :directives
+
+    def inherit!(parent)
+      for directive in directives.keys
+        directives[directive].inherit!(parent.directives[directive])
+      end
+    end
+
+
     def <<(definition)
-      self[definition.name] = definition
+      directives[:definitions] << definition
     end
 
     def [](name)
-      fetch(name.to_s, nil)
+      directives[:definitions].find { |dfn| dfn.name.to_s == name.to_s }
     end
 
-    def each(*args, &block)
-      values.each(*args, &block)
+    def collect(*args, &block)
+      directives[:definitions].collect(*args, &block)
     end
+    def size
+      directives[:definitions].size
+    end
+
 
     def wrap=(value)
       value = value.to_s if value.is_a?(Symbol)
@@ -51,23 +73,7 @@ module Representable
       @options ||= {}
     end
 
-    module InheritMethods
-      def cloned
-        collect { |d| d.clone }
-      end
-
-      def inherit(parent)
-        push(parent.cloned)
-      end
-    end
-    include InheritMethods
-    include InheritableArray # overrides #inherit.
-
   private
-    def push(defs)
-      defs.each { |d| self << d }
-    end
-
     def infer_name_for(name)
       name.to_s.split('::').last.
        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').

@@ -179,5 +179,35 @@ class ConfigTest < MiniTest::Spec
     child[2].object_id.wont_equal length.object_id
   end
 
+  class Config
+    def initialize
+      @directives = {
+        :features   => InheritableHash.new,
+        :definitions => Definitions.new,
+        :options    => InheritableHash.new
+      }
+    end
+    attr_reader :directives
 
+    def inherit!(parent)
+      for directive in directives.keys
+        directives[directive].inherit!(parent.directives[directive])
+      end
+    end
+  end
+  it "what" do
+    parent = Config.new
+    parent.directives[:definitions] << title
+    parent.directives[:features][Object] = true
+
+    config = Config.new
+    config.inherit!(parent)
+    config.directives[:definitions] << stars
+    config.directives[:features][Module] = true
+
+    config.directives[:features].must_equal({Object => true, Module => true})
+
+    config.directives[:definitions].must_equal([title, stars])
+    config.directives[:definitions][0].object_id.wont_equal title.object_id
+  end
 end
