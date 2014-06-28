@@ -39,16 +39,22 @@ module Representable
 
 
     def initialize
-      @features     = InheritableHash.new
-      @definitions  = Definitions.new
-      @options      = InheritableHash.new
+      @directives = {
+        :features    => @features     = InheritableHash.new,
+        :definitions => @definitions  = Definitions.new,
+        :options     => @options      = InheritableHash.new
+      }
     end
-    attr_reader :features, :options, :definitions
+    attr_reader :directives, :options
+
+    def features
+      @features.keys
+    end
 
     def inherit!(parent)
-      for directive in directives
-        # this should be parent.clone, not accessint the directives.
-        send(directive).inherit!(parent.send(directive))
+      for name, dir in directives
+        # this should be parent.clone, not accessing the directives.
+        dir.inherit!(parent.directives[name])
       end
     end
 
@@ -73,10 +79,6 @@ module Representable
     end
 
   private
-    def directives
-      %w{definitions features options}
-    end
-
     def infer_name_for(name)
       name.to_s.split('::').last.
        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').

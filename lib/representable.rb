@@ -143,7 +143,6 @@ private
 
     def property(name, options={}, &block)
       base     = nil
-      features = []
 
       if options[:inherit] # TODO: move this to Definition.
         parent = representable_attrs[name]
@@ -151,7 +150,7 @@ private
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
-        options[:extend] = inline_representer_for(base, features, name, options, &block)
+        options[:extend] = inline_representer_for(base, representable_attrs.features, name, options, &block)
       end
 
       return parent.merge!(options) if options.delete(:inherit)

@@ -62,18 +62,27 @@ class ConfigTest < MiniTest::Spec
     it do
       parent = Representable::Config.new
       parent << title
-      parent.features[Object] = true
+      parent.directives[:features][Object] = true
 
       subject.inherit!(parent)
       subject << stars
-      subject.features[Module] = true
+      subject.directives[:features][Module] = true
 
-      subject.features.must_equal({Object => true, Module => true})
+      subject.directives[:features].must_equal({Object => true, Module => true})
 
       definitions = subject.instance_variable_get(:@definitions).values
       definitions.must_equal([title, stars])
       definitions[0].object_id.wont_equal title.object_id
       definitions[1].object_id.must_equal stars.object_id
+    end
+  end
+
+  describe "#features" do
+    it do
+      subject.directives[:features][Object] = true
+      subject.directives[:features][Module] = true
+
+      subject.features.must_equal [Object, Module]
     end
   end
 end
