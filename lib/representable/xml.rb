@@ -27,6 +27,7 @@ module Representable
       # Example:
       #   band.from_xml("<band><name>Nofx</name></band>")
       def from_xml(*args, &block)
+        warn "[Representable] Deprecation warning: Class methods ::from_hash, ::from_json, ::from_xml, etc. will be removed in 2.0. Please use Model.new.from_json instead. Keep smiling."
         create_represented(*args, &block).from_xml(*args)
       end
 
