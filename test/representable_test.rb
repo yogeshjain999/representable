@@ -29,13 +29,13 @@ class RepresentableTest < MiniTest::Spec
   describe "#representable_attrs" do
     it "responds to #representable_attrs" do
       assert_equal 1, Band.representable_attrs.size
-      assert_equal "name", Band.representable_attrs.first.name
+      assert_equal "name", Band.representable_attrs[:name].name
     end
 
     describe "in module" do
       it "returns definitions" do
         assert_equal 1, BandRepresentation.representable_attrs.size
-        assert_equal "name", BandRepresentation.representable_attrs.first.name
+        assert_equal "name", BandRepresentation.representable_attrs[:name].name
       end
 
       it "inherits to including modules xxx " do
@@ -90,7 +90,7 @@ class RepresentableTest < MiniTest::Spec
           include parent
         end
 
-        assert parent.representable_attrs.first.object_id != child.representable_attrs.first.object_id, "definitions shouldn't be identical"
+        assert parent.representable_attrs[:id].object_id != child.representable_attrs[:id].object_id, "definitions shouldn't be identical"
       end
     end
   end

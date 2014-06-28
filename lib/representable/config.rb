@@ -1,6 +1,8 @@
 module Representable
-  # NOTE: the API of Config is subject to change so don't rely too much on this private object.
-  class Config < Array
+  class Config
+    # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
+    # at compile-time.
+
     # child.inherit(parent)
     class InheritableArray < Array
       def inherit!(parent)
@@ -14,9 +16,15 @@ module Representable
       end
     end
 
-    class Definitions < InheritableArray
+    # Stores Definitions from ::property. It preserves the adding order (1.9+).
+    # Same-named properties get overridden, just like in a Hash.
+    class Definitions < InheritableHash
+      def <<(definition)
+        self[definition.name] = definition
+      end
+
       def clone
-        collect { |d| d.clone }
+        self.class[ collect { |name, dfn| [name, dfn.clone] } ]
       end
     end
 
@@ -42,11 +50,11 @@ module Representable
     end
 
     def [](name)
-      directives[:definitions].find { |dfn| dfn.name.to_s == name.to_s }
+      directives[:definitions][name.to_s]
     end
 
     def collect(*args, &block)
-      directives[:definitions].collect(*args, &block)
+      directives[:definitions].values.collect(*args, &block)
     end
     def size
       directives[:definitions].size

@@ -24,15 +24,6 @@ class ConfigTest < MiniTest::Spec
     end
   end
 
-  describe "#cloned" do
-    it "clones all definitions" do
-      subject << obj = definition
-
-      subject.cloned.map(&:name).must_equal ["title"]
-      subject.cloned.first.object_id.wont_equal obj.object_id
-    end
-  end
-
   describe "#<<" do
     it "returns Definition" do
       (subject << definition).must_equal definition
@@ -43,7 +34,7 @@ class ConfigTest < MiniTest::Spec
       subject << overrider = Representable::Definition.new(:title)
 
       subject.size.must_equal 1
-      subject.first.must_equal overrider
+      subject.directives[:definitions].first.must_equal overrider
     end
   end
 
@@ -62,67 +53,6 @@ class ConfigTest < MiniTest::Spec
       subject.options[:namespacing].must_equal true
     end
   end
-
-  describe "Config inheritance" do
-    # TODO: this section will soon be moved to uber.
-    describe "inheritance when including" do
-      # TODO: test all the below issues AND if cloning works.
-      module TestMethods
-        def representer_for(modules=[Representable], &block)
-          Module.new do
-            extend TestMethods
-            include *modules
-            module_exec(&block)
-          end
-        end
-      end
-      include TestMethods
-
-      it "inherits to uninitialized child" do
-        representer_for do # child
-          include(representer_for do # parent
-            representable_attrs.inheritable_array(:links) << "bar"
-          end)
-        end.representable_attrs.inheritable_array(:links).must_equal(["bar"])
-      end
-
-      it "works with uninitialized parent" do
-        representer_for do # child
-          representable_attrs.inheritable_array(:links) << "bar"
-
-          include(representer_for do # parent
-          end)
-        end.representable_attrs.inheritable_array(:links).must_equal(["bar"])
-      end
-
-      it "inherits when both are initialized" do
-        representer_for do # child
-          representable_attrs.inheritable_array(:links) << "bar"
-
-          include(representer_for do # parent
-            representable_attrs.inheritable_array(:links) << "stadium"
-          end)
-        end.representable_attrs.inheritable_array(:links).must_equal(["bar", "stadium"])
-      end
-
-      it "clones parent inheritables" do # FIXME: actually we don't clone here!
-        representer_for do # child
-          representable_attrs.inheritable_array(:links) << "bar"
-
-          include(parent = representer_for do # parent
-            representable_attrs.inheritable_array(:links) << "stadium"
-          end)
-
-          parent.representable_attrs.inheritable_array(:links) << "park"  # modify parent array.
-
-        end.representable_attrs.inheritable_array(:links).must_equal(["bar", "stadium"])
-      end
-    end
-  end
-
-
-  # config.arrays[:links] = [1]
-  # base.representable_attrs.inherit(representable_attrs)
 
   # child.inherit(parent)
   class InheritableArray < Array
@@ -153,30 +83,33 @@ class ConfigTest < MiniTest::Spec
     child.inherit!(parent).must_equal(:volume => 9, :genre => "Powermetal", :pitch => 99)
   end
 
-
-  class Definitions < InheritableArray
-    def clone
-      collect { |d| d.clone }
-    end
-  end
-
   D = Struct.new(:name)
 
   let (:title)  { D.new(:title) }
   let (:length) { D.new(:length) }
   let (:stars)  { D.new(:stars) }
 
-  it do
-    parent = Definitions.new([title, length])
+  Definitions = Representable::Config::Definitions
+  # test Definitions#clone and #inherit!.
+  it "xxx" do
+    parent = Definitions.new
+    parent << title
+    parent << length
 
-    child = Definitions.new([stars])
+    child = Definitions.new
+    child << stars
     child.inherit!(parent)
 
-    # make sure parent's definitions were cloned.
-    child.must_equal([stars, title, length])
-    child[0].object_id.must_equal stars.object_id
-    child[1].object_id.wont_equal title.object_id
-    child[2].object_id.wont_equal length.object_id
+
+    parent.values.must_equal [title, length]
+
+    # make sure parent's definitions were cloned and added.
+    child_defs = child.values
+    child_defs.must_equal([stars, title, length])
+
+    child_defs[0].object_id.must_equal stars.object_id
+    child_defs[1].object_id.wont_equal title.object_id
+    child_defs[2].object_id.wont_equal length.object_id
   end
 
   class Config
@@ -195,6 +128,7 @@ class ConfigTest < MiniTest::Spec
       end
     end
   end
+
   it "what" do
     parent = Config.new
     parent.directives[:definitions] << title
@@ -207,7 +141,7 @@ class ConfigTest < MiniTest::Spec
 
     config.directives[:features].must_equal({Object => true, Module => true})
 
-    config.directives[:definitions].must_equal([title, stars])
-    config.directives[:definitions][0].object_id.wont_equal title.object_id
+    config.directives[:definitions].values.must_equal([title, stars])
+    config.directives[:definitions].values[0].object_id.wont_equal title.object_id
   end
 end
