@@ -5,7 +5,8 @@ If you need to inherit common methods to all inline decorators, use **** TODO: d
 * Added `Representable::feature` to include a module and register it to be included into inline representers.
 * New signature: `inline_representer(base, features, name, options, &block)`.
 * `Config` no longer is a Hash, it's API is limited to a few methods like `#collect`, `#<<`, etc.
-
+* Moved `Representable::ClassMethods::Declarations` to `Representable::Declarative`.
+* Moved `Representable::ClassMethods` to `Representable::Declarative`.
 
 * Fixed: Inline decorators now work with `inherit: true`.
 * Remove `:extend` in combination with inline representer. The `:extend` option is no longer considered. Include the module directly into the inline block.
