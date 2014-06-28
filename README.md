@@ -267,7 +267,7 @@ module AlbumRepresenter
 
 This works both for representer modules and decorators.
 
-An inline representer is just a Ruby module. You can include other representer modules. This is handy when having a base representer that needs to be extended in the inline block.
+An inline representer is just a Ruby module (or a `Decorator` class). You can include other representer modules. This is handy when having a base representer that needs to be extended in the inline block.
 
 ```ruby
 module AlbumRepresenter
@@ -277,6 +277,20 @@ module AlbumRepresenter
     include SongRepresenter
 
     property :numbers_sold
+  end
+```
+
+If you need to include modules in all inline representers automatically, register it as a feature.
+
+```ruby
+module AlbumRepresenter
+  include Representable::JSON
+  feature Link # imports ::link
+
+  link "/album/1"
+
+  property :hit do
+    link "/hit/1" # link method imported automatically.
   end
 ```
 
