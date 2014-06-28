@@ -34,7 +34,7 @@ class ConfigTest < MiniTest::Spec
       subject << overrider = Representable::Definition.new(:title)
 
       subject.size.must_equal 1
-      subject.directives[:definitions].first.must_equal overrider
+      subject.directives[:definitions][:title].must_equal overrider
     end
   end
 
