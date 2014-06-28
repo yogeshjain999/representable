@@ -17,7 +17,7 @@ module Representable::Coercion
     base.class_eval do
       extend ClassMethods
       # FIXME: use inheritable_attr when it's ready.
-      representable_attrs.directives[:options][:coercer_class] = Class.new(Coercer)
+      representable_attrs.options[:coercer_class] = Class.new(Coercer)
     end
 
   end
@@ -26,7 +26,7 @@ module Representable::Coercion
     def property(name, options={})
       return super unless options[:type]
 
-      representable_attrs.directives[:options][:coercer_class].attribute(name, options[:type])
+      representable_attrs.options[:coercer_class].attribute(name, options[:type])
 
       # By using :getter we "pre-occupy" this directive, but we avoid creating accessors, which i find is the cleaner way.
       options[:exec_context] = :decorator
@@ -38,6 +38,6 @@ module Representable::Coercion
   end
 
   def coercer
-    @coercer ||= representable_attrs.directives[:options][:coercer_class].new
+    @coercer ||= representable_attrs.options[:coercer_class].new
   end
 end

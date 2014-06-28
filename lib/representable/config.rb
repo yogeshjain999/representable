@@ -1,4 +1,5 @@
 module Representable
+  # Config contains three independent, inheritable directives: features, options and definitions.
   class Config
     # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
     # at compile-time.
@@ -38,17 +39,16 @@ module Representable
 
 
     def initialize
-      @directives = {
-        :features   => InheritableHash.new,
-        :definitions => @definitions = Definitions.new,
-        :options    => InheritableHash.new
-      }
+      @features     = InheritableHash.new
+      @definitions  = Definitions.new
+      @options      = InheritableHash.new
     end
-    attr_reader :directives
+    attr_reader :features, :options, :definitions
 
     def inherit!(parent)
-      for directive in directives.keys
-        directives[directive].inherit!(parent.directives[directive])
+      for directive in directives
+        # this should be parent.clone, not accessint the directives.
+        send(directive).inherit!(parent.send(directive))
       end
     end
 
@@ -72,12 +72,11 @@ module Representable
       value
     end
 
-    # Write representer configuration into this hash.
-    def options
-      @options ||= {}
+  private
+    def directives
+      %w{definitions features options}
     end
 
-  private
     def infer_name_for(name)
       name.to_s.split('::').last.
        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').

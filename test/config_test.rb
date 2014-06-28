@@ -1,7 +1,5 @@
 require 'test_helper'
 
-# tested feature: ::property
-
 class ConfigTest < MiniTest::Spec
   subject { Representable::Config.new }
   PunkRock = Class.new
@@ -35,7 +33,7 @@ class ConfigTest < MiniTest::Spec
       subject << overrider = Representable::Definition.new(:title)
 
       subject.size.must_equal 1
-      subject.directives[:definitions][:title].must_equal overrider
+      subject[:title].must_equal overrider
     end
   end
 
@@ -63,21 +61,23 @@ class ConfigTest < MiniTest::Spec
 
     it do
       parent = Representable::Config.new
-      parent.directives[:definitions] << title
-      parent.directives[:features][Object] = true
+      parent << title
+      parent.features[Object] = true
 
       subject.inherit!(parent)
-      subject.directives[:definitions] << stars
-      subject.directives[:features][Module] = true
+      subject << stars
+      subject.features[Module] = true
 
-      subject.directives[:features].must_equal({Object => true, Module => true})
+      subject.features.must_equal({Object => true, Module => true})
 
-      subject.directives[:definitions].values.must_equal([title, stars])
-      subject.directives[:definitions].values[0].object_id.wont_equal title.object_id
-      subject.directives[:definitions].values[1].object_id.must_equal stars.object_id
+      definitions = subject.instance_variable_get(:@definitions).values
+      definitions.must_equal([title, stars])
+      definitions[0].object_id.wont_equal title.object_id
+      definitions[1].object_id.must_equal stars.object_id
     end
   end
 end
+
 
 class ConfigInheritableTest < MiniTest::Spec
   # InheritableArray
