@@ -11,6 +11,7 @@ module Representable
       extend ClassMethods
       extend ClassMethods::Declarations
       extend DSLAdditions
+      extend Feature
     end
   end
 
@@ -87,7 +88,7 @@ private
     end
 
     def prepare(represented)
-      represented.extend(self)  # was: PrepareStrategy::Extend.
+      represented.extend(self)
     end
 
 
@@ -174,11 +175,19 @@ private
   private
     def inline_representer_for(base, features, name, options, &block)
       representer = options[:use_decorator] ? Decorator : self
-      features     = [representer_engine] + features
+      features    = [representer_engine] + features
 
       representer.inline_representer(base, features.reverse, name, options, &block)
     end
   end # DSLAdditions
+
+
+  module Feature
+    def feature(mod)
+      include mod
+      representable_attrs.directives[:features][mod]= true # register the inheritable feature.
+    end
+  end
 end
 
 

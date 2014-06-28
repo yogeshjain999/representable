@@ -9,11 +9,8 @@ class FeaturesTest < MiniTest::Spec
   end
 
   representer! do
-    include Title
-    include Length
-
-    representable_attrs.directives[:features][Title]= true
-    representable_attrs.directives[:features][Length]= true
+    feature Title
+    feature Length
 
     property :title
     property :length
