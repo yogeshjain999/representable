@@ -87,27 +87,4 @@ class VirtusCoercionTest < MiniTest::Spec
       ).to_hash.must_equal({"composed_at"=>date, "title"=>"Scarified"})
     end
   end
-
-  # DISCUSS: do we actually wanna have accessors in a decorator/module? i guess the better idea is to let coercion happen through from_/to_,
-  # only, to make it as simple as possible.
-  # describe "without serialization/deserialization" do
-  #   let (:coercer_class) do
-  #     class SongCoercer < Representable::Decorator
-  #       include Representable::Decorator::Coercion
-
-  #       property :composed_at, :type => DateTime
-  #       property :title
-
-  #       self
-  #     end
-  #   end
-
-  #   it "coerces when setting" do
-  #     coercer = coercer_class.new(song = OpenStruct.new)
-  #     coercer.composed_at = "November 18th, 1983"
-  #     #coercer.title       = "Scarified"
-
-  #     song.composed_at.must_equal date
-  #   end
-  # end
 end
