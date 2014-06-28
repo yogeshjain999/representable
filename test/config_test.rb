@@ -5,8 +5,9 @@ require 'test_helper'
 class ConfigTest < MiniTest::Spec
   subject { Representable::Config.new }
   PunkRock = Class.new
+  Definition = Representable::Definition
 
-  let (:definition) { Representable::Definition.new(:title) }
+  let (:definition) { Definition.new(:title) }
 
   describe "wrapping" do
     it "returns false per default" do
@@ -54,94 +55,44 @@ class ConfigTest < MiniTest::Spec
     end
   end
 
-  # child.inherit(parent)
-  class InheritableArray < Array
-    def inherit!(parent)
-      push(*parent.clone)
+
+  describe "#inherit!" do
+    let (:title)  { Definition.new(:title) }
+    let (:length) { Definition.new(:length) }
+    let (:stars)  { Definition.new(:stars) }
+
+    it do
+      parent = Representable::Config.new
+      parent.directives[:definitions] << title
+      parent.directives[:features][Object] = true
+
+      subject.inherit!(parent)
+      subject.directives[:definitions] << stars
+      subject.directives[:features][Module] = true
+
+      subject.directives[:features].must_equal({Object => true, Module => true})
+
+      subject.directives[:definitions].values.must_equal([title, stars])
+      subject.directives[:definitions].values[0].object_id.wont_equal title.object_id
+      subject.directives[:definitions].values[1].object_id.must_equal stars.object_id
     end
   end
+end
 
-  it "what" do
-    parent = InheritableArray.new([1,2,3])
-    child  = InheritableArray.new([4])
+class ConfigInheritableTest < MiniTest::Spec
+  # InheritableArray
+  it do
+    parent = Representable::Config::InheritableArray.new([1,2,3])
+    child  = Representable::Config::InheritableArray.new([4])
 
     child.inherit!(parent).must_equal([4,1,2,3])
   end
 
-
-  # child.inherit(parent)
-  class InheritableHash < Hash
-    def inherit!(parent)
-      merge!(parent.clone)
-    end
-  end
-
-  it "whatyx" do
-    parent = InheritableHash[:volume => 9, :genre => "Powermetal"]
-    child  = InheritableHash[:genre => "Metal", :pitch => 99]
+  # InheritableHash
+  it do
+    parent = Representable::Config::InheritableHash[:volume => 9, :genre => "Powermetal"]
+    child  = Representable::Config::InheritableHash[:genre => "Metal", :pitch => 99]
 
     child.inherit!(parent).must_equal(:volume => 9, :genre => "Powermetal", :pitch => 99)
-  end
-
-  D = Struct.new(:name)
-
-  let (:title)  { D.new(:title) }
-  let (:length) { D.new(:length) }
-  let (:stars)  { D.new(:stars) }
-
-  Definitions = Representable::Config::Definitions
-  # test Definitions#clone and #inherit!.
-  it "xxx" do
-    parent = Definitions.new
-    parent << title
-    parent << length
-
-    child = Definitions.new
-    child << stars
-    child.inherit!(parent)
-
-
-    parent.values.must_equal [title, length]
-
-    # make sure parent's definitions were cloned and added.
-    child_defs = child.values
-    child_defs.must_equal([stars, title, length])
-
-    child_defs[0].object_id.must_equal stars.object_id
-    child_defs[1].object_id.wont_equal title.object_id
-    child_defs[2].object_id.wont_equal length.object_id
-  end
-
-  class Config
-    def initialize
-      @directives = {
-        :features   => InheritableHash.new,
-        :definitions => Definitions.new,
-        :options    => InheritableHash.new
-      }
-    end
-    attr_reader :directives
-
-    def inherit!(parent)
-      for directive in directives.keys
-        directives[directive].inherit!(parent.directives[directive])
-      end
-    end
-  end
-
-  it "what" do
-    parent = Config.new
-    parent.directives[:definitions] << title
-    parent.directives[:features][Object] = true
-
-    config = Config.new
-    config.inherit!(parent)
-    config.directives[:definitions] << stars
-    config.directives[:features][Module] = true
-
-    config.directives[:features].must_equal({Object => true, Module => true})
-
-    config.directives[:definitions].values.must_equal([title, stars])
-    config.directives[:definitions].values[0].object_id.wont_equal title.object_id
   end
 end
