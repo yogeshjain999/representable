@@ -24,7 +24,15 @@ module Representable
       end
 
       def clone
-        self.class[ collect { |name, dfn| [name, dfn.clone] } ]
+        self.class[ values.collect { |dfn| [dfn.name, dfn.clone] } ]
+      end
+
+      def [](name)
+        fetch(name.to_s, nil)
+      end
+
+      def collect(*args, &block)
+        values.collect(*args, &block)
       end
     end
 
@@ -32,7 +40,7 @@ module Representable
     def initialize
       @directives = {
         :features   => InheritableHash.new,
-        :definitions => definitions = Definitions.new,
+        :definitions => @definitions = Definitions.new,
         :options    => InheritableHash.new
       }
     end
@@ -44,21 +52,9 @@ module Representable
       end
     end
 
-
-    def <<(definition)
-      directives[:definitions] << definition
-    end
-
-    def [](name)
-      directives[:definitions][name.to_s]
-    end
-
-    def collect(*args, &block)
-      directives[:definitions].values.collect(*args, &block)
-    end
-    def size
-      directives[:definitions].size
-    end
+    # delegate #collect etc to Definitions instance.
+    extend Forwardable
+    def_delegators :@definitions, :[], :<<, :collect, :size
 
 
     def wrap=(value)
