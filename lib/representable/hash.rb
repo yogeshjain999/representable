@@ -10,6 +10,7 @@ module Representable
       base.class_eval do
         include Representable # either in Hero or HeroRepresentation.
         extend ClassMethods # DISCUSS: do that only for classes?
+        register_feature Representable::Hash
       end
     end
 
@@ -17,11 +18,6 @@ module Representable
     module ClassMethods
       def from_hash(*args, &block)
         create_represented(*args, &block).from_hash(*args)
-      end
-
-    private
-      def representer_engine
-        Representable::Hash
       end
     end
 

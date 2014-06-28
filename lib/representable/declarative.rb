@@ -66,7 +66,6 @@ module Representable
   private
     def inline_representer_for(base, features, name, options, &block)
       representer = options[:use_decorator] ? Decorator : self
-      features    = [representer_engine] + features
 
       representer.inline_representer(base, features.reverse, name, options, &block)
     end

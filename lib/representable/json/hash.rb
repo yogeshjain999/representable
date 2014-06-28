@@ -2,15 +2,14 @@ require 'representable/json'
 require 'representable/hash_methods'
 
 module Representable::JSON
+  # "Lonely Hash" support.
   module Hash
-    include Representable::JSON
-    include Representable::HashMethods
-
     def self.included(base)
       base.class_eval do
         include Representable
         extend ClassMethods
-        extend Representable::Hash::ClassMethods # ::representer_engine.
+        include Representable::JSON
+        include Representable::HashMethods
       end
     end
 

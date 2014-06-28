@@ -97,7 +97,12 @@ private
   module Feature
     def feature(mod)
       include mod
-      representable_attrs.directives[:features][mod]= true # register the inheritable feature.
+      register_feature(mod)
+    end
+
+  private
+    def register_feature(mod)
+      representable_attrs.directives[:features][mod]= true
     end
   end
 end

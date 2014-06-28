@@ -5,8 +5,9 @@ module Representable::Hash
     def self.included(base)
       base.class_eval do
         include Representable
+        include Representable::Hash
+
         extend ClassMethods
-        extend Representable::Hash::ClassMethods # ::representer_engine.
       end
     end
 

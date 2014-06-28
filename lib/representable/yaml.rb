@@ -9,6 +9,7 @@ module Representable
         include Representable
         extend ClassMethods
         #self.representation_wrap = true # let representable compute it.
+        register_feature Representable::YAML
       end
     end
 
@@ -23,11 +24,6 @@ module Representable
       #   band.from_xml("<band><name>Nofx</name></band>")
       def from_yaml(*args, &block)
         create_represented(*args, &block).from_yaml(*args)
-      end
-
-    private
-      def representer_engine
-        Representable::YAML
       end
     end
 

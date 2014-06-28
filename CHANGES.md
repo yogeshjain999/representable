@@ -3,6 +3,7 @@
 * Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed with **** TODO: how? ****.
 If you need to inherit common methods to all inline decorators, use **** TODO: document features ****.
 * Added `Representable::feature` to include a module and register it to be included into inline representers.
+* Removed `::representer_engine`, this is just another feature now.
 * New signature: `inline_representer(base, features, name, options, &block)`.
 * `Config` no longer is a Hash, it's API is limited to a few methods like `#collect`, `#<<`, etc.
 * Moved `Representable::ClassMethods::Declarations` to `Representable::Declarative`.

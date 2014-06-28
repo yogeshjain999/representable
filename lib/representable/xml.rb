@@ -9,6 +9,7 @@ module Representable
         include Representable
         extend ClassMethods
         self.representation_wrap = true # let representable compute it.
+        register_feature Representable::XML
       end
     end
 
@@ -31,11 +32,6 @@ module Representable
 
       def from_node(*args, &block)
         create_represented(*args, &block).from_node(*args)
-      end
-
-    private
-      def representer_engine
-        Representable::XML
       end
     end
 
