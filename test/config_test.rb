@@ -45,6 +45,16 @@ class ConfigTest < MiniTest::Spec
     it { subject["title"].must_equal definition }
   end
 
+  describe "#each" do
+    before { subject << definition }
+
+    it "what" do
+      definitions = []
+      subject.each { |dfn| definitions << dfn }
+      definitions.must_equal [definition]
+    end
+  end
+
   describe "#options" do
     it { subject.options.must_equal({}) }
     it do

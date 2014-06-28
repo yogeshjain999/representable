@@ -32,9 +32,8 @@ module Representable
         fetch(name.to_s, nil)
       end
 
-      def collect(*args, &block)
-        values.collect(*args, &block)
-      end
+      extend Forwardable
+      def_delegators :values, :each # so we look like an array.
     end
 
 
@@ -60,7 +59,8 @@ module Representable
 
     # delegate #collect etc to Definitions instance.
     extend Forwardable
-    def_delegators :@definitions, :[], :<<, :collect, :size
+    def_delegators :@definitions, :[], :<<, :size, :each
+    include Enumerable
 
 
     def wrap=(value)
