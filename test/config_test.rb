@@ -73,12 +73,19 @@ class ConfigTest < MiniTest::Spec
       parent = Representable::Config.new
       parent << title
       parent.directives[:features][Object] = true
+      # DISCUSS: build InheritableHash automatically in options? is there a gem for that?
+      parent.options[:additional_features] = Representable::Config::InheritableHash[Object => true]
 
       subject.inherit!(parent)
+      # add to inherited config:
       subject << stars
       subject.directives[:features][Module] = true
+      subject.options[:additional_features][Module] = true
 
       subject.directives[:features].must_equal({Object => true, Module => true})
+
+      parent.options[:additional_features].must_equal({Object => true})
+      subject.options[:additional_features].must_equal({Object => true, Module => true})
 
       definitions = subject.instance_variable_get(:@definitions).values
       definitions.must_equal([title, stars])
@@ -108,10 +115,23 @@ class ConfigInheritableTest < MiniTest::Spec
   end
 
   # InheritableHash
-  it do
-    parent = Representable::Config::InheritableHash[:volume => 9, :genre => "Powermetal"]
-    child  = Representable::Config::InheritableHash[:genre => "Metal", :pitch => 99]
+  InheritableHash = Representable::Config::InheritableHash
+  describe "InheritableHash" do
+    it do
+      parent = InheritableHash[:volume => 9, :genre => "Powermetal"]
+      child  = InheritableHash[:genre => "Metal", :pitch => 99]
 
-    child.inherit!(parent).must_equal(:volume => 9, :genre => "Powermetal", :pitch => 99)
+      child.inherit!(parent).must_equal(:volume => 9, :genre => "Powermetal", :pitch => 99)
+    end
+
+    # clone all elements when inheriting.
+    it "what" do
+      parent = InheritableHash[:details => InheritableHash[:title => "Man Of Steel"]]
+      child  = InheritableHash[].inherit!(parent)
+      child[:details][:length] = 136
+
+      parent.must_equal({:details => {:title => "Man Of Steel"}})
+      child.must_equal( {:details => {:title => "Man Of Steel", :length => 136}})
+    end
   end
 end
