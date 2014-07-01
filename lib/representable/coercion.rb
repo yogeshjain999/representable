@@ -10,14 +10,16 @@ module Representable
 
 
     def self.included(base)
-      base.extend ClassMethods
-      # !!! REGISTER FEATURE, TEST
+      base.class_eval do
+        extend ClassMethods
+        register_feature Coercion
+      end
     end
 
 
     module ClassMethods
       def property(name, options={})
-        return super unless options[:type]
+        return super unless type = options[:type]
 
         options = options.merge(
           :pass_options  => true,

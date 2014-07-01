@@ -1,90 +1,36 @@
 require 'test_helper'
 require 'representable/coercion'
-require 'representable/decorator/coercion'
 
 class VirtusCoercionTest < MiniTest::Spec
-  class Song  # note that we have to define accessors for the properties here.
-    attr_accessor :title, :composed_at, :track
-  end
+  representer! do
+    include Representable::Coercion
 
-  let (:date) { DateTime.parse("Fri, 18 Nov 1983 00:00:00 +0000") }
+    property :title # no coercion.
+    property :length, :type => Float
 
-  describe "on object level" do
-    module SongRepresenter
-      include Representable::JSON
-      include Representable::Coercion
-      property :composed_at,  :type => DateTime
-      property :track,        :type => Integer
-      property :title # no coercion.
+    property :band, :class => OpenStruct do
+      property :founded, :type => Integer
     end
 
-    it "coerces properties in #from_json" do
-      song = Song.new.extend(SongRepresenter).from_json('{"composed_at":"November 18th, 1983","track":"18","title":"Scarified"}')
-      song.composed_at.must_equal date
-      song.track.must_equal 18
-      song.title.must_equal "Scarified"
-    end
-
-     it "coerces when rendering" do
-       song = Song.new.extend(SongRepresenter)
-       song.title       = "Scarified"
-       song.composed_at = "Fri, 18 Nov 1983"
-
-       song.to_hash.must_equal({"title" => "Scarified", "composed_at" => date})
-     end
-  end
-
-  describe "on class level" do
-    class ImmigrantSong
-      include Representable::JSON
-      include Representable::Coercion
-
-      property :composed_at,  :type => DateTime, :default => "May 12th, 2012"
-      property :track,        :type => Integer
-
-      attr_accessor :composed_at, :track
-    end
-
-    it "coerces into the provided type" do
-      song = ImmigrantSong.new.from_json("{\"composed_at\":\"November 18th, 1983\",\"track\":\"18\"}")
-      song.composed_at.must_equal date
-      song.track.must_equal 18
-    end
-
-    it "respects the :default options" do
-      song = ImmigrantSong.new.from_json("{}")
-      song.composed_at.must_equal DateTime.parse("Mon, 12 May 2012 00:00:00 +0000")
+    collection :songs, :class => OpenStruct do
+      property :ok, :type => Virtus::Attribute::Boolean
     end
   end
 
-  describe "on decorator" do
-    class SongRepresentation < Representable::Decorator
-      include Representable::JSON
-      include Representable::Coercion
+  let (:album) { OpenStruct.new(:title => "Dire Straits", :length => 41.34,
+    :band  => OpenStruct.new(:founded => "1977"),
+    :songs => [OpenStruct.new(:ok => 1), OpenStruct.new(:ok => 0)]) }
 
-      property :composed_at, :type => DateTime
-      property :title
-    end
+  it { album.extend(representer).to_hash.must_equal({"title"=>"Dire Straits", "length"=>41.34, "band"=>{"founded"=>1977}, "songs"=>[{"ok"=>true}, {"ok"=>false}]}) }
 
-    it "coerces when parsing" do
-      song = SongRepresentation.new(OpenStruct.new).from_json("{\"composed_at\":\"November 18th, 1983\", \"title\": \"Scarified\"}")
-      song.must_be_kind_of OpenStruct
-      song.composed_at.must_equal date
-      song.title.must_equal "Scarified"
-    end
+  it {
+    album = OpenStruct.new
+    album.extend(representer)
+    album.from_hash({"title"=>"Dire Straits", "length"=>"41.34", "band"=>{"founded"=>"1977"}, "songs"=>[{"ok"=>1}, {"ok"=>0}]})
 
-    it "coerses with inherited decorator" do
-      song = Class.new(SongRepresentation).new(OpenStruct.new).from_json("{\"composed_at\":\"November 18th, 1983\", \"title\": \"Scarified\"}")
-      song.composed_at.must_equal date
-    end
-
-    it "coerces when rendering" do
-      SongRepresentation.new(
-        OpenStruct.new(
-          :composed_at  => "November 18th, 1983",
-          :title        => "Scarified"
-        )
-      ).to_hash.must_equal({"composed_at"=>date, "title"=>"Scarified"})
-    end
+    # it
+    album.length.must_equal 41.34
+    album.band.founded.must_equal 1977
+    album.songs[0].ok.must_equal true
+  }
   end
-end

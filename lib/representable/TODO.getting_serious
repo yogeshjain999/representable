@@ -3,3 +3,7 @@
 # Deprecations
 
 * deprecate instance: { nil } which is superseded by parse_strategy: :sync
+
+
+
+from_hash, property :band, class: vergessen
