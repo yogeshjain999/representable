@@ -1,5 +1,6 @@
 module Representable
   # Config contains three independent, inheritable directives: features, options and definitions.
+  # Inherit from parent with Config#inherit!(parent).
   class Config
     # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
     # at compile-time.
@@ -15,6 +16,15 @@ module Representable
       def inherit!(parent)
         merge!(parent.clone)
       end
+
+      def clone
+        self.class[ collect { |k,v| [k, clone_value(v)] } ]
+      end
+
+      def clone_value(value)
+        return value unless value.is_a?(self.class) # FIXME: how to detect cloneable values?
+        value.clone
+      end
     end
 
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
@@ -25,6 +35,7 @@ module Representable
       end
 
       def clone
+        # we can't use InheritableHash#clone here as we override #each :(
         self.class[ values.collect { |dfn| [dfn.name, dfn.clone] } ]
       end
 

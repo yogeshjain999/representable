@@ -11,6 +11,7 @@ If you need to inherit common methods to all inline decorators, use **** TODO: d
 * Fixed: Inline decorators now work with `inherit: true`.
 * Remove `:extend` in combination with inline representer. The `:extend` option is no longer considered. Include the module directly into the inline block.
 * Deprecated class methods `::from_json` and friends. Use the instance version on an instance.
+* Use uber 0.0.7 so we can use `Uber::Callable`.
 
 # 1.8.5
 

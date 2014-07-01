@@ -31,8 +31,8 @@ module Representable
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
       evaluate_option(:writer, doc) do
-        # add :render_filter here.
-        write_fragment(doc, get)
+        value = render_filter(get)
+        write_fragment(doc, value)
       end
     end
 
@@ -40,7 +40,7 @@ module Representable
     def uncompile_fragment(doc)
       evaluate_option(:reader, doc) do
         read_fragment(doc) do |value|
-          # add :parse_filter here.
+          value = parse_filter(value)
           set(value)
         end
       end
@@ -71,6 +71,15 @@ module Representable
     def read_fragment_for(doc)
       read(doc)
     end
+
+    def render_filter(value)
+      evaluate_option(:render_filter, value) { value }
+    end
+
+    def parse_filter(value)
+      evaluate_option(:parse_filter, value) { value }
+    end
+
 
     def get
       evaluate_option(:getter) do
