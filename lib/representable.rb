@@ -1,6 +1,7 @@
 require 'representable/definition'
 require 'representable/mapper'
 require 'representable/config'
+require 'uber/callable'
 
 module Representable
   attr_writer :representable_attrs

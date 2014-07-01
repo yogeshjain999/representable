@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "nokogiri"
   s.add_dependency "multi_json"
-  s.add_dependency "uber"
+  s.add_dependency "uber", "~> 0.0.7"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "test_xml", ">= 0.1.6"
