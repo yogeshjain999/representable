@@ -13,6 +13,7 @@ If you need to inherit common methods to all inline decorators, use **** TODO: d
 * Deprecated class methods `::from_json` and friends. Use the instance version on an instance.
 * Use uber 0.0.7 so we can use `Uber::Callable`.
 * Removed `Decorator::Coercion`.
+* Coercion now happens inside `:render_filter` and `:parse_filter` and doesn't block `:getter` and `:setter` anymore. We require virtus >=1.0 now.
 
 # 1.8.5
 
