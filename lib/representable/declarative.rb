@@ -37,7 +37,7 @@ module Representable
 
       if options[:inherit] # TODO: move this to Definition.
         parent = representable_attrs[name]
-        base = parent[:extend].evaluate(nil) if parent[:extend]# we can savely assume this is _not_ a lambda. # DISCUSS: leave that in #representer_module?
+        base   = parent.representer_module
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
@@ -47,6 +47,7 @@ module Representable
       return parent.merge!(options) if options.delete(:inherit)
 
       # original ::property:
+      # DISCUSS: this could be attrs[name] = options
       representable_attrs << definition_class.new(name, options)
     end
 
@@ -57,7 +58,7 @@ module Representable
     def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
       Module.new do
         include *features # Representable::JSON or similar.
-        include base if base
+        include base if base # base when :inherit, or in decorator.
 
         instance_exec &block
       end
