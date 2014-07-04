@@ -3,7 +3,8 @@ module Representable
     # FIXME: refactor Definition so we can simply add options in #items to existing definition.
     def representable_attrs
       attrs = super
-      attrs << Definition.new(*definition_opts) if attrs.size == 0
+      name, options = definition_opts
+      attrs[name] = options unless attrs[name]
       attrs
     end
 

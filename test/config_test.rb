@@ -5,8 +5,6 @@ class ConfigTest < MiniTest::Spec
   PunkRock = Class.new
   Definition = Representable::Definition
 
-  let (:definition) { Definition.new(:title) }
-
   describe "wrapping" do
     it "returns false per default" do
       assert_equal nil, subject.wrap_for("Punk", nil)
@@ -23,35 +21,27 @@ class ConfigTest < MiniTest::Spec
     end
   end
 
-  describe "#<<" do
-    it "returns Definition" do
-      (subject << definition).must_equal definition
-    end
-
-    it "overwrites old property" do
-      subject << definition
-      subject << overrider = Representable::Definition.new(:title)
-
-      subject.size.must_equal 1
-      subject[:title].must_equal overrider
-    end
-  end
-
   describe "#[]" do
-    before { subject << definition }
+    before { subject[:title] = {:me => true} }
 
-    it { subject[:unknown].must_equal nil }
-    it { subject[:title].must_equal definition }
-    it { subject["title"].must_equal definition }
+    it { subject[:unknown].must_equal     nil }
+    it { subject[:title][:me].must_equal  true }
+    it { subject["title"][:me].must_equal true }
   end
+
+  # []=
+  # deprecate <<
+  # []=(... inherit: true)
+
 
   describe "#each" do
-    before { subject << definition }
+    before { subject[:title]= {:me => true} }
 
     it "what" do
       definitions = []
       subject.each { |dfn| definitions << dfn }
-      definitions.must_equal [definition]
+      definitions.size.must_equal 1
+      definitions[0][:me].must_equal true
     end
   end
 

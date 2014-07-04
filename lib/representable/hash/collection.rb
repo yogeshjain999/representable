@@ -33,7 +33,7 @@ module Representable::Hash
     # FIXME: refactor Definition so we can simply add options in #items to existing definition.
     def representable_attrs
       attrs = super
-      attrs << Definition.new(:_self, :collection => true) if attrs.size == 0
+      attrs[:_self] = {:collection => true} unless attrs[:_self]
       attrs
     end
   end

@@ -31,7 +31,9 @@ module Representable
     # Same-named properties get overridden, just like in a Hash.
     class Definitions < InheritableHash
       def <<(definition)
-        self[definition.name] = definition
+        warn "[Representable] Deprecation Warning: `representable_attrs <<` is deprecated and will be removed in 1.10. Please use representable_attrs[:title] = {} and keep it real."
+        store(definition.name, definition)
+        definition
       end
 
       def clone
@@ -41,6 +43,15 @@ module Representable
 
       def [](name)
         fetch(name.to_s, nil)
+      end
+
+      def []=(name, options)
+        if options.delete(:inherit) # i like that: the :inherit shouldn't be handled outside.
+          return self[name].merge!(options)
+        end
+
+        store(name.to_s, definition = Definition.new(name, options))
+        definition
       end
 
       extend Forwardable
@@ -70,7 +81,7 @@ module Representable
 
     # delegate #collect etc to Definitions instance.
     extend Forwardable
-    def_delegators :@definitions, :[], :<<, :size, :each
+    def_delegators :@definitions, :[], :[]=, :<<, :size, :each
     include Enumerable
 
 
