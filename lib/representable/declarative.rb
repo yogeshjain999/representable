@@ -44,7 +44,7 @@ module Representable
       end
 
       representable_attrs[name] = options # handles :inherit.
-      representable_attrs[name]
+      representable_attrs[name] # TODO: deprecate that.
     end
 
     def inline_representer(*args, &block) # DISCUSS: separate module?

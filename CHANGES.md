@@ -1,10 +1,16 @@
 # 1.9.0
 
+## Relevant
+
 * Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed with **** TODO: how? ****.
 If you need to inherit common methods to all inline decorators, use **** TODO: document features ****.
+* Coercion now happens inside `:render_filter` and `:parse_filter` (new!) and doesn't block `:getter` and `:setter` anymore. We require virtus >=1.0 now.
+
+## Internals
+
 * Added `Representable::feature` to include a module and register it to be included into inline representers.
-* Removed `::representer_engine`, this is just another feature now.
 * New signature: `inline_representer(base, features, name, options, &block)`.
+* Removed `::representer_engine`, the module to include is just another `register_feature` now.
 * `Config` no longer is a Hash, it's API is limited to a few methods like `#<<`, `#[]` etc. It still supports the `Enumberable` interface.
 * Moved `Representable::ClassMethods::Declarations` to `Representable::Declarative`.
 * Moved `Representable::ClassMethods` to `Representable::Declarative`.
@@ -13,7 +19,6 @@ If you need to inherit common methods to all inline decorators, use **** TODO: d
 * Deprecated class methods `::from_json` and friends. Use the instance version on an instance.
 * Use uber 0.0.7 so we can use `Uber::Callable`.
 * Removed `Decorator::Coercion`.
-* Coercion now happens inside `:render_filter` and `:parse_filter` and doesn't block `:getter` and `:setter` anymore. We require virtus >=1.0 now.
 
 # 1.8.5
 
