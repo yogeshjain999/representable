@@ -33,7 +33,6 @@ module Representable
       def <<(definition)
         warn "[Representable] Deprecation Warning: `representable_attrs <<` is deprecated and will be removed in 1.10. Please use representable_attrs[:title] = {} and keep it real."
         store(definition.name, definition)
-        definition
       end
 
       def clone
@@ -51,7 +50,6 @@ module Representable
         end
 
         store(name.to_s, definition = Definition.new(name, options))
-        definition
       end
 
       extend Forwardable
