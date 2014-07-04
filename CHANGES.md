@@ -2,7 +2,7 @@
 
 ## Relevant
 
-* Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed with **** TODO: how? ****.
+* Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed by overriding `Decorator::default_inline_class`.
 If you need to inherit common methods to all inline decorators, use **** TODO: document features ****.
 * Coercion now happens inside `:render_filter` and `:parse_filter` (new!) and doesn't block `:getter` and `:setter` anymore. We require virtus >=1.0 now.
 

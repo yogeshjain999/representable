@@ -67,10 +67,6 @@ module Representable
       representer.inline_representer(base, features.reverse, name, options, &block)
     end
 
-    def definition_class
-      Definition
-    end
-
     def build_config
       Config.new
     end

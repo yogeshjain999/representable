@@ -185,13 +185,6 @@ class RepresentableTest < MiniTest::Spec
   end
 
 
-  describe "#definition_class" do
-    it "returns Definition class" do
-      assert_equal Representable::Definition, Band.send(:definition_class)
-    end
-  end
-
-
   # DISCUSS: i don't like the JSON requirement here, what about some generic test module?
   class PopBand
     include Representable::JSON
