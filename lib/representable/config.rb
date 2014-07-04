@@ -49,7 +49,7 @@ module Representable
           return self[name].merge!(options)
         end
 
-        store(name.to_s, definition = Definition.new(name, options))
+        super(name.to_s, Definition.new(name, options))
       end
 
       extend Forwardable
