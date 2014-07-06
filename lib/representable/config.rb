@@ -37,7 +37,10 @@ module Representable
 
       def clone
         # we can't use InheritableHash#clone here as we override #each :(
-        self.class[ *values.inject([]) { |memo, dfn| memo += [dfn.name, dfn.clone] } ]
+
+        # compile {title: definition.clone, ..}. this is a bit cryptic but makes it work with rubinius.
+        rbx_compatible_hash = values.inject({}) { |memo, dfn| memo[dfn.name] = dfn.clone; memo }
+        self.class[rbx_compatible_hash]
       end
       # public :[]=
 
