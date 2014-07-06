@@ -37,8 +37,9 @@ module Representable
 
       def clone
         # we can't use InheritableHash#clone here as we override #each :(
-        self.class[ values.collect { |dfn| [dfn.name, dfn.clone] } ]
+        self.class[ *values.inject([]) { |memo, dfn| memo += [dfn.name, dfn.clone] } ]
       end
+      # public :[]=
 
       def [](name)
         fetch(name.to_s, nil)

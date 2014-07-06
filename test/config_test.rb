@@ -92,6 +92,7 @@ class ConfigTest < MiniTest::Spec
       parent.options[:additional_features] = Representable::Config::InheritableHash[Object => true]
 
       subject.inherit!(parent)
+
       # add to inherited config:
       subject << stars
       subject.directives[:features][Module] = true
@@ -133,14 +134,16 @@ class ConfigInheritableTest < MiniTest::Spec
   InheritableHash = Representable::Config::InheritableHash
   describe "InheritableHash" do
     it do
-      parent = InheritableHash[:volume => 9, :genre => "Powermetal"]
+      parent = InheritableHash[:volume => volume = Uber::Options::Value.new(9), :genre => "Powermetal"]
       child  = InheritableHash[:genre => "Metal", :pitch => 99]
+      child.inherit!(parent)
 
-      child.inherit!(parent).must_equal(:volume => 9, :genre => "Powermetal", :pitch => 99)
+      # todo: assert order!
+      child.must_equal(:genre => "Powermetal", :pitch => 99, :volume => volume)
     end
 
     # clone all elements when inheriting.
-    it "what" do
+    it do
       parent = InheritableHash[:details => InheritableHash[:title => "Man Of Steel"]]
       child  = InheritableHash[].inherit!(parent)
       child[:details][:length] = 136
@@ -149,4 +152,12 @@ class ConfigInheritableTest < MiniTest::Spec
       child.must_equal( {:details => {:title => "Man Of Steel", :length => 136}})
     end
   end
+
+  # Definitions
+  # it 'MAD' do
+  #   d = Representable::Config::Definitions.new
+  #   d[:title] = {}
+
+  #   puts "INCORRECT: #{d.clone.inspect}"
+  # end
 end
