@@ -1,13 +1,5 @@
 module Representable
   module HashMethods
-    # FIXME: refactor Definition so we can simply add options in #items to existing definition.
-    def representable_attrs
-      attrs = super
-      name, options = definition_opts
-      attrs[name] = options unless attrs[name]
-      attrs
-    end
-
     def create_representation_with(doc, options, format)
       bin   = representable_mapper(format, options).bindings.first
       hash  = filter_keys_for(represented, options)

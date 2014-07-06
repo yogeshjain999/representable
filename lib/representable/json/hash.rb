@@ -10,6 +10,7 @@ module Representable::JSON
         extend ClassMethods
         include Representable::JSON
         include Representable::HashMethods
+        representable_attrs[:_self] = {:hash => true}
       end
     end
 
@@ -18,11 +19,6 @@ module Representable::JSON
       def values(options, &block)
         hash(:_self, options, &block)
       end
-    end
-
-
-    def definition_opts
-      [:_self, {:hash => true, :use_attributes => true}]
     end
   end
 end

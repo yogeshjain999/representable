@@ -6,8 +6,8 @@ module Representable::Hash
       base.class_eval do
         include Representable
         include Representable::Hash
-
         extend ClassMethods
+        representable_attrs[:_self] = {:collection => true}
       end
     end
 
@@ -28,13 +28,6 @@ module Representable::Hash
       bin   = representable_mapper(format, options).bindings.first
       value = bin.deserialize_from(doc)
       represented.replace(value)
-    end
-
-    # FIXME: refactor Definition so we can simply add options in #items to existing definition.
-    def representable_attrs
-      attrs = super
-      attrs[:_self] = {:collection => true} unless attrs[:_self]
-      attrs
     end
   end
 end
