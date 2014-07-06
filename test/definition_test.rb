@@ -69,8 +69,14 @@ class DefinitionTest < MiniTest::Spec
     end
 
     describe "#clone" do
+      subject { Representable::Definition.new(:title, :volume => 9, :clonable => Uber::Options::Value.new(1)) }
+
+      it { subject.clone.must_be_kind_of Representable::Definition }
+      it { subject.clone[:clonable].evaluate(nil).must_equal 1 }
+
       it "clones @options" do
         @def.merge!(:volume => 9)
+
         cloned = @def.clone
         cloned.merge!(:volume => 8)
 
