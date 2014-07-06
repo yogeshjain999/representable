@@ -6,4 +6,5 @@ gemspec
 
 platform :rbx do
   gem 'psych'
+  gem "rubysl-irb"
 end
