@@ -42,7 +42,7 @@ module Representable
       # public :[]=
 
       def [](name)
-        fetch(name.to_s, nil)
+        super(name.to_s)
       end
 
       def []=(name, options)
