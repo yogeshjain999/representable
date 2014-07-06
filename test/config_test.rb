@@ -30,8 +30,33 @@ class ConfigTest < MiniTest::Spec
   end
 
   # []=
-  # deprecate <<
   # []=(... inherit: true)
+  # forwarded to Config#definitions
+  describe "#[]=" do
+    before { subject[:title] = {:me => true} }
+
+    # must be kind of Definition
+    it { subject.size.must_equal 1 }
+    it { subject[:title].name.must_equal "title" }
+    it { subject[:title][:me].must_equal true }
+
+    # this is actually tested in context in inherit_test.
+    it "overrides former definition" do
+      subject[:title] = {:peer => Module}
+      subject[:title][:me].must_equal nil
+      subject[:title][:peer].must_equal Module
+    end
+
+    describe "inherit: true" do
+      before {
+        subject[:title] = {:me => true}
+        subject[:title] = {:peer => Module, :inherit => true}
+      }
+
+      it { subject[:title][:me].must_equal true }
+      it { subject[:title][:peer].must_equal Module }
+    end
+  end
 
 
   describe "#each" do
