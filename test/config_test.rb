@@ -108,6 +108,18 @@ class ConfigTest < MiniTest::Spec
       definitions[0].object_id.wont_equal title.object_id
       definitions[1].object_id.must_equal stars.object_id
     end
+
+    it "xx" do
+      parent = Representable::Config.new
+      parent.options[:links] = Representable::Config::InheritableArray.new
+      parent.options[:links] << "//1"
+
+      subject.options[:links] = Representable::Config::InheritableArray.new
+      subject.options[:links] << "//2"
+
+      subject.inherit!(parent)
+      subject.options[:links].must_equal ["//2", "//1"]
+    end
   end
 
   describe "#features" do
@@ -118,46 +130,4 @@ class ConfigTest < MiniTest::Spec
       subject.features.must_equal [Object, Module]
     end
   end
-end
-
-
-class ConfigInheritableTest < MiniTest::Spec
-  # InheritableArray
-  it do
-    parent = Representable::Config::InheritableArray.new([1,2,3])
-    child  = Representable::Config::InheritableArray.new([4])
-
-    child.inherit!(parent).must_equal([4,1,2,3])
-  end
-
-  # InheritableHash
-  InheritableHash = Representable::Config::InheritableHash
-  describe "InheritableHash" do
-    it do
-      parent = InheritableHash[:volume => volume = Uber::Options::Value.new(9), :genre => "Powermetal"]
-      child  = InheritableHash[:genre => "Metal", :pitch => 99]
-      child.inherit!(parent)
-
-      # todo: assert order!
-      child.must_equal(:genre => "Powermetal", :pitch => 99, :volume => volume)
-    end
-
-    # clone all elements when inheriting.
-    it do
-      parent = InheritableHash[:details => InheritableHash[:title => "Man Of Steel"]]
-      child  = InheritableHash[].inherit!(parent)
-      child[:details][:length] = 136
-
-      parent.must_equal({:details => {:title => "Man Of Steel"}})
-      child.must_equal( {:details => {:title => "Man Of Steel", :length => 136}})
-    end
-  end
-
-  # Definitions
-  # it 'MAD' do
-  #   d = Representable::Config::Definitions.new
-  #   d[:title] = {}
-
-  #   puts "INCORRECT: #{d.clone.inspect}"
-  # end
 end

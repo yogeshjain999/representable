@@ -6,15 +6,33 @@ module Representable
     # at compile-time.
 
     # child.inherit(parent)
+    module Inheritable
+    end
+
     class InheritableArray < Array
+      include Inheritable
+
       def inherit!(parent)
+        puts "before push: #{self.inspect}"
         push(*parent.clone)
       end
     end
 
     class InheritableHash < Hash
+      include Inheritable
+
       def inherit!(parent)
-        merge!(parent.clone)
+        #merge!(parent.clone)
+        for key in (parent.keys + keys).uniq
+          next unless parent_value = parent[key]
+
+          self[key].inherit!(parent_value) and next if self[key].is_a?(Inheritable)
+          self[key] = parent_value.clone and next if parent_value.is_a?(Inheritable)
+
+          self[key] = parent_value # merge! behaviour
+        end
+
+        self
       end
 
       def clone
@@ -22,8 +40,8 @@ module Representable
       end
 
       def clone_value(value)
-        return value unless value.is_a?(self.class) # FIXME: how to detect cloneable values?
-        value.clone
+        return value.clone if value.is_a?(Inheritable)
+        value
       end
     end
 
