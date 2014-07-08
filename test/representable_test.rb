@@ -29,19 +29,19 @@ class RepresentableTest < MiniTest::Spec
   describe "#representable_attrs" do
     it "responds to #representable_attrs" do
       assert_equal 1, Band.representable_attrs.size
-      assert_equal "name", Band.representable_attrs[:name].name
+      assert_equal "name", Band.representable_attrs.get(:name).name
     end
 
     describe "in module" do
       it "returns definitions" do
         assert_equal 1, BandRepresentation.representable_attrs.size
-        assert_equal "name", BandRepresentation.representable_attrs[:name].name
+        assert_equal "name", BandRepresentation.representable_attrs.get(:name).name
       end
 
       it "inherits to including modules xxx " do
         assert_equal 2,  PunkBandRepresentation.representable_attrs.size
-        assert_equal "name", PunkBandRepresentation.representable_attrs[:name].name
-        assert_equal "street_cred", PunkBandRepresentation.representable_attrs[:street_cred].name
+        assert_equal "name", PunkBandRepresentation.representable_attrs.get(:name).name
+        assert_equal "street_cred", PunkBandRepresentation.representable_attrs.get(:street_cred).name
       end
 
       it "inherits to including class" do
@@ -51,8 +51,8 @@ class RepresentableTest < MiniTest::Spec
         end
 
         assert_equal 2,  band.representable_attrs.size
-        assert_equal "name", band.representable_attrs[:name].name
-        assert_equal "street_cred", band.representable_attrs[:street_cred].name
+        assert_equal "name", band.representable_attrs.get(:name).name
+        assert_equal "street_cred", band.representable_attrs.get(:street_cred).name
       end
 
       it "allows including the concrete representer module later" do
@@ -90,7 +90,7 @@ class RepresentableTest < MiniTest::Spec
           include parent
         end
 
-        assert parent.representable_attrs[:id].object_id != child.representable_attrs[:id].object_id, "definitions shouldn't be identical"
+        assert parent.representable_attrs.get(:id).object_id != child.representable_attrs.get(:id).object_id, "definitions shouldn't be identical"
       end
     end
   end
@@ -173,8 +173,8 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "creates correct Definition" do
-      assert_equal "albums", RockBand.representable_attrs[:albums].name
-      assert RockBand.representable_attrs[:albums].array?
+      assert_equal "albums", RockBand.representable_attrs.get(:albums).name
+      assert RockBand.representable_attrs.get(:albums).array?
     end
   end
 

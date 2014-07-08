@@ -3,27 +3,27 @@ require 'test_helper'
 class ConfigInheritableTest < MiniTest::Spec
   # InheritableArray
   it do
-    parent = Representable::Config::InheritableArray.new([1,2,3])
-    child  = Representable::Config::InheritableArray.new([4])
+    parent = Representable::InheritableArray.new([1,2,3])
+    child  = Representable::InheritableArray.new([4])
 
     child.inherit!(parent).must_equal([4,1,2,3])
   end
 
   # InheritableHash
-  InheritableHash = Representable::Config::InheritableHash
+  InheritableHash = Representable::InheritableHash
   describe "InheritableHash" do
     it do
       parent = InheritableHash[
         :volume => volume = Uber::Options::Value.new(9),
         :genre  => "Powermetal",
-        :only_parent => only_parent = Representable::Config::InheritableArray["Pumpkin Box"],
-        :in_both     => in_both     = Representable::Config::InheritableArray["Roxanne"],
+        :only_parent => only_parent = Representable::InheritableArray["Pumpkin Box"],
+        :in_both     => in_both     = Representable::InheritableArray["Roxanne"],
         :hash => {:type => :parent}
       ]
       child  = InheritableHash[
         :genre => "Metal",
         :pitch => 99,
-        :in_both => Representable::Config::InheritableArray["Generator"],
+        :in_both => Representable::InheritableArray["Generator"],
         :hash => {:type => :child}
       ]
 

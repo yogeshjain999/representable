@@ -21,46 +21,46 @@ class ConfigTest < MiniTest::Spec
     end
   end
 
-  describe "#[]" do
-    before { subject[:title] = {:me => true} }
+  # describe "#[]" do
+  #   before { subject.add(:title, {:me => true}) }
 
-    it { subject[:unknown].must_equal     nil }
-    it { subject[:title][:me].must_equal  true }
-    it { subject["title"][:me].must_equal true }
-  end
+  #   it { subject[:unknown].must_equal     nil }
+  #   it { subject.get(:title)[:me].must_equal  true }
+  #   it { subject["title"][:me].must_equal true }
+  # end
 
   # []=
   # []=(... inherit: true)
   # forwarded to Config#definitions
   describe "#[]=" do
-    before { subject[:title] = {:me => true} }
+    before { subject.add(:title, {:me => true}) }
 
     # must be kind of Definition
     it { subject.size.must_equal 1 }
-    it { subject[:title].name.must_equal "title" }
-    it { subject[:title][:me].must_equal true }
+    it { subject.get(:title).name.must_equal "title" }
+    it { subject.get(:title)[:me].must_equal true }
 
     # this is actually tested in context in inherit_test.
     it "overrides former definition" do
-      subject[:title] = {:peer => Module}
-      subject[:title][:me].must_equal nil
-      subject[:title][:peer].must_equal Module
+      subject.add(:title, {:peer => Module})
+      subject.get(:title)[:me].must_equal nil
+      subject.get(:title)[:peer].must_equal Module
     end
 
     describe "inherit: true" do
       before {
-        subject[:title] = {:me => true}
-        subject[:title] = {:peer => Module, :inherit => true}
+        subject.add(:title, {:me => true})
+        subject.add(:title, {:peer => Module, :inherit => true})
       }
 
-      it { subject[:title][:me].must_equal true }
-      it { subject[:title][:peer].must_equal Module }
+      it { subject.get(:title)[:me].must_equal true }
+      it { subject.get(:title)[:peer].must_equal Module }
     end
   end
 
 
   describe "#each" do
-    before { subject[:title]= {:me => true} }
+    before { subject.add(:title, {:me => true}) }
 
     it "what" do
       definitions = []
@@ -79,42 +79,63 @@ class ConfigTest < MiniTest::Spec
   end
 
 
-  describe "#inherit!" do
+  describe "#add" do
+    subject { Representable::Config.new.add(:title, {:me => true}) }
+
+    it { subject.must_be_kind_of Representable::Definition }
+    it { subject[:me].must_equal true }
+  end
+
+  describe "#get" do
+    subject       { Representable::Config.new }
+
+    it do
+      title  = subject.add(:title, {})
+      length = subject.add(:length, {})
+
+      subject.get(:title).must_equal title
+      subject.get(:length).must_equal length
+    end
+  end
+
+
+  describe "xxx- #inherit!" do
     let (:title)  { Definition.new(:title) }
     let (:length) { Definition.new(:length) }
     let (:stars)  { Definition.new(:stars) }
 
     it do
       parent = Representable::Config.new
-      parent << title
-      parent.directives[:features][Object] = true
+      parent.add(:title, {:alias => "Callname"})
+      parent._features[Object] = true
       # DISCUSS: build InheritableHash automatically in options? is there a gem for that?
-      parent.options[:additional_features] = Representable::Config::InheritableHash[Object => true]
+      parent.options[:additional_features] = Representable::InheritableHash[Object => true]
 
       subject.inherit!(parent)
 
       # add to inherited config:
-      subject << stars
-      subject.directives[:features][Module] = true
+      subject.add(:stars, {})
+      subject._features[Module] = true
       subject.options[:additional_features][Module] = true
 
-      subject.directives[:features].must_equal({Object => true, Module => true})
+      subject._features.must_equal({Object => true, Module => true})
 
       parent.options[:additional_features].must_equal({Object => true})
       subject.options[:additional_features].must_equal({Object => true, Module => true})
 
-      definitions = subject.instance_variable_get(:@definitions).values
-      definitions.must_equal([title, stars])
-      definitions[0].object_id.wont_equal title.object_id
-      definitions[1].object_id.must_equal stars.object_id
+      # test Definition interface:
+
+      # definitions.size.must_equal([subject.get(:title), subject.get(:stars)])
+      subject.get(:title).object_id.wont_equal parent.get(:title).object_id
+      # subject.get(:stars).object_id.must_equal stars.object_id
     end
 
     it "xx" do
       parent = Representable::Config.new
-      parent.options[:links] = Representable::Config::InheritableArray.new
+      parent.options[:links] = Representable::InheritableArray.new
       parent.options[:links] << "//1"
 
-      subject.options[:links] = Representable::Config::InheritableArray.new
+      subject.options[:links] = Representable::InheritableArray.new
       subject.options[:links] << "//2"
 
       subject.inherit!(parent)
@@ -124,8 +145,8 @@ class ConfigTest < MiniTest::Spec
 
   describe "#features" do
     it do
-      subject.directives[:features][Object] = true
-      subject.directives[:features][Module] = true
+      subject[:features][Object] = true
+      subject[:features][Module] = true
 
       subject.features.must_equal [Object, Module]
     end

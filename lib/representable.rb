@@ -1,6 +1,7 @@
+require 'representable/config'
 require 'representable/definition'
 require 'representable/mapper'
-require 'representable/config'
+
 require 'uber/callable'
 require 'representable/pipeline'
 
@@ -104,7 +105,7 @@ private
 
   private
     def register_feature(mod)
-      representable_attrs.directives[:features][mod]= true
+      representable_attrs._features[mod]= true
     end
   end
 end

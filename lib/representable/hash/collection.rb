@@ -7,7 +7,7 @@ module Representable::Hash
         include Representable
         include Representable::Hash
         extend ClassMethods
-        representable_attrs[:_self] = {:collection => true}
+        representable_attrs.add(:_self, {:collection => true})
       end
     end
 

@@ -10,7 +10,7 @@ module Representable::JSON
         extend ClassMethods
         include Representable::JSON
         include Representable::HashMethods
-        representable_attrs[:_self] = {:hash => true}
+        representable_attrs.add(:_self, {:hash => true})
       end
     end
 

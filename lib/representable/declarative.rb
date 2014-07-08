@@ -36,15 +36,14 @@ module Representable
       base     = nil
 
       if options[:inherit] # TODO: move this to Definition.
-        base = representable_attrs[name].representer_module
+        base = representable_attrs.get(name).representer_module
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
         options[:extend] = inline_representer_for(base, representable_attrs.features, name, options, &block)
       end
 
-      representable_attrs[name] = options # handles :inherit.
-      representable_attrs[name] # TODO: deprecate that.
+      representable_attrs.add(name, options) # handles :inherit.
     end
 
     def inline_representer(*args, &block) # DISCUSS: separate module?

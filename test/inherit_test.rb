@@ -86,7 +86,7 @@ class InheritTest < MiniTest::Spec
     it "replaces inherited property" do
       representer.representable_attrs.size.must_equal 2
 
-      definition = representer.representable_attrs[:track] # TODO: find a better way to assert Definition identity.
+      definition = representer.representable_attrs.get(:track) # TODO: find a better way to assert Definition identity.
       definition.keys.size.must_equal 2
       definition[:representable].   must_equal true
       definition[:as].evaluate(nil).must_equal "track" # was "no".
