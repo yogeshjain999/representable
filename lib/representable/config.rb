@@ -40,8 +40,9 @@ module Representable
       self.class[ collect { |k,v| [k, clone_value(v)] } ]
     end
 
+  private
     def clone_value(value)
-      return value.clone if value.is_a?(Inheritable)
+      return value.clone if value.is_a?(Cloneable)
       value
     end
   end
@@ -52,11 +53,6 @@ module Representable
   class Config < InheritableHash
     # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
     # at compile-time.
-
-    # child.inherit(parent)
-
-
-
 
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
     # Same-named properties get overridden, just like in a Hash.
@@ -79,7 +75,7 @@ module Representable
       end
 
       extend Forwardable
-      def_delegators :values, :each # so we look like an array.
+      def_delegators :values, :each # so we look like an array. this is only used in Mapper. we could change that so we don't need to hide the hash.
     end
 
 

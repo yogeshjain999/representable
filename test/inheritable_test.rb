@@ -29,7 +29,7 @@ class ConfigInheritableTest < MiniTest::Spec
         :only_parent => only_parent = Representable::InheritableArray["Pumpkin Box"],
         :in_both     => in_both     = Representable::InheritableArray["Roxanne"],
         :hash => {:type => :parent},
-        :clone => parent_clone = CloneableObject.new
+        :clone => parent_clone = CloneableObject.new # cloneable is in both hashes.
       ]
       child  = InheritableHash[
         :genre => "Metal",
@@ -40,10 +40,6 @@ class ConfigInheritableTest < MiniTest::Spec
       ]
 
       child.inherit!(parent)
-
-      puts child.inspect
-
-      child.size.must_equal 7
 
       # order:
       child.to_a.must_equal [
@@ -72,14 +68,23 @@ class ConfigInheritableTest < MiniTest::Spec
       )
     end
 
-    # clone all elements when inheriting.
-    it do
-      parent = InheritableHash[:details => InheritableHash[:title => "Man Of Steel"]]
-      child  = InheritableHash[].inherit!(parent)
-      child[:details][:length] = 136
+    # nested:
+    it 'xff' do
+      parent = InheritableHash[
+        :details => InheritableHash[
+          :title  => title  = "Man Of Steel",
+          :length => length = Representable::Definition.new(:length) # Cloneable.
+      ]]
 
-      parent.must_equal({:details => {:title => "Man Of Steel"}})
-      child.must_equal( {:details => {:title => "Man Of Steel", :length => 136}})
+      child  = InheritableHash[].inherit!(parent)
+      child[:details][:track] = 1
+
+      parent.must_equal({:details => {:title => "Man Of Steel", :length => length}})
+      child.must_equal( {:details => {:title => "Man Of Steel", :length => length, :track => 1}})
+
+      # clone
+      child[:details][:title].object_id.must_equal  title.object_id
+      child[:details][:length].object_id.wont_equal length.object_id
     end
   end
 end
