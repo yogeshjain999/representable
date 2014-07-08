@@ -4,7 +4,7 @@ require "representable/parse_strategies"
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
   class Definition < Hash
-    include Representable::Inheritable
+    include Representable::Cloneable
 
     attr_reader :name
     alias_method :getter, :name

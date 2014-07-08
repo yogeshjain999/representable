@@ -1,7 +1,14 @@
 module Representable
   # Config contains three independent, inheritable directives: features, options and definitions.
   # Inherit from parent with Config#inherit!(parent).
+
+  # Objects marked cloneable will be cloned in #inherit!.
+  module Cloneable
+  end
+
+  # Objects marked cloneable will be inherit!ed in #inherit! when available in parent and child.
   module Inheritable
+    include Cloneable
   end
 
   class InheritableArray < Array
@@ -16,17 +23,13 @@ module Representable
     include Inheritable
 
     def inherit!(parent)
-      puts "paaaaaaaaaaaaaaaaaaaaarent: #{parent.inspect}"
       #merge!(parent.clone)
       for key in (parent.keys + keys).uniq
-        puts "inherit #{key}"
         next unless parent_value = parent[key]
-        puts "from parent: #{parent_value.inspect}"
 
         self[key].inherit!(parent_value) and next if self[key].is_a?(Inheritable)
-        self[key] = parent_value.clone and next if parent_value.is_a?(Inheritable)
+        self[key] = parent_value.clone and next if parent_value.is_a?(Cloneable)
 
-        puts "plain copy #{key}"
         self[key] = parent_value # merge! behaviour
       end
 

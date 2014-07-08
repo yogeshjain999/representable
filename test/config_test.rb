@@ -32,7 +32,7 @@ class ConfigTest < MiniTest::Spec
   # []=
   # []=(... inherit: true)
   # forwarded to Config#definitions
-  describe "#[]=" do
+  describe "#add" do
     before { subject.add(:title, {:me => true}) }
 
     # must be kind of Definition
