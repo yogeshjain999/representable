@@ -1,10 +1,11 @@
-# 1.9.0
+# 2.0.0
 
 ## Relevant
 
 * Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed by overriding `Decorator::default_inline_class` in the decorator class that defines an inline representer block.
 If you need to inherit common methods to all inline decorators, use **** TODO: document features ****.
 * Coercion now happens inside `:render_filter` and `:parse_filter` (new!) and doesn't block `:getter` and `:setter` anymore. We require virtus >=1.0 now.
+* `representable_attrs#[]` and `#[]=` no longer do what you expect (they weren't documented as public, either). Use `representable_attrs#get` and `#add` to play with property `Definition`s.
 
 ## Internals
 

@@ -12,11 +12,6 @@ module Representable
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
     # Same-named properties get overridden, just like in a Hash.
     class Definitions < Inheritable::Hash
-      def <<(definition)
-        warn "[Representable] Deprecation Warning: `representable_attrs <<` is deprecated and will be removed in 1.10. Please use representable_attrs[:title] = {} and keep it real."
-        add(definition.name, definition)
-      end
-
       def add(name, options)
         if options.delete(:inherit) # i like that: the :inherit shouldn't be handled outside.
           return get(name).merge!(options)
