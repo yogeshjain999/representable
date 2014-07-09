@@ -1,6 +1,10 @@
 module Representable
   # Config contains three independent, inheritable directives: features, options and definitions.
-  # Inherit from parent with Config#inherit!(parent).
+  # It is a hash - just add directives if you need them.
+  #
+  # You may access/alter the property Definitions using #each, #collect, #add, #get.
+  #
+  # Inheritance works via Config#inherit!(parent).
   class Config < Inheritable::Hash
     # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
     # at compile-time.
@@ -31,10 +35,11 @@ module Representable
 
 
     def initialize
-        super
-        merge!(:features    => @features     = Inheritable::Hash.new,
-                :definitions => @definitions  = Definitions.new,
-                :options     => @options      = Inheritable::Hash.new)
+      super
+      merge!(
+        :features    => @features     = Inheritable::Hash.new,
+        :definitions => @definitions  = Definitions.new,
+        :options     => @options      = Inheritable::Hash.new )
     end
     attr_reader :options
 
