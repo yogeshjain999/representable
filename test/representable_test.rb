@@ -27,34 +27,7 @@ class RepresentableTest < MiniTest::Spec
 
 
   describe "#representable_attrs" do
-    it "responds to #representable_attrs" do
-      assert_equal 1, Band.representable_attrs.size
-      assert_equal "name", Band.representable_attrs.get(:name).name
-    end
-
     describe "in module" do
-      it "returns definitions" do
-        assert_equal 1, BandRepresentation.representable_attrs.size
-        assert_equal "name", BandRepresentation.representable_attrs.get(:name).name
-      end
-
-      it "inherits to including modules xxx " do
-        assert_equal 2,  PunkBandRepresentation.representable_attrs.size
-        assert_equal "name", PunkBandRepresentation.representable_attrs.get(:name).name
-        assert_equal "street_cred", PunkBandRepresentation.representable_attrs.get(:street_cred).name
-      end
-
-      it "inherits to including class" do
-        band = Class.new do
-          include Representable
-          include PunkBandRepresentation
-        end
-
-        assert_equal 2,  band.representable_attrs.size
-        assert_equal "name", band.representable_attrs.get(:name).name
-        assert_equal "street_cred", band.representable_attrs.get(:street_cred).name
-      end
-
       it "allows including the concrete representer module later" do
         vd = class VD
           attr_accessor :name, :street_cred
