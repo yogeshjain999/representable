@@ -10,7 +10,7 @@ module Representable
     class Definitions < Inheritable::Hash
       def <<(definition)
         warn "[Representable] Deprecation Warning: `representable_attrs <<` is deprecated and will be removed in 1.10. Please use representable_attrs[:title] = {} and keep it real."
-        store(definition.name, definition)
+        add(definition.name, definition)
       end
 
       def add(name, options)
@@ -44,10 +44,8 @@ module Representable
 
     # delegate #collect etc to Definitions instance.
     extend Forwardable
-
-    def_delegators :@definitions, :get, :add, :each, :size # :[] , :<<
-    # include Enumerable
-
+    def_delegators :@definitions, :get, :add, :each, :size
+    # #collect comes from Hash and then gets delegated to @definitions. don't like that.
 
     def wrap=(value)
       value = value.to_s if value.is_a?(Symbol)
