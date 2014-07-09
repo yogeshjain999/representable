@@ -1,3 +1,4 @@
+require 'representable/inheritable'
 require 'representable/config'
 require 'representable/definition'
 require 'representable/mapper'
