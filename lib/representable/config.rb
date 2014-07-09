@@ -42,10 +42,6 @@ module Representable
       @features.keys
     end
 
-    def _features
-      @features
-    end
-
     # delegate #collect etc to Definitions instance.
     extend Forwardable
 

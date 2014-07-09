@@ -106,7 +106,7 @@ private
 
   private
     def register_feature(mod)
-      representable_attrs._features[mod]= true
+      representable_attrs[:features][mod]= true
     end
   end
 end
