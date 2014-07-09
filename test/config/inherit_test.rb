@@ -2,15 +2,52 @@ require 'test_helper'
 
 
 class ConfigInheritTest < MiniTest::Spec
+  def assert_cloned(child, parent, property)
+    child_def  = child.representable_attrs.get(property)
+    parent_def = parent.representable_attrs.get(property)
+
+    child_def.merge!(:alias => property)
+
+    child_def[:alias].wont_equal parent_def[:alias]
+    child_def.object_id.wont_equal parent_def.object_id
+  end
   # class Object
 
   # end
-
-  module BandRepresenter
-
+  module GenreModule
+    include Representable
+    property :genre
   end
 
-  # in module
+
+  # in Decorator ------------------------------------------------
+  class Decorator < Representable::Decorator
+    property :title
+  end
+
+  it { Decorator.representable_attrs[:definitions].keys.must_equal ["title"] }
+
+  # in inheriting Decorator
+
+  class InheritingDecorator < Decorator
+    property :location
+  end
+
+  it { InheritingDecorator.representable_attrs[:definitions].keys.must_equal ["title", "location"] }
+  it { assert_cloned(InheritingDecorator, Decorator, "title") }
+
+  # in inheriting and including Decorator
+
+  class InheritingAndIncludingDecorator < Decorator
+    include GenreModule
+    property :location
+  end
+
+  it { InheritingAndIncludingDecorator.representable_attrs[:definitions].keys.must_equal ["title", "genre", "location"] }
+  it { assert_cloned(InheritingAndIncludingDecorator, GenreModule, :genre) }
+
+
+  # in module ---------------------------------------------------
   module Module
     include Representable
     property :title
@@ -28,6 +65,7 @@ class ConfigInheritTest < MiniTest::Spec
   end
 
   it { SubModule.representable_attrs[:definitions].keys.must_equal ["title", "location"] }
+  it { assert_cloned(SubModule, Module, :title) }
 
   # including preserves order
   module IncludingModule
@@ -41,13 +79,16 @@ class ConfigInheritTest < MiniTest::Spec
   it { IncludingModule.representable_attrs[:definitions].keys.must_equal ["genre", "title", "location"] }
 
 
-  # included in class
+  # included in class -------------------------------------------
   class Class
     include Representable
     include IncludingModule
   end
 
   it { Class.representable_attrs[:definitions].keys.must_equal ["genre", "title", "location"] }
+  it { assert_cloned(Class, IncludingModule, :title) }
+  it { assert_cloned(Class, IncludingModule, :location) }
+  it { assert_cloned(Class, IncludingModule, :genre) }
 
   # included in class with order
   class DefiningClass
@@ -68,19 +109,15 @@ class ConfigInheritTest < MiniTest::Spec
 
 
   # in inheriting class
-  class InheritingRepresenterClass < RepresenterClass
+  class InheritingClass < RepresenterClass
     include Representable
     property :location
   end
 
-  it { InheritingRepresenterClass.representable_attrs[:definitions].keys.must_equal ["title", "location"] }
+  it { InheritingClass.representable_attrs[:definitions].keys.must_equal ["title", "location"] }
+  it { assert_cloned(InheritingClass, RepresenterClass, :title) }
 
   # in inheriting class and including
-  module GenreModule
-    include Representable
-    property :genre
-  end
-
   class InheritingAndIncludingClass < RepresenterClass
     property :location
     include GenreModule
