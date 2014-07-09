@@ -109,8 +109,8 @@ class ConfigTest < MiniTest::Spec
       parent = Representable::Config.new
       parent.add(:title, {:alias => "Callname"})
       parent._features[Object] = true
-      # DISCUSS: build InheritableHash automatically in options? is there a gem for that?
-      parent.options[:additional_features] = Representable::InheritableHash[Object => true]
+      # DISCUSS: build Inheritable::Hash automatically in options? is there a gem for that?
+      parent.options[:additional_features] = Representable::Inheritable::Hash[Object => true]
 
       subject.inherit!(parent)
 
@@ -131,12 +131,13 @@ class ConfigTest < MiniTest::Spec
       # subject.get(:stars).object_id.must_equal stars.object_id
     end
 
+    # Config with Inheritable::Array
     it "xx" do
       parent = Representable::Config.new
-      parent.options[:links] = Representable::InheritableArray.new
+      parent.options[:links] = Representable::Inheritable::Array.new
       parent.options[:links] << "//1"
 
-      subject.options[:links] = Representable::InheritableArray.new
+      subject.options[:links] = Representable::Inheritable::Array.new
       subject.options[:links] << "//2"
 
       subject.inherit!(parent)

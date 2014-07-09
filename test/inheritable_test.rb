@@ -1,5 +1,7 @@
 require 'test_helper'
 
+# tests Inheritable:: classes (the #inherit! method). This can be moved to uber if necessary.
+
 class ConfigInheritableTest < MiniTest::Spec
   class CloneableObject
     include Representable::Cloneable
@@ -11,30 +13,30 @@ class ConfigInheritableTest < MiniTest::Spec
   end
 
 
-  # InheritableArray
+  # Inheritable::Array
   it do
-    parent = Representable::InheritableArray.new([1,2,3])
-    child  = Representable::InheritableArray.new([4])
+    parent = Representable::Inheritable::Array.new([1,2,3])
+    child  = Representable::Inheritable::Array.new([4])
 
     child.inherit!(parent).must_equal([4,1,2,3])
   end
 
-  # InheritableHash
-  InheritableHash = Representable::InheritableHash
-  describe "InheritableHash" do
+  # Inheritable::Hash
+  Inheritable = Representable::Inheritable
+  describe "Inheritable::Hash" do
     it do
-      parent = InheritableHash[
+      parent = Inheritable::Hash[
         :volume => volume = Uber::Options::Value.new(9),
         :genre  => "Powermetal",
-        :only_parent => only_parent = Representable::InheritableArray["Pumpkin Box"],
-        :in_both     => in_both     = Representable::InheritableArray["Roxanne"],
+        :only_parent => only_parent = Representable::Inheritable::Array["Pumpkin Box"],
+        :in_both     => in_both     = Representable::Inheritable::Array["Roxanne"],
         :hash => {:type => :parent},
         :clone => parent_clone = CloneableObject.new # cloneable is in both hashes.
       ]
-      child  = InheritableHash[
+      child  = Inheritable::Hash[
         :genre => "Metal",
         :pitch => 99,
-        :in_both => Representable::InheritableArray["Generator"],
+        :in_both => Representable::Inheritable::Array["Generator"],
         :hash => {:type => :child},
         :clone => child_clone = CloneableObject.new
       ]
@@ -70,13 +72,13 @@ class ConfigInheritableTest < MiniTest::Spec
 
     # nested:
     it 'xff' do
-      parent = InheritableHash[
-        :details => InheritableHash[
+      parent = Inheritable::Hash[
+        :details => Inheritable::Hash[
           :title  => title  = "Man Of Steel",
           :length => length = Representable::Definition.new(:length) # Cloneable.
       ]]
 
-      child  = InheritableHash[].inherit!(parent)
+      child  = Inheritable::Hash[].inherit!(parent)
       child[:details][:track] = 1
 
       parent.must_equal({:details => {:title => "Man Of Steel", :length => length}})

@@ -9,54 +9,56 @@ module Representable
   # Objects marked cloneable will be inherit!ed in #inherit! when available in parent and child.
   module Inheritable
     include Cloneable
-  end
 
-  class InheritableArray < Array
-    include Inheritable
+    class Array < ::Array
+      include Inheritable
 
-    def inherit!(parent)
-      push(*parent.clone)
+      def inherit!(parent)
+        push(*parent.clone)
+      end
     end
-  end
 
-  class InheritableHash < Hash
-    include Inheritable
+    class Hash < ::Hash
+      include Inheritable
 
-    def inherit!(parent)
-      #merge!(parent.clone)
-      for key in (parent.keys + keys).uniq
-        next unless parent_value = parent[key]
+      def inherit!(parent)
+        #merge!(parent.clone)
+        for key in (parent.keys + keys).uniq
+          next unless parent_value = parent[key]
 
-        self[key].inherit!(parent_value) and next if self[key].is_a?(Inheritable)
-        self[key] = parent_value.clone and next if parent_value.is_a?(Cloneable)
+          self[key].inherit!(parent_value) and next if self[key].is_a?(Inheritable)
+          self[key] = parent_value.clone and next if parent_value.is_a?(Cloneable)
 
-        self[key] = parent_value # merge! behaviour
+          self[key] = parent_value # merge! behaviour
+        end
+
+        self
       end
 
-      self
-    end
+      def clone
+        self.class[ collect { |k,v| [k, clone_value(v)] } ]
+      end
 
-    def clone
-      self.class[ collect { |k,v| [k, clone_value(v)] } ]
-    end
-
-  private
-    def clone_value(value)
-      return value.clone if value.is_a?(Cloneable)
-      value
+    private
+      def clone_value(value)
+        return value.clone if value.is_a?(Cloneable)
+        value
+      end
     end
   end
 
 
 
 
-  class Config < InheritableHash
+
+
+  class Config < Inheritable::Hash
     # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
     # at compile-time.
 
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
     # Same-named properties get overridden, just like in a Hash.
-    class Definitions < InheritableHash
+    class Definitions < Inheritable::Hash
       def <<(definition)
         warn "[Representable] Deprecation Warning: `representable_attrs <<` is deprecated and will be removed in 1.10. Please use representable_attrs[:title] = {} and keep it real."
         store(definition.name, definition)
@@ -81,9 +83,9 @@ module Representable
 
     def initialize
         super
-        merge!(:features    => @features     = InheritableHash.new,
+        merge!(:features    => @features     = Inheritable::Hash.new,
                 :definitions => @definitions  = Definitions.new,
-                :options     => @options      = InheritableHash.new)
+                :options     => @options      = Inheritable::Hash.new)
     end
     attr_reader :options
 

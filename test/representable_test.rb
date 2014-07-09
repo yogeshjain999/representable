@@ -51,20 +51,6 @@ class RepresentableTest < MiniTest::Spec
       #  vd.name        = "Van Halen"
       #  assert_equal "{\"name\":\"Van Halen\"}", vd.to_json
       #end
-
-      it "doesn't share inherited properties between family members" do
-        parent = Module.new do
-          include Representable
-          property :id
-        end
-
-        child = Module.new do
-          include Representable
-          include parent
-        end
-
-        assert parent.representable_attrs.get(:id).object_id != child.representable_attrs.get(:id).object_id, "definitions shouldn't be identical"
-      end
     end
   end
 

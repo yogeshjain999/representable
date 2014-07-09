@@ -1,5 +1,6 @@
 require 'test_helper'
 
+# tests defining representers in modules, decorators and classes and the inheritance when combined.
 
 class ConfigInheritTest < MiniTest::Spec
   def assert_cloned(child, parent, property)
