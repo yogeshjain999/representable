@@ -2,32 +2,20 @@ require 'test_helper'
 
 class SchemaTest < MiniTest::Spec
   module Module
-    include Representable#::Schema
-
+    include Representable::Schema
 
     property :title
     property :label do # extend: LabelModule
-      include Representable
+      # include Representable
       # include Representable::Hash # commenting that breaks (no #to_hash for <Label>)
       property :name
-    end
-
-    def self.included(base)
-      super
-
-      base.representable_attrs.each do |cfg|
-        next unless mod = cfg.representer_module # nested decorator.
-
-        inline_representer = base.build_inline_for(mod)
-        cfg.merge!(:extend => inline_representer)
-      end
     end
   end
 
   class Decorator < Representable::Decorator
     include Representable::Hash
 
-    def self.build_inline_for(mod)
+    def self.inline_for(mod)
       Class.new(self) { include mod; self }
     end
 
@@ -51,7 +39,7 @@ class SchemaTest < MiniTest::Spec
   class InheritDecorator < Representable::Decorator
     include Representable::Hash
 
-    def self.build_inline_for(mod)
+    def self.inline_for(mod)
       Class.new(self) { include mod; self }
     end
 
