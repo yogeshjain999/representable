@@ -8,10 +8,6 @@ module Representable
       new(represented)
     end
 
-    def self.inline_representer(base, features, name, options, &block)
-      build_inline(base || default_inline_class, features, name, options, &block)
-    end
-
     def self.default_inline_class
       Representable::Decorator
     end
@@ -24,7 +20,7 @@ module Representable
 
   private
     def self.build_inline(base, features, name, options, &block)
-      Class.new(base).tap do |decorator|
+      Class.new(base || default_inline_class).tap do |decorator|
         decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
           include *features
           instance_exec &block
