@@ -13,19 +13,23 @@ class SchemaTest < MiniTest::Spec
     end
 
     def self.included(base)
-      # super
-      base.representable_attrs.inherit!(representable_attrs)
-
+      super
 
       base.representable_attrs.each do |cfg|
         next unless mod = cfg.representer_module # nested decorator.
-        cfg.merge!(:extend => Class.new(Decorator) { include mod; self })
+
+        inline_representer = base.build_inline_for(mod)
+        cfg.merge!(:extend => inline_representer)
       end
     end
   end
 
   class Decorator < Representable::Decorator
     include Representable::Hash
+
+    def self.build_inline_for(mod)
+      Class.new(self) { include mod; self }
+    end
 
     include Module
 
@@ -46,6 +50,11 @@ class SchemaTest < MiniTest::Spec
 
   class InheritDecorator < Representable::Decorator
     include Representable::Hash
+
+    def self.build_inline_for(mod)
+      Class.new(self) { include mod; self }
+    end
+
     include Module
 
     property :label, inherit: true do # decorator.rb:27:in `initialize': superclass must be a Class (Module given)
