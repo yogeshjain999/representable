@@ -1,8 +1,14 @@
 require 'test_helper'
 
 class SchemaTest < MiniTest::Spec
+  module Genre
+    include Representable
+    property :genre
+  end
+
   module Module
-    include Representable::Schema
+    include Representable
+    feature Representable
 
     property :title
     property :label do # extend: LabelModule
@@ -10,6 +16,8 @@ class SchemaTest < MiniTest::Spec
       # include Representable::Hash # commenting that breaks (no #to_hash for <Label>)
       property :name
     end
+
+    include Genre # Schema::Included::included is called!
   end
 
   class Decorator < Representable::Decorator
@@ -21,18 +29,33 @@ class SchemaTest < MiniTest::Spec
 
     include Module
 
+    def representable_attrs # for instances
+      @bla ||= begin
+        # TODO: do once!
+        attrs = super
+        attrs.each do |cfg|
+          next unless mod = cfg.representer_module # only nested decorator.
+
+          inline_representer = self.class.inline_for(mod) # the includer controls what "wraps" the module.
+          cfg.merge!(:extend => inline_representer)
+        end
+
+        attrs
+      end
+    end
+
   end
 
   # puts Decorator.representable_attrs[:definitions].inspect
 
   let (:label) { OpenStruct.new(:name => "Fat Wreck", :city => "San Francisco") }
-  let (:band) { OpenStruct.new(:label => label) }
+  let (:band) { OpenStruct.new(:genre => "Punkrock", :label => label) }
 
 
   # it { FlatlinersDecorator.new( OpenStruct.new(label: OpenStruct.new) ).
   #   to_hash.must_equal({}) }
   it do
-    Decorator.new(band).to_hash.must_equal({"label"=>{"name"=>"Fat Wreck"}})
+    Decorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck"}})
   end
 
 
@@ -51,6 +74,6 @@ class SchemaTest < MiniTest::Spec
   end
 
   it do
-    InheritDecorator.new(band).to_hash.must_equal({"label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco"}})
+    InheritDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco"}})
   end
 end
