@@ -41,10 +41,10 @@ puts "manifesting for #{cfg.name}"
   end
 
   Representable::Decorator.class_eval do
-    def self.build_config
-      puts "in #{self}"
-      FickenConfig.new
-    end
+    # def self.build_config
+    #   puts "in #{self}"
+    #   FickenConfig.new
+    # end
 
     def self.inline_for(mod) # called in manifest!
       attrs = representable_attrs
@@ -62,7 +62,7 @@ puts "manifesting for #{cfg.name}"
 
   # puts Decorator.representable_attrs[:definitions].inspect
 
-  let (:label) { OpenStruct.new(:name => "Fat Wreck", :city => "San Francisco") }
+  let (:label) { OpenStruct.new(:name => "Fat Wreck", :city => "San Francisco", :employees => [OpenStruct.new(:name => "Mike")]) }
   let (:band) { OpenStruct.new(:genre => "Punkrock", :label => label) }
 
 
@@ -82,6 +82,8 @@ puts "manifesting for #{cfg.name}"
       property :city
     end
   end
+  puts "yoooo"
+  puts InheritDecorator.representable_attrs.get(:label).inspect
 
   it do
     InheritDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco"}})
@@ -89,12 +91,16 @@ puts "manifesting for #{cfg.name}"
 
 
 
-  # class InheritFromDecorator < InheritDecorator
+  class InheritFromDecorator < InheritDecorator
 
-  #   property :label, inherit: true do
-  #     collection :employees do
+    property :label, inherit: true do
+      collection :employees do
+        property :name
+      end
+    end
+  end
 
-  #     end
-  #   end
-  # end
+  it do
+    InheritFromDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco", "employees"=>[{"name"=>"Mike"}]}})
+  end
 end

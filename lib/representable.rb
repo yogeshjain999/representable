@@ -63,7 +63,7 @@ private
   module ClassInclusions
     def included(base)
       super
-      base.inherit!(self) # call inherit! on the including Module or Decorator.
+      base.inherit_module!(self) # call inherit! on the including Module or Decorator.
       # base.representable_attrs.inherit!(representable_attrs) do |attrs|
 
       # base.inherit!(self) => representable_attrs.inherit!(..)
@@ -90,7 +90,7 @@ private
 
 
   module ClassMethods
-    def inherit!(parent)
+    def inherit_module!(parent)
       representable_attrs.inherit!(parent.representable_attrs) # Module just inherits.
     end
 
