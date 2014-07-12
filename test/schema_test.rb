@@ -20,39 +20,6 @@ class SchemaTest < MiniTest::Spec
     include Genre # Schema::Included::included is called!
   end
 
-  class FickenConfig < Representable::Config
-    def inherit!(parent)
-      puts "uuuuuuuu from #{parent}"
-     res= super
-      # we get the module and want to manifest inline modules into inline decorators of ours.
-       manifest!(SchemaTest::Decorator)
-      res
-    end
-
-    def manifest!(inheritor) # one level deep manifesting modules into Decorators.
-      each do |cfg| # only definitions.
-        next unless mod = cfg.representer_module # only nested decorator.
-
-puts "manifesting for #{cfg.name}"
-        inline_representer = inheritor.inline_for(mod) # the includer controls what "wraps" the module.
-        cfg.merge!(:extend => inline_representer)
-      end
-    end
-  end
-
-  Representable::Decorator.class_eval do
-    # def self.build_config
-    #   puts "in #{self}"
-    #   FickenConfig.new
-    # end
-
-    def self.inline_for(mod) # called in manifest!
-      attrs = representable_attrs
-      Class.new(Representable::Decorator) {
-        include *attrs.features
-        include mod; self }
-    end
-  end
 
   class Decorator < Representable::Decorator
     feature Representable::Hash
@@ -82,8 +49,6 @@ puts "manifesting for #{cfg.name}"
       property :city
     end
   end
-  puts "yoooo"
-  puts InheritDecorator.representable_attrs.get(:label).inspect
 
   it do
     InheritDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco"}})

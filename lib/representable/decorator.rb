@@ -16,24 +16,17 @@ module Representable
 
     module InheritModule
       def inherit_module!(parent)
+        inherited_attrs = parent.representable_attrs[:definitions].keys
+
         super # in Representable, calls representable_attrs.inherit!(parent.representable_attrs).
-
-        # puts parent.representable_attrs.inspect
-        # new_shit = parent.representable_attrs.clone
-        # puts "nw ::::::::::::::::::::: #{new_shit.inspect}"
-        __manifest!#(new_shit)
-
-        # representable_attrs.inherit!(new_shit)
-
-        # manifest! # TODO: only manifest new, from parent.
+        __manifest!(inherited_attrs)#(new_shit)
       end
 
-      def __manifest!#(attrs) # one level deep manifesting modules into Decorators.
+      def __manifest!(names) # one level deep manifesting modules into Decorators.
         # puts "---nw ::::::::::::::::::::: #{attrs.inspect}"
-        representable_attrs.each do |cfg| # only definitions.
+        names.each do |name| # only definitions.
+          cfg = representable_attrs.get(name)
           next unless mod = cfg.representer_module # only nested decorator.
-
-          next unless mod.is_a?(Module) # FIXME: make this implicit.
 
   puts "°°°°°°°°°°°°°°°°°° manifesting for #{cfg.name}"
     # here, we can include Decorator features.
@@ -51,7 +44,6 @@ module Representable
 
   private
     def self.build_inline(base, features, name, options, &block)
-      puts "bulding with #{base}"
       Class.new(base || default_inline_class).tap do |decorator|
         decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
           include *features
