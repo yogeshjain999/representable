@@ -18,14 +18,14 @@ module Representable
       @represented = represented
     end
 
-  # private
-  #   def self.build_inline(base, features, name, options, &block)
-  #     Class.new(base || default_inline_class).tap do |decorator|
-  #       decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
-  #         include *features
-  #         instance_exec &block
-  #       end
-  #     end
-  #   end
+  private
+    def self.build_inline(base, features, name, options, &block)
+      Class.new(base || default_inline_class).tap do |decorator|
+        decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
+          include *features
+          instance_exec &block
+        end
+      end
+    end
   end
 end
