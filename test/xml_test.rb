@@ -419,9 +419,10 @@ class CollectionTest < MiniTest::Spec
     module SongRepresenter
       include Representable::XML
       property :name
+      self.representation_wrap = :song
     end
 
-    let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include rpr; self.representation_wrap= :songs } } # FIXME: why isn't representation wrap inherited properly?
+    let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include rpr } }
 
     describe "XML::Collection" do
       describe "with contained objects" do
@@ -438,6 +439,7 @@ class CollectionTest < MiniTest::Spec
         end
 
         it "renders array with decorator" do
+          puts decorator.representable_attrs.inspect
           decorator.new(songs).to_xml.must_equal_xml xml
         end
 
