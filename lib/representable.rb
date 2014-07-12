@@ -63,12 +63,14 @@ private
   module ClassInclusions
     def included(base)
       super
-      base.representable_attrs.inherit!(representable_attrs) do |attrs|
+      base.inherit!(self) # call inherit! on the including Module or Decorator.
+      # base.representable_attrs.inherit!(representable_attrs) do |attrs|
+
       # base.inherit!(self) => representable_attrs.inherit!(..)
         # this could be inluded into Module or Decorator.
         # Decorator::inherit!/include!/absorb!() => manifest manifests.
         # Module::inherit!() => manifest does nothing.
-      end
+      # end
     end
 
     def inherited(base) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
@@ -78,7 +80,8 @@ private
   end
 
   module ModuleExtensions
-    # Copies the representable_attrs to the extended object.
+    # Copies the representable_attrs reference to the extended object.
+    # Note that changing attrs in the instance will affect the class configuration.
     def extended(object)
       super
       object.representable_attrs=(representable_attrs) # yes, we want a hard overwrite here and no inheritance.
@@ -87,6 +90,10 @@ private
 
 
   module ClassMethods
+    def inherit!(parent)
+      representable_attrs.inherit!(parent.representable_attrs) # Module just inherits.
+    end
+
     # Create and yield object and options. Called in .from_json and friends.
     def create_represented(document, *args)
       new.tap do |represented|
