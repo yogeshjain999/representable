@@ -63,7 +63,12 @@ private
   module ClassInclusions
     def included(base)
       super
-      base.representable_attrs.inherit!(representable_attrs)
+      base.representable_attrs.inherit!(representable_attrs) do |attrs|
+      # base.inherit!(self) => representable_attrs.inherit!(..)
+        # this could be inluded into Module or Decorator.
+        # Decorator::inherit!/include!/absorb!() => manifest manifests.
+        # Module::inherit!() => manifest does nothing.
+      end
     end
 
     def inherited(base) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?

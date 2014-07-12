@@ -8,9 +8,9 @@ module Representable
       new(represented)
     end
 
-    # def self.default_inline_class
-    #   Representable::Decorator
-    # end
+    def self.default_inline_class
+      Representable::Decorator
+    end
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
 

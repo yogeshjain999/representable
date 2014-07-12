@@ -86,4 +86,15 @@ puts "manifesting for #{cfg.name}"
   it do
     InheritDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco"}})
   end
+
+
+
+  # class InheritFromDecorator < InheritDecorator
+
+  #   property :label, inherit: true do
+  #     collection :employees do
+
+  #     end
+  #   end
+  # end
 end
