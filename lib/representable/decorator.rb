@@ -28,7 +28,6 @@ module Representable
           cfg = representable_attrs.get(name)
           next unless mod = cfg.representer_module # only nested decorator.
 
-  puts "°°°°°°°°°°°°°°°°°° manifesting for #{cfg.name}"
     # here, we can include Decorator features.
           inline_representer = build_inline(nil, [mod]+representable_attrs.features , cfg.name, {}){} # the includer controls what "wraps" the module.
           cfg.merge!(:extend => inline_representer)

@@ -123,5 +123,4 @@ private
   end
 end
 
-require 'representable/schema'
 require 'representable/autoload'
