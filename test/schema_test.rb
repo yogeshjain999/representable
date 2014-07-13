@@ -1,5 +1,6 @@
 require 'test_helper'
 
+# Include Inherit Module And Decorator Test
 class SchemaTest < MiniTest::Spec
   module Genre
     include Representable
@@ -16,6 +17,9 @@ class SchemaTest < MiniTest::Spec
       # include Representable::Hash # commenting that breaks (no #to_hash for <Label>)
       property :name
     end
+
+    property :album, :extend => lambda { raise "don't manifest me!" } # this is not an inline decorator, don't manifest it.
+
 
     include Genre # Schema::Included::included is called!
   end

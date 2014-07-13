@@ -40,7 +40,8 @@ module Representable
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
-        options[:extend] = inline_representer_for(base, representable_attrs.features, name, options, &block)
+        options[:_inline] = true
+        options[:extend]  = inline_representer_for(base, representable_attrs.features, name, options, &block)
       end
 
       representable_attrs.add(name, options) # handles :inherit.

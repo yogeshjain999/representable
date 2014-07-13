@@ -163,6 +163,7 @@ class RepresentableTest < MiniTest::Spec
       assert_equal 2, @band.groupies
     end
 
+
     it "accepts :exclude option" do
       @band.from_hash({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]})
       assert_equal "No One's Choice", @band.name

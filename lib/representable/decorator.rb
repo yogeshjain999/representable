@@ -23,10 +23,9 @@ module Representable
       end
 
       def __manifest!(names) # one level deep manifesting modules into Decorators.
-        # puts "---nw ::::::::::::::::::::: #{attrs.inspect}"
         names.each do |name| # only definitions.
           cfg = representable_attrs.get(name)
-          next unless mod = cfg.representer_module # only nested decorator.
+          next unless cfg[:_inline] and mod = cfg.representer_module # only inline representers.
 
     # here, we can include Decorator features.
           inline_representer = build_inline(nil, [mod]+representable_attrs.features , cfg.name, {}){} # the includer controls what "wraps" the module.
