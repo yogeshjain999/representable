@@ -3,10 +3,8 @@ module Representable::XML
     include Representable::XML
 
     def self.included(base)
-      base.class_eval do
-        include Representable::Hash::Collection
-        include Methods
-      end
+      base.send :include, Representable::Hash::Collection
+      base.send :include, Methods
     end
 
     module Methods

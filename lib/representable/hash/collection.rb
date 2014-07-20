@@ -4,7 +4,6 @@ module Representable::Hash
 
     def self.included(base)
       base.class_eval do
-        include Representable
         include Representable::Hash
         extend ClassMethods
         representable_attrs.add(:_self, {:collection => true})
