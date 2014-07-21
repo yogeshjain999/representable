@@ -22,41 +22,6 @@ module JsonTest
       end
 
 
-      describe ".from_json" do
-        it "is delegated to #from_json" do
-          block = lambda {|*args|}
-          @Band.any_instance.expects(:from_json).with("{document}", "options") # FIXME: how to NOT expect block?
-          @Band.from_json("{document}", "options", &block)
-        end
-
-        it "yields new object and options to block" do
-          @Band.class_eval { attr_accessor :new_name }
-          @band = @Band.from_json("{}", :new_name => "Diesel Boy") do |band, options|
-            band.new_name= options[:new_name]
-          end
-          assert_equal "Diesel Boy", @band.new_name
-        end
-      end
-
-
-      describe ".from_hash" do
-        it "is delegated to #from_hash not passing the block" do
-          block = lambda {|*args|}
-          @Band.any_instance.expects(:from_hash).with("{document}", "options") # FIXME: how to NOT expect block?
-          @Band.from_hash("{document}", "options", &block)
-        end
-
-        it "yields new object and options to block" do
-          @Band.class_eval { attr_accessor :new_name }
-          @band = @Band.from_hash({}, :new_name => "Diesel Boy") do |band, options|
-            band.new_name= options[:new_name]
-          end
-
-          assert_equal "Diesel Boy", @band.new_name
-        end
-      end
-
-
       describe "#from_json" do
         before do
           @band = @Band.new
@@ -204,7 +169,7 @@ module JsonTest
       end
 
       it "#from_json creates correct accessors" do
-        band = Band.from_json({:name => "Bombshell Rocks"}.to_json)
+        band = Band.new.from_json({:name => "Bombshell Rocks"}.to_json)
         assert_equal "Bombshell Rocks", band.name
       end
 
@@ -230,7 +195,7 @@ module JsonTest
       end
 
       it "#from_json creates one Item instance" do
-        album = Album.from_json('{"label":{"name":"Fat Wreck"}}')
+        album = Album.new.from_json('{"label":{"name":"Fat Wreck"}}')
         assert_equal "Fat Wreck", album.label.name
       end
 
@@ -267,7 +232,7 @@ module JsonTest
       end
 
       it "respects :as in #from_json" do
-        song = Song.from_json({:songName => "Run To The Hills"}.to_json)
+        song = Song.new.from_json({:songName => "Run To The Hills"}.to_json)
         assert_equal "Run To The Hills", song.name
       end
 
@@ -288,17 +253,17 @@ module JsonTest
 
     describe "#from_json" do
       it "uses default when property nil in doc" do
-        album = @Album.from_json({}.to_json)
+        album = @Album.new.from_json({}.to_json)
         assert_equal "30 Years Live", album.name
       end
 
       it "uses value from doc when present" do
-        album = @Album.from_json({:name => "Live At The Wireless"}.to_json)
+        album = @Album.new.from_json({:name => "Live At The Wireless"}.to_json)
         assert_equal "Live At The Wireless", album.name
       end
 
       it "uses value from doc when empty string" do
-        album = @Album.from_json({:name => ""}.to_json)
+        album = @Album.new.from_json({:name => ""}.to_json)
         assert_equal "", album.name
       end
     end
@@ -333,7 +298,7 @@ end
       end
 
       it "#from_json creates correct accessors" do
-        cd = CD.from_json({:songs => ["Out in the cold", "Microphone"]}.to_json)
+        cd = CD.new.from_json({:songs => ["Out in the cold", "Microphone"]}.to_json)
         assert_equal ["Out in the cold", "Microphone"], cd.songs
       end
 
@@ -364,7 +329,7 @@ end
 
       describe "#from_json" do
         it "pushes collection items to array" do
-          cd = Compilation.from_json({:bands => [
+          cd = Compilation.new.from_json({:bands => [
             {:name => "Cobra Skulls"},
             {:name => "Diesel Boy"}]}.to_json)
           assert_equal ["Cobra Skulls", "Diesel Boy"], cd.bands.map(&:name).sort
@@ -388,7 +353,7 @@ end
       end
 
       it "respects :as in #from_json" do
-        songs = Songs.from_json({:songList => ["Out in the cold", "Microphone"]}.to_json)
+        songs = Songs.new.from_json({:songList => ["Out in the cold", "Microphone"]}.to_json)
         assert_equal ["Out in the cold", "Microphone"], songs.tracks
       end
 

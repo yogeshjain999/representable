@@ -2,6 +2,7 @@
 
 ## Relevant
 
+* Removed class methods `::from_json`, `::from_hash`, `::from_yaml` and `::from_xml`. Please build the instance yourself and use something along `Song.new.from_json`.
 * Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed by overriding `Decorator::default_inline_class` in the decorator class that defines an inline representer block.
 If you need to inherit common methods to all inline decorators, use **** TODO: document features ****.
 * Coercion now happens inside `:render_filter` and `:parse_filter` (new!) and doesn't block `:getter` and `:setter` anymore.

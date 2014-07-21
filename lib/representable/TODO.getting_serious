@@ -1,3 +1,5 @@
+* Cleanup the manifest part in Decorator.
+
 * all property objects should be extended/wrapped so we don't need the switch.
 
 # Deprecations

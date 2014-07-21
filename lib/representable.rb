@@ -96,13 +96,6 @@ private
       representable_attrs.inherit!(parent.representable_attrs) # Module just inherits.
     end
 
-    # Create and yield object and options. Called in .from_json and friends.
-    def create_represented(document, *args)
-      new.tap do |represented|
-        yield represented, *args if block_given?
-      end
-    end
-
     def prepare(represented)
       represented.extend(self)
     end

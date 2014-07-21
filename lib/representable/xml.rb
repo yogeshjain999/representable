@@ -19,22 +19,6 @@ module Representable
         representable_attrs.options[:remove_namespaces] = true
       end
 
-      # Creates a new Ruby object from XML using mapping information declared in the class.
-      #
-      # Accepts a block yielding the currently iterated Definition. If the block returns false
-      # the property is skipped.
-      #
-      # Example:
-      #   band.from_xml("<band><name>Nofx</name></band>")
-      def from_xml(*args, &block)
-        warn "[Representable] Deprecation warning: Class methods ::from_hash, ::from_json, ::from_xml, etc. will be removed in 2.0. Please use Model.new.from_json instead. Keep smiling."
-        create_represented(*args, &block).from_xml(*args)
-      end
-
-      def from_node(*args, &block)
-        create_represented(*args, &block).from_node(*args)
-      end
-
       def collection_representer_class
         Collection
       end

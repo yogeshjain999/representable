@@ -10,7 +10,6 @@ module Representable
     def self.included(base)
       base.class_eval do
         include Representable # either in Hero or HeroRepresentation.
-        extend Representable::Hash::ClassMethods  # DISCUSS: this is only for .from_hash, remove in 2.3?
         extend ClassMethods # DISCUSS: do that only for classes?
         register_feature Representable::JSON
       end
@@ -18,11 +17,6 @@ module Representable
 
 
     module ClassMethods
-      # Creates a new object from the passed JSON document.
-      def from_json(*args, &block)
-        create_represented(*args, &block).from_json(*args)
-      end
-
       def collection_representer_class
         JSON::Collection
       end

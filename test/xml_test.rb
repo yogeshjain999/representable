@@ -34,40 +34,6 @@ class XmlTest < MiniTest::Spec
     end
 
 
-    describe ".from_xml" do
-      it "is delegated to #from_xml" do
-        block = lambda {|*args|}
-        @Band.any_instance.expects(:from_xml).with("<document>", "options") # FIXME: how to NOT expect block?
-        @Band.from_xml("<document>", "options", &block)
-      end
-
-      it "yields new object and options to block" do
-        @Band.class_eval { attr_accessor :new_name }
-        @band = @Band.from_xml("<band/>", :new_name => "Diesel Boy") do |band, options|
-          band.new_name= options[:new_name]
-        end
-        assert_equal "Diesel Boy", @band.new_name
-      end
-    end
-
-
-    describe ".from_node" do
-      it "is delegated to #from_node" do
-        block = lambda {|*args|}
-        @Band.any_instance.expects(:from_node).with("<document>", "options") # FIXME: how to expect block?
-        @Band.from_node("<document>", "options", &block)
-      end
-
-      it "yields new object and options to block" do
-        @Band.class_eval { attr_accessor :new_name }
-        @band = @Band.from_node(Nokogiri::XML("<band/>"), :new_name => "Diesel Boy") do |band, options|
-          band.new_name= options[:new_name]
-        end
-        assert_equal "Diesel Boy", @band.new_name
-      end
-    end
-
-
     describe "#from_xml" do
       before do
         @band = @Band.new
@@ -222,7 +188,7 @@ class AttributesTest < MiniTest::Spec
     end
 
     it "#from_xml creates correct accessors" do
-      link = Link.from_xml(%{
+      link = Link.new.from_xml(%{
         <a href="http://apotomo.de" title="Home, sweet home" />
       })
       assert_equal "http://apotomo.de", link.href
@@ -331,7 +297,7 @@ class CollectionTest < MiniTest::Spec
 
     describe "#from_xml" do
       it "pushes collection items to array" do
-        cd = Compilation.from_xml(%{
+        cd = Compilation.new.from_xml(%{
           <compilation>
             <band><name>Diesel Boy</name></band>
             <band><name>Cobra Skulls</name></band>
