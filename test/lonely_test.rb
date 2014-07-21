@@ -6,6 +6,7 @@ require 'representable/json/hash'
 class LonelyRepresenterTest < MiniTest::Spec
   module SongRepresenter
     include Representable::JSON
+
     property :name
   end
 
@@ -51,6 +52,26 @@ class LonelyRepresenterTest < MiniTest::Spec
       it { songs.extend(representer).to_json.must_equal json }
       it { [].extend(representer).from_json(json).must_equal songs }
     end
+
+    # Module.for_collection
+    describe "with ::for_collection" do
+      let (:representer) {
+        Module.new do
+          include Representable
+          include SongRepresenter
+
+          collection_representer :class => Song
+        end
+      }
+
+      # rendering works out of the box, no config necessary
+      it { songs.extend(SongRepresenter.for_collection).to_json.must_equal json }
+      # parsing needs the class set, at least
+      it { [].extend(representer.for_collection).from_json(json).must_equal songs }
+    end
+    # with module including module
+    # with decorator.
+
 
     describe "with contained text" do
       let (:representer) {

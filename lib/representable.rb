@@ -2,6 +2,7 @@ require 'representable/inheritable'
 require 'representable/config'
 require 'representable/definition'
 require 'representable/mapper'
+require 'representable/for_collection'
 
 require 'uber/callable'
 require 'representable/pipeline'
@@ -14,6 +15,7 @@ module Representable
       extend ClassInclusions, ModuleExtensions
       extend ClassMethods
       extend Feature
+      extend ForCollection
     end
   end
 
