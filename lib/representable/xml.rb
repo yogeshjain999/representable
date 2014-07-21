@@ -34,6 +34,10 @@ module Representable
       def from_node(*args, &block)
         create_represented(*args, &block).from_node(*args)
       end
+
+      def collection_representer_class
+        Collection
+      end
     end
 
     def from_xml(doc, *args)

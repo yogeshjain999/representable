@@ -19,7 +19,7 @@ class Album
 end
 
 class Song
-  attr_accessor :name, :track
+  attr_accessor :name, :track # never change this, track rendered with Rails#to_json.
   def initialize(name=nil, track=nil)
     @name   = name
     @track  = track

@@ -13,7 +13,7 @@ module Representable
 
       # what happens here is basically
       # Module.new { include Representable::JSON::Collection; ... }
-      build_inline(nil, [Representable::JSON::Collection], "", {}) {
+      build_inline(nil, [singular.collection_representer_class], "", {}) {
         items options.merge(:extend => singular)
       }
     end

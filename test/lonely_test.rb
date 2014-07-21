@@ -53,47 +53,6 @@ class LonelyRepresenterTest < MiniTest::Spec
       it { [].extend(representer).from_json(json).must_equal songs }
     end
 
-    # Module.for_collection
-    describe "Module::for_collection" do
-      let (:representer) {
-        Module.new do
-          include Representable
-          include SongRepresenter
-
-          collection_representer :class => Song
-        end
-      }
-
-      # rendering works out of the box, no config necessary
-      it { songs.extend(SongRepresenter.for_collection).to_json.must_equal json }
-      it { songs.extend(representer.for_collection).to_json.must_equal json }
-      # parsing needs the class set, at least
-      it { [].extend(representer.for_collection).from_json(json).must_equal songs }
-    end
-
-    # with module including module
-
-    # Decorator.for_collection
-    describe "Decorator::for_collection" do
-      let (:representer) {
-        Class.new(Representable::Decorator) do
-          include SongRepresenter
-
-          collection_representer :class => Song
-        end
-      }
-
-      # rendering works out of the box, no config necessary
-      # it { songs.extend(SongRepresenter.for_collection).to_json.must_equal json }
-      it { representer.for_collection.new(songs).to_json.must_equal json }
-      # parsing needs the class set, at least
-      it { representer.for_collection.new([]).from_json(json).must_equal songs }
-
-      # really use a Decorator for wrapping the array.
-      it { representer.for_collection.new([]).from_json(json).is_a?(Representable).must_equal false }
-    end
-
-
     describe "with contained text" do
       let (:representer) {
         Module.new do
