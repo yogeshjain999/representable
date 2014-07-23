@@ -219,6 +219,18 @@ class ParseStrategyLambdaTest < MiniTest::Spec
     property :title
   end
 
+  # property with instance: lambda, using representable's setter. # TODO: that should be handled better via my api.
+  describe "property parse_strategy: lambda, representable: false" do
+    representer! do
+      property :title,
+        :instance      => lambda { |fragment, options| fragment.to_s },  # this will still call song.title= "8675309".
+        :representable => false # don't call object.from_hash
+    end
+
+    let (:song) { Song.new(nil, nil) }
+    it { song.extend(representer).from_hash("title" => 8675309).title.must_equal "8675309" }
+  end
+
 
   describe "collection" do
     representer!(:inject => :song_representer) do

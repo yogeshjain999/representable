@@ -21,6 +21,7 @@ module Representable
     end
 
 
+    # Using a lambda as parse_strategy does not set the parsed property for you.
     class Proc
       def self.apply!(name, options)
         options[:setter]       = lambda { |*| }
