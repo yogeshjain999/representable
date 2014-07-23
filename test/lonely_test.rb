@@ -6,6 +6,7 @@ require 'representable/json/hash'
 class LonelyRepresenterTest < MiniTest::Spec
   module SongRepresenter
     include Representable::JSON
+
     property :name
   end
 

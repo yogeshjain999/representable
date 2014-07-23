@@ -8,15 +8,33 @@ module Representable
       new(represented)
     end
 
-    def self.inline_representer(base, features, name, options, &block)
-      build_inline(base || default_inline_class, features, name, options, &block)
-    end
-
     def self.default_inline_class
       Representable::Decorator
     end
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
+
+    module InheritModule
+      def inherit_module!(parent)
+        inherited_attrs = parent.representable_attrs[:definitions].keys
+
+        super # in Representable, calls representable_attrs.inherit!(parent.representable_attrs).
+        __manifest!(inherited_attrs)#(new_shit)
+      end
+
+      def __manifest!(names) # one level deep manifesting modules into Decorators.
+        names.each do |name| # only definitions.
+          cfg = representable_attrs.get(name)
+          next unless cfg[:_inline] and mod = cfg.representer_module # only inline representers.
+
+    # here, we can include Decorator features.
+          inline_representer = build_inline(nil, [mod]+representable_attrs.features , cfg.name, {}){} # the includer controls what "wraps" the module.
+          cfg.merge!(:extend => inline_representer)
+        end
+      end
+    end
+    extend InheritModule
+
 
     def initialize(represented)
       @represented = represented
@@ -24,7 +42,7 @@ module Representable
 
   private
     def self.build_inline(base, features, name, options, &block)
-      Class.new(base).tap do |decorator|
+      Class.new(base || default_inline_class).tap do |decorator|
         decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
           include *features
           instance_exec &block

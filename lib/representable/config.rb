@@ -4,6 +4,9 @@ module Representable
   #
   # You may access/alter the property Definitions using #each, #collect, #add, #get.
   #
+  # * features, [options]: "horizontally"+"vertically" inherited values (inline representer)
+  # * definitions, [options], wrap: "vertically" inherited (class inheritance, module inclusion)
+  #
   # Inheritance works via Config#inherit!(parent).
   class Config < Inheritable::Hash
     # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
@@ -34,7 +37,8 @@ module Representable
       merge!(
         :features    => @features     = Inheritable::Hash.new,
         :definitions => @definitions  = Definitions.new,
-        :options     => @options      = Inheritable::Hash.new )
+        :options     => @options      = Inheritable::Hash.new,
+        :wrap        => nil )
     end
     attr_reader :options
 
@@ -49,14 +53,14 @@ module Representable
 
     def wrap=(value)
       value = value.to_s if value.is_a?(Symbol)
-      @wrap = Uber::Options::Value.new(value)
+      self[:wrap] = Uber::Options::Value.new(value)
     end
 
     # Computes the wrap string or returns false.
     def wrap_for(name, context, *args)
-      return unless @wrap
+      return unless self[:wrap]
 
-      value = @wrap.evaluate(context, *args)
+      value = self[:wrap].evaluate(context, *args)
 
       return infer_name_for(name) if value === true
       value

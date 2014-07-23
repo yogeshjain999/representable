@@ -13,8 +13,6 @@ module Representable
       super()
       options = options.clone
 
-      handle_deprecations!(options)
-
       @name   = sym.to_s
       # defaults:
       options[:as] ||= @name
@@ -29,11 +27,6 @@ module Representable
     end
 
     private :[]= # TODO: re-privatize #default when this is sorted with Rubinius.
-
-    def options # TODO: remove in 2.0.
-      warn "Representable::Definition#option is deprecated, use #[] directly."
-      self
-    end
 
     def setter
       :"#{name}="
@@ -103,16 +96,6 @@ module Representable
 
     def handle_as!(options)
       options[:as] = options[:as].to_s if options[:as].is_a?(Symbol) # Allow symbols for as:
-    end
-
-    # TODO: remove in 2.0.
-    def handle_deprecations!(options)
-      raise "The :from option got replaced by :as in Representable 1.8!" if options[:from]
-
-      if options[:decorator_scope]
-        warn "[Representable] Deprecation: `decorator_scope: true` is deprecated, use `exec_context: :decorator` instead."
-        options.merge!(:exec_context => :decorator)
-      end
     end
   end
 end

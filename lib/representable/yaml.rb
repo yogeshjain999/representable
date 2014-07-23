@@ -7,24 +7,8 @@ module Representable
     def self.included(base)
       base.class_eval do
         include Representable
-        extend ClassMethods
         #self.representation_wrap = true # let representable compute it.
         register_feature Representable::YAML
-      end
-    end
-
-
-    module ClassMethods
-      # Creates a new Ruby object from XML using mapping information declared in the class.
-      #
-      # Accepts a block yielding the currently iterated Definition. If the block returns false
-      # the property is skipped.
-      #
-      # Example:
-      #   band.from_xml("<band><name>Nofx</name></band>")
-      def from_yaml(*args, &block)
-        warn "[Representable] Deprecation warning: Class methods ::from_hash, ::from_json, ::from_xml, etc. will be removed in 2.0. Please use Model.new.from_json instead. Keep smiling."
-        create_represented(*args, &block).from_yaml(*args)
       end
     end
 

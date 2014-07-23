@@ -40,14 +40,11 @@ module Representable
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block_given?
-        options[:extend] = inline_representer_for(base, representable_attrs.features, name, options, &block)
+        options[:_inline] = true
+        options[:extend]  = inline_representer_for(base, representable_attrs.features, name, options, &block)
       end
 
       representable_attrs.add(name, options) # handles :inherit.
-    end
-
-    def inline_representer(*args, &block) # DISCUSS: separate module?
-      build_inline(*args, &block)
     end
 
     def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
@@ -63,7 +60,7 @@ module Representable
     def inline_representer_for(base, features, name, options, &block)
       representer = options[:use_decorator] ? Decorator : self
 
-      representer.inline_representer(base, features.reverse, name, options, &block)
+      representer.build_inline(base, features.reverse, name, options, &block)
     end
 
     def build_config

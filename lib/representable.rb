@@ -2,6 +2,7 @@ require 'representable/inheritable'
 require 'representable/config'
 require 'representable/definition'
 require 'representable/mapper'
+require 'representable/for_collection'
 
 require 'uber/callable'
 require 'representable/pipeline'
@@ -14,6 +15,7 @@ module Representable
       extend ClassInclusions, ModuleExtensions
       extend ClassMethods
       extend Feature
+      extend ForCollection
     end
   end
 
@@ -63,7 +65,14 @@ private
   module ClassInclusions
     def included(base)
       super
-      base.representable_attrs.inherit!(representable_attrs)
+      base.inherit_module!(self) # call inherit! on the including Module or Decorator.
+      # base.representable_attrs.inherit!(representable_attrs) do |attrs|
+
+      # base.inherit!(self) => representable_attrs.inherit!(..)
+        # this could be inluded into Module or Decorator.
+        # Decorator::inherit!/include!/absorb!() => manifest manifests.
+        # Module::inherit!() => manifest does nothing.
+      # end
     end
 
     def inherited(base) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
@@ -73,7 +82,8 @@ private
   end
 
   module ModuleExtensions
-    # Copies the representable_attrs to the extended object.
+    # Copies the representable_attrs reference to the extended object.
+    # Note that changing attrs in the instance will affect the class configuration.
     def extended(object)
       super
       object.representable_attrs=(representable_attrs) # yes, we want a hard overwrite here and no inheritance.
@@ -82,11 +92,8 @@ private
 
 
   module ClassMethods
-    # Create and yield object and options. Called in .from_json and friends.
-    def create_represented(document, *args)
-      new.tap do |represented|
-        yield represented, *args if block_given?
-      end
+    def inherit_module!(parent)
+      representable_attrs.inherit!(parent.representable_attrs) # Module just inherits.
     end
 
     def prepare(represented)
