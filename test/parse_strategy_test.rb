@@ -83,6 +83,24 @@ class ParseStrategySyncTest < BaseTest
   end
 
 
+  # Sync errors, when model and incoming are not in sync.
+  describe ":sync with error" do
+    representer! do
+      property :song, :parse_strategy => :sync do
+        property :title
+      end
+    end
+
+    # object.song is nil whereas the document contains one.
+    it do
+      assert_raises Representable::DeserializeError do
+        OpenStruct.new.extend(representer).from_hash({"song" => {"title" => "Perpetual"}})
+      end
+    end
+  end
+
+
+
   # Lonely Collection
   for_formats(
     :hash => [Representable::Hash::Collection, [{"title"=>"Resist Stance"}], [{"title"=>"Suffer"}]],

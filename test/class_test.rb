@@ -39,21 +39,16 @@ class ClassTest < BaseTest
   end
 
 
-  describe "lambda { nil }" do # TODO: remove in 2.0.
+  # this throws a DeserializationError now.
+  describe "lambda { nil }" do
     representer! do
       property :title, :class  => nil
     end
 
-    it "skips creating new instance" do
-      object = Object.new
-      object.instance_eval do
-        def from_hash(hash, *args)
-          hash
-        end
+    it do
+      assert_raises Representable::DeserializeError do
+        OpenStruct.new.extend(representer).from_hash({"title" => {}})
       end
-
-      song = OpenStruct.new.extend(representer).from_hash(hash = {"title" => object})
-      song.title.must_equal object
     end
   end
 

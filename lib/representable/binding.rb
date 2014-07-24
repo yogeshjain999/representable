@@ -153,7 +153,7 @@ module Representable
     private
       # DISCUSS: deprecate :class in favour of :instance and simplicity?
       def class_for(fragment, *args)
-        item_class = class_from(fragment, *args) or return handle_deprecated_class(fragment)
+        item_class = class_from(fragment, *args) or raise DeserializeError.new(":class did not return class constant.")
         item_class.new
       end
 
@@ -162,13 +162,13 @@ module Representable
       end
 
       def instance_for(fragment, *args)
-        evaluate_option(:instance, fragment, *args)
-      end
-
-      def handle_deprecated_class(fragment) # TODO: remove in 2.0.
-        warn "[Representable] `class: lambda { nil }` is deprecated. To return the fragment from parsing, use `instance: lambda { |fragment, *args| fragment }` instead."
-        fragment
+        # cool: if no :instance set, { return } will jump out of this method.
+        evaluate_option(:instance, fragment, *args) { return } or raise DeserializeError.new(":instance did not return object.")
       end
     end
+  end
+
+
+  class DeserializeError < RuntimeError
   end
 end

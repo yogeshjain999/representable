@@ -11,6 +11,8 @@ If you need to inherit common methods to all inline decorators, use **** TODO: d
 * Including modules with representable `property .., inherit: true` into a `Decorator` crashed. This works fine now.
 
 * `::for_collection` and `::represent`.
+* Removed behaviour for `instance: lambda { |*| nil }` which used to return `binding.get`. Simply do it yourself: `instance: lambda { |fragment, options| options.binding.get }` if you need this behaviour. If you use `:instance` and it returns `nil` it throws a `DeserializeError` now, which is way more understandable than `NoMethodError: undefined method `title=' for {"title"=>"Perpetual"}:Hash`.
+
 
 ## Internals
 
