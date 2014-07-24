@@ -10,6 +10,8 @@ If you need to inherit common methods to all inline decorators, use **** TODO: d
 * `::representation_wrap=` in now properly inherited.
 * Including modules with representable `property .., inherit: true` into a `Decorator` crashed. This works fine now.
 
+* `::for_collection` and `::represent`.
+
 ## Internals
 
 * Added `Representable::feature` to include a module and register it to be included into inline representers.
