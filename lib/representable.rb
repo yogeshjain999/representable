@@ -17,6 +17,7 @@ module Representable
       extend ClassMethods
       extend Feature
       extend ForCollection
+      extend Represent
     end
   end
 
