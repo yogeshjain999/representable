@@ -25,7 +25,7 @@ class ForCollectionTest < MiniTest::Spec
       let (:representer) {
         Module.new do
           include mod
-          property :name
+          property :name#, :as => :title
 
           collection_representer :class => Song
 
@@ -34,6 +34,7 @@ class ForCollectionTest < MiniTest::Spec
       }
 
       it { render(songs.extend(representer.for_collection)).must_equal_document output }
+      it { render(representer.for_collection.prepare(songs)).must_equal_document output }
       # parsing needs the class set, at least
       it { parse([].extend(representer.for_collection), input).must_equal songs }
     end
@@ -72,7 +73,7 @@ class ForCollectionTest < MiniTest::Spec
   # with module including module
 end
 
-
+require 'representable/collection'
 class ImplicitCollectionTest < MiniTest::Spec
   let (:songs) { [song, Song.new("Can't Take Them All")] }
   let (:song) { Song.new("Days Go By") }
@@ -90,14 +91,16 @@ class ImplicitCollectionTest < MiniTest::Spec
       let (:representer) {
         Module.new do
           include mod
-          include Representable::Collection
+          puts "including #{mod}"
+          extend Representable::Represent
           property :name
+
+          collection_representer :class => Song # TODOOOOOOOOOOOO: test without Song and fix THIS FUCKINGNoMethodError: undefined method `name=' for {"name"=>"Days Go By"}:Hash ERROR!!!!!!!!!!!!!!!
         end
       }
 
-      # rendering works out of the box, no config necessary
-      it { render(songs.extend(representer)).must_equal_document output }
-      it { parse([].extend(representer), input).must_equal songs }
+      it { render(representer.represent(songs)).must_equal_document output }
+      it { parse(representer.represent([]), input).must_equal songs }
     end
 
 
@@ -120,7 +123,7 @@ class ImplicitCollectionTest < MiniTest::Spec
 
   for_formats(
     :hash => [Representable::Hash, out={"name" => "Days Go By"}, out],
-    :json => [Representable::JSON, out="[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]", out],
+    :json => [Representable::JSON, out="{\"name\":\"Days Go By\"}", out],
     # :xml  => [Representable::XML,  out="<a><song></song><song></song></a>", out]
   ) do |format, mod, output, input|
 
@@ -131,14 +134,15 @@ class ImplicitCollectionTest < MiniTest::Spec
       let (:representer) {
         Module.new do
           include mod
-          include Representable::Collection
+          extend Representable::Represent
           property :name
+
+          collection_representer :class => Song
         end
       }
 
-      # rendering works out of the box, no config necessary
-      it { render(song.extend(representer)).must_equal_document output }
-      it { parse(Song.new.extend(representer), input).must_equal song }
+      it { render(representer.represent(song)).must_equal_document output }
+      it { parse(representer.represent(Song.new), input).must_equal song }
     end
 
 
