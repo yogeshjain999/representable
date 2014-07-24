@@ -162,14 +162,7 @@ module Representable
       end
 
       def instance_for(fragment, *args)
-        instance = evaluate_option(:instance, fragment, *args)
-
-        if instance === true # TODO: remove in 2.0.
-          warn "[Representable] `instance: lambda { true }` is deprecated. Apparently, you know what you're doing, so use `parse_strategy: :sync` instead."
-          return get
-        end
-
-        instance
+        evaluate_option(:instance, fragment, *args)
       end
 
       def handle_deprecated_class(fragment) # TODO: remove in 2.0.
