@@ -405,7 +405,6 @@ class CollectionTest < MiniTest::Spec
         end
 
         it "renders array with decorator" do
-          puts decorator.representable_attrs.inspect
           decorator.new(songs).to_xml.must_equal_xml xml
         end
 

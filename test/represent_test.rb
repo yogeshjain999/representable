@@ -57,7 +57,7 @@ class RepresentTest < MiniTest::Spec
 
       let (:representer) {
         Module.new do
-          include modø
+          include mod
           property :name
 
           collection_representer :class => Song
