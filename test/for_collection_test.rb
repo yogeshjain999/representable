@@ -73,7 +73,7 @@ class ForCollectionTest < MiniTest::Spec
   # with module including module
 end
 
-require 'representable/collection'
+
 class ImplicitCollectionTest < MiniTest::Spec
   let (:songs) { [song, Song.new("Can't Take Them All")] }
   let (:song) { Song.new("Days Go By") }
@@ -91,7 +91,6 @@ class ImplicitCollectionTest < MiniTest::Spec
       let (:representer) {
         Module.new do
           include mod
-          puts "including #{mod}"
           extend Representable::Represent
           property :name
 

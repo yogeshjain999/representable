@@ -3,6 +3,7 @@ require 'representable/config'
 require 'representable/definition'
 require 'representable/mapper'
 require 'representable/for_collection'
+require 'representable/represent'
 
 require 'uber/callable'
 require 'representable/pipeline'
