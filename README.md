@@ -317,7 +317,7 @@ module SongRepresenter
 end
 ```
 
-You can now parse collections to `Song`s.
+You can now parse collections to `Song` instances.
 
 ```ruby
 [].extend(SongRepresenter.for_collection).from_hash([{title: "Sevens"}, {title: "Eric"}])
