@@ -115,3 +115,22 @@ class InheritTest < MiniTest::Spec
       {"hit"=>{"title"=>"Hole In Your Soul", "length"=>"2:59"}}) }
   end
 end
+
+
+# class InheritancingTest < MiniTest::Spec
+#   class SongDecorator < Representable::Decorator
+#     include Representable::Hash
+#     property :album do
+#       # does have Hash.
+#       property :title
+#     end
+#   end
+
+#   class JsonSongDecorator < SongDecorator
+#     include Representable::XML
+#   end
+
+#   it do
+#     puts JsonSongDecorator.new(OpenStruct.new(:album => OpenStruct.new(:title => "Erotic Cakes", :tracks => nil))).to_xml
+#   end
+# end
