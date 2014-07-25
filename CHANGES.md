@@ -4,15 +4,18 @@
 
 * Removed class methods `::from_json`, `::from_hash`, `::from_yaml` and `::from_xml`. Please build the instance yourself and use something along `Song.new.from_json`.
 * Inline representers in `Decorator` do *no longer inherit from `self`*. When defining an inline representer, they are always derived from `Representable::Decorator`. The base class can be changed by overriding `Decorator::default_inline_class` in the decorator class that defines an inline representer block.
-If you need to inherit common methods to all inline decorators, use **** TODO: document features ****.
+If you need to inherit common methods to all inline decorators, include the module using `::feature`: `Representer.feature(BetterProperty)`.
+* Removed behaviour for `instance: lambda { |*| nil }` which used to return `binding.get`. Simply do it yourself: `instance: lambda { |fragment, options| options.binding.get }` if you need this behaviour. If you use `:instance` and it returns `nil` it throws a `DeserializeError` now, which is way more understandable than `NoMethodError: undefined method `title=' for {"title"=>"Perpetual"}:Hash`.
+* Remove behaviour for `class: lambda { nil }` which used to return the fragment. This now throws a `DeserializeError`. Do it yourself with class: lambda { |fragment,*| fragment }.
 * Coercion now happens inside `:render_filter` and `:parse_filter` (new!) and doesn't block `:getter` and `:setter` anymore.
     We require virtus >=1.0 now.
 * `::representation_wrap=` in now properly inherited.
 * Including modules with representable `property .., inherit: true` into a `Decorator` crashed. This works fine now.
 
-* `::for_collection` and `::represent`.
-* Removed behaviour for `instance: lambda { |*| nil }` which used to return `binding.get`. Simply do it yourself: `instance: lambda { |fragment, options| options.binding.get }` if you need this behaviour. If you use `:instance` and it returns `nil` it throws a `DeserializeError` now, which is way more understandable than `NoMethodError: undefined method `title=' for {"title"=>"Perpetual"}:Hash`.
-* Remove behaviour for `class: lambda { nil }` which used to return the fragment. This now throws a `DeserializeError`. Do it yourself with class: lambda { |fragment,*| fragment }.
+## New Stuff
+
+* Added `::for_collection` to automatically generate a collection representer for singular one.
+* Added `::represent` that will detect collections and render the singular/collection with the respective representer.
 
 
 ## Internals
