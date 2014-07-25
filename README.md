@@ -4,7 +4,7 @@ Representable maps Ruby objects to documents and back.
 
 In other words: Take an object and decorate it with a representer module. This will allow you to render a JSON, XML or YAML document from that object. But that's only half of it! You can also use representers to parse a document and create or populate an object.
 
-Representable is helpful for all kind of rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [Roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
+Representable is helpful for all kind of mappings, rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [Roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
 
 
 ## Installation
@@ -293,6 +293,49 @@ module AlbumRepresenter
     link "/hit/1" # link method imported automatically.
   end
 ```
+
+
+## Representing Singular Models And Collections
+
+You can explicitly define representers for collections of models using a ["Lonely Collection"](#lonely-collections). Or you can representable let do that for you.
+
+Rendering a collection of objects comes for free, using `::for_collection`.
+
+```ruby
+  Song.all.extend(SongRepresenter.for_collection).to_hash #=> [{title: "Sevens"}, {title: "Eric"}]
+```
+
+For parsing, you need to provide the class constant to which the items should be deserialized to.
+
+```ruby
+module SongRepresenter
+  include Representable::Hash
+  property :title
+
+  collection_representer class: Song
+end
+```
+
+You can now parse collections to `Song`s.
+
+```ruby
+  [].extend(SongRepresenter.for_collection).from_hash([{title: "Sevens"}, {title: "Eric"}])
+```
+
+As always, this works for decorators _and_ modules.
+
+In case you don't want to know whether or not you're working with a collection or singular model, use `::represent`.
+
+```ruby
+# singular
+SongRepresenter.represent(Song.find(1)).to_hash #=> {title: "Sevens"}
+
+# collection
+SongRepresenter.represent(Song.all).to_hash #=> [{title: "Sevens"}, {title: "Eric"}]
+```
+
+As you can see, `::represent` figures out the correct representer for you (works also for parsing!).
+
 
 ## Document Nesting
 
