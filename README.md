@@ -297,12 +297,13 @@ module AlbumRepresenter
 
 ## Representing Singular Models And Collections
 
-You can explicitly define representers for collections of models using a ["Lonely Collection"](#lonely-collections). Or you can representable let do that for you.
+You can explicitly define representers for collections of models using a ["Lonely Collection"](#lonely-collections). Or you can let representable  do that for you.
 
 Rendering a collection of objects comes for free, using `::for_collection`.
 
 ```ruby
-  Song.all.extend(SongRepresenter.for_collection).to_hash #=> [{title: "Sevens"}, {title: "Eric"}]
+  Song.all.extend(SongRepresenter.for_collection).to_hash
+  #=> [{title: "Sevens"}, {title: "Eric"}]
 ```
 
 For parsing, you need to provide the class constant to which the items should be deserialized to.
@@ -319,7 +320,7 @@ end
 You can now parse collections to `Song`s.
 
 ```ruby
-  [].extend(SongRepresenter.for_collection).from_hash([{title: "Sevens"}, {title: "Eric"}])
+[].extend(SongRepresenter.for_collection).from_hash([{title: "Sevens"}, {title: "Eric"}])
 ```
 
 As always, this works for decorators _and_ modules.
@@ -335,6 +336,8 @@ SongRepresenter.represent(Song.all).to_hash #=> [{title: "Sevens"}, {title: "Eri
 ```
 
 As you can see, `::represent` figures out the correct representer for you (works also for parsing!).
+
+Note: the implicit collection representer internally is implemented using a lonely collection. Everything you pass to `::collection_representer` is simply provided to the `::items` call in the lonely collection. That allows you to use `parse_strategy` and all the other goodies, too.
 
 
 ## Document Nesting
