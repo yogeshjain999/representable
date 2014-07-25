@@ -337,7 +337,7 @@ SongRepresenter.represent(Song.all).to_hash #=> [{title: "Sevens"}, {title: "Eri
 
 As you can see, `::represent` figures out the correct representer for you (works also for parsing!).
 
-Note: the implicit collection representer internally is implemented using a lonely collection. Everything you pass to `::collection_representer` is simply provided to the `::items` call in the lonely collection. That allows you to use `parse_strategy` and all the other goodies, too.
+Note: the implicit collection representer internally is implemented using a lonely collection. Everything you pass to `::collection_representer` is simply provided to the `::items` call in the lonely collection. That allows you to use `:parse_strategy` and all the other goodies, too.
 
 
 ## Document Nesting
