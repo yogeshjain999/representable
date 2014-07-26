@@ -3,7 +3,7 @@ require "virtus"
 module Representable
   module Coercion
     class Coercer
-      def call(value, options)
+      def call(value, doc, options)
         Virtus::Attribute.build(options.binding[:type]).coerce(value)
       end
     end

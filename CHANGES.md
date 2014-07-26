@@ -16,7 +16,8 @@ If you need to inherit common methods to all inline decorators, include the modu
 
 * Added `::for_collection` to automatically generate a collection representer for singular one. Thanks to @timoschilling for inspiring this years ago.
 * Added `::represent` that will detect collections and render the singular/collection with the respective representer.
-
+* Callable options
+* :parse_filter, :render_filter
 
 ## Internals
 
