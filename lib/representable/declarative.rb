@@ -33,7 +33,7 @@ module Representable
     end
 
     def property(name, options={}, &block)
-      base     = nil
+      base = nil
 
       if options[:inherit] # TODO: move this to Definition.
         base = representable_attrs.get(name).representer_module
