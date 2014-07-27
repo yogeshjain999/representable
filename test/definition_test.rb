@@ -254,10 +254,6 @@ class DefinitionTest < MiniTest::Spec
     it "responds to #array?" do
       assert @def.array?
     end
-
-    it "responds to #default" do
-      assert_equal nil, @def.send(:default)
-    end
   end
 
 
