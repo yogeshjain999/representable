@@ -3,6 +3,26 @@ require 'test_helper'
 class DefinitionTest < MiniTest::Spec
   Definition = Representable::Definition
 
+  describe "#initialize" do
+    it do
+      opts = nil
+
+      # new yields the defaultized options HASH.
+      definition = Definition.new(:song) do |options|
+        options[:awesome] = true
+        options[:parse_filter] << 1
+      end
+
+      #
+      definition[:bla]
+
+      definition[:awesome].must_equal true
+      definition[:parse_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[1]
+      definition[:render_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[]
+    end
+  end
+
+
   describe "#merge!" do
     let (:definition) { Definition.new(:song) }
 
@@ -16,6 +36,11 @@ class DefinitionTest < MiniTest::Spec
     #   definition.merge!(:parse_strategy => :sync, :collection => true)
     #   definition[:bullshit].must_equal true
     # end
+
+    # with block
+    it do
+      Definition.new(:song, :extend => Module)
+    end
   end
 
   describe "generic API" do
