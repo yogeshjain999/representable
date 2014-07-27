@@ -18,10 +18,10 @@ module Representable
 
 
     module ClassMethods
-      def build_definition(name, options, &block) # Representable::Declarative
+      def build_definition(name, options, block) # Representable::Declarative
         return super unless type = options[:type]
 
-        options = options.merge(:pass_options  => true) # TODO: remove, standard.
+        options[:pass_options]  = true # TODO: remove, standard.
 
         options[:render_filter] << coercer = Coercer.new
         options[:parse_filter]  << coercer

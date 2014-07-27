@@ -9,9 +9,14 @@ module Representable
     attr_reader :name
     alias_method :getter, :name
 
-    def initialize(sym, options={})
+    def initialize(sym, options={}, block=nil)
       super()
       options = options.clone
+
+      options[:parse_filter]  = Pipeline[*options[:parse_filter]]
+      options[:render_filter] = Pipeline[*options[:render_filter]]
+      # yield options if block_given?
+      block.call( options) if block
 
       @name   = sym.to_s
       # defaults:
@@ -21,7 +26,14 @@ module Representable
     end
 
     # TODO: test merge!.
-    def merge!(options)
+    def merge!(options, block=nil)
+      options = options.clone
+
+      # options[:parse_filter] = self[:parse_filter].instance_variable_get(:@value) + (options[:parse_filter] || [])
+      # options[:render_filter] = self[:render_filter].instance_variable_get(:@value) + (options[:render_filter] || [])
+
+      block.call( options) if block
+
       setup!(options)
       self
     end

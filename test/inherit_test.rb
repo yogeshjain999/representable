@@ -40,6 +40,7 @@ class InheritTest < MiniTest::Spec
     representer! do
       include SongRepresenter
 
+      puts "passing block"
       property :name, :inherit => true do # inherit as: title
         property :string, :as => :s
         property :length
