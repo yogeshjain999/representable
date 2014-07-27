@@ -33,6 +33,28 @@ module Representable
     end
 
     def property(name, options={}, &block)
+      options = options.clone
+
+      # generic options creation - move into Definition!
+      # this could all be defaults in Definition<!!!!!!
+      options[:parse_filter]  = Pipeline[*options[:parse_filter]]
+      options[:render_filter] = Pipeline[*options[:render_filter]]
+
+      build_definition(name, options, &block)
+    end
+
+    def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
+      Module.new do
+        include *features # Representable::JSON or similar.
+        include base if base # base when :inherit, or in decorator.
+
+        instance_exec &block
+      end
+    end
+
+  private
+    # NOTE: this will soon be extracted to separate class, use at your own risk.
+    def build_definition(name, options, &block)
       base = nil
 
       if options[:inherit] # TODO: move this to Definition.
@@ -47,16 +69,6 @@ module Representable
       representable_attrs.add(name, options) # handles :inherit.
     end
 
-    def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
-      Module.new do
-        include *features # Representable::JSON or similar.
-        include base if base # base when :inherit, or in decorator.
-
-        instance_exec &block
-      end
-    end
-
-  private
     def inline_representer_for(base, features, name, options, &block)
       representer = options[:use_decorator] ? Decorator : self
 

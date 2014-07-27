@@ -35,7 +35,6 @@ class VirtusCoercionTest < MiniTest::Spec
   }
 
 
-
   describe "with user :parse_filter and :render_filter" do
     representer! do
       include Representable::Coercion
