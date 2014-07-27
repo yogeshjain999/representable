@@ -38,7 +38,7 @@ module Representable
     end
 
     extend Forwardable
-    def_delegators :@options, :[], :[]=, :each, :has_key?, :size
+    def_delegators :@options, :[], :[]=, :each, :has_key?
     private :[]=
 
     def clone
