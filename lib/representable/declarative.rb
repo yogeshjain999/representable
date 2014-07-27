@@ -32,9 +32,9 @@ module Representable
       property(name, options, &block)
     end
 
-    def property(name, options={}, &__block)
+    def property(name, options={}, &block)
       representable_attrs.add(name, options) do |default_options|# handles :inherit.
-        build_definition(name, default_options, __block)
+        build_definition(name, default_options, &block)
       end
     end
 
@@ -49,7 +49,7 @@ module Representable
 
   private
     # NOTE: this will soon be extracted to separate class, use at your own risk.
-    def build_definition(name, options, block)
+    def build_definition(name, options, &block)
       # change options[..]= here.
 
       base = nil

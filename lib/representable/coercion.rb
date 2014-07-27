@@ -18,7 +18,7 @@ module Representable
 
 
     module ClassMethods
-      def build_definition(name, options, block) # Representable::Declarative
+      def build_definition(name, options, &block) # Representable::Declarative
         return super unless type = options[:type]
 
         options[:pass_options]  = true # TODO: remove, standard.
