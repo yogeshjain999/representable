@@ -33,4 +33,21 @@ class VirtusCoercionTest < MiniTest::Spec
     album.band.founded.must_equal 1977
     album.songs[0].ok.must_equal true
   }
+
+
+
+  describe "with user :parse_filter and :render_filter" do
+    representer! do
+      include Representable::Coercion
+
+      property :length, :type => Float,
+      :parse_filter  => lambda { |fragment, doc, options| "#{fragment}.1" }, # happens BEFORE coercer.
+      :render_filter => lambda { |fragment, doc, options| "#{fragment}.1" }
+    end
+
+    # user's :parse_filter(s) are run before coercion.
+    it { OpenStruct.new.extend(representer).from_hash("length"=>"1").length.must_equal 1.1 }
+    # user's :render_filter(s) are run before coercion.
+    it { OpenStruct.new(:length=>1).extend(representer).to_hash.must_equal({"length" => 1.1}) }
   end
+end
