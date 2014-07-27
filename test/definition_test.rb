@@ -14,12 +14,16 @@ class DefinitionTest < MiniTest::Spec
       end
 
       #
-      definition[:bla]
-
       definition[:awesome].must_equal true
       definition[:parse_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[1]
       definition[:render_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[]
     end
+  end
+
+  describe "#[]" do
+    let (:definition) { Definition.new(:song) }
+    # default is nil.
+    it { definition[:bla].must_equal nil }
   end
 
 
@@ -42,6 +46,14 @@ class DefinitionTest < MiniTest::Spec
       Definition.new(:song, :extend => Module)
     end
   end
+
+  # describe "#==" do
+  #   it { Definition.new(:song).must_equal Definition.new(:song) }
+  #   it { Definition.new(:song).wont_equal Definition.new(:album) }
+
+  #   it { Definition.new(:song, :extend => Module).must_equal Definition.new(:song, :extend => Module) }
+  #   it { Definition.new(:song, :extend => Module).wont_equal Definition.new(:song, :extend => Object) }
+  # end
 
   describe "generic API" do
     before do

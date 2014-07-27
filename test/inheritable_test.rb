@@ -71,7 +71,7 @@ class ConfigInheritableTest < MiniTest::Spec
     end
 
     # nested:
-    it 'xff' do
+    it do
       parent = Inheritable::Hash[
         :details => Inheritable::Hash[
           :title  => title  = "Man Of Steel",
@@ -82,7 +82,12 @@ class ConfigInheritableTest < MiniTest::Spec
       child[:details][:track] = 1
 
       parent.must_equal({:details => {:title => "Man Of Steel", :length => length}})
-      child.must_equal( {:details => {:title => "Man Of Steel", :length => length, :track => 1}})
+
+      child.keys.must_equal [:details]
+      child[:details].keys.must_equal [:title, :length, :track]
+      child[:details][:title].must_equal "Man Of Steel"
+      child[:details][:track].must_equal 1
+      child[:details][:length].name.must_equal "length"
 
       # clone
       child[:details][:title].object_id.must_equal  title.object_id
