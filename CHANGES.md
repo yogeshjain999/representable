@@ -32,6 +32,7 @@ If you need to inherit common methods to all inline decorators, include the modu
 * Deprecated class methods `::from_json` and friends. Use the instance version on an instance.
 * Use uber 0.0.7 so we can use `Uber::Callable`.
 * Removed `Decorator::Coercion`.
+* Removed `Definition#skipable_nil_value?`.
 
 # 1.8.5
 
