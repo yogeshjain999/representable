@@ -15,12 +15,12 @@ module Representable
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
     # Same-named properties get overridden, just like in a Hash.
     class Definitions < Inheritable::Hash
-      def add(name, options, block=nil)
+      def add(name, options, &block)
         if options[:inherit] # i like that: the :inherit shouldn't be handled outside.
           return get(name).merge!(options, block)
         end
 
-        self[name.to_s] = Definition.new(name, options, block)
+        self[name.to_s] = Definition.new(name, options, &block)
       end
 
       def get(name)

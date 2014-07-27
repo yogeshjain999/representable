@@ -3,20 +3,19 @@ require "representable/parse_strategies"
 
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
-  class Definition < Hash
+  class Definition
     include Representable::Cloneable
 
     attr_reader :name
     alias_method :getter, :name
 
-    def initialize(sym, options={}, block=nil)
-      super()
-      options = options.clone
+    def initialize(sym, options={})
+      @options = options = options.clone
 
       options[:parse_filter]  = Pipeline[*options[:parse_filter]]
       options[:render_filter] = Pipeline[*options[:render_filter]]
-      # yield options if block_given?
-      block.call( options) if block
+
+      yield options if block_given?
 
       @name   = sym.to_s
       # defaults:
@@ -38,7 +37,16 @@ module Representable
       self
     end
 
-    private :[]= # TODO: re-privatize #default when this is sorted with Rubinius.
+    extend Forwardable
+    def_delegators :@options, :[], :[]=, :each, :has_key?, :size
+    private :[]=
+
+    def clone
+      super.tap do |cfg|
+        cfg.instance_variable_set :@options, @options.clone
+      end
+    end
+
 
     def setter
       :"#{name}="

@@ -33,16 +33,9 @@ module Representable
     end
 
     def property(name, options={}, &__block)
-      # options = options.clone
-
-      # generic options creation - move into Definition!
-      # this could all be defaults in Definition<!!!!!!
-      # options[:parse_filter]  = Pipeline[*options[:parse_filter]]
-      # options[:render_filter] = Pipeline[*options[:render_filter]]
-
-      representable_attrs.add(name, options, lambda do |default_options|# handles :inherit.
+      representable_attrs.add(name, options) do |default_options|# handles :inherit.
         build_definition(name, default_options, __block)
-      end)
+      end
     end
 
     def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
@@ -57,7 +50,7 @@ module Representable
   private
     # NOTE: this will soon be extracted to separate class, use at your own risk.
     def build_definition(name, options, block)
-      puts "build_definition: #{name}, #{block}"
+      # change options[..]= here.
 
       base = nil
 
@@ -65,14 +58,10 @@ module Representable
         base = representable_attrs.get(name).representer_module
       end # FIXME: can we handle this in super/Definition.new ?
 
-
       if block
-        puts "block"
         options[:_inline] = true
         options[:extend]  = inline_representer_for(base, representable_attrs.features, name, options, &block)
       end
-
-      # representable_attrs.add(name, options) # handles :inherit.
     end
 
     def inline_representer_for(base, features, name, options, &block)
