@@ -42,7 +42,6 @@ module Representable
       self.class.new(name, @options.clone)
     end
 
-
     def setter
       :"#{name}="
     end

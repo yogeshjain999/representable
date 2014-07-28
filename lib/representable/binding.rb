@@ -14,7 +14,7 @@ module Representable
     end
 
     def initialize(definition, represented, decorator, user_options={})  # TODO: remove default arg for user options.
-      @definition = definition
+      @definition   = definition
       @represented  = represented
       @decorator    = decorator
       @user_options = user_options
