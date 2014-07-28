@@ -4,6 +4,8 @@ require 'representable/definition'
 require 'representable/mapper'
 require 'representable/for_collection'
 require 'representable/represent'
+require 'representable/declarative'
+
 
 require 'uber/callable'
 require 'representable/pipeline'
@@ -13,11 +15,13 @@ module Representable
 
   def self.included(base)
     base.class_eval do
+      extend Declarative
       extend ClassInclusions, ModuleExtensions
       extend ClassMethods
       extend Feature
       extend ForCollection
       extend Represent
+      # register_feature Representable
     end
   end
 
@@ -47,7 +51,7 @@ private
   end
 
   def representable_attrs
-    @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not?
+    @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not? what about "freezing"?
   end
 
   def representable_mapper(format, options)
@@ -67,19 +71,12 @@ private
   module ClassInclusions
     def included(base)
       super
-      base.inherit_module!(self) # call inherit! on the including Module or Decorator.
-      # base.representable_attrs.inherit!(representable_attrs) do |attrs|
-
-      # base.inherit!(self) => representable_attrs.inherit!(..)
-        # this could be inluded into Module or Decorator.
-        # Decorator::inherit!/include!/absorb!() => manifest manifests.
-        # Module::inherit!() => manifest does nothing.
-      # end
+      base.inherit_module!(self)
     end
 
     def inherited(base) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
       super
-      base.representable_attrs.inherit!(representable_attrs)
+      base.representable_attrs.inherit!(representable_attrs) # this should be inherit_class!
     end
   end
 
@@ -101,9 +98,6 @@ private
     def prepare(represented)
       represented.extend(self)
     end
-
-    require 'representable/declarative'
-    include Declarative
   end
 
 
