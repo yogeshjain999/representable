@@ -91,6 +91,7 @@ private
 
 
   module ClassMethods
+    # Gets overridden by Decorator as inheriting representers via include in Decorator means a bit more work (manifesting).
     def inherit_module!(parent)
       representable_attrs.inherit!(parent.representable_attrs) # Module just inherits.
     end
