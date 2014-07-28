@@ -58,7 +58,7 @@ class SchemaTest < MiniTest::Spec
   end
 
   describe "3-level deep with features" do
-    let (:label) { OpenStruct.new(:name => "Epitaph", :location => OpenStruct.new(:city => "Sanfran")) }
+    let (:label) { OpenStruct.new(:name => "Epitaph", :location => OpenStruct.new(:city => "Sanfran", :name => "DON'T SHOW ME!")) }
 
     # Module does correctly include features in inlines.
     it { band.extend(Module).to_hash.must_equal({"label"=>{"name"=>"Epitaph", "location"=>{"city"=>"Sanfran"}}, "genre"=>"Punkrock"}) }
