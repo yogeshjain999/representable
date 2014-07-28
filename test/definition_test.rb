@@ -80,6 +80,12 @@ class DefinitionTest < MiniTest::Spec
       # :parse_filter can also be array.
       it { definition.merge!(:parse_filter => [2, 3])[:parse_filter].instance_variable_get(:@value).size.must_equal 3 }
     end
+
+    # does not change arguments
+    it do
+      Definition.new(:title).merge!(options = {:whatever => 1})
+      options.must_equal(:whatever => 1)
+    end
   end
 
 

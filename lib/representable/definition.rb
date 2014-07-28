@@ -26,7 +26,6 @@ module Representable
     def merge!(options, &block)
       options = options.clone
 
-      # TODO: test that clone works.
       options[:parse_filter]  = @options[:parse_filter].push(*options[:parse_filter])
       options[:render_filter] = @options[:render_filter].push(*options[:render_filter])
 
