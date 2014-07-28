@@ -10,10 +10,11 @@ module Representable
     alias_method :getter, :name
 
     def initialize(sym, options={})
-      @options = {}
-      @name    = sym.to_s
+      # @options = Inheritable::Hash.new # allows deep cloning.
+      @runtime_options = {}
 
-      options = options.clone
+      @name    = sym.to_s
+      options  = options.clone
 
       # defaults:
       options[:parse_filter]  = Pipeline[*options[:parse_filter]]
@@ -22,35 +23,33 @@ module Representable
 
       setup!(options)
 
-
       yield options if block_given? # this allows callers of Definition#new access default options in a convenient way.
+      @options = options
 
-      options!(options)
+      runtime_options!(options)
     end
 
     def merge!(options, &block)
       options = options.clone
 
       # TODO: test that clone works.
-      options[:parse_filter]  = self[:parse_filter].instance_variable_get(:@value).push(*options[:parse_filter])
-      options[:render_filter] = self[:render_filter].instance_variable_get(:@value).push(*options[:render_filter])
+      options[:parse_filter]  = @options[:parse_filter].push(*options[:parse_filter])
+      options[:render_filter] = @options[:render_filter].push(*options[:render_filter])
 
       setup!(options) # FIXME: this doesn't yield :as etc.
 
       yield options if block_given?
+      @options = options
 
-      options!(options)
+      runtime_options!(options)
       self
     end
 
     extend Forwardable
-    def_delegators :@options, :[], :[]=, :each, :has_key?
-    private :[]=
+    def_delegators :@runtime_options, :[], :each, :has_key?
 
     def clone
-      super.tap do |cfg|
-        cfg.instance_variable_set :@options, @options.clone
-      end
+      self.class.new(name, @options)
     end
 
 
@@ -106,10 +105,10 @@ module Representable
       Representable::ParseStrategy.apply!(options)
     end
 
-    def options!(options)
+    def runtime_options!(options)
       for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
-        self[name] = value
+        @runtime_options[name] = value
       end
     end
 

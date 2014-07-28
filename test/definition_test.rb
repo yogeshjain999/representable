@@ -128,6 +128,7 @@ class DefinitionTest < MiniTest::Spec
       assert_equal :"songs=", @def.setter
     end
 
+
     describe "#clone" do
       subject { Representable::Definition.new(:title, :volume => 9, :clonable => Uber::Options::Value.new(1)) }
 
@@ -142,6 +143,19 @@ class DefinitionTest < MiniTest::Spec
 
         assert_equal @def[:volume], 9
         assert_equal cloned[:volume], 8
+      end
+
+      # pipeline gets cloned properly
+      describe "pipeline cloning" do
+        subject { Definition.new(:title, :render_filter => 1) }
+
+        it ("yy")do
+          cloned = subject.clone
+          cloned.merge!(:render_filter => 2)
+
+          subject[:render_filter].instance_variable_get(:@value).must_equal [1]
+          cloned[:render_filter].instance_variable_get(:@value).must_equal [1,2]
+        end
       end
     end
   end

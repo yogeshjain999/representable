@@ -39,6 +39,7 @@ module Representable
 
       private
         def clone_value(value)
+          puts "[ #{value.inspect}"
           return value.clone if value.is_a?(Cloneable)
           value
         end
