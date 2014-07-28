@@ -33,7 +33,15 @@ class DefinitionTest < MiniTest::Spec
 
   # merge!
   describe "#merge!" do
-    let (:definition) { Definition.new(:song) }
+    let (:definition) { Definition.new(:song, :whatever => true) }
+
+    # merges new options.
+    it { definition.merge!(:something => true)[:something].must_equal true }
+    # doesn't override original options.
+    it { definition.merge!({:something => true})[:whatever].must_equal true }
+    # override original when passed in #merge!.
+    it { definition.merge!({:whatever => false})[:whatever].must_equal false }
+
 
     it "runs macros" do
       definition[:setter].must_equal nil
@@ -42,7 +50,7 @@ class DefinitionTest < MiniTest::Spec
     end
 
     # with block
-    it "xx" do
+    it do
       definition = Definition.new(:song, :extend => Module).merge!({:something => true}) do |options|
         options[:awesome] = true
         options[:render_filter] << 1
@@ -72,9 +80,6 @@ class DefinitionTest < MiniTest::Spec
       # :parse_filter can also be array.
       it { definition.merge!(:parse_filter => [2, 3])[:parse_filter].instance_variable_get(:@value).size.must_equal 3 }
     end
-
-
-    it { Definition.new(:title).merge!(:something => true)[:something].must_equal true }
   end
 
 

@@ -10,9 +10,8 @@ module Representable
     alias_method :getter, :name
 
     def initialize(sym, options={}, &block)
+      @options = {}
       # @options = Inheritable::Hash.new # allows deep cloning. we then had to set Pipeline cloneable.
-      @runtime_options = {}
-
       @name    = sym.to_s
       options  = options.clone
 
@@ -94,14 +93,16 @@ module Representable
       Representable::ParseStrategy.apply!(options)
 
       yield options if block_given?
-      @options = options
+      @options.merge!(options)
 
-      runtime_options!(options)
+      runtime_options!(@options)
     end
 
     # wrapping dynamic options in Value does save runtime, as this is used very frequently (and totally unnecessary to wrap an option
     # at runtime, its value never changes).
     def runtime_options!(options)
+      @runtime_options = {}
+
       for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
         @runtime_options[name] = value
