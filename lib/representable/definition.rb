@@ -23,22 +23,23 @@ module Representable
       setup!(options)
 
 
-      yield options if block_given?
+      yield options if block_given? # this allows callers of Definition#new access default options in a convenient way.
 
-      dynamic_options!(options)
+      options!(options)
     end
 
-    # TODO: test merge!.
     def merge!(options, &block)
       options = options.clone
 
-      options[:parse_filter]  = Pipeline[*self[:parse_filter].instance_variable_get(:@value)  + [*options[:parse_filter]]]
-      options[:render_filter] = Pipeline[*self[:render_filter].instance_variable_get(:@value) + [*options[:render_filter]]]
+      # TODO: test that clone works.
+      options[:parse_filter]  = self[:parse_filter].instance_variable_get(:@value).push(*options[:parse_filter])
+      options[:render_filter] = self[:render_filter].instance_variable_get(:@value).push(*options[:render_filter])
+
+      setup!(options) # FIXME: this doesn't yield :as etc.
 
       yield options if block_given?
 
-      setup!(options)
-      dynamic_options!(options)
+      options!(options)
       self
     end
 
@@ -105,7 +106,7 @@ module Representable
       Representable::ParseStrategy.apply!(options)
     end
 
-    def dynamic_options!(options)
+    def options!(options)
       for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
         self[name] = value

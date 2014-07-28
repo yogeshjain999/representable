@@ -31,7 +31,7 @@ class DefinitionTest < MiniTest::Spec
     it { definition[:bla].must_equal nil }
   end
 
-
+  # merge!
   describe "#merge!" do
     let (:definition) { Definition.new(:song) }
 
@@ -42,8 +42,20 @@ class DefinitionTest < MiniTest::Spec
     end
 
     # with block
-    it do
-      Definition.new(:song, :extend => Module)
+    it "xx" do
+      definition = Definition.new(:song, :extend => Module).merge!({:something => true}) do |options|
+        options[:awesome] = true
+        options[:render_filter] << 1
+
+        # default variables
+        # options[:as].must_equal "song"
+        # options[:extend].must_equal Module
+      end
+
+      definition[:awesome].must_equal true
+      definition[:something].must_equal true
+      definition[:render_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[1]
+      definition[:parse_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[]
     end
 
     describe "with :parse_filter" do
