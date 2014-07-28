@@ -77,14 +77,14 @@ class SchemaTest < MiniTest::Spec
 
   # puts Decorator.representable_attrs[:definitions].inspect
 
-  let (:label) { OpenStruct.new(:name => "Fat Wreck", :city => "San Francisco", :employees => [OpenStruct.new(:name => "Mike")]) }
+  let (:label) { OpenStruct.new(:name => "Fat Wreck", :city => "San Francisco", :employees => [OpenStruct.new(:name => "Mike")], :location => OpenStruct.new(:city => "Sanfran")) }
   let (:band) { OpenStruct.new(:genre => "Punkrock", :label => label) }
 
 
   # it { FlatlinersDecorator.new( OpenStruct.new(label: OpenStruct.new) ).
   #   to_hash.must_equal({}) }
   it do
-    Decorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck"}})
+    Decorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "location"=>{"city"=>"Sanfran"}}})
   end
 
 
@@ -95,11 +95,15 @@ class SchemaTest < MiniTest::Spec
 
     property :label, inherit: true do # decorator.rb:27:in `initialize': superclass must be a Class (Module given)
       property :city
+
+      property :location, :inherit => true do
+        property :city
+      end
     end
   end
 
   it do
-    InheritDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco"}})
+    InheritDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco", "location"=>{"city"=>"Sanfran"}}})
   end
 
 
@@ -114,6 +118,6 @@ class SchemaTest < MiniTest::Spec
   end
 
   it do
-    InheritFromDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco", "employees"=>[{"name"=>"Mike"}]}})
+    InheritFromDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco", "employees"=>[{"name"=>"Mike"}], "location"=>{"city"=>"Sanfran"}}})
   end
 end
