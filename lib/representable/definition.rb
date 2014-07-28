@@ -34,7 +34,7 @@ module Representable
     end
 
     extend Forwardable
-    def_delegators :@runtime_options, :[], :each, :has_key?
+    def_delegators :@runtime_options, :[], :each
 
     def clone
       self.class.new(name, @options.clone)
@@ -67,7 +67,7 @@ module Representable
     end
 
     def has_default?
-      has_key?(:default)
+      @options.has_key?(:default)
     end
 
     def representer_module
