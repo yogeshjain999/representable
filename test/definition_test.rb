@@ -238,54 +238,6 @@ class DefinitionTest < MiniTest::Spec
   end
 
 
-  describe "#writeable?" do
-
-    it "returns true when :writeable is not given" do
-      @def = Representable::Definition.new(:song)
-      assert_equal true, @def.writeable?
-    end
-
-    it "returns true when :writeable => true" do
-      @def = Representable::Definition.new(:song, :writeable => true)
-      assert_equal true, @def.writeable?
-    end
-
-    it "returns false when :writeable => false" do
-      @def = Representable::Definition.new(:song, :writeable => false)
-      assert_equal false, @def.writeable?
-    end
-
-    it "returns nil when :writeable is nil" do
-      @def = Representable::Definition.new(:song, :writeable => nil)
-      assert_equal nil, @def.writeable?
-    end
-
-  end
-
-  describe "#readable?" do
-
-    it "returns true when :readable is not given" do
-      @def = Representable::Definition.new(:song)
-      assert_equal true, @def.readable?
-    end
-
-    it "returns true when :readable => true" do
-      @def = Representable::Definition.new(:song, :readable => true)
-      assert_equal true, @def.readable?
-    end
-
-    it "returns false when :readable => false" do
-      @def = Representable::Definition.new(:song, :readable => false)
-      assert_equal false, @def.readable?
-    end
-
-    it "returns nil when :readable is nil" do
-      @def = Representable::Definition.new(:song, :readable => nil)
-      assert_equal nil, @def.readable?
-    end
-
-  end
-
   describe "#binding" do
     it "returns true when :binding is set" do
       assert Representable::Definition.new(:songs, :binding => Object)[:binding]

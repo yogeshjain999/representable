@@ -1,5 +1,3 @@
-require 'representable/readable_writeable'
-
 module Representable
   # Render and parse by looping over the representer's properties and dispatching to bindings.
   # Conditionals are handled here, too.
@@ -28,18 +26,19 @@ module Representable
 
     private
       def serialize_property(binding, doc, options)
-        return if skip_property?(binding, options)
+        return if skip_property?(binding, options.merge(:action => :serialize))
         compile_fragment(binding, doc)
       end
 
       def deserialize_property(binding, doc, options)
-        return if skip_property?(binding, options)
+        return if skip_property?(binding, options.merge(:action => :deserialize))
         uncompile_fragment(binding, doc)
       end
 
       # Checks and returns if the property should be included.
       def skip_property?(binding, options)
         return true if skip_excluded_property?(binding, options)  # no need for further evaluation when :exclude'ed
+        return true if skip_protected_property(binding, options)
 
         skip_conditional_property?(binding)
       end
@@ -56,6 +55,11 @@ module Representable
         not binding.send(:evaluate_option, :if)
       end
 
+      # DISCUSS: this could be just another :if option in a Pipeline?
+      def skip_protected_property(binding, options)
+        options[:action] == :serialize ? binding[:readable] == false : binding[:writeable] == false
+      end
+
       def compile_fragment(bin, doc)
         bin.compile_fragment(doc)
       end
@@ -66,6 +70,5 @@ module Representable
     end
 
     include Methods
-    include ReadableWriteable # DISCUSS: make this pluggable.
   end
 end
