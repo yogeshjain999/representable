@@ -84,7 +84,7 @@ module Representable
     end
 
     def representer_module
-      self[:extend].evaluate(nil) if self[:extend]
+      @options[:extend]
     end
 
     def skipable_empty_value?(value)
