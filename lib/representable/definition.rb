@@ -10,18 +10,22 @@ module Representable
     alias_method :getter, :name
 
     def initialize(sym, options={})
-      @options = options = options.clone
+      @options = {}
+      @name    = sym.to_s
 
+      options = options.clone
+
+      # defaults:
       options[:parse_filter]  = Pipeline[*options[:parse_filter]]
       options[:render_filter] = Pipeline[*options[:render_filter]]
+      options[:as]          ||= @name
+
+      setup!(options)
+
 
       yield options if block_given?
 
-      @name   = sym.to_s
-      # defaults:
-      options[:as] ||= @name
-
-      setup!(options)
+      dynamic_options!(options)
     end
 
     # TODO: test merge!.
@@ -34,6 +38,7 @@ module Representable
       yield options if block_given?
 
       setup!(options)
+      dynamic_options!(options)
       self
     end
 
@@ -98,7 +103,9 @@ module Representable
 
       # DISCUSS: we could call more macros here (e.g. for :nested).
       Representable::ParseStrategy.apply!(options)
+    end
 
+    def dynamic_options!(options)
       for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
         self[name] = value

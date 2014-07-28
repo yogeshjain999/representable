@@ -9,9 +9,13 @@ class DefinitionTest < MiniTest::Spec
       opts = nil
 
       # new yields the defaultized options HASH.
-      definition = Definition.new(:song) do |options|
+      definition = Definition.new(:song, :extend => Module) do |options|
         options[:awesome] = true
         options[:parse_filter] << 1
+
+        # default variables
+        options[:as].must_equal "song"
+        options[:extend].must_equal Module
       end
 
       #
@@ -37,42 +41,30 @@ class DefinitionTest < MiniTest::Spec
       definition[:setter].must_respond_to :evaluate
     end
 
-    # it "what" do
-    #   definition.merge!(:parse_strategy => :sync, :collection => true)
-    #   definition[:bullshit].must_equal true
-    # end
-
     # with block
     it do
       Definition.new(:song, :extend => Module)
     end
 
-
     describe "with :parse_filter" do
-      let (:definition) { Definition.new(:title, :parse_filter => lambda {}) }
+      let (:definition) { Definition.new(:title, :parse_filter => 1) }
 
       # merges :parse_filter and :render_filter.
       it do
-        merged = definition.merge!(:parse_filter => lambda {})[:parse_filter]
+        merged = definition.merge!(:parse_filter => 2)[:parse_filter]
 
         merged.instance_variable_get(:@value).must_be_kind_of Representable::Pipeline
         merged.instance_variable_get(:@value).size.must_equal 2
       end
 
-      it do
-        definition.merge!(:parse_filter => [lambda {},lambda {}])[:parse_filter].
-          instance_variable_get(:@value).size.must_equal 3
-      end
+      # :parse_filter can also be array.
+      it { definition.merge!(:parse_filter => [2, 3])[:parse_filter].instance_variable_get(:@value).size.must_equal 3 }
     end
+
+
+    it { Definition.new(:title).merge!(:something => true)[:something].must_equal true }
   end
 
-  # describe "#==" do
-  #   it { Definition.new(:song).must_equal Definition.new(:song) }
-  #   it { Definition.new(:song).wont_equal Definition.new(:album) }
-
-  #   it { Definition.new(:song, :extend => Module).must_equal Definition.new(:song, :extend => Module) }
-  #   it { Definition.new(:song, :extend => Module).wont_equal Definition.new(:song, :extend => Object) }
-  # end
 
   describe "generic API" do
     before do
