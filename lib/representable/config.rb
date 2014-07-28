@@ -17,7 +17,7 @@ module Representable
     class Definitions < Inheritable::Hash
       def add(name, options, &block)
         if options[:inherit] # i like that: the :inherit shouldn't be handled outside.
-          return get(name).merge!(options, block)
+          return get(name).merge!(options, &block)
         end
 
         self[name.to_s] = Definition.new(name, options, &block)

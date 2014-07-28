@@ -55,5 +55,5 @@ class RenderFilterTest < MiniTest::Spec
     property :track, :render_filter => [lambda { |val, doc, options| "#{val}-2" } ], :inherit => true
   end
 
-  it { OpenStruct.new.extend(representer).to_hash.must_equal "Nine-1-2" }
+  it { OpenStruct.new("track" => "Nine").extend(representer).to_hash.must_equal({"track"=>"Nine-1-2"}) }
 end

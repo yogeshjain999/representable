@@ -33,7 +33,7 @@ module Representable
     end
 
     def property(name, options={}, &block)
-      representable_attrs.add(name, options) do |default_options|# handles :inherit.
+      representable_attrs.add(name, options) do |default_options| # handles :inherit.
         build_definition(name, default_options, &block)
       end
     end

@@ -3,6 +3,7 @@ require 'test_helper'
 class DefinitionTest < MiniTest::Spec
   Definition = Representable::Definition
 
+  # TODO: test that we DON'T clone options, that must happen in
   describe "#initialize" do
     it do
       opts = nil
@@ -44,6 +45,24 @@ class DefinitionTest < MiniTest::Spec
     # with block
     it do
       Definition.new(:song, :extend => Module)
+    end
+
+
+    describe "with :parse_filter" do
+      let (:definition) { Definition.new(:title, :parse_filter => lambda {}) }
+
+      # merges :parse_filter and :render_filter.
+      it do
+        merged = definition.merge!(:parse_filter => lambda {})[:parse_filter]
+
+        merged.instance_variable_get(:@value).must_be_kind_of Representable::Pipeline
+        merged.instance_variable_get(:@value).size.must_equal 2
+      end
+
+      it do
+        definition.merge!(:parse_filter => [lambda {},lambda {}])[:parse_filter].
+          instance_variable_get(:@value).size.must_equal 3
+      end
     end
   end
 

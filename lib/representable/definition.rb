@@ -25,13 +25,13 @@ module Representable
     end
 
     # TODO: test merge!.
-    def merge!(options, block=nil)
+    def merge!(options, &block)
       options = options.clone
 
-      # options[:parse_filter] = self[:parse_filter].instance_variable_get(:@value) + (options[:parse_filter] || [])
-      # options[:render_filter] = self[:render_filter].instance_variable_get(:@value) + (options[:render_filter] || [])
+      options[:parse_filter]  = Pipeline[*self[:parse_filter].instance_variable_get(:@value)  + [*options[:parse_filter]]]
+      options[:render_filter] = Pipeline[*self[:render_filter].instance_variable_get(:@value) + [*options[:render_filter]]]
 
-      block.call( options) if block
+      yield options if block_given?
 
       setup!(options)
       self
