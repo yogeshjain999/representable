@@ -151,7 +151,11 @@ class DefinitionTest < MiniTest::Spec
 
         it ("yy")do
           cloned = subject.clone
+
           cloned.merge!(:render_filter => 2)
+
+          subject.instance_variable_get(:@options)[:render_filter].must_equal [1]
+          cloned.instance_variable_get(:@options)[:render_filter].must_equal [1,2]
 
           subject[:render_filter].instance_variable_get(:@value).must_equal [1]
           cloned[:render_filter].instance_variable_get(:@value).must_equal [1,2]

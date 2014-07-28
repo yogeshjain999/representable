@@ -9,8 +9,8 @@ module Representable
     attr_reader :name
     alias_method :getter, :name
 
-    def initialize(sym, options={})
-      # @options = Inheritable::Hash.new # allows deep cloning.
+    def initialize(sym, options={}, &block)
+      # @options = Inheritable::Hash.new # allows deep cloning. we then had to set Pipeline cloneable.
       @runtime_options = {}
 
       @name    = sym.to_s
@@ -21,12 +21,7 @@ module Representable
       options[:render_filter] = Pipeline[*options[:render_filter]]
       options[:as]          ||= @name
 
-      setup!(options)
-
-      yield options if block_given? # this allows callers of Definition#new access default options in a convenient way.
-      @options = options
-
-      runtime_options!(options)
+      setup!(options, &block)
     end
 
     def merge!(options, &block)
@@ -36,12 +31,7 @@ module Representable
       options[:parse_filter]  = @options[:parse_filter].push(*options[:parse_filter])
       options[:render_filter] = @options[:render_filter].push(*options[:render_filter])
 
-      setup!(options) # FIXME: this doesn't yield :as etc.
-
-      yield options if block_given?
-      @options = options
-
-      runtime_options!(options)
+      setup!(options, &block) # FIXME: this doesn't yield :as etc.
       self
     end
 
@@ -49,7 +39,7 @@ module Representable
     def_delegators :@runtime_options, :[], :each, :has_key?
 
     def clone
-      self.class.new(name, @options)
+      self.class.new(name, @options.clone)
     end
 
 
@@ -97,14 +87,21 @@ module Representable
     end
 
   private
-    def setup!(options)
+    def setup!(options, &block)
       handle_extend!(options)
       handle_as!(options)
 
       # DISCUSS: we could call more macros here (e.g. for :nested).
       Representable::ParseStrategy.apply!(options)
+
+      yield options if block_given?
+      @options = options
+
+      runtime_options!(options)
     end
 
+    # wrapping dynamic options in Value does save runtime, as this is used very frequently (and totally unnecessary to wrap an option
+    # at runtime, its value never changes).
     def runtime_options!(options)
       for name, value in options
         value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
