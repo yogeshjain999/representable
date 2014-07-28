@@ -40,7 +40,8 @@ module Representable
 
     def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
       Module.new do
-        include *features # Representable::JSON or similar.
+        include Representable
+        feature *features # Representable::JSON or similar.
         include base if base # base when :inherit, or in decorator.
 
         instance_exec &block

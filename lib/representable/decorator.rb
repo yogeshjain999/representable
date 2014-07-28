@@ -19,17 +19,23 @@ module Representable
         inherited_attrs = parent.representable_attrs[:definitions].keys
 
         super # in Representable, calls representable_attrs.inherit!(parent.representable_attrs).
-        __manifest!(inherited_attrs)#(new_shit)
+        # now, inline representers are still modules, which is wrong.
+        manifest!(inherited_attrs)
       end
 
-      def __manifest!(names) # one level deep manifesting modules into Decorators.
+    private
+       # one level deep manifesting modules into Decorators.
+      def manifest!(names)
         names.each do |name| # only definitions.
-          cfg = representable_attrs.get(name)
-          next unless cfg[:_inline] and mod = cfg.representer_module # only inline representers.
+          definition = representable_attrs.get(name)
+          next unless definition[:_inline] and mod = definition.representer_module # only inline representers.
 
-    # here, we can include Decorator features.
-          inline_representer = build_inline(nil, [mod]+representable_attrs.features , cfg.name, {}){} # the includer controls what "wraps" the module.
-          cfg.merge!(:extend => inline_representer)
+          # here, we can include Decorator features.
+          inline_representer = build_inline(nil, representable_attrs.features, definition.name, {}) {
+            include mod
+          } # the includer controls what "wraps" the module.
+
+          definition.merge!(:extend => inline_representer)
         end
       end
     end
@@ -44,7 +50,7 @@ module Representable
     def self.build_inline(base, features, name, options, &block)
       Class.new(base || default_inline_class).tap do |decorator|
         decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
-          include *features
+          feature *features
           instance_exec &block
         end
       end

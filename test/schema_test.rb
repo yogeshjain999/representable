@@ -7,15 +7,31 @@ class SchemaTest < MiniTest::Spec
     property :genre
   end
 
+  module LinkFeature
+    def self.included(base)
+      base.extend(Link)
+    end
+
+    module Link
+      def link
+      end
+    end
+  end
+
+
   module Module
-    include Representable
-    feature Representable
+    include Representable::Hash
+    feature LinkFeature
 
     property :title
     property :label do # extend: LabelModule
-      # include Representable
-      # include Representable::Hash # commenting that breaks (no #to_hash for <Label>)
       property :name
+      link # feature
+
+      property :location do
+        property :city
+        link # feature.
+      end
     end
 
     property :album, :extend => lambda { raise "don't manifest me!" } # this is not an inline decorator, don't manifest it.
@@ -23,6 +39,34 @@ class SchemaTest < MiniTest::Spec
 
     include Genre # Schema::Included::included is called!
   end
+
+
+  class WithLocationStreetRepresenter < Representable::Decorator
+    include Representable::Hash
+    feature LinkFeature
+
+    property :title
+    property :label do # extend: LabelModule
+      property :name
+      link # feature
+
+      property :location do
+        property :city
+        link # feature.
+      end
+    end
+  end
+
+  describe "3-level deep with features" do
+    let (:label) { OpenStruct.new(:name => "Epitaph", :location => OpenStruct.new(:city => "Sanfran")) }
+
+    # Module does correctly include features in inlines.
+    it { band.extend(Module).to_hash.must_equal({"label"=>{"name"=>"Epitaph", "location"=>{"city"=>"Sanfran"}}, "genre"=>"Punkrock"}) }
+
+    # Decorator does correctly include features in inlines.
+    it { Decorator.new(band).to_hash.must_equal({"label"=>{"name"=>"Epitaph", "location"=>{"city"=>"Sanfran"}}, "genre"=>"Punkrock"}) }
+  end
+
 
 
   class Decorator < Representable::Decorator

@@ -21,7 +21,7 @@ module Representable
       extend Feature
       extend ForCollection
       extend Represent
-      # register_feature Representable
+      # register_feature Representable # Representable gets included automatically when creating inline representer.
     end
   end
 
@@ -102,9 +102,11 @@ private
 
 
   module Feature
-    def feature(mod)
-      include mod
-      register_feature(mod)
+    def feature(*mods)
+      mods.each do |mod|
+        include mod
+        register_feature(mod)
+      end
     end
 
   private
