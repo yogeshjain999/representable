@@ -8,8 +8,7 @@ If you need to inherit common methods to all inline decorators, include the modu
 * You can now define methods in inline representers! The block is now `module_eval`ed and not `instance_exec`ed anymore. Same goes for Decorators, note that you need to `exec_context: :decorator`, though. Here, the block is `class_eval`ed.
 * Removed behaviour for `instance: lambda { |*| nil }` which used to return `binding.get`. Simply do it yourself: `instance: lambda { |fragment, options| options.binding.get }` if you need this behaviour. If you use `:instance` and it returns `nil` it throws a `DeserializeError` now, which is way more understandable than `NoMethodError: undefined method `title=' for {"title"=>"Perpetual"}:Hash`.
 * Remove behaviour for `class: lambda { nil }` which used to return the fragment. This now throws a `DeserializeError`. Do it yourself with class: lambda { |fragment,*| fragment }.
-* Coercion now happens inside `:render_filter` and `:parse_filter` (new!) and doesn't block `:getter` and `:setter` anymore.
-    We require virtus >=1.0 now.
+* Coercion now happens inside `:render_filter` and `:parse_filter` (new!) and doesn't block `:getter` and `:setter` anymore. Also, we require virtus >=1.0 now.
 * `::representation_wrap=` in now properly inherited.
 * Including modules with representable `property .., inherit: true` into a `Decorator` crashed. This works fine now.
 

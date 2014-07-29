@@ -405,9 +405,9 @@ class AlbumRepresentation < Representable::Decorator
 end
 ```
 
-### Helpers In Decorators
+### Methods In Modules
 
-In module representers you can add methods for properties.
+You can define methods in representers in case they aren't defined on the represented object.
 
 ```ruby
 module SongRepresenter
@@ -418,7 +418,23 @@ module SongRepresenter
   end
 ```
 
-That works as the method is mixed into the represented object. When adding a helper method to a decorator, representable will still invoke accessors on the represented instance - unless you tell it the scope.
+That works as the method is mixed into the represented object.
+
+Note that this also goes for inline representers.
+
+```ruby
+  property :song do
+    property :title
+
+    def title
+      "Static titles are better"
+    end
+  end
+```
+
+### Methods In Decorators
+
+When adding a method to a decorator, representable will still invoke accessors on the represented instance - unless you tell it the scope.
 
 ```ruby
 class SongRepresenter < Representable::Decorator
