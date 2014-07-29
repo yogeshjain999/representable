@@ -44,7 +44,7 @@ module Representable
         feature *features # Representable::JSON or similar.
         include base if base # base when :inherit, or in decorator.
 
-        instance_exec &block
+        module_eval &block
       end
     end
 

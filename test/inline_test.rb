@@ -226,4 +226,26 @@ class InlineTest < MiniTest::Spec
       must_equal({"song"=>{"artist"=>"Strung Out", "title"=>"The Fever And The Sound"}})
     end
   end
+
+
+  # define method in inline representer
+  describe "define method in inline representer" do
+    Mod = Module.new do
+      include Representable::Hash
+
+      def song
+        "Object.new"
+      end
+
+      property :song do
+        property :duration
+
+        def duration
+          "6:53"
+        end
+      end
+    end
+
+    it { Object.new.extend(Mod).to_hash.must_equal("song"=>{"duration"=>"6:53"}) }
+  end
 end
