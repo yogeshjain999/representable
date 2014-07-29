@@ -49,10 +49,18 @@ module Representable
     end
 
   private
-    # NOTE: this will soon be extracted to separate class, use at your own risk.
+    # This method is meant to be overridden if you want to add or change DSL options.
+    # The options hash is already initialized, add or change elements as you need.
+    #
+    # Example:
+    #
+    # def build_definition(name, options, &block)
+    #   options[:pass_options] = true
+    #   options[:render_filter] << Sanitizer.new if options[:sanitize]
+    #   options[:setter] << lambda { |fragment, options| send("set_#{options.binding.name}=", fragment) }
+    #   super # don't forget to call super
+    # end
     def build_definition(name, options, &block)
-      # change options[..]= here.
-
       base = nil
 
       if options[:inherit] # TODO: move this to Definition.
