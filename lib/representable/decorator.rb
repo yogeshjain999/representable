@@ -51,7 +51,7 @@ module Representable
       Class.new(base || default_inline_class).tap do |decorator|
         decorator.class_eval do # Ruby 1.8.7 wouldn't properly execute the block passed to Class.new!
           feature *features
-          instance_exec &block
+          class_eval &block
         end
       end
     end

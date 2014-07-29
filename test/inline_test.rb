@@ -248,4 +248,25 @@ class InlineTest < MiniTest::Spec
 
     it { Object.new.extend(Mod).to_hash.must_equal("song"=>{"duration"=>"6:53"}) }
   end
+
+  # define method inline with Decorator
+  describe "define method inline with Decorator" do
+    dec = Class.new(Representable::Decorator) do
+      include Representable::Hash
+
+      def song
+        "Object.new"
+      end
+
+      property :song, :exec_context => :decorator do
+        property :duration, :exec_context => :decorator
+
+        def duration
+          "6:53"
+        end
+      end
+    end
+
+    it { dec.new(Object.new).to_hash.must_equal("song"=>{"duration"=>"6:53"}) }
+  end
 end
