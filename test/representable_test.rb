@@ -520,4 +520,38 @@ class RepresentableTest < MiniTest::Spec
       inner.wont_be_kind_of Representable::Hash
     end
   end
+
+
+  # using your own Definition class
+  class StaticDefinition < Representable::Definition
+    def initialize(name, options)
+      options[:as] = :Name
+      super
+    end
+  end
+
+
+  module StaticRepresenter
+    def self.build_config
+      Representable::Config.new(StaticDefinition)
+    end
+    include Representable::Hash
+
+    property :title
+  end
+
+  # we currently need an intermediate decorator to inherit ::build_config properly.
+  class BaseDecorator < Representable::Decorator
+    include Representable::Hash
+    def self.build_config
+      Representable::Config.new(StaticDefinition)
+    end
+  end
+
+  class StaticDecorator < BaseDecorator
+    property :title
+  end
+
+  it { OpenStruct.new(:title => "Tarutiri").extend(StaticRepresenter).to_hash.must_equal({"Name"=>"Tarutiri"}) }
+  it { StaticDecorator.new(OpenStruct.new(:title => "Tarutiri")).to_hash.must_equal({"Name"=>"Tarutiri"}) }
 end
