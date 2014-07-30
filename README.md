@@ -527,6 +527,8 @@ Here's a list of all dynamic options and their argument signature.
 * `instance: lambda { |fragment, [i], args| }` ([see Object Creation](#polymorphic-object-creation))
 * `reader: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
 * `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
+* `parse_filter:  lambda { |fragment, document, args| }` ([see Filters](#filters)))
+* `render_filter: lambda { |value, document, args| }` ([see Filters](#filters))
 * `if: lambda { |args| }` ([see Conditions](#conditions))
 * `prepare: lambda { |object, args| }` ([see docs](#rendering-and-parsing-without-extend))
 * `serialize: lambda { |object, args| }` ([see docs](#overriding-serialize-and-deserialize))
@@ -548,6 +550,48 @@ end
 The `Options` instance exposes the following readers: `#binding`, `#represented`, `#decorator` and  `#user_options` which is the hash you usually have as `args`.
 
 Option-specific arguments (e.g. `fragment`, [see here](#available-options)) are still prepended, making the `Options` object always the *last* argument.
+
+
+## Filters
+
+Representabe offers you `:render_filter` and `:parse_filter` to modify the value to be rendered or parsed.
+
+Filters are implemented using `Pipeline`, which means you can add as many as you want. The result from the former filter will be passed to the next.
+
+```ruby
+property :title, render_filter: lambda { |value, doc, *args| value.html_safe }
+```
+
+This will be executed right before the fragment gets rendered into the document.
+
+```ruby
+property :title, parse_filter: lambda { |fragment, doc, *args| Sanitizer.call(fragment) }
+```
+
+Just before setting the fragment to the object via the `:setter`, the `:parse_filter` is called.
+
+
+## Callable Options
+
+While lambdas are one option for dynamic options, you might also pass a "callable" object to a directive.
+
+```ruby
+class Sanitizer
+  include Uber::Callable
+
+  def call(represented, fragment, doc, *args)
+    fragment.sanitize
+  end
+end
+```
+
+Note how including `Uber::Callable` marks instances of this class as callable. No `respond_to?` or other magic takes place here.
+
+```ruby
+property :title, parse_filter: Santizer.new
+```
+
+This is enough to have the `Sanitizer` class run with all the arguments that are usually passed to the lambda (preceded by the represented object as first argument).
 
 
 ## XML Support
