@@ -14,21 +14,13 @@ module Representable
 
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
     # Same-named properties get overridden, just like in a Hash.
-    #
-    # Overwrite definition_class if you need a custom Definition object (helpful when using
-    # representable in other gems).
     class Definitions < Inheritable::Hash
-      def initialize(definition_class)
-        @definition_class = definition_class
-        super()
-      end
-
       def add(name, options, &block)
         if options[:inherit] # i like that: the :inherit shouldn't be handled outside.
           return get(name).merge!(options, &block)
         end
 
-        self[name.to_s] = definition_class.new(name, options, &block)
+        self[name.to_s] = Definition.new(name, options, &block)
       end
 
       def get(name)
@@ -37,17 +29,14 @@ module Representable
 
       extend Forwardable
       def_delegators :values, :each # so we look like an array. this is only used in Mapper. we could change that so we don't need to hide the hash.
-
-    private
-      attr_reader :definition_class
     end
 
 
-    def initialize(definition_class=Definition)
+    def initialize
       super
       merge!(
         :features    => @features     = Inheritable::Hash.new,
-        :definitions => @definitions  = Definitions.new(definition_class),
+        :definitions => @definitions  = Definitions.new,
         :options     => @options      = Inheritable::Hash.new,
         :wrap        => nil )
     end
