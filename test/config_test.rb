@@ -21,6 +21,20 @@ class ConfigTest < MiniTest::Spec
     end
   end
 
+  describe "#[]" do
+    # does return nil for non-existent
+    it { subject[:hello].must_equal nil }
+  end
+
+  describe "#[] ||=" do
+    # does return nil for non-existent
+    it do
+      subject[:hello] ||= true
+      subject[:hello] .must_equal true
+    end
+    it {  }
+  end
+
   # describe "#[]" do
   #   before { subject.add(:title, {:me => true}) }
 

@@ -44,7 +44,7 @@ module Representable
 
 
     def initialize(definition_class=Definition)
-      super
+      super()
       merge!(
         :features    => @features     = Inheritable::Hash.new,
         :definitions => @definitions  = Definitions.new(definition_class),
