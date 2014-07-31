@@ -1,3 +1,7 @@
+# 2.0.3
+
+# Fixed a bug where `Forwardable` wasn't available (because we didn't require it :).
+
 # 2.0.2
 
 * Fixed a bug with `Config#[]` which returned a default value that shouldn't be there.
