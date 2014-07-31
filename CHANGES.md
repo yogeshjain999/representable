@@ -1,3 +1,7 @@
+# 2.0.1
+
+* Made is simpler to define your own `Definition` class by passing it to `Config.new(Definition)` in `Representer::build_config`.
+
 # 2.0.0
 
 ## Relevant
