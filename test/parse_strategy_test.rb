@@ -145,8 +145,8 @@ class ParseStrategyFindOrInstantiateTest < BaseTest
 
   Song = Struct.new(:id, :title)
   Song.class_eval do
-    def self.find(id)
-      return new(1, "Resist Stan") if id==1# we should return the same object here
+    def self.find_by(attributes={})
+      return new(1, "Resist Stan") if attributes[:id]==1# we should return the same object here
       new
     end
   end
@@ -227,8 +227,8 @@ end
 class ParseStrategyLambdaTest < MiniTest::Spec
   Song = Struct.new(:id, :title)
   Song.class_eval do
-    def self.find(id)
-      return new(1, "Resist Stan") if id==1# we should return the same object here
+    def self.find_by(attributes={})
+      return new(1, "Resist Stan") if attributes[:id]==1# we should return the same object here
       new
     end
   end
