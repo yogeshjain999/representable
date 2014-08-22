@@ -14,6 +14,7 @@ module Representable
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
 
+    # TODO: implement that just by calling ::property(name, options){include mod} on the inheriting representer.
     module InheritModule
       def inherit_module!(parent)
         inherited_attrs = parent.representable_attrs[:definitions].keys
