@@ -1,6 +1,5 @@
 require 'test_helper'
 
-require 'representable/json/collection'
 require 'representable/json/hash'
 
 class LonelyRepresenterTest < MiniTest::Spec

@@ -1,6 +1,10 @@
+# 2.0.4
+
+* Fix implicit rendering of JSON and XML collections where json/collection wasn't loaded properly, resulting in the native JSON's `#to_json` to be called.
+
 # 2.0.3
 
-# Fixed a bug where `Forwardable` wasn't available (because we didn't require it :).
+* Fixed a bug where `Forwardable` wasn't available (because we didn't require it :).
 
 # 2.0.2
 

@@ -1,5 +1,6 @@
 require 'multi_json'
 require 'representable/hash'
+require 'representable/json/collection'
 
 module Representable
   # Brings #to_json and #from_json to your object.

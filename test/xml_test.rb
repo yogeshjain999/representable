@@ -378,7 +378,6 @@ class CollectionTest < MiniTest::Spec
     end
   end
 
-  require 'representable/xml/collection'
   require 'representable/xml/hash'
   class LonelyRepresenterTest < MiniTest::Spec
     # TODO: where is the XML::Hash test?

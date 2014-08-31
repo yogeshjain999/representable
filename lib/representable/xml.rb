@@ -1,5 +1,6 @@
 require 'representable'
 require 'representable/bindings/xml_bindings'
+require 'representable/xml/collection'
 require 'nokogiri'
 
 module Representable
