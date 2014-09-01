@@ -1,6 +1,7 @@
 # 2.0.4
 
 * Fix implicit rendering of JSON and XML collections where json/collection wasn't loaded properly, resulting in the native JSON's `#to_json` to be called.
+* Fix `:find_or_instantiate` parse strategy which wouldn't instantiate but raise an error. Thanks to @d4rky-pl.
 
 # 2.0.3
 
