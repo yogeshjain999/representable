@@ -83,6 +83,11 @@ module Representable
       self[:binding].call(self, *args)
     end
 
+    def inspect
+      state = (instance_variables-[:@runtime_options, :@name]).collect { |ivar| "#{ivar}=#{instance_variable_get(ivar)}" }
+      "#<Representable::Definition ==>#{name} #{state.join(" ")}>"
+    end
+
   private
     def setup!(options, &block)
       handle_extend!(options)
