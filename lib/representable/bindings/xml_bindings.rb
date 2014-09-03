@@ -132,11 +132,7 @@ module Representable
       end
 
       def deserialize_from(node)
-        {}.tap do |hash|
-          node.each do |k,v|
-            hash[k] = deserialize(v)
-          end
-        end
+        HashDeserializer.new(self).deserialize(node)
       end
     end
 
