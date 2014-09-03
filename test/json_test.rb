@@ -395,15 +395,15 @@ end
 
       describe "parsing" do
         subject { OpenStruct.new.extend(representer) }
-        let (:hash) { {"7"=>{"name"=>"Contemplation"}} }
+        let (:hsh) { {"7"=>{"name"=>"Contemplation"}} }
 
         it "parses incoming hash" do
-          subject.from_hash("songs"=>hash).songs.must_equal({"7"=>Song.new("Contemplation")})
+          subject.from_hash("songs"=>hsh).songs.must_equal({"7"=>Song.new("Contemplation")})
         end
 
         it "doesn't modify the incoming hash" do
-          subject.from_hash("songs"=> incoming_hash = hash.dup)
-          hash.must_equal incoming_hash
+          subject.from_hash("songs"=> incoming_hash = hsh.dup)
+          hsh.must_equal incoming_hash
         end
       end
     end
