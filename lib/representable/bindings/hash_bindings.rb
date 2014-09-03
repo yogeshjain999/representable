@@ -22,10 +22,6 @@ module Representable
         hash[as] = serialize(value)
       end
 
-      def deserialize_from(fragment)
-        deserialize(fragment)
-      end
-
       def serialize_method
         :to_hash
       end
