@@ -58,27 +58,20 @@ module Representable
     end
 
     def read_fragment(doc)
-      value = read_fragment_for(doc)
+      fragment = read(doc)
         # read (hash or node)
           # return if skip_parse
           # deserialize # this is only if we want to deserialize!
 
-
-      if value == FragmentNotFound
+      if fragment == FragmentNotFound
         return unless has_default?
         value = self[:default]
+      else
+        # use a Deserializer to transform fragment to/into object.
+        value = deserialize(fragment)
       end
 
       yield value
-    end
-
-    def read_fragment_for(doc)
-      fragment = read(doc)
-
-      return fragment if fragment == FragmentNotFound # FIXME.
-
-      # use a Deserializer to transform fragment to/into object.
-      deserialize(fragment)
     end
 
     def render_filter(value, doc)
