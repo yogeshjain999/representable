@@ -55,9 +55,7 @@ module Representable
       end
 
       def deserialize(fragment)
-        {}.tap do |hsh|
-          fragment.each { |key, item_fragment| hsh[key] = super(item_fragment) }
-        end
+        HashDeserializer.new(self).deserialize(fragment)
       end
     end
   end

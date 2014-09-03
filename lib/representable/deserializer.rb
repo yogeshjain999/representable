@@ -1,4 +1,5 @@
 module Representable
+  # CollectionDeserializer#call([fragment, fragment]), where fragment can be Hash, Node, etc.
   class CollectionDeserializer
     def initialize(binding) # TODO: get rid of binding dependency
       @binding = binding
@@ -9,9 +10,22 @@ module Representable
 
       # next step: get rid of collect.
       fragment.enum_for(:each_with_index).collect do |item_fragment, i|
-        @deserializer = ObjectDeserializer.new(@binding)
+        deserialize!(item_fragment, i) # FIXME: what if obj nil?
+      end
+    end
 
-        @deserializer.call(item_fragment, i) # FIXME: what if obj nil?
+  private
+    def deserialize!(*args)
+      # TODO: re-use deserializer.
+      ObjectDeserializer.new(@binding).call(*args)
+    end
+  end
+
+
+  class HashDeserializer < CollectionDeserializer
+    def deserialize(hash)
+      {}.tap do |hsh|
+        hash.each { |key, fragment| hsh[key] = deserialize!(fragment) }
       end
     end
   end

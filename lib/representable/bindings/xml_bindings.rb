@@ -113,11 +113,12 @@ module Representable
       end
 
       def deserialize_from(nodes)
-        {}.tap do |hash|
-          nodes.children.each do |node|
-            hash[node.name] = deserialize(content_for node)
-          end
+        hash = {}
+        nodes.children.each do |node|
+          hash[node.name] = content_for node
         end
+
+        HashDeserializer.new(self).deserialize(hash)
       end
     end
 
