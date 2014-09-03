@@ -86,7 +86,8 @@ module Representable
         return res
       end
 
-      fragment
+      # use a Deserializer to transform fragment to/into object.
+      deserialize(fragment)
     end
 
     def render_filter(value, doc)

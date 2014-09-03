@@ -46,9 +46,7 @@ module Representable
       end
 
       def deserialize_from(nodes)
-        content_node = content_for(nodes.first)
-
-        deserialize(content_node)
+        content_for(nodes.first)
       end
 
       # DISCUSS: why is this public?
