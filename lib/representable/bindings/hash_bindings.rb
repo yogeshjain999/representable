@@ -41,7 +41,7 @@ module Representable
       end
 
       def deserialize(fragment)
-        CollectionDeserializer.new(self).deserialize(fragment)
+        fragment
       end
     end
 
@@ -55,7 +55,7 @@ module Representable
       end
 
       def deserialize(fragment)
-        HashDeserializer.new(self).deserialize(fragment)
+        fragment
       end
     end
   end

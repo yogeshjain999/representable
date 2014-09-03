@@ -93,8 +93,7 @@ module Representable
           content_for(item)
         end
 
-        # *Deserializer doesn't want anything format specific!
-        CollectionDeserializer.new(self).deserialize(content_nodes)
+        content_nodes
       end
 
     private
@@ -118,7 +117,7 @@ module Representable
           hash[node.name] = content_for node
         end
 
-        HashDeserializer.new(self).deserialize(hash)
+        hash
       end
     end
 

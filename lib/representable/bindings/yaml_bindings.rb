@@ -42,7 +42,7 @@ module Representable
       end
 
       def deserialize(fragment)  # FIXME: redundant from Hash::Bindings
-        CollectionDeserializer.new(self).deserialize(fragment)
+        fragment
       end
     end
   end

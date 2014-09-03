@@ -59,6 +59,10 @@ module Representable
 
     def read_fragment(doc)
       value = read_fragment_for(doc)
+        # read (hash or node)
+          # return if skip_parse
+          # deserialize # this is only if we want to deserialize!
+
 
       if value == FragmentNotFound
         return unless has_default?
@@ -69,7 +73,20 @@ module Representable
     end
 
     def read_fragment_for(doc)
-      read(doc)
+      fragment = read(doc)
+
+      return fragment if fragment == FragmentNotFound # FIXME.
+
+      return HashDeserializer.new(self).deserialize(fragment) if self.class.to_s =~ /HashBind/
+
+      if self.class.to_s =~ /CollectionBind/
+        puts self.class
+        res= CollectionDeserializer.new(self).deserialize(fragment)
+        puts "deserialized #{res.inspect}"
+        return res
+      end
+
+      fragment
     end
 
     def render_filter(value, doc)
@@ -142,6 +159,9 @@ module Representable
       end
 
       def deserialize(data)
+        # skip_parse
+        # return if evaluate_option(:skip_parse, data)
+
         # DISCUSS: does it make sense to skip deserialization of nil-values here?
         ObjectDeserializer.new(self).call(data)
       end

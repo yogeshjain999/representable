@@ -9,7 +9,9 @@ module Representable
     def update_properties_from(doc, options, format)
       bin   = representable_mapper(format, options).bindings.first
       hash  = filter_keys_for(doc, options)
-      value = bin.deserialize_from(hash)
+
+      value = HashDeserializer.new(bin).deserialize(hash)
+      # value = bin.deserialize_from(hash)
       represented.replace(value)
     end
 
