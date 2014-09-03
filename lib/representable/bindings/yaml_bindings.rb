@@ -41,8 +41,9 @@ module Representable
         end
       end
 
-      def deserialize(fragment)  # FIXME: redundant from Hash::Bindings
-        fragment
+    private
+      def deserializer_class
+        CollectionDeserializer
       end
     end
   end

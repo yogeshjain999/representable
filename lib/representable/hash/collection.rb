@@ -26,7 +26,7 @@ module Representable::Hash
     def update_properties_from(doc, options, format)
       bin   = representable_mapper(format, options).bindings.first
       #value = bin.deserialize_from(doc)
-      value = CollectionDeserializer.new(bin).deserialize(doc)
+      value = CollectionDeserializer.new(bin).call(doc)
       represented.replace(value)
     end
   end

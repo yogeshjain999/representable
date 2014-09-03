@@ -10,7 +10,7 @@ module Representable
       bin   = representable_mapper(format, options).bindings.first
       hash  = filter_keys_for(doc, options)
 
-      value = HashDeserializer.new(bin).deserialize(hash)
+      value = HashDeserializer.new(bin).call(hash)
       # value = bin.deserialize_from(hash)
       represented.replace(value)
     end

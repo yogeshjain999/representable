@@ -98,6 +98,10 @@ module Representable
       def set_for(parent, nodes)
         Nokogiri::XML::NodeSet.new(parent.document, nodes)
       end
+
+      def deserializer_class
+        CollectionDeserializer
+      end
     end
 
 
@@ -116,6 +120,12 @@ module Representable
         end
 
         hash
+      end
+
+    private
+      def deserializer_class
+        # FIXME: this is never called?
+        HashDeserializer
       end
     end
 

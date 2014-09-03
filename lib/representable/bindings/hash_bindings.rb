@@ -35,8 +35,9 @@ module Representable
         value.collect { |item| super(item) } # TODO: i don't want Array but Forms here - what now?
       end
 
-      def deserialize(fragment)
-        fragment
+    private
+      def deserializer_class
+        CollectionDeserializer
       end
     end
 
@@ -49,8 +50,9 @@ module Representable
         end
       end
 
-      def deserialize(fragment)
-        fragment
+    private
+      def deserializer_class
+        HashDeserializer
       end
     end
   end

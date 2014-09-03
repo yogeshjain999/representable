@@ -77,15 +77,6 @@ module Representable
 
       return fragment if fragment == FragmentNotFound # FIXME.
 
-      return HashDeserializer.new(self).deserialize(fragment) if self.class.to_s =~ /HashBind/
-
-      if self.class.to_s =~ /CollectionBind/
-        puts self.class
-        res= CollectionDeserializer.new(self).deserialize(fragment)
-        puts "deserialized #{res.inspect}"
-        return res
-      end
-
       # use a Deserializer to transform fragment to/into object.
       deserialize(fragment)
     end
@@ -160,11 +151,7 @@ module Representable
       end
 
       def deserialize(data)
-        # skip_parse
-        # return if evaluate_option(:skip_parse, data)
-
-        # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        ObjectDeserializer.new(self).call(data)
+        deserializer_class.new(self).call(data)
       end
 
       def create_object(fragment, *args)
@@ -172,6 +159,10 @@ module Representable
       end
 
     private
+      def deserializer_class
+        ObjectDeserializer
+      end
+
       # DISCUSS: deprecate :class in favour of :instance and simplicity?
       def class_for(fragment, *args)
         item_class = class_from(fragment, *args) or raise DeserializeError.new(":class did not return class constant.")

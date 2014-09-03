@@ -5,7 +5,7 @@ module Representable
       @binding = binding
     end
 
-    def deserialize(fragment)
+    def call(fragment)
       # puts "deserialize #{@binding.name}" # TODO: introduce Representable::Debug.
 
       # next step: get rid of collect.
@@ -23,7 +23,7 @@ module Representable
 
 
   class HashDeserializer < CollectionDeserializer
-    def deserialize(hash)
+    def call(hash)
       {}.tap do |hsh|
         hash.each { |key, fragment| hsh[key] = deserialize!(fragment) }
       end
