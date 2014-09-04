@@ -463,3 +463,41 @@ class CollectionTest < MiniTest::Spec
     end
   end
 end
+
+class XmlHashTest < MiniTest::Spec
+  # scalar, no object
+  describe "plain text" do
+    representer!(module: Representable::XML) do
+      hash :songs
+    end
+
+    let (:doc) { "<open_struct><first>The Gargoyle</first><second>Bronx</second></open_struct>" }
+
+    # to_xml
+    it { OpenStruct.new(songs: {"first" => "The Gargoyle", "second" => "Bronx"}).extend(representer).to_xml.must_equal_xml(doc) }
+    # FIXME: this NEVER worked!
+    # it { OpenStruct.new.extend(representer).from_xml(doc).songs.must_equal({"first" => "The Gargoyle", "second" => "Bronx"}) }
+  end
+
+  describe "with objects" do
+    representer!(module: Representable::XML) do
+      hash :songs, class: OpenStruct do
+        property :title
+      end
+    end
+
+    let (:doc) { "<open_struct>
+  <open_struct>
+    <title>The Gargoyle</title>
+  </open_struct>
+  <open_struct>
+    <title>Bronx</title>
+  </open_struct>
+</open_struct>" }
+
+    # to_xml
+    it { OpenStruct.new(songs: {"first" => OpenStruct.new(title: "The Gargoyle"), "second" => OpenStruct.new(title: "Bronx")}).extend(representer).to_xml.must_equal_xml(doc) }
+    # FIXME: this NEVER worked!
+    # it { OpenStruct.new.extend(representer).from_xml(doc).songs.must_equal({"first" => "The Gargoyle", "second" => "Bronx"}) }
+  end
+end

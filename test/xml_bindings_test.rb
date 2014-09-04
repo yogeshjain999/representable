@@ -44,10 +44,6 @@ class XMLBindingTest < MiniTest::Spec
         @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :class => SongWithRepresenter), nil, nil, {:doc => @doc})
       end
 
-      it "extracts with #read" do
-        assert_equal @song, @property.read(Nokogiri::XML("<song><name>Thinning the Herd</name></song>"))
-      end
-
       it "inserts with #write" do
         @property.write(@doc, @song)
         assert_xml_equal("<song><name>Thinning the Herd</name></song>", @doc.to_s)
@@ -57,10 +53,6 @@ class XMLBindingTest < MiniTest::Spec
     describe "with an object and :extend" do
       before do
         @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :class => Song, :extend => SongRepresenter), nil, nil, {:doc => @doc})
-      end
-
-      it "extracts with #read" do
-        assert_equal @song, @property.read(Nokogiri::XML("<song><name>Thinning the Herd</name></song>"))
       end
 
       it "inserts with #write" do
@@ -93,41 +85,12 @@ class XMLBindingTest < MiniTest::Spec
         @property = Representable::XML::PropertyBinding.new(Representable::Definition.new(:song, :collection => true, :class => SongWithRepresenter), nil, nil, {:doc => @doc})
       end
 
-      it "extracts with #read" do
-        assert_equal @song, @property.read(Nokogiri::XML("<song><name>Thinning the Herd</name></song>"))
-      end
-
       it "inserts with #write" do
         @property.write(@doc, @song)
         assert_xml_equal("<song><name>Thinning the Herd</name></song>", @doc.to_s)
         assert_kind_of Nokogiri::XML::Node, @doc.children.first
         assert_equal "song", @doc.children.first.name
         assert_equal "name", @doc.children.first.children.first.name
-      end
-    end
-  end
-
-
-  describe "HashBinding" do
-    describe "with plain text items" do
-      before do
-        @property = Representable::XML::HashBinding.new(Representable::Definition.new(:songs, :hash => true), nil, nil)
-      end
-
-      it "extracts with #read" do
-        assert_equal({"first" => "The Gargoyle", "second" => "Bronx"} , @property.read(Nokogiri::XML("<songs><first>The Gargoyle</first><second>Bronx</second></songs>")))
-      end
-
-      it "inserts with #write" do
-        parent = Nokogiri::XML::Node.new("parent", @doc)
-        @property.write(parent, {"first" => "The Gargoyle", "second" => "Bronx"})
-        assert_xml_equal("<songs><first>The Gargoyle</first><second>Bronx</second></songs>", parent.to_s)
-      end
-    end
-
-    describe "with objects" do
-      before do
-        @property = Representable::XML::HashBinding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter), nil)
       end
     end
   end
