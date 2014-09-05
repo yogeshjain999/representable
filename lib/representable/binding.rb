@@ -59,14 +59,12 @@ module Representable
 
     def read_fragment(doc)
       fragment = read(doc)
-        # read (hash or node)
-          # return if skip_parse
-          # deserialize # this is only if we want to deserialize!
 
       if fragment == FragmentNotFound
         return unless has_default?
         value = self[:default]
       else
+        return value if evaluate_option(:skip_parse, fragment)
         # use a Deserializer to transform fragment to/into object.
         value = deserialize(fragment)
       end
