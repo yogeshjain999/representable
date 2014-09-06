@@ -64,7 +64,7 @@ module Representable
         return unless has_default?
         value = self[:default]
       else
-        return value if evaluate_option(:skip_parse, fragment)
+        return if evaluate_option(:skip_parse, fragment)
         # use a Deserializer to transform fragment to/into object.
         value = deserialize(fragment)
       end

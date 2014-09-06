@@ -1,6 +1,7 @@
 # 2.0.5
 
 * Make `Definition#inspect` more readable by filtering out some instance variables like `@runtime_options`.
+* `:skip_parse`. (add to README)
 
 # 2.0.4
 
