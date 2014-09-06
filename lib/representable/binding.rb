@@ -39,10 +39,10 @@ module Representable
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
       evaluate_option(:reader, doc) do
-        read_fragment(doc) do |value|
-          value = parse_filter(value, doc)
-          set(value)
-        end
+        read_fragment(doc)# do |value|
+        #   value = parse_filter(value, doc)
+        #   set(value)
+        # end
       end
     end
 
@@ -60,17 +60,23 @@ module Representable
     def read_fragment(doc)
       fragment = read(doc)
 
-      if fragment == FragmentNotFound
-        return unless has_default?
-        value = self[:default]
-      else
-        return if evaluate_option(:skip_parse, fragment)
-        # use a Deserializer to transform fragment to/into object.
-        value = deserialize(fragment)
-      end
+      populator.call(fragment, doc)
 
-      yield value
+      # # the rest should be applied per item (collection) or per fragment (collection and property)
+      # if fragment == FragmentNotFound
+      #   return unless has_default?
+      #   value = self[:default]
+      # else
+      #   return if evaluate_option(:skip_parse, fragment)
+      #   # use a Deserializer to transform fragment to/into object.
+      #   value = deserialize(fragment)
+      # end
+
+      # yield value
+      #   # parse_filter
+      #   # set
     end
+
 
     def render_filter(value, doc)
       evaluate_option(:render_filter, value, doc) { value }
@@ -152,6 +158,11 @@ module Representable
     private
       def deserializer_class
         ObjectDeserializer
+      end
+
+      require 'representable/populator'
+      def populator
+        Populator.new(self)
       end
 
       # DISCUSS: deprecate :class in favour of :instance and simplicity?
