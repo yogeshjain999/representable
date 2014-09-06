@@ -838,7 +838,7 @@ module AlbumRepresenter
 end
 ```
 
-The block for `:class` receives the currently parsed fragment. Here, this might be somthing like `{"title"=>"Weirdo", "track"=>5}`.
+The block for `:class` receives the currently parsed fragment. Here, this might be something like `{"title"=>"Weirdo", "track"=>5}`.
 
 If this is not enough, you may override the entire object creation process using `:instance`.
 
