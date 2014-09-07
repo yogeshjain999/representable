@@ -61,22 +61,7 @@ module Representable
       fragment = read(doc)
 
       populator.call(fragment, doc)
-
-      # # the rest should be applied per item (collection) or per fragment (collection and property)
-      # if fragment == FragmentNotFound
-      #   return unless has_default?
-      #   value = self[:default]
-      # else
-      #   return if evaluate_option(:skip_parse, fragment)
-      #   # use a Deserializer to transform fragment to/into object.
-      #   value = deserialize(fragment)
-      # end
-
-      # yield value
-      #   # parse_filter
-      #   # set
     end
-
 
     def render_filter(value, doc)
       evaluate_option(:render_filter, value, doc) { value }
@@ -147,22 +132,18 @@ module Representable
         ObjectSerializer.new(self, object).call
       end
 
-      def deserialize(data)
-        deserializer_class.new(self).call(data)
-      end
-
       def create_object(fragment, *args)
         instance_for(fragment, *args) or class_for(fragment, *args)
       end
 
     private
-      def deserializer_class
-        ObjectDeserializer
-      end
-
       require 'representable/populator'
       def populator
-        Populator.new(self)
+        populator_class.new(self)
+      end
+
+      def populator_class
+        Populator
       end
 
       # DISCUSS: deprecate :class in favour of :instance and simplicity?
@@ -185,16 +166,16 @@ module Representable
     # generics for collection bindings.
     module Collection
     private
-      def deserializer_class
-        CollectionDeserializer
+      def populator_class
+        Populator::Collection
       end
     end
 
     # and the same for hashes.
     module Hash
     private
-      def deserializer_class
-        HashDeserializer
+      def populator_class
+        Populator::Hash
       end
     end
   end

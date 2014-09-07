@@ -17,9 +17,7 @@ module Representable
         return unless @binding.has_default?
         value = @binding[:default]
       else
-        return if @binding.send(:evaluate_option, :skip_parse, fragment)
-        # use a Deserializer to transform fragment to/into object.
-        value = @binding.deserialize(fragment) # CollectionDeserializer/HashDeserializer/etc.
+        value = deserialize(fragment) { return } # stop here if skip_parse?
       end
 
       value = @binding.parse_filter(value, doc)
@@ -29,8 +27,30 @@ module Representable
     end
 
   private
-    def method_name
+    def deserialize(fragment)
+      return yield if @binding.send(:evaluate_option, :skip_parse, fragment)
 
+      # use a Deserializer to transform fragment to/into object.
+      deserializer_class.new(@binding).call(fragment) # CollectionDeserializer/HashDeserializer/etc.
+    end
+
+    def deserializer_class
+      ObjectDeserializer
+    end
+
+
+    class Collection < self
+    private
+      def deserializer_class
+        CollectionDeserializer
+      end
+    end
+
+    class Hash < self
+    private
+      def deserializer_class
+        HashDeserializer
+      end
     end
   end
 end

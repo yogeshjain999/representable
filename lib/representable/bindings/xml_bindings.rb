@@ -141,7 +141,7 @@ module Representable
     # Represents a tag attribute. Currently this only works on the top-level tag.
     class AttributeBinding < PropertyBinding
       def read(node)
-        deserialize(node[as])
+        node[as]
       end
 
       def serialize_for(value, parent)
