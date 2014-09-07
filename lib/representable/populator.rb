@@ -5,7 +5,7 @@ module Representable
       # deserialize
       # parse_filter
       # set
-  class Populator
+  class Populator # rename to Deserializer?
     def initialize(binding)
       @binding = binding
     end
@@ -39,8 +39,28 @@ module Representable
     end
 
 
+    # A separated collection deserializer/populator allows us better dealing with populating/modifying
+    # collections of models. (e.g. replace, update, push, etc.).
+    # That also gives us a place to apply options like :parse_filter, etc. per item.
     class Collection < self
     private
+      def deserialize(fragment)
+        collection = [] # this can be replaced, e.g. AR::Collection or whatever.
+
+        fragment.each_with_index do |item_fragment, i|
+          # add more per-item options here!
+          next if @binding.send(:evaluate_option, :skip_parse, item_fragment)
+
+          collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
+        end
+
+        collection
+      end
+
+      def deserialize!(*args)
+        ObjectDeserializer.new(@binding).call(*args)
+      end
+
       def deserializer_class
         CollectionDeserializer
       end

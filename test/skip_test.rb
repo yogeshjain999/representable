@@ -22,4 +22,7 @@ class SkipTest < MiniTest::Spec
 
   # skip parsing.
   it { song.from_hash({"band" => {}}, skip?: true).band.must_equal nil }
+  # skip_parse is _per item_.
+  let (:airplay) { OpenStruct.new(station: "JJJ") }
+  it { song.from_hash({"airplays" => [{"station" => "JJJ"}, {}]}, skip?: true).airplays.must_equal [airplay] }
 end
