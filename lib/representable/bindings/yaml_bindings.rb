@@ -34,16 +34,13 @@ module Representable
 
 
     class CollectionBinding < PropertyBinding
+      include Binding::Collection
+
       def serialize(value)
         Psych::Nodes::Sequence.new.tap do |seq|
           seq.style = Psych::Nodes::Sequence::FLOW if self[:style] == :flow
           value.each { |obj| seq.children << super(obj) }
         end
-      end
-
-    private
-      def deserializer_class
-        CollectionDeserializer
       end
     end
   end

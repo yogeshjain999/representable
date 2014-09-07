@@ -31,28 +31,22 @@ module Representable
     end
 
     class CollectionBinding < PropertyBinding
+      include Binding::Collection
+
       def serialize(value)
         value.collect { |item| super(item) } # TODO: i don't want Array but Forms here - what now?
-      end
-
-    private
-      def deserializer_class
-        CollectionDeserializer
       end
     end
 
 
     class HashBinding < PropertyBinding
+      include Binding::Hash
+
       def serialize(value)
         # requires value to respond to #each with two block parameters.
         {}.tap do |hsh|
           value.each { |key, obj| hsh[key] = super(obj) }
         end
-      end
-
-    private
-      def deserializer_class
-        HashDeserializer
       end
     end
   end

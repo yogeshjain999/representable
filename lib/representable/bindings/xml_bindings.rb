@@ -81,6 +81,8 @@ module Representable
     end
 
     class CollectionBinding < PropertyBinding
+      include Binding::Collection
+
       def serialize_for(value, parent)
         # return NodeSet so << works.
         set_for(parent, value.collect { |item| super(item, parent) })
@@ -98,14 +100,12 @@ module Representable
       def set_for(parent, nodes)
         Nokogiri::XML::NodeSet.new(parent.document, nodes)
       end
-
-      def deserializer_class
-        CollectionDeserializer
-      end
     end
 
 
     class HashBinding < CollectionBinding
+      include Binding::Hash
+
       def serialize_for(value, parent)
         set_for(parent, value.collect do |k, v|
           node = node_for(parent, k)
@@ -120,12 +120,6 @@ module Representable
         end
 
         hash
-      end
-
-    private
-      def deserializer_class
-        # FIXME: this is never called?
-        HashDeserializer
       end
     end
 

@@ -180,6 +180,23 @@ module Representable
         evaluate_option(:instance, fragment, *args) { return } or raise DeserializeError.new(":instance did not return object.")
       end
     end
+
+
+    # generics for collection bindings.
+    module Collection
+    private
+      def deserializer_class
+        CollectionDeserializer
+      end
+    end
+
+    # and the same for hashes.
+    module Hash
+    private
+      def deserializer_class
+        HashDeserializer
+      end
+    end
   end
 
 
