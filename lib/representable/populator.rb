@@ -54,7 +54,7 @@ module Representable
           collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
         end
 
-        collection
+        collection # with parse_strategy: :sync, this is ignored.
       end
 
       def deserialize!(*args)
