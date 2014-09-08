@@ -1,3 +1,8 @@
+# 2.1.0
+
+* Make `Definition#inspect` more readable by filtering out some instance variables like `@runtime_options`.
+* `:skip_parse`. (add to README)
+
 # 2.0.4
 
 * Fix implicit rendering of JSON and XML collections where json/collection wasn't loaded properly, resulting in the native JSON's `#to_json` to be called.

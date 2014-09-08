@@ -320,14 +320,14 @@ class CollectionTest < MiniTest::Spec
 
 
   describe ":as" do
-    let(:xml) {
+    let(:xml_doc) {
       Module.new do
         include Representable::XML
         collection :songs, :as => :song
       end }
 
     it "collects untyped items" do
-      album = Album.new.extend(xml).from_xml(%{
+      album = Album.new.extend(xml_doc).from_xml(%{
         <album>
           <song>Two Kevins</song>
           <song>Wright and Rong</song>
@@ -340,8 +340,8 @@ class CollectionTest < MiniTest::Spec
 
 
   describe ":wrap" do
-    let (:album) { Album.new.extend(xml) }
-    let (:xml) {
+    let (:album) { Album.new.extend(xml_doc) }
+    let (:xml_doc) {
       Module.new do
         include Representable::XML
         collection :songs, :as => :song, :wrap => :songs
@@ -397,22 +397,22 @@ class CollectionTest < MiniTest::Spec
         end
 
         let (:songs) { [Song.new("Days Go By"), Song.new("Can't Take Them All")] }
-        let (:xml)   { "<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>" }
+        let (:xml_doc)   { "<songs><song><name>Days Go By</name></song><song><name>Can't Take Them All</name></song></songs>" }
 
         it "renders array" do
-          songs.extend(representer).to_xml.must_equal_xml xml
+          songs.extend(representer).to_xml.must_equal_xml xml_doc
         end
 
         it "renders array with decorator" do
-          decorator.new(songs).to_xml.must_equal_xml xml
+          decorator.new(songs).to_xml.must_equal_xml xml_doc
         end
 
         it "parses array" do
-          [].extend(representer).from_xml(xml).must_equal songs
+          [].extend(representer).from_xml(xml_doc).must_equal songs
         end
 
         it "parses array with decorator" do
-          decorator.new([]).from_xml(xml).must_equal songs
+          decorator.new([]).from_xml(xml_doc).must_equal songs
         end
       end
     end
@@ -423,11 +423,11 @@ class CollectionTest < MiniTest::Spec
       end
 
       let (:songs) { {"one" => "Graveyards", "two" => "Can't Take Them All"} }
-      let (:xml)   { "<favs one=\"Graveyards\" two=\"Can't Take Them All\" />" }
+      let (:xml_doc)   { "<favs one=\"Graveyards\" two=\"Can't Take Them All\" />" }
 
       describe "#to_xml" do
         it "renders hash" do
-          songs.extend(representer).to_xml.must_equal_xml xml
+          songs.extend(representer).to_xml.must_equal_xml xml_doc
         end
 
         it "respects :exclude" do
@@ -439,27 +439,65 @@ class CollectionTest < MiniTest::Spec
         end
 
         it "renders hash with decorator" do
-          decorator.new(songs).to_xml.must_equal_xml xml
+          decorator.new(songs).to_xml.must_equal_xml xml_doc
         end
       end
 
       describe "#from_json" do
         it "returns hash" do
-          {}.extend(representer).from_xml(xml).must_equal songs
+          {}.extend(representer).from_xml(xml_doc).must_equal songs
         end
 
         it "respects :exclude" do
-          assert_equal({"two" => "Can't Take Them All"}, {}.extend(representer).from_xml(xml, :exclude => [:one]))
+          assert_equal({"two" => "Can't Take Them All"}, {}.extend(representer).from_xml(xml_doc, :exclude => [:one]))
         end
 
         it "respects :include" do
-          assert_equal({"one" => "Graveyards"}, {}.extend(representer).from_xml(xml, :include => [:one]))
+          assert_equal({"one" => "Graveyards"}, {}.extend(representer).from_xml(xml_doc, :include => [:one]))
         end
 
         it "parses hash with decorator" do
-          decorator.new({}).from_xml(xml).must_equal songs
+          decorator.new({}).from_xml(xml_doc).must_equal songs
         end
       end
     end
+  end
+end
+
+class XmlHashTest < MiniTest::Spec
+  # scalar, no object
+  describe "plain text" do
+    representer!(module: Representable::XML) do
+      hash :songs
+    end
+
+    let (:doc) { "<open_struct><first>The Gargoyle</first><second>Bronx</second></open_struct>" }
+
+    # to_xml
+    it { OpenStruct.new(songs: {"first" => "The Gargoyle", "second" => "Bronx"}).extend(representer).to_xml.must_equal_xml(doc) }
+    # FIXME: this NEVER worked!
+    # it { OpenStruct.new.extend(representer).from_xml(doc).songs.must_equal({"first" => "The Gargoyle", "second" => "Bronx"}) }
+  end
+
+  describe "with objects" do
+    representer!(module: Representable::XML) do
+      hash :songs, class: OpenStruct do
+        property :title
+      end
+    end
+
+    let (:doc) { "<open_struct>
+  <open_struct>
+    <title>The Gargoyle</title>
+  </open_struct>
+  <open_struct>
+    <title>Bronx</title>
+  </open_struct>
+</open_struct>" }
+
+    # to_xml
+    it { OpenStruct.new(songs: {"first" => OpenStruct.new(title: "The Gargoyle"), "second" => OpenStruct.new(title: "Bronx")}).extend(representer).to_xml.must_equal_xml(doc) }
+    # FIXME: this NEVER worked!
+    # it { OpenStruct.new.extend(representer).from_xml(doc).songs.must_equal({"first" => "The Gargoyle", "second" => "Bronx"}) }
   end
 end

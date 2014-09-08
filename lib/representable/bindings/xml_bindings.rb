@@ -46,8 +46,7 @@ module Representable
       end
 
       def deserialize_from(nodes)
-        content_for deserialize(nodes.first)
-        #deserialize(nodes.first)
+        content_for(nodes.first)
       end
 
       # DISCUSS: why is this public?
@@ -82,6 +81,8 @@ module Representable
     end
 
     class CollectionBinding < PropertyBinding
+      include Binding::Collection
+
       def serialize_for(value, parent)
         # return NodeSet so << works.
         set_for(parent, value.collect { |item| super(item, parent) })
@@ -92,8 +93,7 @@ module Representable
           content_for(item)
         end
 
-        # *Deserializer doesn't want anything format specific!
-        CollectionDeserializer.new(self).deserialize(content_nodes)
+        content_nodes
       end
 
     private
@@ -104,6 +104,8 @@ module Representable
 
 
     class HashBinding < CollectionBinding
+      include Binding::Hash
+
       def serialize_for(value, parent)
         set_for(parent, value.collect do |k, v|
           node = node_for(parent, k)
@@ -112,11 +114,12 @@ module Representable
       end
 
       def deserialize_from(nodes)
-        {}.tap do |hash|
-          nodes.children.each do |node|
-            hash[node.name] = deserialize(content_for node)
-          end
+        hash = {}
+        nodes.children.each do |node|
+          hash[node.name] = content_for node
         end
+
+        hash
       end
     end
 
@@ -130,11 +133,7 @@ module Representable
       end
 
       def deserialize_from(node)
-        {}.tap do |hash|
-          node.each do |k,v|
-            hash[k] = deserialize(v)
-          end
-        end
+        HashDeserializer.new(self).deserialize(node)
       end
     end
 
@@ -142,7 +141,7 @@ module Representable
     # Represents a tag attribute. Currently this only works on the top-level tag.
     class AttributeBinding < PropertyBinding
       def read(node)
-        deserialize(node[as])
+        node[as]
       end
 
       def serialize_for(value, parent)

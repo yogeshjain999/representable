@@ -14,16 +14,11 @@ module Representable
       def read(hash)
         return FragmentNotFound unless hash.has_key?(as) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
 
-        fragment = hash[as]
-        deserialize(fragment)
+        hash[as] # fragment
       end
 
       def write(hash, value)
         hash[as] = serialize(value)
-      end
-
-      def deserialize_from(fragment)
-        deserialize(fragment)
       end
 
       def serialize_method
@@ -36,27 +31,21 @@ module Representable
     end
 
     class CollectionBinding < PropertyBinding
+      include Binding::Collection
+
       def serialize(value)
         value.collect { |item| super(item) } # TODO: i don't want Array but Forms here - what now?
-      end
-
-      def deserialize(fragment)
-        CollectionDeserializer.new(self).deserialize(fragment)
       end
     end
 
 
     class HashBinding < PropertyBinding
+      include Binding::Hash
+
       def serialize(value)
         # requires value to respond to #each with two block parameters.
         {}.tap do |hsh|
           value.each { |key, obj| hsh[key] = super(obj) }
-        end
-      end
-
-      def deserialize(fragment)
-        {}.tap do |hsh|
-          fragment.each { |key, item_fragment| hsh[key] = super(item_fragment) }
         end
       end
     end

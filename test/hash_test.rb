@@ -14,7 +14,7 @@ class HashTest < MiniTest::Spec
 
 
   describe "property" do
-    let (:hash) { hash_representer do property :best_song end }
+    let (:hsh) { hash_representer do property :best_song end }
 
     let (:album) { Album.new.tap do |album|
       album.best_song = "Liar"
@@ -22,14 +22,14 @@ class HashTest < MiniTest::Spec
 
     describe "#to_hash" do
       it "renders plain property" do
-        album.extend(hash).to_hash.must_equal("best_song" => "Liar")
+        album.extend(hsh).to_hash.must_equal("best_song" => "Liar")
       end
     end
 
 
     describe "#from_hash" do
       it "parses plain property" do
-        album.extend(hash).from_hash("best_song" => "This Song Is Recycled").best_song.must_equal "This Song Is Recycled"
+        album.extend(hsh).from_hash("best_song" => "This Song Is Recycled").best_song.must_equal "This Song Is Recycled"
       end
     end
 
@@ -95,7 +95,7 @@ class HashTest < MiniTest::Spec
 
 
   describe "collection" do
-    let (:hash) { hash_representer do collection :songs end }
+    let (:hsh) { hash_representer do collection :songs end }
 
     let (:album) { Album.new.tap do |album|
       album.songs = ["Jackhammer", "Terrible Man"]
@@ -104,14 +104,14 @@ class HashTest < MiniTest::Spec
 
     describe "#to_hash" do
       it "renders a block style list per default" do
-        album.extend(hash).to_hash.must_equal("songs" => ["Jackhammer", "Terrible Man"])
+        album.extend(hsh).to_hash.must_equal("songs" => ["Jackhammer", "Terrible Man"])
       end
     end
 
 
     describe "#from_hash" do
       it "parses a block style list" do
-        album.extend(hash).from_hash("songs" => ["Off Key Melody", "Sinking"]).must_equal Album.new(["Off Key Melody", "Sinking"])
+        album.extend(hsh).from_hash("songs" => ["Off Key Melody", "Sinking"]).must_equal Album.new(["Off Key Melody", "Sinking"])
 
       end
     end

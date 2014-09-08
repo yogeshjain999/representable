@@ -39,10 +39,10 @@ module Representable
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
       evaluate_option(:reader, doc) do
-        read_fragment(doc) do |value|
-          value = parse_filter(value, doc)
-          set(value)
-        end
+        read_fragment(doc)# do |value|
+        #   value = parse_filter(value, doc)
+        #   set(value)
+        # end
       end
     end
 
@@ -58,18 +58,9 @@ module Representable
     end
 
     def read_fragment(doc)
-      value = read_fragment_for(doc)
+      fragment = read(doc)
 
-      if value == FragmentNotFound
-        return unless has_default?
-        value = self[:default]
-      end
-
-      yield value
-    end
-
-    def read_fragment_for(doc)
-      read(doc)
+      populator.call(fragment, doc)
     end
 
     def render_filter(value, doc)
@@ -141,16 +132,20 @@ module Representable
         ObjectSerializer.new(self, object).call
       end
 
-      def deserialize(data)
-        # DISCUSS: does it make sense to skip deserialization of nil-values here?
-        ObjectDeserializer.new(self).call(data)
-      end
-
       def create_object(fragment, *args)
         instance_for(fragment, *args) or class_for(fragment, *args)
       end
 
     private
+      require 'representable/populator'
+      def populator
+        populator_class.new(self)
+      end
+
+      def populator_class
+        Populator
+      end
+
       # DISCUSS: deprecate :class in favour of :instance and simplicity?
       def class_for(fragment, *args)
         item_class = class_from(fragment, *args) or raise DeserializeError.new(":class did not return class constant.")
@@ -164,6 +159,23 @@ module Representable
       def instance_for(fragment, *args)
         # cool: if no :instance set, { return } will jump out of this method.
         evaluate_option(:instance, fragment, *args) { return } or raise DeserializeError.new(":instance did not return object.")
+      end
+    end
+
+
+    # generics for collection bindings.
+    module Collection
+    private
+      def populator_class
+        Populator::Collection
+      end
+    end
+
+    # and the same for hashes.
+    module Hash
+    private
+      def populator_class
+        Populator::Hash
       end
     end
   end

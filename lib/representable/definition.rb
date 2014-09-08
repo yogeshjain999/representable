@@ -83,6 +83,11 @@ module Representable
       self[:binding].call(self, *args)
     end
 
+    def inspect
+      state = (instance_variables-[:@runtime_options, :@name]).collect { |ivar| "#{ivar}=#{instance_variable_get(ivar)}" }
+      "#<Representable::Definition ==>#{name} #{state.join(" ")}>"
+    end
+
   private
     def setup!(options, &block)
       handle_extend!(options)
@@ -109,7 +114,7 @@ module Representable
     end
 
     def dynamic_options
-      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend, :prepare, :if, :deserialize, :serialize, :render_filter, :parse_filter]
+      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend, :prepare, :if, :deserialize, :serialize, :render_filter, :parse_filter, :skip_parse]
     end
 
     def handle_extend!(options)

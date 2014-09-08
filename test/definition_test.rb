@@ -88,6 +88,11 @@ class DefinitionTest < MiniTest::Spec
     end
   end
 
+  # #inspect
+  describe "#inspect" do
+    it { Definition.new(:songs).inspect.must_equal "#<Representable::Definition ==>songs @options={:parse_filter=>[], :render_filter=>[], :as=>\"songs\"}>" }
+  end
+
 
   describe "generic API" do
     before do
