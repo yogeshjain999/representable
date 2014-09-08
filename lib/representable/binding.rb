@@ -1,3 +1,4 @@
+require "representable/populator"
 require "representable/deserializer"
 require "representable/serializer"
 
@@ -89,6 +90,20 @@ module Representable
       evaluate_option(:extend, object) # TODO: pass args? do we actually have args at the time this is called (compile-time)?
     end
 
+    # Evaluate the option (either nil, static, a block or an instance method call) or
+    # executes passed block when option not defined.
+    def evaluate_option(name, *args)
+      unless proc = self[name]
+        return yield if block_given?
+        return
+      end
+
+      # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
+      options = self[:pass_options] ? Options.new(self, user_options, represented, decorator) : user_options
+
+      proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
+    end
+
   private
     # Apparently, SimpleDelegator is super slow due to a regex, so we do it
     # ourselves, right, Jimmy?
@@ -106,21 +121,6 @@ module Representable
 
     attr_reader :exec_context, :decorator
 
-    # Evaluate the option (either nil, static, a block or an instance method call) or
-    # executes passed block when option not defined.
-    def evaluate_option(name, *args)
-      unless proc = self[name]
-        return yield if block_given?
-        return
-      end
-
-      # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
-      options = self[:pass_options] ? Options.new(self, user_options, represented, decorator) : user_options
-
-      proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
-    end
-
-
     # Options instance gets passed to lambdas when pass_options: true.
     # This is considered the new standard way and should be used everywhere for forward-compat.
     Options = Struct.new(:binding, :user_options, :represented, :decorator)
@@ -132,33 +132,13 @@ module Representable
         ObjectSerializer.new(self, object).call
       end
 
-      def create_object(fragment, *args)
-        instance_for(fragment, *args) or class_for(fragment, *args)
-      end
-
     private
-      require 'representable/populator'
       def populator
         populator_class.new(self)
       end
 
       def populator_class
         Populator
-      end
-
-      # DISCUSS: deprecate :class in favour of :instance and simplicity?
-      def class_for(fragment, *args)
-        item_class = class_from(fragment, *args) or raise DeserializeError.new(":class did not return class constant.")
-        item_class.new
-      end
-
-      def class_from(fragment, *args)
-        evaluate_option(:class, fragment, *args)
-      end
-
-      def instance_for(fragment, *args)
-        # cool: if no :instance set, { return } will jump out of this method.
-        evaluate_option(:instance, fragment, *args) { return } or raise DeserializeError.new(":instance did not return object.")
       end
     end
 

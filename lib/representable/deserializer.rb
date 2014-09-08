@@ -1,6 +1,8 @@
 module Representable
   # Deserializer's job is deserializing the already parsed fragment into a scalar or an object.
   # This object is then returned to the Populator.
+  #
+  # It respects :deserialize, :prepare, :class, :instance
   class Deserializer
     def initialize(binding)
       @binding = binding
@@ -10,7 +12,7 @@ module Representable
       return fragment unless @binding.typed? # customize with :extend. this is not really straight-forward.
 
       # what if create_object is responsible for providing the deserialize-to object?
-      object = @binding.create_object(fragment, *args) # customize with :instance and :class.
+      object = create_object(fragment, *args) # customize with :instance and :class.
 
       # DISCUSS: what parts should be in this class, what in Binding?
       representable = prepare(object) # customize with :prepare and :extend.
@@ -42,6 +44,25 @@ module Representable
       mod.prepare(object)
     end
     # in deserialize, we should get the original object?
+
+    def create_object(fragment, *args)
+      instance_for(fragment, *args) or class_for(fragment, *args)
+    end
+
+    def class_for(fragment, *args)
+      item_class = class_from(fragment, *args) or raise DeserializeError.new(":class did not return class constant.")
+      item_class.new
+    end
+
+    def class_from(fragment, *args)
+      @binding.evaluate_option(:class, fragment, *args)
+    end
+
+    def instance_for(fragment, *args)
+      # cool: if no :instance set, { return } will jump out of this method.
+      @binding.evaluate_option(:instance, fragment, *args) { return } or raise DeserializeError.new(":instance did not return object.")
+    end
+
 
 
     # Collection does exactly the same as Deserializer but for a collection.
