@@ -3,6 +3,8 @@ module Representable
   # This object is then returned to the Populator.
   #
   # It respects :deserialize, :prepare, :class, :instance
+  #
+  # Collection bindings return an array of parsed fragment items (still native format, e.g. Nokogiri node, for nested objects).
   class Deserializer
     def initialize(binding)
       @binding = binding
@@ -12,9 +14,7 @@ module Representable
       return fragment unless @binding.typed? # customize with :extend. this is not really straight-forward.
 
       # what if create_object is responsible for providing the deserialize-to object?
-      object = create_object(fragment, *args) # customize with :instance and :class.
-
-      # DISCUSS: what parts should be in this class, what in Binding?
+      object        = create_object(fragment, *args) # customize with :instance and :class.
       representable = prepare(object) # customize with :prepare and :extend.
 
       deserialize(representable, fragment, @binding.user_options) # deactivate-able via :representable => false.

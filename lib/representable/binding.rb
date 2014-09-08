@@ -4,6 +4,9 @@ require "representable/serializer"
 
 module Representable
   # The Binding wraps the Definition instance for this property and provides methods to read/write fragments.
+
+  # The flow when parsing is Binding#read_fragment -> Populator -> Deserializer.
+  # Actual parsing the fragment from the document happens in Binding#read, everything after that is generic.
   class Binding
     class FragmentNotFound
     end
@@ -40,10 +43,7 @@ module Representable
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
       evaluate_option(:reader, doc) do
-        read_fragment(doc)# do |value|
-        #   value = parse_filter(value, doc)
-        #   set(value)
-        # end
+        read_fragment(doc)
       end
     end
 
@@ -55,7 +55,7 @@ module Representable
 
     def write_fragment_for(value, doc)
       return if skipable_empty_value?(value)
-      write(doc, value)
+      write(doc, value) # TODO: this must be write(doc, serializer.call) to be in line with Populator.
     end
 
     def read_fragment(doc)

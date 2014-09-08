@@ -1,5 +1,6 @@
 # 2.1.0
 
+* It's now Binding#read_fragment -> Populator -> Deserializer. This is mostly changed to allow better support for complex collection semantics as found in Object-HAL.
 * Make `Definition#inspect` more readable by filtering out some instance variables like `@runtime_options`.
 * `:skip_parse`. (add to README)
 
