@@ -4,8 +4,6 @@ require 'representable/bindings/hash_bindings.rb'
 module Representable
   module XML
     class PropertyBinding < Binding
-      include Binding::Object
-
       def self.build_for(definition, *args)
         return CollectionBinding.new(definition, *args)      if definition.array?
         return HashBinding.new(definition, *args)            if definition.hash? and not definition[:use_attributes] # FIXME: hate this.

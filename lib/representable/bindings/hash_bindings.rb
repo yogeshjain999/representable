@@ -3,8 +3,6 @@ require 'representable/binding'
 module Representable
   module Hash
     class PropertyBinding < Representable::Binding
-      include Binding::Object
-
       def self.build_for(definition, *args)  # TODO: remove default arg.
         return CollectionBinding.new(definition, *args)  if definition.array?
         return HashBinding.new(definition, *args)        if definition.hash?

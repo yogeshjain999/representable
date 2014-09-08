@@ -121,26 +121,22 @@ module Representable
 
     attr_reader :exec_context, :decorator
 
+    def serialize(object)
+      ObjectSerializer.new(self, object).call
+    end
+
+    def populator
+      populator_class.new(self)
+    end
+
+    def populator_class
+      Populator
+    end
+
+
     # Options instance gets passed to lambdas when pass_options: true.
     # This is considered the new standard way and should be used everywhere for forward-compat.
     Options = Struct.new(:binding, :user_options, :represented, :decorator)
-
-
-    # Delegates to call #to_*/from_*.
-    module Object
-      def serialize(object)
-        ObjectSerializer.new(self, object).call
-      end
-
-    private
-      def populator
-        populator_class.new(self)
-      end
-
-      def populator_class
-        Populator
-      end
-    end
 
 
     # generics for collection bindings.
