@@ -2,7 +2,7 @@ module Representable
   #
   # populator
       # skip_parse? --> return
-      # deserialize
+      # deserialize (this is where additional logic can happen, e.g. Object-HAL's collection semantics).
       # parse_filter
       # set
   class Populator # rename to Deserializer?
@@ -28,14 +28,14 @@ module Representable
 
   private
     def deserialize(fragment)
-      return yield if @binding.send(:evaluate_option, :skip_parse, fragment)
+      return yield if @binding.send(:evaluate_option, :skip_parse, fragment) # TODO: move this into Deserializer.
 
       # use a Deserializer to transform fragment to/into object.
       deserializer_class.new(@binding).call(fragment) # CollectionDeserializer/HashDeserializer/etc.
     end
 
     def deserializer_class
-      ObjectDeserializer
+      Deserializer
     end
 
 
@@ -45,31 +45,14 @@ module Representable
     class Collection < self
     private
       def deserialize(fragment)
-        collection = [] # this can be replaced, e.g. AR::Collection or whatever.
-
-        fragment.each_with_index do |item_fragment, i|
-          # add more per-item options here!
-          next if @binding.send(:evaluate_option, :skip_parse, item_fragment)
-
-          collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
-        end
-
-        collection # with parse_strategy: :sync, this is ignored.
-      end
-
-      def deserialize!(*args)
-        ObjectDeserializer.new(@binding).call(*args)
-      end
-
-      def deserializer_class
-        CollectionDeserializer
+        return Deserializer::Collection.new(@binding).call(fragment)
       end
     end
 
     class Hash < self
     private
       def deserializer_class
-        HashDeserializer
+        Deserializer::Hash
       end
     end
   end

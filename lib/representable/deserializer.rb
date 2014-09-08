@@ -1,38 +1,7 @@
 module Representable
-  # CollectionDeserializer#call([fragment, fragment]), where fragment can be Hash, Node, etc.
-  class CollectionDeserializer
-    def initialize(binding) # TODO: get rid of binding dependency
-      @binding = binding
-    end
-
-    def call(fragment)
-      # puts "deserialize #{@binding.name}" # TODO: introduce Representable::Debug.
-
-      # next step: get rid of collect.
-      fragment.enum_for(:each_with_index).collect do |item_fragment, i|
-        deserialize!(item_fragment, i) # FIXME: what if obj nil?
-      end
-    end
-
-  private
-    def deserialize!(*args)
-      # TODO: re-use deserializer.
-      ObjectDeserializer.new(@binding).call(*args)
-    end
-  end
-
-
-  class HashDeserializer < CollectionDeserializer
-    def call(hash)
-      {}.tap do |hsh|
-        hash.each { |key, fragment| hsh[key] = deserialize!(fragment) }
-      end
-    end
-  end
-
-
-  class ObjectDeserializer
-    # dependencies: Def#options, Def#create_object
+  # Deserializer's job is deserializing the already parsed fragment into a scalar or an object.
+  # This object is then returned to the Populator.
+  class Deserializer
     def initialize(binding)
       @binding = binding
     end
@@ -73,5 +42,37 @@ module Representable
       mod.prepare(object)
     end
     # in deserialize, we should get the original object?
+
+
+    # Collection does exactly the same as Deserializer but for a collection.
+    class Collection < self
+      def call(fragment)
+        collection = [] # this can be replaced, e.g. AR::Collection or whatever.
+
+        fragment.each_with_index do |item_fragment, i|
+          # add more per-item options here!
+          next if @binding.send(:evaluate_option, :skip_parse, item_fragment)
+
+          collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
+        end
+
+        collection # with parse_strategy: :sync, this is ignored.
+      end
+
+    private
+      def deserialize!(*args)
+        # TODO: re-use deserializer.
+        Deserializer.new(@binding).call(*args)
+      end
+    end
+
+
+    class Hash < Collection
+      def call(hash)
+        {}.tap do |hsh|
+          hash.each { |key, fragment| hsh[key] = deserialize!(fragment) }
+        end
+      end
+    end
   end
 end

@@ -1,7 +1,7 @@
 require "representable/deserializer"
 
 module Representable
-  class ObjectSerializer < ObjectDeserializer
+  class ObjectSerializer < Deserializer
     def initialize(binding, object)
       super(binding)
       @object = object
