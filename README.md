@@ -527,6 +527,7 @@ Here's a list of all dynamic options and their argument signature.
 * `instance: lambda { |fragment, [i], args| }` ([see Object Creation](#polymorphic-object-creation))
 * `reader: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
 * `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
+* `skip_parse: lambda { |fragment, args| }` ([see Skip Parsing](#skip-parsing))
 * `parse_filter:  lambda { |fragment, document, args| }` ([see Filters](#filters)))
 * `render_filter: lambda { |value, document, args| }` ([see Filters](#filters))
 * `if: lambda { |args| }` ([see Conditions](#conditions))
@@ -570,6 +571,24 @@ property :title, parse_filter: lambda { |fragment, doc, *args| Sanitizer.call(fr
 
 Just before setting the fragment to the object via the `:setter`, the `:parse_filter` is called.
 
+
+## Skip Parsing
+
+You can skip parsing for particular fragments which will completely ignore them as if they weren't present in the parsed document.
+
+```ruby
+property :title, skip_parse: lambda { |fragment, options| fragment.blank? }
+```
+
+Note that when used with collections, this is evaluated per item.
+
+```ruby
+collection :songs, skip_parse: lambda { |fragment, options| fragment["title"].blank? } do
+  property :title
+end
+```
+
+This won't parse empty incoming songs in the collection.
 
 ## Callable Options
 

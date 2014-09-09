@@ -52,15 +52,15 @@ module Representable
     def write_fragment(doc, value)
       value = default_for(value)
 
-      write_fragment_for(value, doc)
-    end
-
-    def write_fragment_for(value, doc)
       return if skipable_empty_value?(value)
 
+      render_fragment(value, doc)
+    end
+
+    def render_fragment(value, doc)
       fragment = serialize(value) # render fragments of hash, xml, yaml.
 
-      write(doc, fragment) # TODO: this must be write(doc, serializer.call) to be in line with Populator.
+      write(doc, fragment)
     end
 
     def read_fragment(doc)

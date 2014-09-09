@@ -144,7 +144,7 @@ module Representable
       end
 
       def serialize_for(value, parent)
-        parent[as] = serialize(value.to_s)
+        parent[as] = value.to_s
       end
 
       def write(parent, value)

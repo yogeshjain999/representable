@@ -1,8 +1,16 @@
 # 2.1.0
 
-* It's now Binding#read_fragment -> Populator -> Deserializer. This is mostly changed to allow better support for complex collection semantics as found in Object-HAL.
+## Breaking Changes
+
+* None, unless you messed around with internals like `Binding`.
+
+## Changes
+
+* Added `:skip_parse` to skip deserialization of fragments.
+* It's now `Binding#read_fragment -> Populator -> Deserializer`. Mostly, this got changed to allow better support for complex collection semantics when populating/deserializing as found in Object-HAL.
+* Likewise, it is `Binding#write_fragment -> Serializer`, clearly separating format-specific and generic logic.
 * Make `Definition#inspect` more readable by filtering out some instance variables like `@runtime_options`.
-* `:skip_parse`. (add to README)
+* Remove `Binding#write_fragment_for`. This is `#render_fragment` now.
 
 # 2.0.4
 

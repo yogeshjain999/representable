@@ -3,7 +3,7 @@ module Representable
     def create_representation_with(doc, options, format)
       bin   = representable_mapper(format, options).bindings.first
       hash  = filter_keys_for(represented, options)
-      bin.write_fragment_for(hash, doc) # TODO: Use something along Populator, which does
+      bin.render_fragment(hash, doc) # TODO: Use something along Populator, which does
     end
 
     def update_properties_from(doc, options, format)
