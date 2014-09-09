@@ -20,7 +20,7 @@ module Representable::Hash
 
     def create_representation_with(doc, options, format)
       bin   = representable_mapper(format, options).bindings.first
-      bin.write(doc, represented)
+      bin.write_fragment_for(represented, doc)
     end
 
     def update_properties_from(doc, options, format)

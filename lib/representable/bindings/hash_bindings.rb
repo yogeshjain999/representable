@@ -15,8 +15,8 @@ module Representable
         hash[as] # fragment
       end
 
-      def write(hash, value)
-        hash[as] = serialize(value)
+      def write(hash, fragment)
+        hash[as] = fragment
       end
 
       def serialize_method
@@ -28,24 +28,14 @@ module Representable
       end
     end
 
+
     class CollectionBinding < PropertyBinding
       include Binding::Collection
-
-      def serialize(value)
-        value.collect { |item| super(item) } # TODO: i don't want Array but Forms here - what now?
-      end
     end
 
 
     class HashBinding < PropertyBinding
       include Binding::Hash
-
-      def serialize(value)
-        # requires value to respond to #each with two block parameters.
-        {}.tap do |hsh|
-          value.each { |key, obj| hsh[key] = super(obj) }
-        end
-      end
     end
   end
 end

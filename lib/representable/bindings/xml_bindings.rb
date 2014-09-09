@@ -13,14 +13,14 @@ module Representable
         new(definition, *args)
       end
 
-      def write(parent, value)
+      def write(parent, fragments)
         wrap_node = parent
 
         if wrap = self[:wrap]
           parent << wrap_node = node_for(parent, wrap)
         end
 
-        wrap_node << serialize_for(value, parent)
+        wrap_node << serialize_for(fragments, parent)
       end
 
       def read(node)
@@ -37,9 +37,9 @@ module Representable
       end
 
       def serialize_node(node, value)
-        return serialize(value) if typed?
+        return value if typed?
 
-        node.content = serialize(value)
+        node.content = value
         node
       end
 
@@ -125,11 +125,12 @@ module Representable
       # DISCUSS: use AttributeBinding here?
       def write(parent, value)  # DISCUSS: is it correct overriding #write here?
         value.collect do |k, v|
-          parent[k] = serialize(v.to_s)
+          parent[k] = v.to_s
         end
         parent
       end
 
+      # FIXME: this is not tested!
       def deserialize_from(node)
         HashDeserializer.new(self).deserialize(node)
       end
@@ -158,7 +159,7 @@ module Representable
       end
 
       def serialize_for(value, parent)
-        parent.content = serialize(value.to_s)
+        parent.content = value.to_s
       end
 
       def write(parent, value)

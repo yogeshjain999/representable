@@ -8,13 +8,14 @@ module Representable
         new(definition, *args)
       end
 
-      def write(map, value)
+      def write(map, fragment)
         map.children << Psych::Nodes::Scalar.new(as)
-        map.children << serialize(value)  # FIXME: should be serialize.
+        map.children << node_for(fragment)  # FIXME: should be serialize.
       end
+    # private
 
-      def serialize(value)
-        write_scalar super(value)
+      def node_for(fragment)
+        write_scalar(fragment)
       end
 
       def write_scalar(value)
@@ -36,10 +37,10 @@ module Representable
     class CollectionBinding < PropertyBinding
       include Binding::Collection
 
-      def serialize(value)
+      def node_for(fragments)
         Psych::Nodes::Sequence.new.tap do |seq|
           seq.style = Psych::Nodes::Sequence::FLOW if self[:style] == :flow
-          value.each { |obj| seq.children << super(obj) }
+          fragments.each { |frag| seq.children << write_scalar(frag) }
         end
       end
     end

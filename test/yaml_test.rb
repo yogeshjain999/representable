@@ -124,18 +124,15 @@ songs: [Off Key Melody, Sinking]").must_equal Album.new(["Off Key Melody", "Sink
 
 
     describe "with :class and :extend" do
-      yaml_song = yaml_representer do
-        property :name
-        property :track
-      end
       let (:yaml_album) { Module.new do
         include Representable::YAML
-        collection :songs, :extend => yaml_song, :class => Song
+        collection :songs, :class => Song do
+          property :name
+          property :track
+        end
       end }
 
-      let (:album) { Album.new.tap do |album|
-        album.songs = [Song.new("Liar", 1), Song.new("What I Know", 2)]
-      end }
+      let (:album) { Album.new([Song.new("Liar", 1), Song.new("What I Know", 2)]) }
 
 
       describe "#to_yaml" do

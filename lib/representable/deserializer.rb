@@ -5,6 +5,9 @@ module Representable
   # It respects :deserialize, :prepare, :class, :instance
   #
   # Collection bindings return an array of parsed fragment items (still native format, e.g. Nokogiri node, for nested objects).
+  #
+  # Workflow
+  #   call -> instance/class -> prepare -> deserialize -> from_json.
   class Deserializer
     def initialize(binding)
       @binding = binding

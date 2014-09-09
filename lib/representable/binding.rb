@@ -7,6 +7,8 @@ module Representable
 
   # The flow when parsing is Binding#read_fragment -> Populator -> Deserializer.
   # Actual parsing the fragment from the document happens in Binding#read, everything after that is generic.
+  #
+  # Serialization: Serializer -> {frag}/[frag]/frag -> Binding#write
   class Binding
     class FragmentNotFound
     end
@@ -55,11 +57,14 @@ module Representable
 
     def write_fragment_for(value, doc)
       return if skipable_empty_value?(value)
-      write(doc, value) # TODO: this must be write(doc, serializer.call) to be in line with Populator.
+
+      fragment = serialize(value) # render fragments of hash, xml, yaml.
+
+      write(doc, fragment) # TODO: this must be write(doc, serializer.call) to be in line with Populator.
     end
 
     def read_fragment(doc)
-      fragment = read(doc)
+      fragment = read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
 
       populator.call(fragment, doc)
     end
@@ -122,7 +127,15 @@ module Representable
     attr_reader :exec_context, :decorator
 
     def serialize(object)
-      ObjectSerializer.new(self, object).call
+      serializer.call(object)
+    end
+
+    def serializer_class
+      Serializer
+    end
+
+    def serializer
+      serializer_class.new(self)
     end
 
     def populator
@@ -145,6 +158,10 @@ module Representable
       def populator_class
         Populator::Collection
       end
+
+      def serializer_class
+        Serializer::Collection
+      end
     end
 
     # and the same for hashes.
@@ -152,6 +169,10 @@ module Representable
     private
       def populator_class
         Populator::Hash
+      end
+
+      def serializer_class
+        Serializer::Hash
       end
     end
   end
