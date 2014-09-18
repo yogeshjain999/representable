@@ -33,8 +33,6 @@ module Representable
       self
     end
 
-    #extend Forwardable
-    #def_delegators :@runtime_options, :[], :each
     def [](name)
       @runtime_options[name]
     end
@@ -52,7 +50,7 @@ module Representable
     end
 
     def representable?
-      return if self[:representable] === false
+      return if self[:representable] == false
       self[:representable] or typed?
     end
 
