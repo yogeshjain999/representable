@@ -33,8 +33,11 @@ module Representable
       self
     end
 
-    extend Forwardable
-    def_delegators :@runtime_options, :[], :each
+    #extend Forwardable
+    #def_delegators :@runtime_options, :[], :each
+    def [](name)
+      @runtime_options[name]
+    end
 
     def clone
       self.class.new(name, @options.clone)

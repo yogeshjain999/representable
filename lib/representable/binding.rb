@@ -109,12 +109,35 @@ module Representable
       proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
     end
 
-  private
-    # Apparently, SimpleDelegator is super slow due to a regex, so we do it
-    # ourselves, right, Jimmy?
-    def method_missing(*args, &block)
-      @definition.send(*args, &block)
+    def [](name)
+      @definition[name]
     end
+    def getter
+      @definition.getter
+    end
+    def setter
+      @definition.setter
+    end
+    def default_for(*args)
+      # return nil
+      @definition.default_for(*args)
+    end
+    def typed?
+      @definition.typed?
+    end
+    def representable?
+      @definition.representable?
+    end
+    def skipable_empty_value?(*args)
+      @definition.skipable_empty_value?(*args)
+    end
+    def has_default?(*args)
+      @definition.has_default?(*args)
+    end
+    def name
+      @definition.name
+    end
+  private
 
     def setup_exec_context!
       context = represented
