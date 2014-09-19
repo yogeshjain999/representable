@@ -1,4 +1,4 @@
-require 'representable/bindings/yaml_bindings'
+require 'representable/yaml/binding'
 
 module Representable
   module YAML

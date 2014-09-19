@@ -1,4 +1,4 @@
-require 'representable/binding'
+require 'representable/hash/binding'
 
 module Representable
   module YAML

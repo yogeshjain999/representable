@@ -1,5 +1,5 @@
 require 'representable/binding'
-require 'representable/bindings/hash_bindings.rb'
+require 'representable/hash/binding.rb'
 
 module Representable
   module XML

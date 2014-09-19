@@ -1,5 +1,5 @@
 require 'representable'
-require 'representable/bindings/hash_bindings'
+require 'representable/hash/binding'
 
 module Representable
   # The generic representer. Brings #to_hash and #from_hash to your object.
