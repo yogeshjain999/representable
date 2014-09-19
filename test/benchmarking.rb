@@ -36,6 +36,7 @@ times = []
   album = OpenStruct.new(songs: 100.times.collect { random_song })
 
   times << Benchmark.measure do
+    puts "================ next!"
     album.extend(AlbumRepresenter).to_json
   end
 end
