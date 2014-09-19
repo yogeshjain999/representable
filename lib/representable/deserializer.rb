@@ -27,13 +27,13 @@ module Representable
     def deserialize(object, fragment, options) # TODO: merge with #serialize.
       return object unless @binding.representable?
 
-      @binding.send(:evaluate_option, :deserialize, object, fragment) do
+      @binding.evaluate_option(:deserialize, object, fragment) do
         object.send(@binding.deserialize_method, fragment, options)
       end
     end
 
     def prepare(object)
-      @binding.send(:evaluate_option, :prepare, object) do
+      @binding.evaluate_option(:prepare, object) do
         prepare!(object)
       end
     end
@@ -75,7 +75,7 @@ module Representable
 
         fragment.each_with_index do |item_fragment, i|
           # add more per-item options here!
-          next if @binding.send(:evaluate_option, :skip_parse, item_fragment)
+          next if @binding.evaluate_option(:skip_parse, item_fragment)
 
           collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
         end

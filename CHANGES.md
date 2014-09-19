@@ -13,6 +13,7 @@
 * Remove `Binding#write_fragment_for`. This is `#render_fragment` now.
 * Almost 100% speedup for rendering and parsing by removing Ruby's delegation and `method_missing`.
 * Bindings are now in the following naming format: `Representable::Hash::Binding[::Collection]`. The file name is `representable/hash/binding`.
+* Move `Definition#skipable_empty_value?` and `Definition#default_for` to `Binding` as it is runtime-specific.
 
 # 2.0.4
 

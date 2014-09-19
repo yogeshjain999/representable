@@ -28,7 +28,7 @@ module Representable
 
   private
     def deserialize(fragment)
-      return yield if @binding.send(:evaluate_option, :skip_parse, fragment) # TODO: move this into Deserializer.
+      return yield if @binding.evaluate_option(:skip_parse, fragment) # TODO: move this into Deserializer.
 
       # use a Deserializer to transform fragment to/into object.
       deserializer_class.new(@binding).call(fragment) # CollectionDeserializer/HashDeserializer/etc.

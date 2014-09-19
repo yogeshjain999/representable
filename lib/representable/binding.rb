@@ -109,7 +109,8 @@ module Representable
     def [](name)
       @definition[name]
     end
-    # TODO: make this better.
+    # TODO: i don't want to define all methods here, but it is faster!
+    # TODO: test public interface.
     def getter
       @definition.getter
     end
@@ -131,6 +132,13 @@ module Representable
     def representer_module
       @definition.representer_module
     end
+    # perf : 1.7-1.9
+    #extend Forwardable
+    #def_delegators :@definition, *%w([] getter setter typed? representable? has_default? name representer_module)
+    # perf : 1.7-1.9
+    # %w([] getter setter typed? representable? has_default? name representer_module).each do |name|
+    #   define_method(name.to_sym) { |*args| @definition.send(name, *args) }
+    # end
 
     def skipable_empty_value?(value)
       return true if array? and self[:render_empty] == false and value and value.size == 0  # TODO: change in 2.0, don't render emtpy.
