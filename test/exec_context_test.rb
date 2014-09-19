@@ -40,8 +40,8 @@ class ExecContextTest < MiniTest::Spec
         }
       end
 
-      it { render(song).must_equal_document({Representable::Hash::PropertyBinding => "name"}) }
-      it { parse(song, {Representable::Hash::PropertyBinding => "Rebel Fate"}).name.must_equal "Rebel Fate" }
+      it { render(song).must_equal_document({Representable::Hash::Binding => "name"}) }
+      it { parse(song, {Representable::Hash::Binding => "Rebel Fate"}).name.must_equal "Rebel Fate" }
     end
 
 
@@ -85,8 +85,8 @@ class ExecContextTest < MiniTest::Spec
           }
         end
 
-        it { render(song).must_equal_document({Representable::Hash::PropertyBinding => "name"}) }
-        it { parse(song, {Representable::Hash::PropertyBinding => "Rebel Fate"}).name.must_equal "Rebel Fate" }
+        it { render(song).must_equal_document({Representable::Hash::Binding => "name"}) }
+        it { parse(song, {Representable::Hash::Binding => "Rebel Fate"}).name.must_equal "Rebel Fate" }
       end
     end
   end

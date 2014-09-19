@@ -104,20 +104,20 @@ class XmlTest < MiniTest::Spec
 
     describe "XML::Binding#build_for" do
       it "returns AttributeBinding" do
-        assert_kind_of XML::AttributeBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => "band", :attribute => true), nil, nil)
+        assert_kind_of XML::Binding::Attribute, XML::Binding.build_for(Def.new(:band, :as => "band", :attribute => true), nil, nil)
       end
 
-      it "returns PropertyBinding" do
-        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :class => Hash), nil, nil)
-        assert_kind_of XML::PropertyBinding, XML::PropertyBinding.build_for(Def.new(:band, :as => :content), nil, nil)
+      it "returns Binding" do
+        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :class => Hash), nil, nil)
+        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :as => :content), nil, nil)
       end
 
       it "returns CollectionBinding" do
-        assert_kind_of XML::CollectionBinding, XML::PropertyBinding.build_for(Def.new(:band, :collection => :true), nil, nil)
+        assert_kind_of XML::Binding::Collection, XML::Binding.build_for(Def.new(:band, :collection => :true), nil, nil)
       end
 
       it "returns HashBinding" do
-        assert_kind_of XML::HashBinding, XML::PropertyBinding.build_for(Def.new(:band, :hash => :true), nil, nil)
+        assert_kind_of XML::Binding::Hash, XML::Binding.build_for(Def.new(:band, :hash => :true), nil, nil)
       end
     end
 
@@ -206,7 +206,7 @@ end
 
 
 class CDataBand
-  class CData < Representable::XML::PropertyBinding
+  class CData < Representable::XML::Binding
     def serialize_node(parent, value)
       parent << Nokogiri::XML::CDATA.new(parent, represented.name)
     end

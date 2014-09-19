@@ -15,7 +15,7 @@ module Representable
 
     def from_yaml(doc, options={})
       hash = Psych.load(doc)
-      from_hash(hash, options, PropertyBinding)
+      from_hash(hash, options, Binding)
     end
 
     # Returns a Nokogiri::XML object representing this object.
@@ -23,7 +23,7 @@ module Representable
       #root_tag = options[:wrap] || representation_wrap
 
       Psych::Nodes::Mapping.new.tap do |map|
-        create_representation_with(map, options, PropertyBinding)
+        create_representation_with(map, options, Binding)
       end
     end
 

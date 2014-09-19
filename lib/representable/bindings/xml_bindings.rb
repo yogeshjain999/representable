@@ -3,13 +3,13 @@ require 'representable/bindings/hash_bindings.rb'
 
 module Representable
   module XML
-    class PropertyBinding < Binding
+    class Binding < Representable::Binding
       def self.build_for(definition, *args)
-        return CollectionBinding.new(definition, *args)      if definition.array?
-        return HashBinding.new(definition, *args)            if definition.hash? and not definition[:use_attributes] # FIXME: hate this.
-        return AttributeHashBinding.new(definition, *args)   if definition.hash? and definition[:use_attributes]
-        return AttributeBinding.new(definition, *args)       if definition[:attribute]
-        return ContentBinding.new(definition, *args)         if definition[:content]
+        return Collection.new(definition, *args)      if definition.array?
+        return Hash.new(definition, *args)            if definition.hash? and not definition[:use_attributes] # FIXME: hate this.
+        return AttributeHash.new(definition, *args)   if definition.hash? and definition[:use_attributes]
+        return Attribute.new(definition, *args)       if definition[:attribute]
+        return Content.new(definition, *args)         if definition[:content]
         new(definition, *args)
       end
 
@@ -76,95 +76,96 @@ module Representable
 
         node.content
       end
-    end
 
-    class CollectionBinding < PropertyBinding
-      include Binding::Collection
 
-      def serialize_for(value, parent)
-        # return NodeSet so << works.
-        set_for(parent, value.collect { |item| super(item, parent) })
-      end
+      class Collection < self
+        include Representable::Binding::Collection
 
-      def deserialize_from(nodes)
-        content_nodes = nodes.collect do |item| # TODO: move this to Node?
-          content_for(item)
+        def serialize_for(value, parent)
+          # return NodeSet so << works.
+          set_for(parent, value.collect { |item| super(item, parent) })
         end
 
-        content_nodes
-      end
+        def deserialize_from(nodes)
+          content_nodes = nodes.collect do |item| # TODO: move this to Node?
+            content_for(item)
+          end
 
-    private
-      def set_for(parent, nodes)
-        Nokogiri::XML::NodeSet.new(parent.document, nodes)
-      end
-    end
-
-
-    class HashBinding < CollectionBinding
-      include Binding::Hash
-
-      def serialize_for(value, parent)
-        set_for(parent, value.collect do |k, v|
-          node = node_for(parent, k)
-          serialize_node(node, v)
-        end)
-      end
-
-      def deserialize_from(nodes)
-        hash = {}
-        nodes.children.each do |node|
-          hash[node.name] = content_for node
+          content_nodes
         end
 
-        hash
-      end
-    end
-
-    class AttributeHashBinding < CollectionBinding
-      # DISCUSS: use AttributeBinding here?
-      def write(parent, value)  # DISCUSS: is it correct overriding #write here?
-        value.collect do |k, v|
-          parent[k] = v.to_s
+      private
+        def set_for(parent, nodes)
+          Nokogiri::XML::NodeSet.new(parent.document, nodes)
         end
-        parent
       end
 
-      # FIXME: this is not tested!
-      def deserialize_from(node)
-        HashDeserializer.new(self).deserialize(node)
-      end
-    end
 
+      class Hash < Collection
+        include Representable::Binding::Hash
 
-    # Represents a tag attribute. Currently this only works on the top-level tag.
-    class AttributeBinding < PropertyBinding
-      def read(node)
-        node[as]
-      end
+        def serialize_for(value, parent)
+          set_for(parent, value.collect do |k, v|
+            node = node_for(parent, k)
+            serialize_node(node, v)
+          end)
+        end
 
-      def serialize_for(value, parent)
-        parent[as] = value.to_s
-      end
+        def deserialize_from(nodes)
+          hash = {}
+          nodes.children.each do |node|
+            hash[node.name] = content_for node
+          end
 
-      def write(parent, value)
-        serialize_for(value, parent)
-      end
-    end
-
-    # Represents tag content.
-    class ContentBinding < PropertyBinding
-      def read(node)
-        node.content
+          hash
+        end
       end
 
-      def serialize_for(value, parent)
-        parent.content = value.to_s
+      class AttributeHash < Collection
+        # DISCUSS: use AttributeBinding here?
+        def write(parent, value)  # DISCUSS: is it correct overriding #write here?
+          value.collect do |k, v|
+            parent[k] = v.to_s
+          end
+          parent
+        end
+
+        # FIXME: this is not tested!
+        def deserialize_from(node)
+          HashDeserializer.new(self).deserialize(node)
+        end
       end
 
-      def write(parent, value)
-        serialize_for(value, parent)
+
+      # Represents a tag attribute. Currently this only works on the top-level tag.
+      class Attribute < self
+        def read(node)
+          node[as]
+        end
+
+        def serialize_for(value, parent)
+          parent[as] = value.to_s
+        end
+
+        def write(parent, value)
+          serialize_for(value, parent)
+        end
       end
-    end
+
+      # Represents tag content.
+      class Content < self
+        def read(node)
+          node.content
+        end
+
+        def serialize_for(value, parent)
+          parent.content = value.to_s
+        end
+
+        def write(parent, value)
+          serialize_for(value, parent)
+        end
+      end
+    end # Binding
   end
 end

@@ -2,10 +2,10 @@ require 'representable/binding'
 
 module Representable
   module Hash
-    class PropertyBinding < Representable::Binding
+    class Binding < Representable::Binding
       def self.build_for(definition, *args)  # TODO: remove default arg.
-        return CollectionBinding.new(definition, *args)  if definition.array?
-        return HashBinding.new(definition, *args)        if definition.hash?
+        return Collection.new(definition, *args)  if definition.array?
+        return Hash.new(definition, *args)        if definition.hash?
         new(definition, *args)
       end
 
@@ -26,16 +26,15 @@ module Representable
       def deserialize_method
         :from_hash
       end
-    end
+
+      class Collection < self
+        include Representable::Binding::Collection
+      end
 
 
-    class CollectionBinding < PropertyBinding
-      include Binding::Collection
-    end
-
-
-    class HashBinding < PropertyBinding
-      include Binding::Hash
+      class Hash < self
+        include Representable::Binding::Hash
+      end
     end
   end
 end

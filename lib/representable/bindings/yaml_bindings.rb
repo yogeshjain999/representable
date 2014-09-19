@@ -2,9 +2,9 @@ require 'representable/binding'
 
 module Representable
   module YAML
-    class PropertyBinding < Representable::Hash::PropertyBinding
+    class Binding < Representable::Hash::Binding
       def self.build_for(definition, *args)
-        return CollectionBinding.new(definition, *args) if definition.array?
+        return Collection.new(definition, *args) if definition.array?
         new(definition, *args)
       end
 
@@ -31,16 +31,16 @@ module Representable
       def deserialize_method
         :from_hash
       end
-    end
 
 
-    class CollectionBinding < PropertyBinding
-      include Binding::Collection
+      class Collection < self
+        include Representable::Binding::Collection
 
-      def node_for(fragments)
-        Psych::Nodes::Sequence.new.tap do |seq|
-          seq.style = Psych::Nodes::Sequence::FLOW if self[:style] == :flow
-          fragments.each { |frag| seq.children << write_scalar(frag) }
+        def node_for(fragments)
+          Psych::Nodes::Sequence.new.tap do |seq|
+            seq.style = Psych::Nodes::Sequence::FLOW if self[:style] == :flow
+            fragments.each { |frag| seq.children << write_scalar(frag) }
+          end
         end
       end
     end

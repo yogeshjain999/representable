@@ -32,7 +32,7 @@ module Representable
     end
 
     def from_node(node, options={})
-      update_properties_from(node, options, PropertyBinding)
+      update_properties_from(node, options, Binding)
     end
 
     # Returns a Nokogiri::XML object representing this object.
@@ -40,7 +40,7 @@ module Representable
       options[:doc] ||= Nokogiri::XML::Document.new
       root_tag = options[:wrap] || representation_wrap(options)
 
-      create_representation_with(Nokogiri::XML::Node.new(root_tag.to_s, options[:doc]), options, PropertyBinding)
+      create_representation_with(Nokogiri::XML::Node.new(root_tag.to_s, options[:doc]), options, Binding)
     end
 
     def to_xml(*args)
