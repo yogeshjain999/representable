@@ -21,11 +21,8 @@ module Representable
 
     def initialize(definition, represented, decorator, user_options={})  # TODO: remove default arg for user options.
       @definition   = definition
-      @represented  = represented
-      @decorator    = decorator
-      @user_options = user_options
 
-      setup_exec_context!
+      setup!(represented, decorator, user_options) # this can be used in #compile_fragment/#uncompile_fragment in case we wanna reuse the Binding instance.
     end
 
     attr_reader :user_options, :represented # TODO: make private/remove.
@@ -112,15 +109,15 @@ module Representable
     def [](name)
       @definition[name]
     end
+    # TODO: make this better.
     def getter
       @definition.getter
     end
     def setter
       @definition.setter
     end
-    def default_for(*args)
-      # return nil
-      @definition.default_for(*args)
+    def default_for(value)
+      @definition.default_for(value)
     end
     def typed?
       @definition.typed?
@@ -137,7 +134,15 @@ module Representable
     def name
       @definition.name
     end
+
   private
+    def setup!(represented, decorator, user_options)
+      @represented  = represented
+      @decorator    = decorator
+      @user_options = user_options
+
+      setup_exec_context!
+    end
 
     def setup_exec_context!
       context = represented

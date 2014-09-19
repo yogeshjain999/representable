@@ -1,3 +1,7 @@
+# Caching of Bindings
+# in Decorators, this could be an instance class var. when inherited, it is automatically busted.
+# however, in modules we can't do that. we never know when a module is "finalised", so we don't really know when to bust the cache.
+
 module Representable
   # Config contains three independent, inheritable directives: features, options and definitions.
   # It is a hash - just add directives if you need them.
@@ -76,6 +80,10 @@ module Representable
       return infer_name_for(name) if value === true
       value
     end
+
+    # def binding_cache
+    #   @binding_cache ||= {}
+    # end
 
   private
     def infer_name_for(name)

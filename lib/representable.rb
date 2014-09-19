@@ -41,7 +41,9 @@ private
 
   def representable_bindings_for(format, options)
     options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
+
     representable_attrs.collect {|attr| representable_binding_for(attr, format, options) }
+    # representable_attrs.binding_cache[format] ||= representable_attrs.collect {|attr| representable_binding_for(attr, format, options) }
   end
 
   def representable_binding_for(attribute, format, options)
@@ -60,7 +62,6 @@ private
     bindings = representable_bindings_for(format, options)
     Mapper.new(bindings, represented, options) # TODO: remove self, or do we need it? and also represented!
   end
-
 
   def representation_wrap(*args)
     representable_attrs.wrap_for(self.class.name, represented, *args)
