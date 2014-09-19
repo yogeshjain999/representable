@@ -191,64 +191,6 @@ class DefinitionTest < MiniTest::Spec
   end
 
 
-  describe "#skipable_empty_value?" do
-    # default if skipable_empty_value?
-    before do
-      @def = Representable::Definition.new(:song, :render_nil => true)
-    end
-
-    it "returns false when not nil" do
-      assert_equal false, @def.skipable_empty_value?("Disconnect, Disconnect")
-    end
-
-    it "returns false when nil and :render_nil => true" do
-      assert_equal false, @def.skipable_empty_value?(nil)
-    end
-
-    it "returns true when nil and :render_nil => false" do
-      assert_equal true, Representable::Definition.new(:song).skipable_empty_value?(nil)
-    end
-
-    it "returns false when not nil and :render_nil => false" do
-      assert_equal false, Representable::Definition.new(:song).skipable_empty_value?("Fatal Flu")
-    end
-  end
-
-
-  describe "#default_for" do
-    before do
-      @def = Representable::Definition.new(:song, :default => "Insider")
-    end
-
-    it "always returns value when value not nil" do
-      assert_equal "Black And Blue", @def.default_for("Black And Blue")
-    end
-
-    it "returns false when value false" do
-      assert_equal false, @def.default_for(false)
-    end
-
-    it "returns default when value nil" do
-      assert_equal "Insider", @def.default_for(nil)
-    end
-
-    it "returns nil when value nil and :render_nil true" do
-      @def = Representable::Definition.new(:song, :render_nil => true)
-      assert_equal nil, @def.default_for(nil)
-    end
-
-    it "returns nil when value nil and :render_nil true even when :default is set" do
-      @def = Representable::Definition.new(:song, :render_nil => true, :default => "The Quest")
-      assert_equal nil, @def.default_for(nil)
-    end
-
-    it "returns nil if no :default" do
-      @def = Representable::Definition.new(:song)
-      assert_equal nil, @def.default_for(nil)
-    end
-  end
-
-
   describe "#binding" do
     it "returns true when :binding is set" do
       assert Representable::Definition.new(:songs, :binding => Object)[:binding]

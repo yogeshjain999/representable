@@ -11,6 +11,8 @@
 * Likewise, it is `Binding#write_fragment -> Serializer`, clearly separating format-specific and generic logic.
 * Make `Definition#inspect` more readable by filtering out some instance variables like `@runtime_options`.
 * Remove `Binding#write_fragment_for`. This is `#render_fragment` now.
+* Almost 100% speedup for rendering and parsing by removing Ruby's delegation and `method_missing`.
+* Bindings are now in the following naming format: `Representable::Hash::Binding[::Collection]`. The file name is `representable/hash/binding`.
 
 # 2.0.4
 

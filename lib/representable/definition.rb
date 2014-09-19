@@ -62,22 +62,12 @@ module Representable
       self[:hash]
     end
 
-    def default_for(value)
-      return self[:default] if skipable_empty_value?(value)
-      value
-    end
-
     def has_default?
       @options.has_key?(:default)
     end
 
     def representer_module
       @options[:extend]
-    end
-
-    def skipable_empty_value?(value)
-      return true if array? and self[:render_empty] == false and value and value.size == 0  # TODO: change in 2.0, don't render emtpy.
-      value.nil? and not self[:render_nil]
     end
 
     def create_binding(*args)

@@ -116,23 +116,34 @@ module Representable
     def setter
       @definition.setter
     end
-    def default_for(value)
-      @definition.default_for(value)
-    end
     def typed?
       @definition.typed?
     end
     def representable?
       @definition.representable?
     end
-    def skipable_empty_value?(*args)
-      @definition.skipable_empty_value?(*args)
-    end
     def has_default?(*args)
       @definition.has_default?(*args)
     end
     def name
       @definition.name
+    end
+    def representer_module
+      @definition.representer_module
+    end
+
+    def skipable_empty_value?(value)
+      return true if array? and self[:render_empty] == false and value and value.size == 0  # TODO: change in 2.0, don't render emtpy.
+      value.nil? and not self[:render_nil]
+    end
+
+    def default_for(value)
+      return self[:default] if skipable_empty_value?(value)
+      value
+    end
+
+    def array?
+      @definition.array?
     end
 
   private
