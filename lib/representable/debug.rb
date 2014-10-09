@@ -20,7 +20,7 @@ module Representable
     module Binding
       def read(doc)
         value = super
-        "                #read: #{value.inspect}"
+        puts "                #read --> #{value.inspect}"
         value
       end
 
