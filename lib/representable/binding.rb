@@ -28,7 +28,7 @@ module Representable
     attr_reader :user_options, :represented # TODO: make private/remove.
 
     def as # DISCUSS: private?
-      evaluate_option(:as)
+      @as ||= evaluate_option(:as)
     end
 
     # Retrieve value and write fragment to the doc.
