@@ -31,11 +31,15 @@ module Representable
       return yield if @binding.evaluate_option(:skip_parse, fragment) # TODO: move this into Deserializer.
 
       # use a Deserializer to transform fragment to/into object.
-      deserializer_class.new(@binding).call(fragment) # CollectionDeserializer/HashDeserializer/etc.
+      deserializer.call(fragment) # CollectionDeserializer/HashDeserializer/etc.
     end
 
     def deserializer_class
       Deserializer
+    end
+
+    def deserializer
+      deserializer_class.new(@binding)
     end
 
 
@@ -45,7 +49,11 @@ module Representable
     class Collection < self
     private
       def deserialize(fragment)
-        return Deserializer::Collection.new(@binding).call(fragment)
+        return deserializer.call(fragment)
+      end
+
+      def deserializer
+        Deserializer::Collection.new(@binding)
       end
     end
 
