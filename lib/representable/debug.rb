@@ -25,11 +25,11 @@ module Representable
       end
 
       def evaluate_option(name, *args, &block)
-        puts self[name] ?
-          "                #evaluate_option: eval #{name}" :
-          "                #evaluate_option: ignoring #{name}"
+        puts (evaled = self[name]) ?
+          "                #evaluate_option [#{name}]: eval!!!" :
+          "                #evaluate_option [#{name}]: skipping"
         value = super
-        puts "                #evaluate_option: --> #{value} (#{name})"
+        puts "                #evaluate_option [#{name}]: --> #{value}" if evaled
         value
       end
 
