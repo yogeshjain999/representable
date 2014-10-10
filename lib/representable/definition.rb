@@ -33,6 +33,12 @@ module Representable
       self
     end
 
+    def delete!(name)
+      @runtime_options.delete(name)
+      @options.delete(name)
+      self
+    end
+
     def [](name)
       @runtime_options[name]
     end

@@ -88,6 +88,16 @@ class DefinitionTest < MiniTest::Spec
     end
   end
 
+
+  # delete!
+  describe "#delete!" do
+    let (:definition) { Definition.new(:song, serialize: "remove me!") }
+
+    before { definition[:serialize].evaluate(nil).must_equal "remove me!" }
+
+    it { definition.delete!(:serialize)[:serialize].must_equal nil }
+  end
+
   # #inspect
   describe "#inspect" do
     it { Definition.new(:songs).inspect.must_equal "#<Representable::Definition ==>songs @options={:parse_filter=>[], :render_filter=>[], :as=>\"songs\"}>" }
