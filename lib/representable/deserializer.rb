@@ -28,8 +28,12 @@ module Representable
       return object unless @binding.representable?
 
       @binding.evaluate_option(:deserialize, object, fragment) do
-        object.send(@binding.deserialize_method, fragment, options)
+        demarshal(object, fragment, options)
       end
+    end
+
+    def demarshal(object, fragment, options)
+      object.send(@binding.deserialize_method, fragment, options)
     end
 
     def prepare(object)

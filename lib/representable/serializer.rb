@@ -16,8 +16,12 @@ module Representable
       return object unless @binding.representable?
 
       @binding.evaluate_option(:serialize, object) do
-        object.send(@binding.serialize_method, user_options.merge!({:wrap => false}))
+        marshal(object, user_options)
       end
+    end
+
+    def marshal(object, user_options)
+      object.send(@binding.serialize_method, user_options.merge!({:wrap => false}))
     end
 
 
