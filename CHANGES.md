@@ -1,3 +1,8 @@
+# 2.1.1
+
+* Added `Definition#delete!` to remove options.
+* Added `Representable::apply` do iterate and change schemas.
+
 # 2.1.0
 
 ## Breaking Changes

@@ -7,6 +7,7 @@ require 'representable/mapper'
 require 'representable/for_collection'
 require 'representable/represent'
 require 'representable/declarative'
+require 'representable/apply'
 
 
 require 'uber/callable'
@@ -23,6 +24,7 @@ module Representable
       extend Feature
       extend ForCollection
       extend Represent
+      extend Apply
       # register_feature Representable # Representable gets included automatically when creating inline representer.
     end
   end

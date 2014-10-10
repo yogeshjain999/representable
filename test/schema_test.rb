@@ -121,3 +121,38 @@ class SchemaTest < MiniTest::Spec
     InheritFromDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco", "employees"=>[{"name"=>"Mike"}], "location"=>{"city"=>"Sanfran"}}})
   end
 end
+
+
+class ApplyTest < MiniTest::Spec
+  class AlbumDecorator < Representable::Decorator
+    property :title
+
+    property :hit do
+      property :title
+    end
+
+    collection :songs do
+      property :title
+    end
+
+    property :band do # yepp, people do crazy stuff like that.
+      property :label do
+        property :name
+      end
+    end
+  end
+
+  # #apply
+  it do
+    properties = []
+
+    AlbumDecorator.apply do |dfn|
+      properties << dfn.name
+      dfn.merge! :cool => true
+    end.must_equal AlbumDecorator
+
+    properties.must_equal ["title", "hit", "title", "songs", "title", "band", "label", "name"]
+    # writeable
+    AlbumDecorator.representable_attrs.get(:band).representer_module.representable_attrs.get(:label).representer_module.representable_attrs.get(:name)[:cool].must_equal true
+  end
+end
