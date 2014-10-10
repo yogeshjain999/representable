@@ -12,6 +12,13 @@ module Representable
         super
       end
 
+      def create_representation_with(doc, options, format)
+        puts
+        puts "[Serialize]........."
+        puts "[Serialize]"
+        super
+      end
+
       def representable_mapper(*args)
         super.extend(Mapper)
       end
@@ -25,6 +32,7 @@ module Representable
       end
 
       def evaluate_option(name, *args, &block)
+        puts "=====#{self[name]}" if name ==:prepare
         puts (evaled = self[name]) ?
           "                #evaluate_option [#{name}]: eval!!!" :
           "                #evaluate_option [#{name}]: skipping"
@@ -35,6 +43,10 @@ module Representable
 
       def populator
         super.extend(Populator)
+      end
+
+      def serializer
+        super.extend(Serializer)
       end
     end
 
@@ -58,10 +70,23 @@ module Representable
       end
     end
 
+    module Serializer
+      def marshal(object, user_options)
+        puts "                    Serializer#marshal: --> #{object.inspect}"
+        super
+      end
+    end
+
     module Mapper
       def uncompile_fragment(bin, doc)
         bin.extend(Binding)
         puts "              uncompile_fragment: #{bin.name}"
+        super
+      end
+
+      def compile_fragment(bin, doc)
+        bin.extend(Binding)
+        puts "              compile_fragment: #{bin.name}"
         super
       end
     end
