@@ -38,6 +38,7 @@ module Representable
           "                #evaluate_option [#{name}]: skipping"
         value = super
         puts "                #evaluate_option [#{name}]: --> #{value}" if evaled
+        puts "                #evaluate_option [#{name}]: -->= #{args.first}" if name == :setter
         value
       end
 
