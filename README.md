@@ -1300,6 +1300,30 @@ end
 
 This is an implementation detail most people shouldn't worry about.
 
+## Debugging
+
+Representable is a generic mapper using recursions and things that might be hard to understand from the outside. That's why we got the `Debug` module which will give helpful output about what it's doing when parsing or rendering.
+
+You can extend objects on the run to see what they're doing.
+
+```ruby
+song.extend(SongRepresenter).extend(Representable::Debug).from_json("..")
+song.extend(SongRepresenter).extend(Representable::Debug).to_json("..")
+```
+
+`Debug` can also be included statically into your representer or decorator.
+
+```ruby
+class SongRepresenter < Representable::Decorator
+  include Representable::JSON
+  include Representable::Debug
+
+  property :title
+end
+```
+
+It's probably a good idea not to do this in production.
+
 
 ## Copyright
 
