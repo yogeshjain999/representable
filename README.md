@@ -1308,7 +1308,7 @@ You can extend objects on the run to see what they're doing.
 
 ```ruby
 song.extend(SongRepresenter).extend(Representable::Debug).from_json("..")
-song.extend(SongRepresenter).extend(Representable::Debug).to_json("..")
+song.extend(SongRepresenter).extend(Representable::Debug).to_json
 ```
 
 `Debug` can also be included statically into your representer or decorator.
