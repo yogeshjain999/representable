@@ -2,6 +2,7 @@
 
 * Added `Definition#delete!` to remove options.
 * Added `Representable::apply` do iterate and change schemas.
+* Added `Config.remove` to remove properties.
 
 # 2.1.0
 

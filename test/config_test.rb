@@ -39,6 +39,16 @@ class ConfigTest < MiniTest::Spec
   # forwarded to Config#definitions
   # that goes to ConfigDefinitionsTest
   describe "#add" do
+    describe "returns" do
+      it do
+        # #add returns Definition.`
+        subject = Representable::Config.new.add(:title, {:me => true})
+
+        subject.must_be_kind_of Representable::Definition
+        subject[:me].must_equal true
+      end
+    end
+
     before { subject.add(:title, {:me => true}) }
 
     # must be kind of Definition
@@ -65,6 +75,20 @@ class ConfigTest < MiniTest::Spec
   end
 
 
+  describe "#remove" do
+    subject { Representable::Config.new }
+
+    it do
+      subject.add(:title, {:me => true})
+      subject.add(:genre, {})
+      subject.get(:genre).must_be_kind_of Representable::Definition
+
+      subject.remove(:genre)
+      subject.get(:genre).must_equal nil
+    end
+  end
+
+
   describe "#each" do
     before { subject.add(:title, {:me => true}) }
 
@@ -84,14 +108,6 @@ class ConfigTest < MiniTest::Spec
     end
   end
 
-
-  describe "#add" do
-    subject { Representable::Config.new.add(:title, {:me => true}) }
-
-    it { subject.must_be_kind_of Representable::Definition }
-    it { subject[:me].must_equal true }
-  end
-
   describe "#get" do
     subject       { Representable::Config.new }
 
@@ -105,7 +121,7 @@ class ConfigTest < MiniTest::Spec
   end
 
 
-  describe "xxx- #inherit!" do
+  describe "#inherit!" do
     let (:title)  { Definition.new(:title) }
     let (:length) { Definition.new(:length) }
     let (:stars)  { Definition.new(:stars) }

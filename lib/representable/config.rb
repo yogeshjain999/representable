@@ -39,6 +39,10 @@ module Representable
         self[name.to_s]
       end
 
+      def remove(name)
+        delete(name.to_s)
+      end
+
       extend Forwardable
       def_delegators :values, :each # so we look like an array. this is only used in Mapper. we could change that so we don't need to hide the hash.
 
@@ -63,7 +67,7 @@ module Representable
 
     # delegate #collect etc to Definitions instance.
     extend Forwardable
-    def_delegators :@definitions, :get, :add, :each, :size
+    def_delegators :@definitions, :get, :add, :each, :size, :remove
     # #collect comes from Hash and then gets delegated to @definitions. don't like that.
 
     def wrap=(value)
