@@ -3,6 +3,25 @@
 * Added `Definition#delete!` to remove options.
 * Added `Representable::apply` do iterate and change schemas.
 * Added `Config.remove` to remove properties.
+* Added `Representable::Debug` which just has to be included into your represented object.
+
+    ```ruby
+    song.extend(SongRepresenter).extend(Representable::Debug).from_json("..")
+    song.extend(SongRepresenter).extend(Representable::Debug).to_json("..")
+    ```
+
+    It can also be included statically into your representer or decorator.
+
+    ```ruby
+    class SongRepresenter < Representable::Decorator
+      include Representable::JSON
+      include Representable::Debug
+
+      property :title
+    end
+    ```
+
+    It is great.
 
 # 2.1.0
 
