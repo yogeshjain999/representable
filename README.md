@@ -1329,7 +1329,7 @@ It's probably a good idea not to do this in production.
 
 Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his inspiring work.
 
-* Copyright (c) 2011-2013 Nick Sutterer <apotonick@gmail.com>
+* Copyright (c) 2011-2015 Nick Sutterer <apotonick@gmail.com>
 * ROXML is Copyright (c) 2004-2009 Ben Woosley, Zak Mandhro and Anders Engstrom.
 
 Representable is released under the [MIT License](http://www.opensource.org/licenses/MIT).
