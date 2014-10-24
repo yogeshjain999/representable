@@ -62,7 +62,7 @@ song = Song.new.extend(SongRepresenter).from_json(%{ {"title":"Roxanne"} })
 #=> #<Song title="Roxanne", track=nil>
 ```
 
-Note that parsing [per default does require string keys](#symbol-keys-vs-string-keys) and does _not_ pick up symbol keys.
+Note that parsing hashes per default does [require string keys](#symbol-keys-vs-string-keys) and does _not_ pick up symbol keys.
 
 ## Extend vs. Decorator
 
@@ -1304,7 +1304,7 @@ This is an implementation detail most people shouldn't worry about.
 
 ## Symbol Keys vs. String Keys
 
-When parsing representable reads properties from hashes by using their string key.
+When parsing representable reads properties from hashes by using their string keys.
 
 ```ruby
 song.from_hash("title" => "Road To Never")
@@ -1320,7 +1320,7 @@ module SongRepresenter
 end
 ```
 
-This will give you a behavior close to Rails` `HashWithIndifferentAccess` by stringifying the incoming hash internally.
+This will give you a behavior close to Rails' `HashWithIndifferentAccess` by stringifying the incoming hash internally.
 
 
 ## Debugging
