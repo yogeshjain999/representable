@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency "uber", "~> 0.0.7"
 
   s.add_development_dependency "rake"
-  s.add_development_dependency "test_xml", ">= 0.1.6"
+  s.add_development_dependency "test_xml", "0.1.6"
   s.add_development_dependency "minitest", ">= 5.4.1"
   s.add_development_dependency "mocha", ">= 0.13.0"
   s.add_development_dependency "mongoid"
