@@ -55,7 +55,8 @@ module Representable
     end
 
     def render_fragment(value, doc)
-      fragment = serialize(value) # render fragments of hash, xml, yaml.
+      # DISCUSS: should we return a Skip object instead of this block trick? (same in Populator?)
+      fragment = serialize(value) { return } # render fragments of hash, xml, yaml.
 
       write(doc, fragment)
     end
@@ -173,8 +174,8 @@ module Representable
 
     attr_reader :exec_context, :decorator
 
-    def serialize(object)
-      serializer.call(object)
+    def serialize(object, &block)
+      serializer.call(object, &block)
     end
 
     def serializer_class
