@@ -1,3 +1,7 @@
+# 2.1.3
+
+* Like 2.1.2 (got yanked) because I thought it's buggy but it's not. What has changed is that `Serializer::Collection#serialize` no longer does `collection.collect` but `collection.each` since this allows filtering out unwanted elements.
+
 # 2.1.2
 
 * Added `:skip_render` options.
