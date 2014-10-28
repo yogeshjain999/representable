@@ -11,7 +11,7 @@ module Representable
 
   private
     def serialize(object, user_options, &block)
-      return yield if @binding.evaluate_option(:skip_render, object) # this will
+      return yield if @binding.evaluate_option(:skip_render, object) # this will jump out of #render_fragment. introduce Skip object here.
 
       serialize!(object, user_options)
     end

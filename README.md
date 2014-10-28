@@ -530,6 +530,7 @@ Here's a list of all dynamic options and their argument signature.
 * `reader: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
 * `writer: lambda { |document, args| }` ([see Read And Write](#overriding-read-and-write))
 * `skip_parse: lambda { |fragment, args| }` ([see Skip Parsing](#skip-parsing))
+* `skip_render: lambda { |object, args| }` ([see Skip Rendering](#skip-rendering))
 * `parse_filter:  lambda { |fragment, document, args| }` ([see Filters](#filters)))
 * `render_filter: lambda { |value, document, args| }` ([see Filters](#filters))
 * `if: lambda { |args| }` ([see Conditions](#conditions))
@@ -591,6 +592,17 @@ end
 ```
 
 This won't parse empty incoming songs in the collection.
+
+## Skip Rendering
+
+The exact same also works for rendering. You can skip rendering properties and items of collections.
+
+```ruby
+property :title, skip_render: lambda { |object, options| options[:skip_title] == true }
+```
+
+In collections, this will be run per item.
+
 
 ## Callable Options
 

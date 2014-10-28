@@ -1,3 +1,7 @@
+# 2.1.2
+
+* Added `:skip_render` options.
+
 # 2.1.1
 
 * Added `Definition#delete!` to remove options.
