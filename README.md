@@ -1119,7 +1119,7 @@ module SongRepresenter
   include Representable::JSON
 
   property :title
-  property :track, if: lambda { track > 0 }
+  property :track, if: lambda { |args| track > 0 }
 end
 ```
 
