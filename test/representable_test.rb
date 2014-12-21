@@ -214,6 +214,12 @@ class RepresentableTest < MiniTest::Spec
       @band.from_hash 'hometown' => nil
     end
 
+    it "sets simple property to nil when incoming value is nil" do
+      @band.name = "Ween"
+      @band.from_hash 'name' => nil
+      assert_equal nil, @band.name
+    end
+
     it "sets represented property to nil when incoming value is nil" do
       portland = Hometown.new
       portland.name = "Portland"
