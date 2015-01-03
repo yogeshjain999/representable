@@ -50,7 +50,7 @@ module Representable
           args = args.last # TODO: don't pass i as separate block parameter but in Options.
           object_class = args.binding[:class].evaluate(self, fragment, args)
 
-          object_class.find_by(id: fragment["id"]) or object_class.new
+          object_class.find_by({id: fragment["id"]}) or object_class.new
         }
       end
     end
