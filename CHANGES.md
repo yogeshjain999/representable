@@ -1,3 +1,8 @@
+# 2.1.4
+
+* Allow lonely collection representers without configuration, with inline representer, only. This is for render-only collection representers and very handy.
+* Now runs with MagLev.
+
 # 2.1.3
 
 * Like 2.1.2 (got yanked) because I thought it's buggy but it's not. What has changed is that `Serializer::Collection#serialize` no longer does `collection.collect` but `collection.each` since this allows filtering out unwanted elements.
