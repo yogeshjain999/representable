@@ -3,6 +3,33 @@ require 'test_helper'
 require 'representable/json/hash'
 
 class LonelyRepresenterTest < MiniTest::Spec
+
+  # test ::items without arguments, render-only.
+  for_formats(
+    :hash => [Representable::Hash::Collection, [{"name"=>"Resist Stance"}, {"name"=>"Suffer"}]],
+    :json => [Representable::JSON::Collection, "[{\"name\":\"Resist Stance\"},{\"name\":\"Suffer\"}]"],
+    :xml  => [Representable::XML::Collection, "<array><song><name>Resist Stance</name></song><song><name>Suffer</name></song></array>"],
+  ) do |format, mod, output, input|
+
+    describe "[#{format}] lonely collection, render-only" do # TODO: introduce :representable option?
+      let (:format) { format }
+
+      representer!(module: mod) do
+        items do
+          property :name
+        end
+      end
+
+      let (:album) { [Song.new("Resist Stance"), Song.new("Suffer")].extend(representer) }
+
+      it "calls #to_hash on song instances, nothing else" do
+        render(album).must_equal_document(output)
+      end
+    end
+  end
+
+
+
   module SongRepresenter
     include Representable::JSON
 

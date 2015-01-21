@@ -3,9 +3,11 @@ module Representable::XML
     include Representable::XML
 
     def self.included(base)
+      base.send :include, Representable::XML
       base.send :include, Representable::Hash::Collection
       base.send :include, Methods
     end
+
 
     module Methods
       def update_properties_from(doc, *args)
