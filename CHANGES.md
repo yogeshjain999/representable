@@ -1,3 +1,13 @@
+# 2.1.5
+
+* Using `inherit: true` now works even if the parent property hasn't been defined before. It will simply create a new property. This used to crash with `undefined method `merge!' for nil:NilClass`.
+
+  ```ruby
+  class SongRepresenter < Representable::Decorator
+    property :title, inherit: true # this will create a brand-new :title property.
+  end
+  ```
+
 # 2.1.4
 
 * Allow lonely collection representers without configuration, with inline representer, only. This is for render-only collection representers and very handy.
