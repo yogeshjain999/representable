@@ -28,9 +28,10 @@ module Representable
       end
 
       def add(name, options, &block)
-        if options[:inherit] # i like that: the :inherit shouldn't be handled outside.
-          return get(name).merge!(options, &block)
+        if options[:inherit] and parent_property = get(name) # i like that: the :inherit shouldn't be handled outside.
+          return parent_property.merge!(options, &block)
         end
+        options.delete(:inherit) # TODO: can we handle the :inherit in one single place?
 
         self[name.to_s] = definition_class.new(name, options, &block)
       end

@@ -115,6 +115,16 @@ class InheritTest < MiniTest::Spec
     it { inheriting.new(OpenStruct.new(:hit => OpenStruct.new(:title => "Hole In Your Soul", :length => "2:59"))).to_hash.must_equal(
       {"hit"=>{"title"=>"Hole In Your Soul", "length"=>"2:59"}}) }
   end
+
+
+  # :inherit when property doesn't exist, yet.
+  describe ":inherit without inheritable property" do
+    representer! do
+      property :name, :inherit => true
+    end
+
+    it { representer.prepare(Song.new("The Beginning")).to_hash.must_equal({"name"=>"The Beginning"})}
+  end
 end
 
 
