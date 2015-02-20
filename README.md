@@ -1202,7 +1202,7 @@ end
 In a decorator it works alike.
 
 ```ruby
-module SongRepresenter < Representable::Decorator
+class SongRepresenter < Representable::Decorator
   include Representable::JSON
   include Representable::Coercion
 
