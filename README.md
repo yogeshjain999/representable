@@ -950,7 +950,7 @@ end
 The `#items` method lets you configure the contained entity representing here.
 
 ```ruby
-[Song.new(title: "Hyper Music"), Song.new(title: "Screenager")].extend(SongsRepresenter).to_json
+[Song.new(title: "Hyper Music"), Song.new(title: "Screenager")].extend(SongsRepresenter.for_collection).to_json
 #=> [{"title":"Hyper Music"},{"title":"Screenager"}]
 ```
 
