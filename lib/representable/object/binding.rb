@@ -7,7 +7,10 @@ module Representable
       end
 
       def read(hash)
-        hash.send(as) # :getter? no, that's for parsing!
+        fragment = hash.send(as) # :getter? no, that's for parsing!
+
+        return FragmentNotFound if fragment.nil? and typed?
+        fragment
       end
 
       def deserialize_method

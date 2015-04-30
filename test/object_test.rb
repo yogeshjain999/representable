@@ -28,4 +28,12 @@ class ObjectTest < MiniTest::Spec
     target.album.name.must_equal "Ruiner"
     target.album.songs[0].title.must_equal "In Vino Veritas II"
   end
+
+  # ignore nested object when nil
+  it do
+    representer.prepare(Song.new("The King Is Dead")).from_object(Song.new)
+
+    target.title.must_equal nil # scalar property gets overridden when nil.
+    target.album.must_equal nil # nested property stays nil.
+  end
 end
