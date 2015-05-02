@@ -1,3 +1,5 @@
+require "representable"
+
 module Representable
   class Decorator
     attr_reader :represented
