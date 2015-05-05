@@ -1334,6 +1334,28 @@ end
 
 This will give you a behavior close to Rails' `HashWithIndifferentAccess` by stringifying the incoming hash internally.
 
+## Object to Object Mapping
+
+Since Representable 2.1.6 we also allow mapping objects to objects directly. This is extremely fast as the source object is queried for its properties and then values are directly written to the target object.
+
+`````ruby
+require "representable/object"
+
+module SongRepresenter
+  include Representable::Object
+
+  property :title
+end
+```
+
+As always, the source object needs to have readers for all properties and the target writers.
+
+```ruby
+song_copy = OpenStruct.new.extend(SongRepresenter).from_object(song)
+song_copy.title = "Roxanne"
+```
+
+All kind of transformation options can be used as well as nesting.
 
 ## Debugging
 

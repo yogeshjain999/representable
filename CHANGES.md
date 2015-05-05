@@ -1,3 +1,8 @@
+# 2.1.6
+
+* Introducing `Representable::Object` that allows mapping objects to objects. This is way faster than rendering a hash from the source and then writing the hash to the target object.
+* Fixed loading issues when requiring `representable/decorator`, only.
+
 # 2.1.5
 
 * Using `inherit: true` now works even if the parent property hasn't been defined before. It will simply create a new property. This used to crash with `undefined method `merge!' for nil:NilClass`.
