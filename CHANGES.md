@@ -1,6 +1,6 @@
 # 2.1.7
 
-* Adding `Object#to_object`.
+* Adding `Object#to_object`. This is even faster than using `#from_object` for simple transformations.
 
 # 2.1.6
 
