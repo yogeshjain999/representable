@@ -13,9 +13,18 @@ module Representable
         fragment
       end
 
+      def write(hash, fragment)
+        true
+      end
+
       def deserialize_method
         :from_object
       end
+
+      def serialize_method
+        :to_object
+      end
+
 
       class Collection < self
         include Representable::Binding::Collection

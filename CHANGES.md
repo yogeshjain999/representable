@@ -1,3 +1,7 @@
+# 2.1.7
+
+* Adding `Object#to_object`.
+
 # 2.1.6
 
 * Introducing `Representable::Object` that allows mapping objects to objects. This is way faster than rendering a hash from the source and then writing the hash to the target object.

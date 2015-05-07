@@ -21,5 +21,9 @@ module Representable
     def from_object(data, options={}, binding_builder=Binding)
       update_properties_from(data, options, binding_builder)
     end
+
+    def to_object(options={}, binding_builder=Binding)
+      create_representation_with(nil, options, binding_builder)
+    end
   end
 end
