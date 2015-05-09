@@ -1,3 +1,19 @@
+# 2.1.8
+
+* API change: features are now included into inline representers in the order they were specified. This used to be the other way round and is, of course, wrong, in case a sub-feature wants to override an existing method introduced by an earlier feature.
+
+  ```ruby
+  class Album < Representable::Decorator
+    include Representable::Hash
+    feature Title
+    feature Date
+
+    property :songs
+      # will include R::Hash, Title, then Date.
+  ```
+
+As this is an edge-casey change, I decided _not_ to minor-version bump.
+
 # 2.1.7
 
 * Adding `Object#to_object`. This is even faster than using `#from_object` for simple transformations.
