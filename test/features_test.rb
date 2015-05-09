@@ -39,3 +39,32 @@ class FeaturesTest < MiniTest::Spec
     it { representer.new(song).to_hash.must_equal({"title"=>"Is It A Lie", "length"=>"2:31", "details"=>{"title"=>"Is It A Lie"}}) }
   end
 end
+
+class FeatureInclusionOrderTest < MiniTest::Spec
+  module Title
+    def title
+      "I was first!"
+    end
+  end
+
+  module OverridingTitle
+    def title
+      "I am number two, " + super
+    end
+  end
+
+  representer!(decorator: true) do
+    feature Title
+    feature OverridingTitle
+
+    property :title, exec_context: :decorator
+
+    property :song do
+      property :title, exec_context: :decorator
+    end
+  end
+
+  it do
+    representer.new(OpenStruct.new(song: Object)).to_hash.must_equal({"title"=>"I am number two, I was first!", "song"=>{"title"=>"I am number two, I was first!"}})
+  end
+end
