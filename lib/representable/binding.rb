@@ -1,7 +1,3 @@
-require "representable/populator"
-require "representable/deserializer"
-require "representable/serializer"
-
 module Representable
   # The Binding wraps the Definition instance for this property and provides methods to read/write fragments.
 
@@ -181,21 +177,26 @@ module Representable
       serializer.call(object, &block)
     end
 
-    def serializer_class
-      Serializer
-    end
+    module Factories
+      def serializer_class
+        Serializer
+      end
 
-    def serializer
-      serializer_class.new(self)
-    end
+      def serializer
+        @serializer ||= serializer_class.new(self).tap do
+          puts "creataiiiing serialijser"
+        end
+      end
 
-    def populator
-      populator_class.new(self)
-    end
+      def populator
+        populator_class.new(self)
+      end
 
-    def populator_class
-      Populator
+      def populator_class
+        Populator
+      end
     end
+    include Factories
 
 
     # Options instance gets passed to lambdas when pass_options: true.

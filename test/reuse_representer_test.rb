@@ -1,23 +1,5 @@
 require "test_helper"
 
-module Representable
-  module Cached
-    def representable_mapper(*)
-      @mapper ||= super
-    end
-
-    # replace represented for each property in this representer.
-    # DISCUSS: not sure if we need to replace self and user_options.
-    def update!(represented, user_options)
-      representable_mapper.bindings.each do |binding|
-        binding.update!(represented, self, user_options)
-        # binding.instance_variable_set(:@represented, represented)
-        # binding.instance_variable_set(:@exec_context, represented)
-      end
-    end
-  end
-end
-
 
 # TODO: also test with feature(Cached)
 

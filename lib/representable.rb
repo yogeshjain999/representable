@@ -8,6 +8,10 @@ require 'representable/for_collection'
 require 'representable/represent'
 require 'representable/declarative'
 require 'representable/apply'
+require "representable/populator"
+require "representable/deserializer"
+require "representable/serializer"
+require "representable/cached"
 
 
 require 'uber/callable'

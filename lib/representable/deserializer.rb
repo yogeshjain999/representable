@@ -10,7 +10,7 @@ module Representable
   #   call -> instance/class -> prepare -> deserialize -> from_json.
   class Deserializer
     def initialize(binding)
-      puts "++++ using #{binding.object_id.inspect}"
+      # puts "++++ using #{binding.object_id.inspect}"
       @binding = binding
     end
 
@@ -49,18 +49,18 @@ module Representable
       return object unless mod
 
       mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
-      puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} .. #{@binding.instance_variable_get(:@__representer)}}"
+      # puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} .. #{@binding.instance_variable_get(:@__representer)}}"
 
-      if representer = @binding.instance_variable_get(:@__representer)
-        representer.update!(object, @binding.user_options) # FIXME: @binding.user_options is wrong, it's the old options in case this class gets cached.
-        return representer
-      end
-
-      representer = mod.prepare(object)
-      @binding.instance_variable_set(:@__representer, representer) if representer.is_a?(Cached) # TODO: remove the if once we know what to do.
-      representer
+      prepare_for(mod, object)
     end
     # in deserialize, we should get the original object?
+
+    module PleaseSortOutWhatMethodsNeedToBeOverridable
+    def prepare_for(mod, object)
+      mod.prepare(object)
+    end
+  end
+    include PleaseSortOutWhatMethodsNeedToBeOverridable
 
     def create_object(fragment, *args)
       instance_for(fragment, *args) or class_for(fragment, *args)

@@ -34,7 +34,6 @@ module Representable
 
     class Collection < self
       def serialize(array, *args)
-        puts "serializing #{array.size} with #{@binding.object_id}"
         collection = [] # TODO: unify with Deserializer::Collection.
 
         array.each do |item|
