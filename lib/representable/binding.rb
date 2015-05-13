@@ -19,10 +19,10 @@ module Representable
       build_for(definition, *args)
     end
 
-    def initialize(definition, represented, decorator, user_options={})  # TODO: remove default arg for user options.
-      @definition   = definition
+    def initialize(definition, represented, parent_decorator, user_options={})  # TODO: remove default arg for user options.
+      @definition = definition
 
-      setup!(represented, decorator, user_options) # this can be used in #compile_fragment/#uncompile_fragment in case we wanna reuse the Binding instance.
+      setup!(represented, parent_decorator, user_options) # this can be used in #compile_fragment/#uncompile_fragment in case we wanna reuse the Binding instance.
     end
 
     attr_reader :user_options, :represented # TODO: make private/remove.
@@ -102,7 +102,7 @@ module Representable
       end
 
       # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
-      options = self[:pass_options] ? Options.new(self, user_options, represented, decorator) : user_options
+      options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
 
       proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
     end
@@ -155,24 +155,27 @@ module Representable
       @definition.array?
     end
 
+    # Note: this method is experimental.
+    def update!(represented, parent_decorator, user_options)
+      setup!(represented, parent_decorator, user_options)
+    end
+
   private
-    def setup!(represented, decorator, user_options)
-      @represented  = represented
-      @decorator    = decorator
-      @user_options = user_options
+    def setup!(represented, parent_decorator, user_options)
+      @represented      = represented
+      @parent_decorator = parent_decorator
+      @user_options     = user_options
 
       setup_exec_context!
     end
 
     def setup_exec_context!
-      context = represented
-      context = self        if self[:exec_context] == :binding
-      context = decorator   if self[:exec_context] == :decorator
-
-      @exec_context = context
+      @exec_context = @represented
+      @exec_context = self             if self[:exec_context] == :binding
+      @exec_context = parent_decorator if self[:exec_context] == :decorator
     end
 
-    attr_reader :exec_context, :decorator
+    attr_reader :exec_context, :parent_decorator
 
     def serialize(object, &block)
       serializer.call(object, &block)

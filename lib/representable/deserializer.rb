@@ -52,7 +52,7 @@ module Representable
       puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} .. #{@binding.instance_variable_get(:@__representer)}}"
 
       if representer = @binding.instance_variable_get(:@__representer)
-        representer.update!(object)
+        representer.update!(object, @binding.user_options) # FIXME: @binding.user_options is wrong, it's the old options in case this class gets cached.
         return representer
       end
 

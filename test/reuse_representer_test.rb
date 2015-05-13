@@ -6,10 +6,13 @@ module Representable
       @mapper ||= super
     end
 
-    def update!(represented)
+    # replace represented for each property in this representer.
+    # DISCUSS: not sure if we need to replace self and user_options.
+    def update!(represented, user_options)
       representable_mapper.bindings.each do |binding|
-        binding.instance_variable_set(:@represented, represented)
-        binding.instance_variable_set(:@exec_context, represented)
+        binding.update!(represented, self, user_options)
+        # binding.instance_variable_set(:@represented, represented)
+        # binding.instance_variable_set(:@exec_context, represented)
       end
     end
   end
@@ -57,7 +60,7 @@ require "pp"
 # puts "???"
 # pp representer
 
-representer.update!(album2)
+representer.update!(album2, {})
 
 puts "???"
 
