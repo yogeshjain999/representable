@@ -49,7 +49,7 @@ module Representable
       return object unless mod
 
       mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
-      puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} .. #{@binding.instance_variable_get(:@__representer)}"
+      puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} .. #{@binding.instance_variable_get(:@__representer)}}"
 
       if representer = @binding.instance_variable_get(:@__representer)
         representer.update!(object)
@@ -57,7 +57,7 @@ module Representable
       end
 
       representer = mod.prepare(object)
-      @binding.instance_variable_set(:@__representer, representer)
+      @binding.instance_variable_set(:@__representer, representer) if representer.is_a?(Cached) # TODO: remove the if once we know what to do.
       representer
     end
     # in deserialize, we should get the original object?
