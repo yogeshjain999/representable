@@ -10,6 +10,7 @@ module Representable
   #   call -> instance/class -> prepare -> deserialize -> from_json.
   class Deserializer
     def initialize(binding)
+      puts "++++ using #{binding.object_id.inspect}"
       @binding = binding
     end
 
@@ -48,7 +49,18 @@ module Representable
       return object unless mod
 
       mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
-      mod.prepare(object)
+      puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} .. #{@binding.instance_variable_get(:@__representer)}"
+
+      if representer = @binding.instance_variable_get(:@__representer)
+        representer.extend(Representable::Cached)
+        representer.update!(object)
+        return representer
+      end
+
+      representer = mod.prepare(object)
+      representer.extend(Representable::Cached)
+      @binding.instance_variable_set(:@__representer, representer)
+      representer
     end
     # in deserialize, we should get the original object?
 

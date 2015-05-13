@@ -4,6 +4,7 @@ module Representable
   module Hash
     class Binding < Representable::Binding
       def self.build_for(definition, *args)  # TODO: remove default arg.
+        puts "@@@build@@ #{definition.inspect}"
         return Collection.new(definition, *args)  if definition.array?
         return Hash.new(definition, *args)        if definition.hash?
         new(definition, *args)
