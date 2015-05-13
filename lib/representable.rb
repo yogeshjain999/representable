@@ -66,7 +66,7 @@ private
   end
 
   def representation_wrap(*args)
-    representable_attrs.wrap_for(self.class.name, represented, *args)
+    representable_attrs.wrap_for(nil, represented, *args) { self.class.name }
   end
 
   def represented

@@ -77,10 +77,12 @@ module Representable
     end
 
     # Computes the wrap string or returns false.
-    def wrap_for(name, context, *args)
+    def wrap_for(name, context, *args, &block)
       return unless self[:wrap]
 
       value = self[:wrap].evaluate(context, *args)
+
+      name = yield if block_given? # DISCUSS: deprecate/restructure the entire wrapping flow.
 
       return infer_name_for(name) if value === true
       value
