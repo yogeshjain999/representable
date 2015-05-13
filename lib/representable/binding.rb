@@ -18,6 +18,9 @@ module Representable
     def initialize(definition, represented, parent_decorator, user_options={})  # TODO: remove default arg for user options.
       @definition = definition
 
+      # static options.
+      @_representable = @definition.representable?
+
       setup!(represented, parent_decorator, user_options) # this can be used in #compile_fragment/#uncompile_fragment in case we wanna reuse the Binding instance.
     end
 
@@ -121,9 +124,10 @@ module Representable
       @definition.typed?
     end
     #   1.87      0.096     0.029     0.000     0.067    40001   Representable::Definition#representable?
-    #   1.12      0.066     0.016     0.000     0.050    40001   Representable::Binding#representable?
+    #   1.12      0.066     0.016     0.000     0.050    40001   Representable::Binding#representable? with no caching when false!!!
+    #   0.82      0.012     0.012     0.000     0.000    40001   Representable::Binding#representable?
     def representable?
-      @_representable ||= @definition.representable?
+      @_representable
     end
     def has_default?(*args)
       @definition.has_default?(*args)
