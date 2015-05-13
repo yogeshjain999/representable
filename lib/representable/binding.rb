@@ -120,9 +120,10 @@ module Representable
     def typed?
       @definition.typed?
     end
+    #   1.87      0.096     0.029     0.000     0.067    40001   Representable::Definition#representable?
+    #   1.12      0.066     0.016     0.000     0.050    40001   Representable::Binding#representable?
     def representable?
-      # @_representable ||= @definition.representable?
-      @definition.representable?
+      @_representable ||= @definition.representable?
     end
     def has_default?(*args)
       @definition.has_default?(*args)
