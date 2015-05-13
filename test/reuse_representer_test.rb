@@ -7,7 +7,7 @@ module Representable
     end
 
     def update!(represented)
-      @mapper.bindings.each do |binding|
+      representable_mapper.bindings.each do |binding|
         binding.instance_variable_set(:@represented, represented)
         binding.instance_variable_set(:@exec_context, represented)
       end
