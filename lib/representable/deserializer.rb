@@ -52,13 +52,11 @@ module Representable
       puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} .. #{@binding.instance_variable_get(:@__representer)}"
 
       if representer = @binding.instance_variable_get(:@__representer)
-        representer.extend(Representable::Cached)
         representer.update!(object)
         return representer
       end
 
       representer = mod.prepare(object)
-      representer.extend(Representable::Cached)
       @binding.instance_variable_set(:@__representer, representer)
       representer
     end

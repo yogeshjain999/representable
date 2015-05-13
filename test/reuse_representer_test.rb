@@ -1,13 +1,33 @@
 require "test_helper"
 
+module Representable
+  module Cached
+    def representable_mapper(*)
+      @mapper ||= super
+    end
+
+    def update!(represented)
+      @mapper.bindings.each do |binding|
+        binding.instance_variable_set(:@represented, represented)
+        binding.instance_variable_set(:@exec_context, represented)
+      end
+    end
+  end
+end
+
+
+# TODO: also test with feature(Cached)
+
 class SongRepresenter < Representable::Decorator
   include Representable::Hash
+  include Representable::Cached
 
   property :title
 end
 
 class AlbumRepresenter < Representable::Decorator
   include Representable::Hash
+  include Representable::Cached
 
   property :name
   collection :songs, decorator: SongRepresenter
@@ -27,24 +47,9 @@ album = Model::Album.new("Live And Dangerous", [song, song2, Model::Song.new("Em
 
 album2 = Model::Album.new("Louder And Even More Dangerous", [song2, song])
 
-module Representable
-  module Cached
-    def representable_mapper(*)
-      @mapper ||= super
-    end
-
-    def update!(represented)
-      @mapper.bindings.each do |binding|
-        binding.instance_variable_set(:@represented, represented)
-        binding.instance_variable_set(:@exec_context, represented)
-      end
-    end
-  end
-end
 
 
 representer = AlbumRepresenter.new(album)
-representer.extend(Representable::Cached)
 
 puts representer.to_hash # called in Deserializer/Serializer
 
