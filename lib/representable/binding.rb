@@ -85,7 +85,10 @@ module Representable
     end
 
     # DISCUSS: do we really need that?
+    #   1.38      0.104     0.021     0.000     0.083    40001   Representable::Binding#representer_module_for
+    #   1.13      0.044     0.017     0.000     0.027    40001   Representable::Binding#representer_module_for (with memoize).
     def representer_module_for(object, *args)
+      # TODO: cache this!
       evaluate_option(:extend, object) # TODO: pass args? do we actually have args at the time this is called (compile-time)?
     end
 
@@ -118,6 +121,7 @@ module Representable
       @definition.typed?
     end
     def representable?
+      # @_representable ||= @definition.representable?
       @definition.representable?
     end
     def has_default?(*args)
@@ -126,7 +130,7 @@ module Representable
     def name
       @definition.name
     end
-    def representer_module
+    def representer_module # FIXME: where do we need that?
       @definition.representer_module
     end
     # perf : 1.7-1.9
@@ -137,8 +141,11 @@ module Representable
     #   define_method(name.to_sym) { |*args| @definition.send(name, *args) }
     # end
 
+    #   1.55      0.031     0.022     0.000     0.009    60004   Representable::Binding#skipable_empty_value?
+    #   1.51      0.030     0.022     0.000     0.008    60004   Representable::Binding#skipable_empty_value?
+    # after polymorphism:
+    # 1.44      0.031     0.022     0.000     0.009    60002   Representable::Binding#skipable_empty_value?
     def skipable_empty_value?(value)
-      return true if array? and self[:render_empty] == false and value and value.size == 0  # TODO: change in 2.0, don't render emtpy.
       value.nil? and not self[:render_nil]
     end
 
@@ -147,6 +154,7 @@ module Representable
       value
     end
 
+      # 1.24      0.043     0.024     0.000     0.019    60009   Representable::Definition#array?
     def array?
       @definition.array?
     end
@@ -184,7 +192,7 @@ module Representable
 
       def serializer
         @serializer ||= serializer_class.new(self).tap do
-          puts "creataiiiing serialijser"
+          # puts "creataiiiing serialijser"
         end
       end
 
@@ -213,6 +221,12 @@ module Representable
 
       def serializer_class
         Serializer::Collection
+      end
+
+      def skipable_empty_value?(value)
+        # TODO: this can be optimized, again.
+        return true if value.nil? and not self[:render_nil] # FIXME: test this without the "and"
+        return true if self[:render_empty] == false and value and value.size == 0  # TODO: change in 2.0, don't render emtpy.
       end
     end
 
