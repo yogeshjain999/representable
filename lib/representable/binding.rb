@@ -30,6 +30,12 @@ module Representable
       @as ||= evaluate_option(:as)
     end
 
+    # DISCUSS:
+    # currently, we need to call B#update! before compile_fragment/uncompile_fragment.
+    # this will change to B#renderer(represented, options).call
+    #                     B#parser  (represented, options).call
+    # goal is to have two objects for 2 entirely different tasks.
+
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
       evaluate_option(:writer, doc) do
