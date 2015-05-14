@@ -18,8 +18,9 @@ module Representable
     def initialize(definition, represented, parent_decorator, user_options={})  # TODO: remove default arg for user options.
       @definition = definition
 
-      # static options.
+      # static options. do this once.
       @_representable = @definition.representable?
+      @_skip_filters = self[:readable]==false || self[:writeable]==false || self[:if]
 
       setup!(represented, parent_decorator, user_options) # this can be used in #compile_fragment/#uncompile_fragment in case we wanna reuse the Binding instance.
     end
@@ -167,6 +168,11 @@ module Representable
     # Note: this method is experimental.
     def update!(represented, parent_decorator, user_options)
       setup!(represented, parent_decorator, user_options)
+    end
+
+    # Does this binding contain :if, :readable or :writeable settings?
+    def skip_filters?
+      @_skip_filters
     end
 
   private
