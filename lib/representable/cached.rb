@@ -15,9 +15,9 @@ module Representable
     end
 
     # replace represented for each property in this representer.
-    # DISCUSS: not sure if we need to replace self and user_options.
     def update!(represented)
       @represented = represented
+      self
     end
 
     # TODO: also for deserializer.
@@ -34,8 +34,7 @@ module Representable
     module Serializer
       def prepare_for(mod, object)
         if representer = @binding.cached_representer
-          representer.update!(object)
-          return representer
+          return representer.update!(object)
         end
 
         @binding.cached_representer = super(mod, object)
