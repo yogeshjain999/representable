@@ -166,8 +166,11 @@ module Representable
     end
 
     # Note: this method is experimental.
-    def update!(represented, parent_decorator, user_options)
-      setup!(represented, parent_decorator, user_options)
+    def update!(represented, user_options)
+      @represented      = represented
+      @user_options     = user_options
+
+      setup_exec_context!
     end
 
     # Does this binding contain :if, :readable or :writeable settings?
@@ -178,7 +181,7 @@ module Representable
   private
     def setup!(represented, parent_decorator, user_options)
       @represented      = represented
-      @parent_decorator = parent_decorator
+      @parent_decorator = parent_decorator # DISCUSS: where's this needed?
       @user_options     = user_options
 
       setup_exec_context!
