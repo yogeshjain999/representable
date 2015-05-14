@@ -124,7 +124,7 @@ module Representable
       @definition.typed?
     end
     #   1.87      0.096     0.029     0.000     0.067    40001   Representable::Definition#representable?
-    #   1.12      0.066     0.016     0.000     0.050    40001   Representable::Binding#representable? with no caching when false!!!
+    #   1.12      0.066     0.016     0.000     0.050    40001   Representable::Binding#representable? with `@_representable ||= definition.representable`  (no caching when false)!!!
     #   0.82      0.012     0.012     0.000     0.000    40001   Representable::Binding#representable?
     def representable?
       @_representable
@@ -178,8 +178,10 @@ module Representable
       setup_exec_context!
     end
 
+    #   1.80      0.066     0.027     0.000     0.039    30002   Representable::Binding#setup_exec_context!
+    #   0.98      0.034     0.014     0.000     0.020    30002   Representable::Binding#setup_exec_context!
     def setup_exec_context!
-      @exec_context = @represented
+      return @exec_context = @represented unless self[:exec_context]
       @exec_context = self             if self[:exec_context] == :binding
       @exec_context = parent_decorator if self[:exec_context] == :decorator
     end
