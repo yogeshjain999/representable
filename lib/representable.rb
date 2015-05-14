@@ -48,12 +48,11 @@ private
   def representable_bindings_for(format, options)
     options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
 
-    representable_attrs.collect {|attr| representable_binding_for(attr, format, options) }
-    # representable_attrs.binding_cache[format] ||= representable_attrs.collect {|attr| representable_binding_for(attr, format, options) }
+    representable_attrs.collect {|definition| representable_binding_for(definition, format, options) }
   end
 
-  def representable_binding_for(attribute, format, options)
-    format.build(attribute, represented, self, options)
+  def representable_binding_for(definition, format, options)
+    format.build(definition, self)
   end
 
   def cleanup_options(options) # TODO: remove me. this clearly belongs in Representable.
