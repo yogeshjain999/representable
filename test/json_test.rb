@@ -88,15 +88,15 @@ module JsonTest
 
       describe "#build_for" do
         it "returns TextBinding" do
-          assert_kind_of Representable::Hash::Binding, Representable::Hash::Binding.build_for(Def.new(:band), nil, nil)
+          assert_kind_of Representable::Hash::Binding, Representable::Hash::Binding.build_for(Def.new(:band), nil)
         end
 
         it "returns HashBinding" do
-          assert_kind_of Representable::Hash::Binding::Hash, Representable::Hash::Binding.build_for(Def.new(:band, :hash => true), nil, nil)
+          assert_kind_of Representable::Hash::Binding::Hash, Representable::Hash::Binding.build_for(Def.new(:band, :hash => true), nil)
         end
 
         it "returns CollectionBinding" do
-          assert_kind_of Representable::Hash::Binding::Collection, Representable::Hash::Binding.build_for(Def.new(:band, :collection => true), nil, nil)
+          assert_kind_of Representable::Hash::Binding::Collection, Representable::Hash::Binding.build_for(Def.new(:band, :collection => true), nil)
         end
       end
 

@@ -29,7 +29,7 @@ class XMLBindingTest < MiniTest::Spec
   describe "AttributeBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::XML::Binding::Attribute.new(Representable::Definition.new(:name, :attribute => true), nil, nil)
+        @property = Representable::XML::Binding::Attribute.new(Representable::Definition.new(:name, :attribute => true), nil)
       end
 
       it "extracts with #read" do
@@ -46,7 +46,7 @@ class XMLBindingTest < MiniTest::Spec
 
   describe "ContentBinding" do
     before do
-      @property = Representable::XML::Binding::Content.new(Representable::Definition.new(:name, :content => true), nil, nil)
+      @property = Representable::XML::Binding::Content.new(Representable::Definition.new(:name, :content => true), nil)
     end
 
     it "extracts with #read" do

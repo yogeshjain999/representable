@@ -15,14 +15,13 @@ module Representable
       build_for(definition, *args)
     end
 
-    def initialize(definition, represented, parent_decorator, user_options={})  # TODO: remove default arg for user options.
-      @definition = definition
+    def initialize(definition, parent_decorator)
+      @definition       = definition
+      @parent_decorator = parent_decorator # DISCUSS: where's this needed?
 
       # static options. do this once.
       @_representable = @definition.representable?
       @_skip_filters  = self[:readable]==false || self[:writeable]==false || self[:if]
-
-      setup!(represented, parent_decorator, user_options) # this can be used in #compile_fragment/#uncompile_fragment in case we wanna reuse the Binding instance.
     end
 
     attr_reader :user_options, :represented # TODO: make private/remove.
@@ -179,14 +178,6 @@ module Representable
     end
 
   private
-    def setup!(represented, parent_decorator, user_options)
-      @represented      = represented
-      @parent_decorator = parent_decorator # DISCUSS: where's this needed?
-      @user_options     = user_options
-
-      setup_exec_context!
-    end
-
     #   1.80      0.066     0.027     0.000     0.039    30002   Representable::Binding#setup_exec_context!
     #   0.98      0.034     0.014     0.000     0.020    30002   Representable::Binding#setup_exec_context!
     def setup_exec_context!

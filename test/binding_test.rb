@@ -5,7 +5,7 @@ class BindingTest < MiniTest::Spec
   let (:render_nil_definition) { Representable::Definition.new(:song, :render_nil => true) }
 
   describe "#skipable_empty_value?" do
-    let (:binding) { Binding.new(render_nil_definition, nil, nil) }
+    let (:binding) { Binding.new(render_nil_definition, nil) }
 
     # don't skip when present.
     it { binding.skipable_empty_value?("Disconnect, Disconnect").must_equal false }
@@ -14,16 +14,16 @@ class BindingTest < MiniTest::Spec
     it { binding.skipable_empty_value?(nil).must_equal false }
 
     # skip when nil and :render_nil undefined.
-    it { Binding.new(Representable::Definition.new(:song), nil, nil).skipable_empty_value?(nil).must_equal true }
+    it { Binding.new(Representable::Definition.new(:song), nil).skipable_empty_value?(nil).must_equal true }
 
     # don't skip when nil and :render_nil undefined.
-    it { Binding.new(Representable::Definition.new(:song), nil, nil).skipable_empty_value?("Fatal Flu").must_equal false }
+    it { Binding.new(Representable::Definition.new(:song), nil).skipable_empty_value?("Fatal Flu").must_equal false }
   end
 
 
   describe "#default_for" do
     let (:definition) { Representable::Definition.new(:song, :default => "Insider") }
-    let (:binding) { Binding.new(definition, nil, nil) }
+    let (:binding) { Binding.new(definition, nil) }
 
     # return value when value present.
     it { binding.default_for("Black And Blue").must_equal "Black And Blue" }
@@ -35,12 +35,12 @@ class BindingTest < MiniTest::Spec
     it { binding.default_for(nil).must_equal "Insider" }
 
     # return nil when value nil and render_nil: true.
-    it { Binding.new(render_nil_definition, nil, nil).default_for(nil).must_equal nil }
+    it { Binding.new(render_nil_definition, nil).default_for(nil).must_equal nil }
 
     # return nil when value nil and render_nil: true, even when :default is set" do
-    it { Binding.new(Representable::Definition.new(:song, :render_nil => true, :default => "The Quest"), nil, nil).default_for(nil).must_equal nil }
+    it { Binding.new(Representable::Definition.new(:song, :render_nil => true, :default => "The Quest"), nil).default_for(nil).must_equal nil }
 
     # return nil if no :default
-    it { Binding.new(Representable::Definition.new(:song), nil, nil).default_for(nil).must_equal nil }
+    it { Binding.new(Representable::Definition.new(:song), nil).default_for(nil).must_equal nil }
   end
 end
