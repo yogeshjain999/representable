@@ -20,7 +20,7 @@ module Representable
 
       # static options. do this once.
       @_representable = @definition.representable?
-      @_skip_filters = self[:readable]==false || self[:writeable]==false || self[:if]
+      @_skip_filters  = self[:readable]==false || self[:writeable]==false || self[:if]
 
       setup!(represented, parent_decorator, user_options) # this can be used in #compile_fragment/#uncompile_fragment in case we wanna reuse the Binding instance.
     end
@@ -171,7 +171,7 @@ module Representable
     end
 
     # Does this binding contain :if, :readable or :writeable settings?
-    def skip_filters?
+    def skip_filters? # FIXME: test me.
       @_skip_filters
     end
 

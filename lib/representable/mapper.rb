@@ -38,7 +38,6 @@ module Representable
       # Checks and returns if the property should be included.
       #   1.78      0.107     0.025     0.000     0.081    30002   Representable::Mapper::Methods#skip_property?
       #   0.96      0.013     0.013     0.000     0.000    30002   Representable::Mapper::Methods#skip_property? hash only
-      #  1.66      0.077     0.023     0.000     0.055    30002   Representable::Mapper::Methods#skip_property? with binding[]
       #   1.15      0.025     0.016     0.000     0.009    30002   Representable::Mapper::Methods#skip_property?
 
       def skip_property?(binding, options)

@@ -1,5 +1,12 @@
 module Representable
   module Cached
+    # The main point here is that the decorator instance simply saves its mapper. Since the mapper
+    # in turn stores the bindings, we have a straight-forward way of "caching" the bindings without
+    # having to mess around on the class level: this all happens in the decorator _instance_.
+    #
+    # Every binding in turn stores its nested representer (if it has one), implementing a recursive caching.
+    #
+    # Decorator -> Mapper -> [Binding->Decorator, Binding]
     def representable_mapper(*)
       @mapper ||= super.tap do |mapper|
         mapper.bindings.each { |binding| binding.extend(Binding) }
