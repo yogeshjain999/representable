@@ -1,3 +1,9 @@
+# 2.2.0
+
+## API change.
+
+* The `:extend` option only accepts one module. `extend: [Module, Module]` does no longer work and it actually didn't work in former versions of 2.x, anyway, it just included the first element of an array.
+
 # 2.1.8
 
 * API change: features are now included into inline representers in the order they were specified. This used to be the other way round and is, of course, wrong, in case a sub-feature wants to override an existing method introduced by an earlier feature.

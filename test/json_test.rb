@@ -119,7 +119,7 @@ module JsonTest
       module AlbumRepresenter
         include Representable::JSON
         property :best_song, :class => Song, :extend => SongRepresenter
-        collection :songs, :class => Song, :extend => [SongRepresenter]
+        collection :songs, :class => Song, :extend => SongRepresenter
       end
 
 

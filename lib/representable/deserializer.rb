@@ -48,7 +48,6 @@ module Representable
 
       return object unless mod
 
-      mod = mod.first if mod.is_a?(Array) # TODO: deprecate :extend => [..]
        # puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} [#{@binding.instance_variable_get(:@__array).inspect}] .. #{@binding.instance_variable_get(:@__representer)}}"
 
       prepare_for(mod, object)
