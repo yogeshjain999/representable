@@ -183,6 +183,8 @@ module Representable
       @_skip_filters
     end
 
+    attr_accessor :cached_representer
+
   private
     #   1.80      0.066     0.027     0.000     0.039    30002   Representable::Binding#setup_exec_context!
     #   0.98      0.034     0.014     0.000     0.020    30002   Representable::Binding#setup_exec_context!
