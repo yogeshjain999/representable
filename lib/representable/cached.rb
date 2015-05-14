@@ -1,4 +1,5 @@
 module Representable
+  # Using this module only makes sense with Decorator representers.
   module Cached
     # The main point here is that the decorator instance simply saves its mapper. Since the mapper
     # in turn stores the bindings, we have a straight-forward way of "caching" the bindings without
@@ -15,12 +16,8 @@ module Representable
 
     # replace represented for each property in this representer.
     # DISCUSS: not sure if we need to replace self and user_options.
-    def update!(represented, user_options)
-      representable_mapper.bindings(represented, user_options).each do |binding|
-        binding.update!(represented, user_options)
-        # binding.instance_variable_set(:@represented, represented)
-        # binding.instance_variable_set(:@exec_context, represented)
-      end
+    def update!(represented)
+      @represented = represented
     end
 
     # TODO: also for deserializer.
@@ -36,14 +33,12 @@ module Representable
 
     module Serializer
       def prepare_for(mod, object)
-        if representer = @binding.instance_variable_get(:@__representer)
-          representer.update!(object, @binding.user_options) # FIXME: @binding.user_options is wrong, it's the old options in case this class gets cached.
+        if representer = @binding.cached_representer
+          representer.update!(object)
           return representer
         end
 
-        representer = super(mod, object)
-        @binding.instance_variable_set(:@__representer, representer)
-        representer
+        @binding.cached_representer = super(mod, object)
       end
     end
   end
