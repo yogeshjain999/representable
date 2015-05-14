@@ -37,12 +37,12 @@ private
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
     # deserialize_for(bindings, mapper ? , options)
-    representable_mapper(format, options).deserialize(doc, options)
+    representable_mapper(format, options).deserialize(represented, doc, options)
   end
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    representable_mapper(format, options).serialize(doc, options)
+    representable_mapper(format, options).serialize(represented, doc, options)
   end
 
   def representable_bindings_for(format, options)
@@ -66,7 +66,7 @@ private
 
   def representable_mapper(format, options)
     bindings = representable_bindings_for(format, options)
-    Mapper.new(bindings, represented, options) # TODO: remove self, or do we need it? and also represented!
+    Mapper.new(bindings)
   end
 
   def representation_wrap(*args)

@@ -3,22 +3,25 @@ module Representable
   # Conditionals are handled here, too.
   class Mapper
     module Methods
-      def initialize(bindings, represented, options) # TODO: get rid of represented dependency.
-        @represented  = represented # the (extended) model.
-        @bindings     = bindings
+      def initialize(bindings)
+        @bindings = bindings
       end
 
-      attr_reader :bindings
+      def bindings(represented, options)
+        @bindings.each do |binding|
+          binding.update!(represented, options)
+        end
+      end
 
-      def deserialize(doc, options)
-        bindings.each do |bin|
+      def deserialize(represented, doc, options)
+        bindings(represented, options).each do |bin|
           deserialize_property(bin, doc, options)
         end
-        @represented
+        represented
       end
 
-      def serialize(doc, options)
-        bindings.each do |bin|
+      def serialize(represented, doc, options)
+        bindings(represented, options).each do |bin|
           serialize_property(bin, doc, options)
         end
         doc

@@ -7,16 +7,16 @@ module Representable
     # Every binding in turn stores its nested representer (if it has one), implementing a recursive caching.
     #
     # Decorator -> Mapper -> [Binding->Decorator, Binding]
-    def representable_mapper(*)
+    def representable_mapper(format, options)
       @mapper ||= super.tap do |mapper|
-        mapper.bindings.each { |binding| binding.extend(Binding) }
+        mapper.bindings(represented, options).each { |binding| binding.extend(Binding) }
       end
     end
 
     # replace represented for each property in this representer.
     # DISCUSS: not sure if we need to replace self and user_options.
     def update!(represented, user_options)
-      representable_mapper.bindings.each do |binding|
+      representable_mapper.bindings(represented, user_options).each do |binding|
         binding.update!(represented, user_options)
         # binding.instance_variable_set(:@represented, represented)
         # binding.instance_variable_set(:@exec_context, represented)

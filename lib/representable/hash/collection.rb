@@ -19,12 +19,12 @@ module Representable::Hash
 
 
     def create_representation_with(doc, options, format)
-      bin   = representable_mapper(format, options).bindings.first
+      bin   = representable_mapper(format, options).bindings(represented, options).first
       bin.render_fragment(represented, doc)
     end
 
     def update_properties_from(doc, options, format)
-      bin   = representable_mapper(format, options).bindings.first
+      bin   = representable_mapper(format, options).bindings(represented, options).first
       #value = bin.deserialize_from(doc)
       value = Deserializer::Collection.new(bin).call(doc)
       represented.replace(value)
