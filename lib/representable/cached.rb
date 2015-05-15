@@ -29,6 +29,20 @@ module Representable
           serializer.extend(Serializer)
         end
       end
+
+      def populator
+        @__populator ||= super.tap do |populator|
+          puts "#{object_id} pop extendin"
+          # populator.extend(Serializer)
+        end
+      end
+
+      def deserializer
+        @__deserializer ||= super.tap do |deserializer|
+          puts "#{object_id} deser extendin"
+          deserializer.extend(Serializer)
+        end
+      end
     end
 
     module Serializer

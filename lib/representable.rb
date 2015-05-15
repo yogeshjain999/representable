@@ -56,7 +56,7 @@ private
     format.build(definition, self)
   end
 
-  def normalize_options!(options) # TODO: remove me. this clearly belongs in Representable.
+  def normalize_options!(options)
     # TODO: ideally, private_options would be nil if none set or so, so we could save a lot of time in nested objects.
     private_options = {}
     # return private_options if options.size == 0

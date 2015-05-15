@@ -10,7 +10,7 @@ module Representable
   #   call -> instance/class -> prepare -> deserialize -> from_json.
   class Deserializer
     def initialize(binding)
-      # puts "++++ using #{binding.object_id.inspect}"
+       puts "++++ using #{binding.object_id.inspect}"
       @binding = binding
     end
 

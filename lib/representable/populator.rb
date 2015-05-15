@@ -35,12 +35,8 @@ module Representable
       deserializer.call(fragment) # CollectionDeserializer/HashDeserializer/etc.
     end
 
-    def deserializer_class
-      Deserializer
-    end
-
     def deserializer
-      deserializer_class.new(@binding)
+      @binding.deserializer
     end
 
 
@@ -52,17 +48,9 @@ module Representable
       def deserialize(fragment)
         return deserializer.call(fragment)
       end
-
-      def deserializer
-        Deserializer::Collection.new(@binding)
-      end
     end
 
     class Hash < self
-    private
-      def deserializer_class
-        Deserializer::Hash
-      end
     end
   end
 end

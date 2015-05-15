@@ -67,6 +67,7 @@ module Representable
     end
 
     def read_fragment(doc)
+      puts "#{object_id} reading fragment [#{name}]: #{doc} in "
       fragment = read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
 
       populator.call(fragment, doc)
@@ -212,11 +213,19 @@ module Representable
       end
 
       def populator
-        populator_class.new(self)
+        @populator ||= populator_class.new(self)
       end
 
       def populator_class
         Populator
+      end
+
+      def deserializer_class
+        Deserializer
+      end
+
+      def deserializer
+        @dafuck ||= deserializer_class.new(self)
       end
     end
     include Factories
@@ -238,6 +247,10 @@ module Representable
         Serializer::Collection
       end
 
+      def deserializer_class
+        Deserializer::Collection
+      end
+
       def skipable_empty_value?(value)
         # TODO: this can be optimized, again.
         return true if value.nil? and not self[:render_nil] # FIXME: test this without the "and"
@@ -254,6 +267,10 @@ module Representable
 
       def serializer_class
         Serializer::Hash
+      end
+
+      def deserializer_class
+        Deserializer::Hash
       end
     end
   end
