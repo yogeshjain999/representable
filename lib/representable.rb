@@ -36,26 +36,19 @@ module Representable
 private
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
-    # deserialize_for(bindings, mapper ? , options)
-    private_options = {}
-    private_options[:include] = options.delete(:include) if options[:include]
-    private_options[:exclude] = options.delete(:exclude) if options[:exclude]
+    private_options = normalize_options!(options)
 
     representable_mapper(format, options).deserialize(represented, doc, options, private_options)
   end
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    private_options = {}
-    private_options[:include] = options.delete(:include) if options[:include]
-    private_options[:exclude] = options.delete(:exclude) if options[:exclude]
+    private_options = normalize_options!(options)
 
     representable_mapper(format, options).serialize(represented, doc, options, private_options)
   end
 
   def representable_bindings_for(format, options)
-    # options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
-
     representable_attrs.collect {|definition| representable_binding_for(definition, format, options) }
   end
 
@@ -63,8 +56,13 @@ private
     format.build(definition, self)
   end
 
-  def cleanup_options(options) # TODO: remove me. this clearly belongs in Representable.
-    options.reject { |k,v| [:include, :exclude].include?(k) }
+  def normalize_options!(options) # TODO: remove me. this clearly belongs in Representable.
+    # TODO: ideally, private_options would be nil if none set or so, so we could save a lot of time in nested objects.
+    private_options = {}
+    # return private_options if options.size == 0
+    private_options[:include] = options.delete(:include) if options[:include]
+    private_options[:exclude] = options.delete(:exclude) if options[:exclude]
+    private_options
   end
 
   def representable_attrs
