@@ -37,16 +37,24 @@ private
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
     # deserialize_for(bindings, mapper ? , options)
-    representable_mapper(format, options).deserialize(represented, doc, options)
+    private_options = {}
+    private_options[:include] = options.delete(:include) if options[:include]
+    private_options[:exclude] = options.delete(:exclude) if options[:exclude]
+
+    representable_mapper(format, options).deserialize(represented, doc, options, private_options)
   end
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    representable_mapper(format, options).serialize(represented, doc, options)
+    private_options = {}
+    private_options[:include] = options.delete(:include) if options[:include]
+    private_options[:exclude] = options.delete(:exclude) if options[:exclude]
+
+    representable_mapper(format, options).serialize(represented, doc, options, private_options)
   end
 
   def representable_bindings_for(format, options)
-    options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
+    # options = cleanup_options(options)  # FIXME: make representable-options and user-options  two different hashes.
 
     representable_attrs.collect {|definition| representable_binding_for(definition, format, options) }
   end
