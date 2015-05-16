@@ -48,7 +48,7 @@ module Representable
 
       return object unless mod
 
-       # puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} [#{@binding.instance_variable_get(:@__array).inspect}] .. #{@binding.instance_variable_get(:@__representer)}}"
+        puts "@@PREP@@@ #{object.inspect} with binding: #{@binding.object_id} [#{@binding.instance_variable_get(:@__array).inspect}] .. #{@binding.instance_variable_get(:@__representer)}}"
 
       prepare_for(mod, object)
     end
@@ -98,8 +98,11 @@ module Representable
 
     private
       def deserialize!(*args)
-        # TODO: re-use deserializer.
-        Deserializer.new(@binding).call(*args)
+        item_deserializer.call(*args)
+      end
+
+      def item_deserializer
+        @item_deserializer = Deserializer.new(@binding)
       end
     end
 
