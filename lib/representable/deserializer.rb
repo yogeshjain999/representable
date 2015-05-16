@@ -36,27 +36,26 @@ module Representable
       object.send(@binding.deserialize_method, fragment, options)
     end
 
-    def prepare(object)
-      @binding.evaluate_option(:prepare, object) do
-        prepare!(object)
+    module Prepare
+      def prepare(object)
+        @binding.evaluate_option(:prepare, object) do
+          prepare!(object)
+        end
+      end
+
+      def prepare!(object)
+        mod = @binding.representer_module_for(object)
+
+        return object unless mod
+
+        prepare_for(mod, object)
+      end
+
+      def prepare_for(mod, object)
+        mod.prepare(object)
       end
     end
-
-    def prepare!(object)
-      mod = @binding.representer_module_for(object)
-
-      return object unless mod
-
-      prepare_for(mod, object)
-    end
-    # in deserialize, we should get the original object?
-
-    module PleaseSortOutWhatMethodsNeedToBeOverridable
-    def prepare_for(mod, object)
-      mod.prepare(object)
-    end
-  end
-    include PleaseSortOutWhatMethodsNeedToBeOverridable
+    include Prepare
 
     def create_object(fragment, *args)
       instance_for(fragment, *args) or class_for(fragment, *args)
