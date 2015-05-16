@@ -29,62 +29,107 @@ class CachedTest < MiniTest::Spec
   end
 
 
-  let (:album_hash) { {"name"=>"Louder And Even More Dangerous", "songs"=>[{"title"=>"Southbound:{:volume=>10}"}, {"title"=>"Jailbreak:{:volume=>10}"}]} }
+  describe "serialization" do
+    let (:album_hash) { {"name"=>"Louder And Even More Dangerous", "songs"=>[{"title"=>"Southbound:{:volume=>10}"}, {"title"=>"Jailbreak:{:volume=>10}"}]} }
 
-  it do
-    song   = Model::Song.new("Jailbreak")
-    song2  = Model::Song.new("Southbound")
-    album  = Model::Album.new("Live And Dangerous", [song, song2, Model::Song.new("Emerald")])
-    album2 = Model::Album.new("Louder And Even More Dangerous", [song2, song])
+    let (:song) { Model::Song.new("Jailbreak") }
+    let (:song2) { Model::Song.new("Southbound") }
+    let (:album) { Model::Album.new("Live And Dangerous", [song, song2, Model::Song.new("Emerald")]) }
+    let (:representer) { AlbumRepresenter.new(album) }
 
-    representer = AlbumRepresenter.new(album)
+    it do
+      album2 = Model::Album.new("Louder And Even More Dangerous", [song2, song])
 
-    # makes sure options are passed correctly.
+      # makes sure options are passed correctly.
+      representer.to_hash(volume: 9).must_equal({"name"=>"Live And Dangerous",
+        "songs"=>[{"title"=>"Jailbreak:{:volume=>9}"}, {"title"=>"Southbound:{:volume=>9}"}, {"title"=>"Emerald:{:volume=>9}"}]}) # called in Deserializer/Serializer
 
-    representer.to_hash(volume: 9).must_equal({"name"=>"Live And Dangerous",
-      "songs"=>[{"title"=>"Jailbreak:{:volume=>9}"}, {"title"=>"Southbound:{:volume=>9}"}, {"title"=>"Emerald:{:volume=>9}"}]}) # called in Deserializer/Serializer
+      # representer becomes reusable as it is stateless.
+      representer.update!(album2)
 
-    # representer becomes reusable as it is stateless.
-    representer.update!(album2)
+      # makes sure options are passed correctly.
+      representer.to_hash(volume:10).must_equal(album_hash)
+    end
 
-    # makes sure options are passed correctly.
-    representer.to_hash(volume:10).must_equal(album_hash)
+    # profiling
+    it "xx" do
+     RubyProf.start
+        representer.to_hash
+      res = RubyProf.stop
+
+      printer = RubyProf::FlatPrinter.new(res)
+
+      data = StringIO.new
+      printer.print(data)
+      data = data.string
+
+      printer.print(STDOUT)
+
+      # only 1 nested decorators are instantiated, Song.
+      data.must_match "1   <Class::Representable::Decorator>#prepare"
+      # a total of 4 properties in the object graph.
+      data.must_match "4   Representable::Binding#initialize"
+      # 2 mappers for Album, Song
+      data.must_match "2   Representable::Mapper::Methods#initialize"
+      # 6 deserializers as the songs collection uses 2.
+      data.must_match "3   Representable::Deserializer#initialize"
+    end
   end
 
-  it "deser" do
-    album_hash = {
-      "name"=>"Louder And Even More Dangerous",
-      "songs"=>[
-        {"title"=>"Southbound", "composer"=>{"name"=>"Lynott"}},
-        {"title"=>"Jailbreak", "composer"=>{"name"=>"Phil Lynott"}},
-        {"title"=>"Emerald"}
-      ]
+
+  describe "deserialization" do
+    let (:album_hash) {
+      {
+        "name"=>"Louder And Even More Dangerous",
+        "songs"=>[
+          {"title"=>"Southbound", "composer"=>{"name"=>"Lynott"}},
+          {"title"=>"Jailbreak", "composer"=>{"name"=>"Phil Lynott"}},
+          {"title"=>"Emerald"}
+        ]
+      }
     }
 
+    it do
+      album = Model::Album.new
 
+      AlbumRepresenter.new(album).from_hash(album_hash)
 
-    representer = AlbumRepresenter.new(Model::Album.new)
+      album.songs.size.must_equal 3
+      album.name.must_equal "Louder And Even More Dangerous"
+      album.songs[0].title.must_equal "Southbound"
+      album.songs[0].composer.name.must_equal "Lynott"
+      album.songs[1].title.must_equal "Jailbreak"
+      album.songs[1].composer.name.must_equal "Phil Lynott"
+      album.songs[2].title.must_equal "Emerald"
+      album.songs[2].composer.must_equal nil
 
-    RubyProf.start
-      representer.from_hash(album_hash)
-    res = RubyProf.stop
+      # TODO: test options.
+    end
 
-    printer = RubyProf::FlatPrinter.new(res)
+    it do
+      representer = AlbumRepresenter.new(Model::Album.new)
 
-    data = StringIO.new
-    printer.print(data)
-    data = data.string
+      RubyProf.start
+        representer.from_hash(album_hash)
+      res = RubyProf.stop
 
-    # only 2 nested decorators are instantiated, Song, and Artist.
-    data.must_match "2   <Class::Representable::Decorator>#prepare"
-    # a total of 5 properties in the object graph.
-    data.must_match "5   Representable::Binding#initialize"
-    # three mappers for Album, Song, composer
-    data.must_match "3   Representable::Mapper::Methods#initialize"
-    # 6 deserializers as the songs collection uses 2.
-    data.must_match "6   Representable::Deserializer#initialize"
-    # one populater for every property.
-    data.must_match "5   Representable::Populator#initialize"
-    # printer.print(STDOUT)
+      printer = RubyProf::FlatPrinter.new(res)
+
+      data = StringIO.new
+      printer.print(data)
+      data = data.string
+
+      # only 2 nested decorators are instantiated, Song, and Artist.
+      data.must_match "2   <Class::Representable::Decorator>#prepare"
+      # a total of 5 properties in the object graph.
+      data.must_match "5   Representable::Binding#initialize"
+      # three mappers for Album, Song, composer
+      data.must_match "3   Representable::Mapper::Methods#initialize"
+      # 6 deserializers as the songs collection uses 2.
+      data.must_match "6   Representable::Deserializer#initialize"
+      # one populater for every property.
+      data.must_match "5   Representable::Populator#initialize"
+      # printer.print(STDOUT)
+    end
   end
 end
