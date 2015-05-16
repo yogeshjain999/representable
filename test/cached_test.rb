@@ -11,9 +11,12 @@ class CachedTest < MiniTest::Spec
 
   class SongRepresenter < Representable::Decorator
     include Representable::Hash
-    include Representable::Cached
+    feature Representable::Cached
 
     property :title, render_filter: lambda { |value, doc, options| "#{value}:#{options.user_options}" }, pass_options: true
+    property :composer, class: Model::Artist do
+      property :name
+    end
   end
 
   class AlbumRepresenter < Representable::Decorator
@@ -48,6 +51,15 @@ class CachedTest < MiniTest::Spec
   end
 
   it "deser" do
+    album_hash = {
+      "name"=>"Louder And Even More Dangerous",
+      "songs"=>[
+        {"title"=>"Southbound", "composer"=>{"name"=>"Lynott"}},
+        {"title"=>"Jailbreak", "composer"=>{"name"=>"Phil Lynott"}},
+        {"title"=>"Emerald"}
+      ]
+    }
+
     representer = AlbumRepresenter.new(Model::Album.new)
     representer.from_hash(album_hash)
   end

@@ -16,6 +16,7 @@ module Representable
     end
 
     def initialize(definition, parent_decorator)
+      puts "New binding #{object_id} @@@@@ 1111::::: #{definition.name.inspect}"
       @definition       = definition
       @parent_decorator = parent_decorator # DISCUSS: where's this needed?
 
@@ -207,9 +208,7 @@ module Representable
       end
 
       def serializer
-        @serializer ||= serializer_class.new(self).tap do
-          # puts "creataiiiing serialijser"
-        end
+        @serializer ||= serializer_class.new(self)
       end
 
       def populator
@@ -225,7 +224,7 @@ module Representable
       end
 
       def deserializer
-        @dafuck ||= deserializer_class.new(self)
+        @deserializer ||= deserializer_class.new(self)
       end
     end
     include Factories
