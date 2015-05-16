@@ -25,21 +25,12 @@ module Representable
     module Binding
       def serializer
         @__serializer ||= super.tap do |serializer|
-          puts "extendin"
           serializer.extend(Serializer)
-        end
-      end
-
-      def populator
-        @__populator ||= super.tap do |populator|
-          puts "#{object_id} pop extendin"
-          # populator.extend(Serializer)
         end
       end
 
       def deserializer
         @__deserializer ||= super.tap do |deserializer|
-          puts "#{object_id} deser extendin"
           deserializer.extend(Serializer)
         end
       end
@@ -51,7 +42,7 @@ module Representable
           return representer.update!(object)
         end
 
-        puts "--------> caching representer for #{object} in #{@binding.object_id}"
+        # puts "--------> caching representer for #{object} in #{@binding.object_id}"
         @binding.cached_representer = super(mod, object)
       end
 
@@ -59,7 +50,6 @@ module Representable
       # TODO: this is a temporary solution.
       def item_deserializer
         @__item_deserializer ||= super.tap do |deserializer|
-          puts "#{object_id} itemdeser extendin"
           deserializer.extend(Serializer)
         end
       end

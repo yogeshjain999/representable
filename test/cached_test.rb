@@ -1,4 +1,5 @@
 require "test_helper"
+require 'ruby-prof'
 
 class CachedTest < MiniTest::Spec
   # TODO: also test with feature(Cached)
@@ -60,7 +61,30 @@ class CachedTest < MiniTest::Spec
       ]
     }
 
+
+
     representer = AlbumRepresenter.new(Model::Album.new)
-    representer.from_hash(album_hash)
+
+    RubyProf.start
+      representer.from_hash(album_hash)
+    res = RubyProf.stop
+
+    printer = RubyProf::FlatPrinter.new(res)
+
+    data = StringIO.new
+    printer.print(data)
+    data = data.string
+
+    # only 2 nested decorators are instantiated, Song, and Artist.
+    data.must_match "2   <Class::Representable::Decorator>#prepare"
+    # a total of 5 properties in the object graph.
+    data.must_match "5   Representable::Binding#initialize"
+    # three mappers for Album, Song, composer
+    data.must_match "3   Representable::Mapper::Methods#initialize"
+    # 6 deserializers as the songs collection uses 2.
+    data.must_match "6   Representable::Deserializer#initialize"
+    # one populater for every property.
+    data.must_match "5   Representable::Populator#initialize"
+    # printer.print(STDOUT)
   end
 end

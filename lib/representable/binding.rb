@@ -16,7 +16,6 @@ module Representable
     end
 
     def initialize(definition, parent_decorator)
-      puts "New binding #{object_id} @@@@@ 1111::::: #{definition.name.inspect}"
       @definition       = definition
       @parent_decorator = parent_decorator # DISCUSS: where's this needed?
 
@@ -68,7 +67,6 @@ module Representable
     end
 
     def read_fragment(doc)
-      puts "#{object_id} reading fragment [#{name}]: #{doc} in "
       fragment = read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
 
       populator.call(fragment, doc)
