@@ -4,7 +4,6 @@ require 'representable/xml'
 require 'representable/yaml'
 require 'minitest/autorun'
 require 'test_xml/mini_test'
-require 'mocha/setup'
 
 class Album
   attr_accessor :songs, :best_song
