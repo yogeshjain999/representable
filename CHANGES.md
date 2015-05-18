@@ -3,6 +3,7 @@
 ## API change.
 
 * The `:extend` option only accepts one module. `extend: [Module, Module]` does no longer work and it actually didn't work in former versions of 2.x, anyway, it just included the first element of an array.
+* Remove `Binding#representer_module`.
 
 # 2.1.8
 

@@ -74,7 +74,6 @@ module Representable
     end
 
     def render_fragment(value, doc)
-      # DISCUSS: should we return a Skip object instead of this block trick? (same in Populator?)
       fragment = serialize(value) { return } # render fragments of hash, xml, yaml.
 
       write(doc, fragment)
@@ -131,17 +130,6 @@ module Representable
     def [](name)
       @definition[name]
     end
-
-    def representer_module # FIXME: where do we need that?
-      @definition.representer_module
-    end
-    # perf : 1.7-1.9
-    #extend Forwardable
-    #def_delegators :@definition, *%w([] getter setter typed? representable? has_default? name representer_module)
-    # perf : 1.7-1.9
-    # %w([] getter setter typed? representable? has_default? name representer_module).each do |name|
-    #   define_method(name.to_sym) { |*args| @definition.send(name, *args) }
-    # end
 
     #   1.55      0.031     0.022     0.000     0.009    60004   Representable::Binding#skipable_empty_value?
     #   1.51      0.030     0.022     0.000     0.008    60004   Representable::Binding#skipable_empty_value?
