@@ -4,7 +4,7 @@
 
 * Introduce `Representable::Cached` that will keep the mapper, which in turn will keep the bindings, which in turn will keep their representer, in case they're nested. You have to include this feature manually and you can expect a 50% and more speed-up for rendering and parsing. Not to speak about the reduced memory footprint.
 
-  ``ruby
+  ```ruby
   class SongDecorator < Representable::Decorator
     include Representable::JSON
     feature Representable::Cached
