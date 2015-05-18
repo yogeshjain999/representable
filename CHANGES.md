@@ -1,5 +1,29 @@
 # 2.2.0
 
+## New Stuff
+
+* Introduce `Representable::Cached` that will keep the mapper, which in turn will keep the bindings, which in turn will keep their representer, in case they're nested. You have to include this feature manually and you can expect a 50% and more speed-up for rendering and parsing. Not to speak about the reduced memory footprint.
+
+  ``ruby
+  class SongDecorator < Representable::Decorator
+    include Representable::JSON
+    feature Representable::Cached
+
+    # ..
+  end
+  ```
+* Introduced `Decorator#update!` to re-use a decorator instance between requests. This will inject the represented object, only.
+
+  ```ruby
+  decorator = SongDecorator.new(song)
+  decorator.to_json(..)
+
+  decorator.update!(louder_song)
+  decorator.to_json(..)
+  ```
+
+  This is quite awesome.
+
 ## API change.
 
 * The `:extend` option only accepts one module. `extend: [Module, Module]` does no longer work and it actually didn't work in former versions of 2.x, anyway, it just included the first element of an array.
