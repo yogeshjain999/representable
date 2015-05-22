@@ -11,7 +11,7 @@ module Representable
 
     def initialize(sym, options={}, &block)
       @options = {}
-      # @options = Inheritable::Hash.new # allows deep cloning. we then had to set Pipeline cloneable.
+      @options = Cloneable::Hash.new # allows deep cloning. we then had to set Pipeline cloneable.
       @name    = sym.to_s
       options  = options.clone
 

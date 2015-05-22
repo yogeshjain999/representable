@@ -88,9 +88,10 @@ private
       base.inherit_module!(self)
     end
 
-    def inherited(base) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
-      super
-      base.representable_attrs.inherit!(representable_attrs) # this should be inherit_class!
+    def inherited(subclass) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
+      # FIXME: subclass.representable_attrs is ALWAYS empty at this point.
+      subclass.representable_attrs.inherit!(representable_attrs) # this should be inherit_class!
+      # DISCUSS: this could also just be: subclass.inheritable_attr :representable_attrs --> superclass.representable_attrs.clone
     end
   end
 

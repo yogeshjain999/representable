@@ -171,6 +171,17 @@ class DefinitionTest < MiniTest::Spec
         assert_equal cloned[:volume], 8
       end
 
+      # cloning of Cloneables in @options.
+      it do
+        definition = Representable::Definition.new(:title)
+        definition.merge!(deserializer: Representable::Inheritable::Hash.new)
+
+        clone = definition.clone
+        clone[:deserializer].merge!(b: 2)
+
+        definition[:deserializer].object_id.wont_equal clone[:deserializer].object_id
+      end
+
       # pipeline gets cloned properly
       describe "pipeline cloning" do
         subject { Definition.new(:title, :render_filter => 1) }
