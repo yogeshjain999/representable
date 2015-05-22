@@ -1,3 +1,10 @@
+# 2.2.1
+
+## API change.
+
+* Options in `Definition` are now Cloneable. That means they will deep-clone when they contain values that are `Cloneable`. This allows clean cloning of deeply nested configuration hashes, e.g. for `deserializer: {instance: ->{}}` in combination with inheritance across representers.
+
+
 # 2.2.0
 
 ## New Stuff
