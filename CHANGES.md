@@ -4,6 +4,8 @@
 
 * Options in `Definition` are now Cloneable. That means they will deep-clone when they contain values that are `Cloneable`. This allows clean cloning of deeply nested configuration hashes, e.g. for `deserializer: {instance: ->{}}` in combination with inheritance across representers.
 
+  The former behavior was not to clone, which would allow sub-representers to bleed into the parent options, which is _wrong_. However, this fix shouldn't affect anyone but me.
+
 
 # 2.2.0
 
