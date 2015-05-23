@@ -33,6 +33,7 @@ class InheritTest < MiniTest::Spec
     end
 
     it { SongRepresenter.prepare(Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"title"=>{"str"=>"Believe It"}, "no"=>1}) }
+    # the block doesn't override the inline representer.
     it { representer.prepare( Song.new(Struct.new(:string).new("Believe It"), 1)).to_hash.must_equal({"title"=>{"str"=>"Believe It"}, "no"=>1}) }
   end
 
@@ -99,7 +100,11 @@ class InheritTest < MiniTest::Spec
   describe ":inherit with decorator" do
     representer!(:decorator => true) do
       property :hit do
-        property :title
+        property :title, exec_context: :decorator
+
+        def title
+          "Cheap Transistor Radio"
+        end
       end
     end
 
@@ -112,8 +117,13 @@ class InheritTest < MiniTest::Spec
       end
     }
 
+    it { representer.new(OpenStruct.new(hit: OpenStruct.new(title: "I WILL BE OVERRIDDEN", :length => "2:59"))).to_hash.must_equal(
+      {"hit"=>{"title"=>"Cheap Transistor Radio"}}) }
+
+    # inheriting decorator inherits inline representer class (InlineRepresenter#title).
+    # inheriting decorator adds :length.
     it { inheriting.new(OpenStruct.new(:hit => OpenStruct.new(:title => "Hole In Your Soul", :length => "2:59"))).to_hash.must_equal(
-      {"hit"=>{"title"=>"Hole In Your Soul", "length"=>"2:59"}}) }
+      {"hit"=>{"title"=>"Cheap Transistor Radio", "length"=>"2:59"}}) }
   end
 
 
