@@ -84,7 +84,7 @@ module Representable
 
         fragment.each_with_index do |item_fragment, i|
           # add more per-item options here!
-          next if @binding.evaluate_option(:skip_parse, item_fragment)
+          next if @binding.evaluate_option(:skip_parse, item_fragment) # TODO: pass in index!
 
           collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
         end

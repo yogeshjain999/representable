@@ -21,7 +21,7 @@ module Representable
     #
     # Overwrite definition_class if you need a custom Definition object (helpful when using
     # representable in other gems).
-    class Definitions < Inheritable::Hash
+    class Definitions < Inheritable::Hash # TODO: cloneable!
       def initialize(definition_class)
         @definition_class = definition_class
         super()
