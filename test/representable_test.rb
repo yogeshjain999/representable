@@ -109,6 +109,56 @@ class RepresentableTest < MiniTest::Spec
       assert_xml_equal "<song name=\"Days Go By\"/>", @song.extend(SongXmlRepresenter).to_xml
       assert_json "{\"name\":\"Days Go By\"}", @song.extend(SongJsonRepresenter).to_json
     end
+
+
+    # test if we call super in
+    #   ::inherited
+    #   ::included
+    #   ::extended
+    module Representer
+      include Representable # overrides ::inherited.
+    end
+
+    class BaseClass
+      def self.inherited(subclass)
+        super
+        subclass.instance_eval { def other; end }
+      end
+
+      include Representable # overrides ::inherited.
+      include Representer
+    end
+
+    class SubClass < BaseClass # triggers Representable::inherited, then OtherModule::inherited.
+    end
+
+    # test ::inherited.
+    it do
+      BaseClass.respond_to?(:other).must_equal false
+      SubClass.respond_to?(:other).must_equal true
+    end
+
+    module DifferentIncluded
+      def included(includer)
+        includer.instance_eval { def different; end }
+      end
+    end
+
+    module CombinedIncluded
+      extend DifferentIncluded # defines ::included.
+      include Representable    # overrides ::included.
+    end
+
+    class IncludingClass
+      include Representable
+      include CombinedIncluded
+    end
+
+    # test ::included.
+    it do
+      IncludingClass.respond_to?(:representable_attrs) # from Representable
+      IncludingClass.respond_to?(:different)
+    end
   end
 
 
