@@ -1,7 +1,29 @@
 module Representable
   module Declarative
+    class Defaults
+      def setup!(hash, &block)
+        @default_declarative_options = hash if hash.any?
+        @strategic_declarative_options = block if block_given?
+        self
+      end
+
+      def options_for_property(property_name, given_options)
+        options = @default_declarative_options || {}
+        unless @strategic_declarative_options.nil?
+          dynamic_options = @strategic_declarative_options.call(property_name, given_options)
+          options.merge!(dynamic_options)
+        end
+        options.merge!(given_options)
+        options
+      end
+    end
+
     def representable_attrs
       @representable_attrs ||= build_config
+    end
+
+    def defaults(hash={}, &block)
+      (@defaults ||= Defaults.new).setup!(hash, &block)
     end
 
     def representation_wrap=(name)
@@ -33,6 +55,7 @@ module Representable
     end
 
     def property(name, options={}, &block)
+      options = defaults.options_for_property(name, options)
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
         build_definition(name, default_options, &block)
       end

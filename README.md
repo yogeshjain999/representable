@@ -1314,6 +1314,34 @@ end
 
 This is an implementation detail most people shouldn't worry about.
 
+
+### Defaults
+
+Declaring default options for `property`, `nested`, `collection` and `hash` is
+easy as:
+
+```ruby
+defaults render_nil: true
+```
+
+You can also pass a block for dynamic default options based on the property
+name or on the property options.
+
+```ruby
+defaults render_nil: true do |name|
+  { as: name.to_s.camelize }
+end
+```
+
+```ruby
+defaults render_nil: true do |name, options|
+  {
+    as: name.to_s.camelize,
+    embedded: options.fetch(:hash, false)
+  }
+end
+```
+
 ## Symbol Keys vs. String Keys
 
 When parsing representable reads properties from hashes by using their string keys.
