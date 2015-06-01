@@ -2,7 +2,7 @@ require 'test_helper'
 
 class SkipParseTest < MiniTest::Spec
   representer! do
-    property :title
+    property :title, skip_parse: lambda { |fragment, opts| true } # never parse title.
     property :band,
       skip_parse: lambda { |fragment, opts| opts[:skip?] and fragment["name"].nil? }, class: OpenStruct do
         property :name
@@ -17,8 +17,17 @@ class SkipParseTest < MiniTest::Spec
   let (:song) { OpenStruct.new.extend(representer) }
 
   # do parse.
-  it { song.from_hash({"band" => {"name" => "Mute 98"}}, skip?: true).band.name.must_equal "Mute 98" }
-  it { song.from_hash({"airplays" => [{"station" => "JJJ"}]}, skip?: true).airplays[0].station.must_equal "JJJ" }
+  it do
+    song.from_hash({
+      "title"    => "Victim Of Fate",
+      "band"     => {"name" => "Mute 98"},
+      "airplays" => [{"station" => "JJJ"}]
+    }, skip?: true)
+
+    song.title.must_equal nil # never parsed.
+    song.band.name.must_equal "Mute 98"
+    song.airplays[0].station.must_equal "JJJ"
+  end
 
   # skip parsing.
   it { song.from_hash({"band" => {}}, skip?: true).band.must_equal nil }
