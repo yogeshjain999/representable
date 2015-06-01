@@ -2,7 +2,7 @@ require 'test_helper'
 
 class SkipParseTest < MiniTest::Spec
   representer! do
-    property :title, skip_parse: lambda { |fragment, opts| true } # never parse title.
+    property :title, skip_parse: lambda { |fragment, opts| opts[:skip?] and fragment == "skip me" }
     property :band,
       skip_parse: lambda { |fragment, opts| opts[:skip?] and fragment["name"].nil? }, class: OpenStruct do
         property :name
@@ -24,19 +24,25 @@ class SkipParseTest < MiniTest::Spec
       "airplays" => [{"station" => "JJJ"}]
     }, skip?: true)
 
-    song.title.must_equal nil # never parsed.
+    song.title.must_equal "Victim Of Fate"
     song.band.name.must_equal "Mute 98"
     song.airplays[0].station.must_equal "JJJ"
   end
 
   # skip parsing.
-  it { song.from_hash({"band" => {}}, skip?: true).band.must_equal nil }
-  # skip_parse is _per item_.
   let (:airplay) { OpenStruct.new(station: "JJJ") }
-  it { song.from_hash({"airplays" => [{"station" => "JJJ"}, {}]}, skip?: true).airplays.must_equal [airplay] }
 
-  # it skips parsing of items as if they hadn't been in the document.
-  it { song.from_hash({"airplays" => [{"station" => "JJJ"}, {}, {"station" => "JJJ"}]}, skip?: true).airplays.must_equal [airplay, airplay] }
+  it do
+    song.from_hash({
+      "title"    => "skip me",
+      "band"     => {},
+      "airplays" => [{"station" => "JJJ"}, {}],
+    }, skip?: true)
+
+    song.title.must_equal nil
+    song.band.must_equal nil
+    song.airplays.must_equal [airplay]
+  end
 end
 
 class SkipRenderTest < MiniTest::Spec
