@@ -14,6 +14,12 @@ module Representable
       Representable::Decorator
     end
 
+    # This is called from inheritable_attr when inheriting a decorator class to a subclass.
+    # Explicitly subclassing the Decorator makes sure representable_attrs is a clean version.
+    def self.clone
+      Class.new(self) # DISCUSS: why isn't this called by Ruby?
+    end
+
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
 
     # TODO: implement that just by calling ::property(name, options){include mod} on the inheriting representer.

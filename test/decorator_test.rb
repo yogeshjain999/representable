@@ -73,3 +73,25 @@ class DecoratorTest < MiniTest::Spec
     end
   end
 end
+
+require "uber/inheritable_attr"
+class InheritanceWithDecoratorTest < MiniTest::Spec
+  class Twin
+    extend Uber::InheritableAttr
+    inheritable_attr :representer_class
+    self.representer_class = Representable::Decorator
+  end
+
+  class Album < Twin
+    representer_class.property :title # Twin.representer_class.clone
+  end
+
+  class Song < Twin # Twin.representer_class.clone
+  end
+
+  it do
+    Twin.representer_class.representable_attrs[:definitions].size.must_equal 0
+    Album.representer_class.representable_attrs[:definitions].size.must_equal 1
+    Song.representer_class.representable_attrs[:definitions].size.must_equal 0
+  end
+end
