@@ -1,3 +1,7 @@
+# 2.2.3
+
+* Introduce `Decorator::clone` to make sure cloning properly copies representable_attrs. in former versions, this would partially share definitions with subclasses when the decorator was an `inheritable_attr`.
+
 # 2.2.2
 
 * Bug fix: In 2.2.1 I accidentially removed a `super` call in `Representable::inherited` which leads to wrong behavior when having Representable mixed into a class along with other classes overriding `inherited`. Thanks to @jrmhaig for an [excellent bug report](https://github.com/apotonick/representable/issues/139#issuecomment-105926608) making it really easy to find the problem.
