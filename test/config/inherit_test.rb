@@ -24,9 +24,12 @@ class ConfigInheritTest < MiniTest::Spec
   # in Decorator ------------------------------------------------
   class Decorator < Representable::Decorator
     property :title
+    property :artist do
+      property :id
+    end
   end
 
-  it { Decorator.representable_attrs[:definitions].keys.must_equal ["title"] }
+  it { Decorator.representable_attrs[:definitions].keys.must_equal ["title", "artist"] }
 
   # in inheriting Decorator
 
@@ -34,8 +37,11 @@ class ConfigInheritTest < MiniTest::Spec
     property :location
   end
 
-  it { InheritingDecorator.representable_attrs[:definitions].keys.must_equal ["title", "location"] }
+  it { InheritingDecorator.representable_attrs[:definitions].keys.must_equal ["title", "artist", "location"] }
   it { assert_cloned(InheritingDecorator, Decorator, "title") }
+  it do
+    InheritingDecorator.representable_attrs.get(:artist).representer_module.object_id.wont_equal Decorator.representable_attrs.get(:artist).representer_module.object_id
+  end
 
   # in inheriting and including Decorator
 
@@ -44,7 +50,7 @@ class ConfigInheritTest < MiniTest::Spec
     property :location
   end
 
-  it { InheritingAndIncludingDecorator.representable_attrs[:definitions].keys.must_equal ["title", "genre", "location"] }
+  it { InheritingAndIncludingDecorator.representable_attrs[:definitions].keys.must_equal ["title", "artist", "genre", "location"] }
   it { assert_cloned(InheritingAndIncludingDecorator, GenreModule, :genre) }
 
 

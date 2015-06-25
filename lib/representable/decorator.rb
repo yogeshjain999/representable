@@ -2,6 +2,10 @@ require "representable"
 
 module Representable
   class Decorator
+    class << self
+      include Cloneable
+    end
+
     attr_reader :represented
     alias_method :decorated, :represented
 
