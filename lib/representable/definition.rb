@@ -10,7 +10,6 @@ module Representable
     alias_method :getter, :name
 
     def initialize(sym, options={}, &block)
-      @options = {}
       @options = Cloneable::Hash.new # allows deep cloning. we then had to set Pipeline cloneable.
       @name    = sym.to_s
       options  = options.clone
