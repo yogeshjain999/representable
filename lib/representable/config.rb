@@ -88,10 +88,6 @@ module Representable
       value
     end
 
-    # def binding_cache
-    #   @binding_cache ||= {}
-    # end
-
   private
     def infer_name_for(name)
       name.to_s.split('::').last.
