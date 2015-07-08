@@ -1,5 +1,5 @@
 notifications:
-  irc: "irc.freenode.org#cells"
+  # irc: "irc.freenode.org#cells"
 matrix:
   include:
     - rvm: 1.9.3
