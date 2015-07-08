@@ -46,3 +46,39 @@ class WrapTest < MiniTest::Spec
     end
   end
 end
+
+class DisableWrapTest < MiniTest::Spec
+  Band = Struct.new(:name)
+  Album = Struct.new(:band)
+
+  class BandDecorator < Representable::Decorator
+    include Representable::Hash
+
+    self.representation_wrap = :bands
+    property :name
+  end
+
+  let (:band) { BandDecorator.prepare(Band.new("Social Distortion")) }
+
+  it do
+    band.to_hash.must_equal({"bands" => {"name"=>"Social Distortion"}})
+    band.to_hash(wrap: false).must_equal({"name"=>"Social Distortion"})
+  end
+
+
+  class AlbumDecorator < Representable::Decorator
+    include Representable::Hash
+
+    self.representation_wrap = :albums
+
+    property :band, decorator: BandDecorator, wrap: false
+  end
+
+
+  let (:album) { AlbumDecorator.prepare(Album.new(Band.new("Social Distortion"))) }
+
+  it do
+    album.to_hash.must_equal({"albums" => {"band" => {"name"=>"Social Distortion"}}})
+  end
+end
+
