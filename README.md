@@ -15,6 +15,23 @@ The representable gem runs with all Ruby versions >= 1.9.3.
 gem 'representable'
 ```
 
+### Dependencies
+
+Representable does a great job with JSON, it also features support for XML, YAML and pure ruby
+hashes. But Representable did not bundle dependencies for JSON and XML.
+
+If you want to use JSON, add the following to your Gemfile:
+
+```ruby
+gem 'multi_json'
+```
+
+If you want to use XML, add the following to your Gemfile:
+
+```ruby
+gem 'nokogiri'
+```
+
 ## Example
 
 What if we're writing an API for music - songs, albums, bands.

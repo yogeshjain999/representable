@@ -1,7 +1,12 @@
 require 'representable'
 require 'representable/xml/binding'
 require 'representable/xml/collection'
-require 'nokogiri'
+
+begin
+  require 'nokogiri'
+rescue LoadError => _
+  abort "Missing dependency 'nokogiri' for Representable::XML. See dependencies section in README.md for details."
+end
 
 module Representable
   module XML
