@@ -48,7 +48,7 @@ class WrapTest < MiniTest::Spec
 end
 
 
-class DisableWrapTest < MiniTest::Spec
+class HashDisableWrapTest < MiniTest::Spec
   Band  = Struct.new(:name, :label)
   Album = Struct.new(:band)
   Label = Struct.new(:name)
@@ -92,5 +92,52 @@ class DisableWrapTest < MiniTest::Spec
   it "parses" do
     album.from_hash({"albums" => {"band" => {"name"=>"Rvivr"}}}).band.name.must_equal "Rvivr"
   end
+end
+
+
+class XMLDisableWrapTest < MiniTest::Spec
+  Band  = Struct.new(:name, :label)
+  Album = Struct.new(:band)
+  Label = Struct.new(:name)
+
+  class BandDecorator < Representable::Decorator
+    include Representable::XML
+
+    self.representation_wrap = :bands # when nested, it uses this.
+    property :name
+
+    # property :label do # this should have a wrap!
+    #   self.representation_wrap = :important
+    #   property :name
+    # end
+  end
+
+  let (:band) { BandDecorator.prepare(Band.new("Social Distortion")) }
+
+  it do
+    band.to_xml.must_equal_xml "<bands><name>Social Distortion</name></bands>"
+    band.to_xml(wrap: "combo").must_equal_xml "<combo><name>Social Distortion</name></combo>"
+  end
+
+
+  class AlbumDecorator < Representable::Decorator
+    include Representable::XML
+
+    self.representation_wrap = :albums
+
+    property :band, decorator: BandDecorator, wrap: "po", class: Band
+  end
+
+
+  let (:album) { AlbumDecorator.prepare(Album.new(Band.new("Social Distortion", Label.new("Epitaph")))) }
+
+  # band has wrap turned of per property definition, however, label still has wrap.
+  it "rendersxx" do
+    album.to_xml.must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
+  end
+
+  # it "parses" do
+  #   album.from_hash({"albums" => {"band" => {"name"=>"Rvivr"}}}).band.name.must_equal "Rvivr"
+  # end
 end
 
