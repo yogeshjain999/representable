@@ -162,6 +162,8 @@ module Representable
       @user_options  = user_options
       # this is the propagated_options.
       @user_options  = user_options.merge(wrap: false) if self[:wrap] == false
+
+      # @user_options  = user_options.merge(wrap: self[:wrap]) if self[:wrap]
     end
 
     #   1.80      0.066     0.027     0.000     0.039    30002   Representable::Binding#setup_exec_context!
