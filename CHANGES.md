@@ -1,6 +1,28 @@
 # 2.3.0
 
 * `to_*`/`from_*` with options do no longer change the hash but work on copies.
+* `to_*`/`from_*` now respect `wrap: false`. This will suppress the wrapping on the first level.
+* Introduce `property "name", wrap: false`. This allows reusing existing representers with `representation_wrap` set as nested representers but suppressing the wrapping.
+
+    ```ruby
+    class BandDecorator < Representable::Decorator
+      include Representable::Hash
+      self.representation_wrap = :bands # wrap set!
+
+      property :name
+    end
+
+    class AlbumDecorator < Representable::Decorator
+      include Representable::Hash
+      self.representation_wrap = :albums # wrap set!
+
+      property :band, decorator: BandDecorator, wrap: false # you can now set :wrap to false!
+    end
+
+    album.to_hash #=> {"albums" => {"band" => {"name"=>"Social Distortion"}}}
+    ```
+
+    Thanks to @fighella for inspiring this feature when working on [roarify](https://github.com/fighella/roarify).
 
 # 2.2.3
 
