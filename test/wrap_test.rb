@@ -67,9 +67,17 @@ class HashDisableWrapTest < MiniTest::Spec
 
   let (:band) { BandDecorator.prepare(Band.new("Social Distortion")) }
 
+  # direct, local api.
   it do
     band.to_hash.must_equal({"bands" => {"name"=>"Social Distortion"}})
     band.to_hash(wrap: false).must_equal({"name"=>"Social Distortion"})
+    band.to_hash(wrap: :band).must_equal(:band=>{"name"=>"Social Distortion"})
+  end
+
+  it do
+    band.from_hash({"bands" => {"name"=>"Social Distortion"}}).name.must_equal "Social Distortion"
+    band.from_hash({"name"=>"Social Distortion"}, wrap: false).name.must_equal "Social Distortion"
+    band.from_hash({band: {"name"=>"Social Distortion"}}, wrap: :band).name.must_equal "Social Distortion"
   end
 
 
