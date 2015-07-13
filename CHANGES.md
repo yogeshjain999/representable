@@ -1,3 +1,7 @@
+# 2.3.0
+
+* `to_*`/`from_*` with options do no longer change the hash but work on copies.
+
 # 2.2.3
 
 * Introduce `Decorator::clone` to make sure cloning properly copies representable_attrs. in former versions, this would partially share definitions with subclasses when the decorator was an `inheritable_attr`.
