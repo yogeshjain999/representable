@@ -30,7 +30,6 @@ module Representable
     #   0.33      0.004     0.004     0.000     0.000    20001   Hash#merge!
     #   0.00      0.000     0.000     0.000     0.000        1   Hash#merge!
     def marshal(object, user_options)
-      return object.send(@binding.serialize_method, user_options.merge(wrap: false)) if @binding[:wrap]==false
       object.send(@binding.serialize_method, user_options)
     end
 

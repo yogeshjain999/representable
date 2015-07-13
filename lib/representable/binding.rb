@@ -44,6 +44,9 @@ module Representable
       @as ||= evaluate_option(:as)
     end
 
+    # Single entry points for rendering and parsing a property are #compile_fragment
+    # and #uncompile_fragment in Mapper.
+    #
     # DISCUSS:
     # currently, we need to call B#update! before compile_fragment/uncompile_fragment.
     # this will change to B#renderer(represented, options).call
@@ -146,15 +149,21 @@ module Representable
 
     # Note: this method is experimental.
     def update!(represented, user_options)
-      @represented      = represented
-      @user_options     = user_options
+      @represented = represented
 
+      setup_user_options!(user_options)
       setup_exec_context!
     end
 
     attr_accessor :cached_representer
 
   private
+    def setup_user_options!(user_options)
+      @user_options  = user_options
+      # this is the propagated_options.
+      @user_options  = user_options.merge(wrap: false) if self[:wrap] == false
+    end
+
     #   1.80      0.066     0.027     0.000     0.039    30002   Representable::Binding#setup_exec_context!
     #   0.98      0.034     0.014     0.000     0.020    30002   Representable::Binding#setup_exec_context!
     def setup_exec_context!

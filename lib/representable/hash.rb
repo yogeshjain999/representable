@@ -39,6 +39,7 @@ module Representable
 
   private
     def filter_wrap(data, options)
+      return data if options[:wrap] == false
       return data unless wrap = options[:wrap] || representation_wrap(options)
       filter_wrap_for(data, wrap)
     end

@@ -47,15 +47,22 @@ class WrapTest < MiniTest::Spec
   end
 end
 
+
 class DisableWrapTest < MiniTest::Spec
-  Band = Struct.new(:name)
+  Band  = Struct.new(:name, :label)
   Album = Struct.new(:band)
+  Label = Struct.new(:name)
 
   class BandDecorator < Representable::Decorator
     include Representable::Hash
 
     self.representation_wrap = :bands
     property :name
+
+    property :label do # this should have a wrap!
+      self.representation_wrap = :important
+      property :name
+    end
   end
 
   let (:band) { BandDecorator.prepare(Band.new("Social Distortion")) }
@@ -71,14 +78,19 @@ class DisableWrapTest < MiniTest::Spec
 
     self.representation_wrap = :albums
 
-    property :band, decorator: BandDecorator, wrap: false
+    property :band, decorator: BandDecorator, wrap: false, class: Band
   end
 
 
-  let (:album) { AlbumDecorator.prepare(Album.new(Band.new("Social Distortion"))) }
+  let (:album) { AlbumDecorator.prepare(Album.new(Band.new("Social Distortion", Label.new("Epitaph")))) }
 
-  it do
-    album.to_hash.must_equal({"albums" => {"band" => {"name"=>"Social Distortion"}}})
+  # band has wrap turned of per property definition, however, label still has wrap.
+  it "renders" do
+    album.to_hash.must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
+  end
+
+  it "parses" do
+    album.from_hash({"albums" => {"band" => {"name"=>"Rvivr"}}}).band.name.must_equal "Rvivr"
   end
 end
 
