@@ -43,9 +43,9 @@ private
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    options, private_options = normalize_options!(options)
+    propagated_options, private_options = normalize_options!(options)
 
-    representable_mapper(format, options).serialize(represented, doc, options, private_options)
+    representable_mapper(format, propagated_options).serialize(represented, doc, propagated_options, private_options)
   end
 
   def representable_bindings_for(format, options)
