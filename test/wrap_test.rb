@@ -141,6 +141,7 @@ class XMLDisableWrapTest < MiniTest::Spec
 
   # band has wrap turned of per property definition, however, label still has wrap.
   it "rendersxx" do
+    skip
     album.to_xml.must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
   end
 
