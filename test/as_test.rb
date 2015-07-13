@@ -41,3 +41,25 @@ class AsTest < MiniTest::Spec
     end
   end
 end
+
+
+# hash: to_hash(wrap: ) is representation_wrap
+
+class AsXmlTest < MiniTest::Spec
+  Band  = Struct.new(:name, :label)
+  Album = Struct.new(:band)
+  Label = Struct.new(:name)
+
+  representer!(module: Representable::XML, decorator: true) do
+    self.representation_wrap = :album
+    property :band, as: :combo do
+      self.representation_wrap = :band
+      property :name
+    end
+  end
+
+  it do
+    skip
+    representer.new(Album.new(Band.new("Offspring"))).to_xml.must_equal ""
+  end
+end
