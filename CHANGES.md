@@ -1,5 +1,6 @@
 # 2.3.0
 
+* Remove dependency to Nokogiri and Multi_JSON. You have to add what you need to your `Gemfile`/`gemspec` now.
 * `to_*`/`from_*` with options do no longer change the hash but work on copies.
 * `to_*`/`from_*` now respect `wrap: false`. This will suppress the wrapping on the first level.
 * Introduce `property "name", wrap: false`. This allows reusing existing representers with `representation_wrap` set as nested representers but suppressing the wrapping.
