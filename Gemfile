@@ -7,3 +7,8 @@ platform :rbx do
   gem "rubysl-irb"
   gem "json_pure"
 end
+
+group :test do
+  gem "nokogiri", require: false
+  gem "multi_json", require: false
+end

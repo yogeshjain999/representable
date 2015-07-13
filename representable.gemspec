@@ -20,8 +20,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.license       = "MIT"
 
-  s.add_dependency "nokogiri"
-  s.add_dependency "multi_json"
   s.add_dependency "uber", "~> 0.0.7"
 
   s.add_development_dependency "rake"
