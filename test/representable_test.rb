@@ -258,25 +258,6 @@ class RepresentableTest < MiniTest::Spec
       @band.from_hash({})
     end
 
-    # Fixes issue #115
-    it "allows nil value in the incoming document and corresponding nil value for the represented" do
-      assert_nil @band.hometown
-      @band.from_hash 'hometown' => nil
-    end
-
-    it "sets simple property to nil when incoming value is nil" do
-      @band.name = "Ween"
-      @band.from_hash 'name' => nil
-      assert_equal nil, @band.name
-    end
-
-    it "sets represented property to nil when incoming value is nil" do
-      portland = Hometown.new
-      portland.name = "Portland"
-      @band.hometown = portland
-      @band.from_hash 'hometown' => nil
-      assert_equal nil, @band.hometown.name
-    end
 
     # FIXME: do we need this test with XML _and_ JSON?
     it "ignores (no-default) properties not present in the incoming document" do
