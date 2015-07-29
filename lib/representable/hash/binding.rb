@@ -11,6 +11,7 @@ module Representable
       end
 
       def read(hash)
+        return nil if hash.nil?
         return FragmentNotFound unless hash.has_key?(as) # DISCUSS: put it all in #read for performance. not really sure if i like returning that special thing.
 
         hash[as] # fragment

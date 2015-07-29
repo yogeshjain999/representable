@@ -193,13 +193,22 @@ class RepresentableTest < MiniTest::Spec
     end
   end
 
+  class Hometown
+    attr_accessor :name
+  end
+
+  module HometownRepresentable
+    include Representable::JSON
+    property :name
+  end
 
   # DISCUSS: i don't like the JSON requirement here, what about some generic test module?
   class PopBand
     include Representable::JSON
     property :name
     property :groupies
-    attr_accessor :name, :groupies
+    property :hometown, class: Hometown, extend: HometownRepresentable
+    attr_accessor :name, :groupies, :hometown
   end
 
   describe "#update_properties_from" do
@@ -247,6 +256,26 @@ class RepresentableTest < MiniTest::Spec
         def name=(*); raise "I should never be called!"; end
       end
       @band.from_hash({})
+    end
+
+    # Fixes issue #115
+    it "allows nil value in the incoming document and corresponding nil value for the represented" do
+      assert_nil @band.hometown
+      @band.from_hash 'hometown' => nil
+    end
+
+    it "sets simple property to nil when incoming value is nil" do
+      @band.name = "Ween"
+      @band.from_hash 'name' => nil
+      assert_equal nil, @band.name
+    end
+
+    it "sets represented property to nil when incoming value is nil" do
+      portland = Hometown.new
+      portland.name = "Portland"
+      @band.hometown = portland
+      @band.from_hash 'hometown' => nil
+      assert_equal nil, @band.hometown.name
     end
 
     # FIXME: do we need this test with XML _and_ JSON?
