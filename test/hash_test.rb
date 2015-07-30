@@ -54,11 +54,18 @@ class HashWithTypedPropertyTest < MiniTest::Spec
       album.best_song.name.must_equal "Go With Me"
     end
 
-    # nested nil removes
+    # nested nil removes nested object.
     it do
       album = Album.new(Song.new("Pre-medicated Murder"))
       album.extend(representer).from_hash("best_song" => nil)
       album.best_song.must_equal nil
+    end
+
+    # nested blank hash creates blank object when not populated.
+    it do
+      album = Album.new#(Song.new("Pre-medicated Murder"))
+      album.extend(representer).from_hash("best_song" => {})
+      album.best_song.name.must_equal nil
     end
 
     # Fixes issue #115
