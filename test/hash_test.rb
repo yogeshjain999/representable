@@ -50,13 +50,22 @@ class HashWithTypedPropertyTest < MiniTest::Spec
 
   describe "#from_hash" do
     it "parses embedded typed property" do
-      album.extend(representer).from_hash("best_song" => {"name" => "Go With Me"}).must_equal Album.new(Song.new("Go With Me"))
+      album.extend(representer).from_hash("best_song" => {"name" => "Go With Me"})
+      album.best_song.name.must_equal "Go With Me"
+    end
+
+    # nested nil removes
+    it do
+      album = Album.new(Song.new("Pre-medicated Murder"))
+      album.extend(representer).from_hash("best_song" => nil)
+      album.best_song.must_equal nil
     end
 
     # Fixes issue #115
     it "allows nil value in the incoming document and corresponding nil value for the represented" do
       album = Album.new
       album.extend(representer).from_hash("best_song" => nil)
+      album.best_song.must_equal nil
     end
   end
 end

@@ -18,7 +18,7 @@ module Representable
         value = @binding[:default]
       else
         # DISCUSS: should we return a Skip object instead of this block trick? (same in Binding#serialize?)
-        value = deserialize(fragment) { return } # stop here if skip_parse?
+        value = deserialize(fragment) { return } # stop here if skip_parse.
       end
 
       value = @binding.parse_filter(value, doc)

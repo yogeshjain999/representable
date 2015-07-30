@@ -24,6 +24,7 @@
     ```
 
     Thanks to @fighella for inspiring this feature when working on [roarify](https://github.com/fighella/roarify).
+* `from_hash` no longer crashes with "NoMethodError: undefined method 'has_key?' for nil:NilClass" when an incoming nested object's value is `nil`. This was a problem with documents like `{song: nil}` where `song` is a nested property. Thanks to @mhuggins and @moxley for helping here.
 
 # 2.2.3
 

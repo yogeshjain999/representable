@@ -15,6 +15,7 @@ module Representable
 
     def call(fragment, *args) # FIXME: args is always i.
       return fragment unless @binding.typed? # customize with :extend. this is not really straight-forward.
+      return fragment if fragment.nil?
 
       # what if create_object is responsible for providing the deserialize-to object?
       object        = create_object(fragment, *args) # customize with :instance and :class.
