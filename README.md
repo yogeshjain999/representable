@@ -195,7 +195,7 @@ Album.new.extend(AlbumRepresenter).
 
 ## Suppressing Nested Wraps
 
-When reusing a representer class/module for a nested document, you might want to suppress the wrap for the nested fragment.
+When reusing a representer for a nested document, you might want to suppress the wrap for the nested fragment.
 
 ```ruby
 module SongRepresenter
@@ -206,7 +206,7 @@ module SongRepresenter
 end
 ```
 
-When reusing the `SongRepresenter` in a nested setup, you can suppress the wrapping using the `:wrap` option.
+When reusing `SongRepresenter` in a nested setup you can suppress the wrapping using the `:wrap` option.
 
 ```ruby
 module AlbumRepresenter
