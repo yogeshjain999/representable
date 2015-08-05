@@ -193,6 +193,37 @@ Album.new.extend(AlbumRepresenter).
 #=> #<Album name="Offspring", songs=[#<Song title="Genocide">, #<Song title="Nitro", composers=["Offspring"]>]>
 ```
 
+## Suppressing Nested Wraps
+
+When reusing a representer class/module for a nested document, you might want to suppress the wrap for the nested fragment.
+
+```ruby
+module SongRepresenter
+  include Representable::JSON
+
+  self.representation_wrap = :songs
+  property :title
+end
+```
+
+When reusing the `SongRepresenter` in a nested setup, you can suppress the wrapping using the `:wrap` option.
+
+```ruby
+module AlbumRepresenter
+  include Representable::JSON
+
+  collection :songs, extend: SongRepresenter, wrap: false
+end
+```
+
+The `representation_wrap` from the nested representer now won't be rendered and parsed.
+
+```ruby
+album.extend(AlbumRepresenter).to_json #=> "{\"songs\": [{\"name\": \"Roxanne\"}]}"
+```
+
+Note that this only works for JSON and Hash at the moment.
+
 
 ## Parse Strategies
 
