@@ -281,39 +281,48 @@ class RepresentableTest < MiniTest::Spec
     end
 
     describe "passing options" do
-      class Track
-        attr_accessor :nr
-      end
-
       module TrackRepresenter
         include Representable::Hash
-        property :nr
 
-        def to_hash(options)
-          @nr = options[:nr]
-          super
-        end
-        def from_hash(data, options)
-          super.tap do
-            @nr = options[:nr]
+      end
+
+      representer! do
+        property :track, class: OpenStruct do
+          property :nr
+
+          property :length, class: OpenStruct do
+            def to_hash(options)
+              {seconds: options[:nr]}
+            end
+
+            def from_hash(hash, options)
+              super.tap do
+                self.seconds = options[:nr]
+              end
+            end
+          end
+
+          def to_hash(options)
+            super.merge({"nr" => options[:nr]})
+          end
+
+          def from_hash(data, options)
+            super.tap do
+              self.nr = options[:nr]
+            end
           end
         end
       end
 
-      representer! do
-        property :track, :extend => TrackRepresenter, :class => Track
+      it "#to_hash propagates to nested objects" do
+        OpenStruct.new(track: OpenStruct.new(nr: 1, length: OpenStruct.new(seconds: nil))).extend(representer).
+          to_hash(nr: 9).must_equal({"track"=>{"nr"=>9, "length"=>{seconds: 9}}})
       end
 
-      describe "#to_hash" do
-        it "propagates to nested objects" do
-          Song.new("Ocean Song", Track.new).extend(representer).to_hash(:nr => 9).must_equal({"track"=>{"nr"=>9}})
-        end
-      end
-
-      describe "#from_hash" do
-        it "propagates to nested objects" do
-          Song.new.extend(representer).from_hash({"track"=>{"nr" => "replace me"}}, :nr => 9).track.nr.must_equal 9
-        end
+      it "#from_hash propagates to nested objects" do
+        song = OpenStruct.new.extend(representer).from_hash({"track"=>{"nr" => "replace me", "length"=>{"seconds"=>"replacing"}}}, :nr => 9)
+        song.track.nr.must_equal 9
+        song.track.length.seconds.must_equal 9
       end
     end
   end
