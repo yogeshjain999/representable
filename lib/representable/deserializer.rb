@@ -13,6 +13,7 @@ module Representable
       @binding = binding
     end
 
+    # Workflow: binding.set(Deserializer.(fragment))
     def call(fragment, *args) # FIXME: args is always i.
       return fragment unless @binding.typed? # customize with :extend. this is not really straight-forward.
       return fragment if fragment.nil?
@@ -29,7 +30,7 @@ module Representable
       return object unless @binding.representable?
 
       @binding.evaluate_option(:deserialize, object, fragment) do
-        demarshal(object, fragment, options)
+        demarshal(object, fragment, options) # object.from_hash.
       end
     end
 

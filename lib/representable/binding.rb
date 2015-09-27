@@ -85,7 +85,9 @@ module Representable
     def read_fragment(doc)
       fragment = read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
 
-      populator.call(fragment, doc)
+      evaluate_option(:populator, doc) do
+        populator.(fragment, doc)
+      end
     end
 
     def render_filter(value, doc)
