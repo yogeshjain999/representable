@@ -15,7 +15,7 @@ class DeserializePipelineTest < MiniTest::Spec
   class Representer < Representable::Decorator
     include Representable::Hash
 
-    property :artist, populator: Uber::Options::Value.new(ArtistPopulator) do
+    property :artist, populator: Uber::Options::Value.new(ArtistPopulator.new) do
       property :email
     end
   end
