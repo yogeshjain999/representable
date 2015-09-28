@@ -8,6 +8,8 @@ class DeserializePipelineTest < MiniTest::Spec
   class ArtistPopulator
     include Uber::Callable
 
+
+
     def call(represented, fragment, options)
       result  = fragment != Representable::Binding::FragmentNotFound
       return unless result # this is one pipeline step.
@@ -31,3 +33,28 @@ class DeserializePipelineTest < MiniTest::Spec
     puts album.inspect
   end
 end
+
+# [:not_found?, :default, :deserialize].("yo")
+
+NotFound = ->(fragment) do
+  return Representable::Pipeline::Stop if fragment == Representable::Binding::FragmentNotFound
+  fragment
+end
+
+Default = ->(fragment) do
+  fragment
+end
+
+Deserialize = ->(fragment) do
+  DeserializePipelineTest::Artist.new
+end
+
+Set = ->(object) do
+  puts "@@@@@ setting #{object.inspect}"
+end
+
+puts "yo"
+Representable::Pipeline[NotFound, Default, Deserialize, Set].(nil, "yo")
+
+puts "Representable::Binding::FragmentNotFound"
+Representable::Pipeline[NotFound, Default, Deserialize, Set].(nil, Representable::Binding::FragmentNotFound)

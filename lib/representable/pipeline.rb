@@ -7,8 +7,13 @@ module Representable
     include Uber::Callable
     # include Representable::Cloneable
 
+    Stop = nil
+
     def call(context, value, *args)
-      inject(value) { |memo, block| block.call(memo, *args) }
+      inject(value) do |memo, block|
+        return memo if memo == Stop # Nil objects here?
+        block.call(memo, *args)
+      end
     end
   end
 end
