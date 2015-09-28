@@ -43,26 +43,20 @@ module Representable
   end
 
 
+  class Iterate
+    def initialize(functions)
+      @functions = functions
+    end
 
-require "representable/pipeline"
-  typed = Pipeline[SkipParse, CreateObject, Prepare, Deserialize]
-  Iterate = ->(fragment, doc, binding) do
-          arr = [] # FIXME : THIS happens in collection deserializer.
-          fragment.each_with_index do |item_fragment, i|
-            arr << typed.("blaaaa", item_fragment, doc, binding, i) # FIXME: need to pass in index (Options!!!)
-          end
+    def call(fragment, doc, binding)
+      arr = [] # FIXME : THIS happens in collection deserializer.
+      fragment.each_with_index do |item_fragment, i|
+        arr << Pipeline[*@functions].("blaaaa", item_fragment, doc, binding, i)
+      end
 
-          arr
-        end
-
-  ScalarIterate = ->(fragment, doc, binding) do
-          arr = [] # FIXME : THIS happens in collection deserializer.
-          fragment.each_with_index do |item_fragment, i|
-            arr << Pipeline[SkipParse].("blaaaa", item_fragment, doc, binding)
-          end
-
-          arr
-        end
+      arr
+    end
+  end
 
 
   class Populator
@@ -77,8 +71,8 @@ require "representable/pipeline"
 
       if @binding.array?
 
-        normal = [Default, ScalarIterate, ParseFilter, Set]
-        typed = [Default, Iterate, ParseFilter, Set]
+        typed = [Default, Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]), ParseFilter, Set]
+        normal = [Default, Iterate.new([SkipParse]), ParseFilter, Set]
 
         return Pipeline[*@binding.typed? ? typed : normal].
                 ("blaaaaaaa", fragment, doc, @binding)
