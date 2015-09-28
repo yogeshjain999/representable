@@ -15,7 +15,6 @@ module Representable
 
     # Workflow: binding.set(Deserializer.(fragment))
     def call(fragment, object, *args) # FIXME: args is always i.
-      return fragment unless @binding.typed? # customize with :extend. this is not really straight-forward.
       return object unless @binding.representable?
       # return fragment if fragment.nil?
 
