@@ -25,12 +25,17 @@ module Representable::Hash
 
     def update_properties_from(doc, options, format)
       bin   = representable_mapper(format, options).bindings(represented, options).first
-      #value = bin.deserialize_from(doc)
       # value = Deserializer::Collection.new(bin).call(doc)
 
-      # value = Populator.new(bin).call(doc, doc)
-      value = Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]).
-        (doc, doc, bin)
+      # Populator.new(bin).call()
+      if bin.typed?
+        value = Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]).
+          (doc, doc, bin)
+      else
+value = Iterate.new([SkipParse]).
+          (doc, doc, bin)
+      end
+
 
       represented.replace(value)
     end

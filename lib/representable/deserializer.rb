@@ -75,15 +75,5 @@ module Representable
       # cool: if no :instance set, { return } will jump out of this method.
       @binding.evaluate_option(:instance, fragment, *args) { return } or raise DeserializeError.new(":instance did not return object.")
     end
-
-
-
-    class Hash < self# Collection
-      def call(hash)
-        {}.tap do |hsh|
-          hash.each { |key, fragment| hsh[key] = deserialize!(fragment) }
-        end
-      end
-    end
   end
 end

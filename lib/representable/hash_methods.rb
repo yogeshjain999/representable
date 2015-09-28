@@ -11,7 +11,9 @@ module Representable
       hash  = filter_keys_for!(doc, options)
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
-      value = Deserializer::Hash.new(bin).call(hash)
+      # value = Deserializer::Hash.new(bin).call(hash)
+      value = Iterate::Hash.new([SkipParse, CreateObject, Prepare, Deserialize]).(hash, doc, bin)
+
       # value = bin.deserialize_from(hash)
       represented.replace(value)
     end

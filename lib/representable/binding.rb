@@ -221,10 +221,6 @@ module Representable
         Serializer::Collection
       end
 
-      def deserializer_class
-        Deserializer#::Collection
-      end
-
       def skipable_empty_value?(value)
         # TODO: this can be optimized, again.
         return true if value.nil? and not self[:render_nil] # FIXME: test this without the "and"
@@ -237,10 +233,6 @@ module Representable
     private
       def serializer_class
         Serializer::Hash
-      end
-
-      def deserializer_class
-        Deserializer::Hash
       end
     end
   end

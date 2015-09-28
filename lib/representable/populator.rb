@@ -56,6 +56,15 @@ module Representable
 
       arr
     end
+
+
+    class Hash < self
+      def call(fragment, doc, binding)
+        {}.tap do |hsh|
+          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.("blaaaa", item_fragment, doc, binding) }
+        end
+      end
+    end
   end
 
 
