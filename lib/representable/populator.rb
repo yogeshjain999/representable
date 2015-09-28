@@ -58,7 +58,7 @@ require "representable/pipeline"
   ScalarIterate = ->(fragment, doc, binding) do
           arr = [] # FIXME : THIS happens in collection deserializer.
           fragment.each_with_index do |item_fragment, i|
-            arr << Pipeline[SkipParse, Deserialize].("blaaaa", item_fragment, doc, binding)
+            arr << Pipeline[SkipParse].("blaaaa", item_fragment, doc, binding)
           end
 
           arr
@@ -72,7 +72,7 @@ require "representable/pipeline"
 
     # goal of this is to have this workflow apply-able to collections AND to items per collection, or for items in hashes.
     def call(fragment, doc)
-      normal = [Default, SkipParse, Deserialize, ParseFilter, Set]
+      normal = [Default, SkipParse, ParseFilter, Set]
       typed = [Default, SkipParse, CreateObject, Prepare, Deserialize, ParseFilter, Set]
 
       if @binding.array?
