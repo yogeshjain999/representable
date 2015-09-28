@@ -66,17 +66,4 @@ module Representable
       end
     end
   end
-
-
-  # Implements the pipeline that happens after the fragment has been read from the incoming document.
-  class Populator
-    def initialize(binding)
-      @binding = binding
-    end
-
-    # goal of this is to have this workflow apply-able to collections AND to items per collection, or for items in hashes.
-    def call(fragment, doc)
-      Pipeline[*@binding.functions].("blaaaaaaa", fragment, doc, @binding)
-    end
-  end
 end

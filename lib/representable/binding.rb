@@ -88,7 +88,8 @@ module Representable
       # Populator[Default]
 
       evaluate_option(:populator, fragment) do
-        populator.(fragment, doc) # per-binding populator.
+        # Implements the pipeline that happens after the fragment has been read from the incoming document.
+        populator.("blaaaaaaa", fragment, doc, self) # per-binding populator.
       end
     end
 
@@ -205,7 +206,7 @@ module Representable
       end
 
       def populator
-        @populator ||= Populator.new(self)
+        @populator ||= Pipeline[*functions]
       end
 
       def deserializer
