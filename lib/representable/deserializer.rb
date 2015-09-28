@@ -13,25 +13,13 @@ module Representable
       @binding = binding
     end
 
-    # Workflow: binding.set(Deserializer.(fragment))
     def call(fragment, object, *args) # FIXME: args is always i.
-      return object unless @binding.representable?
-      # return fragment if fragment.nil?
-
-      # what if create_object is responsible for providing the deserialize-to object?
-      # object        = create_object(fragment, *args) # customize with :instance and :class.
-      # representable = prepare(object) # customize with :prepare and :extend.
-
-      deserialize(object, fragment, @binding.user_options) # deactivate-able via :representable => false.
-    end
-
-  private
-    def deserialize(object, fragment, options) # TODO: merge with #serialize.
       @binding.evaluate_option(:deserialize, object, fragment) do
-        demarshal(object, fragment, options) # object.from_hash.
+        demarshal(object, fragment, @binding.user_options) # object.from_hash.
       end
     end
 
+  private
     def demarshal(object, fragment, options)
       object.send(@binding.deserialize_method, fragment, options)
     end

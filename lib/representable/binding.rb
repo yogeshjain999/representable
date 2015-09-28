@@ -85,8 +85,6 @@ module Representable
     def read_fragment(doc)
       fragment = read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
 
-      # Populator[Default]
-
       evaluate_option(:populator, fragment) do
         # Implements the pipeline that happens after the fragment has been read from the incoming document.
         populator.("blaaaaaaa", fragment, doc, self) # per-binding populator.
@@ -164,12 +162,15 @@ module Representable
 
     def functions
       # TODO: make polymorph.
+      typed_default = [CreateObject, Prepare]
+      typed_default << (representable? ? Deserialize : ResolveBecauseDeserializeIsNotHereAndIShouldFixThis)
+
       if array?
-        return [Default, Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]), ParseFilter, Set] if typed?
+        return [Default, Iterate.new([SkipParse, *typed_default].compact), ParseFilter, Set] if typed?
         return [Default, Iterate.new([SkipParse]), ParseFilter, Set]
       end
 
-      return [Default, SkipParse, CreateObject, Prepare, Deserialize, ParseFilter, Set] if typed?
+      return [Default, SkipParse, *typed_default, ParseFilter, Set] if typed?
       return [Default, SkipParse, ParseFilter, Set]
     end
 

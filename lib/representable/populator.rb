@@ -1,8 +1,12 @@
 module Representable
+  StopOnNotFound = -> (fragment, doc, binding, *) do
+    return Pipeline::Stop if fragment == Binding::FragmentNotFound
+    fragment
+  end
+  # FIXME: how to combine those two guys?
   Default = ->(fragment, doc, binding,*) do
-    # return Representable::Pipeline::Stop if fragment == Representable::Binding::FragmentNotFound
-    if fragment == Representable::Binding::FragmentNotFound
-      return Representable::Pipeline::Stop unless binding.has_default?
+    if fragment == Binding::FragmentNotFound
+      return Pipeline::Stop unless binding.has_default?
       return binding[:default]
     end
 
@@ -18,6 +22,10 @@ module Representable
     fragment, object = blaaaaaaa
     # use a Deserializer to transform fragment to/into object.
     binding.send(:deserializer).call(fragment, object)
+  end
+  ResolveBecauseDeserializeIsNotHereAndIShouldFixThis = -> (blaaaaaaa, doc, binding,*) do
+    fragment, object = blaaaaaaa
+    object
   end
 
   CreateObject = ->(fragment, doc, binding,*args) do

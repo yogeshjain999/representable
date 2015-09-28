@@ -14,7 +14,7 @@ module Representable
       inject(value) do |memo, block|
         return memo if memo == Stop # Nil objects here?
         block.call(memo, *args)
-      end
+      end # FIXME: aaargh
     end
   end
 end
