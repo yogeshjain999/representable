@@ -49,12 +49,12 @@ Deserialize = ->(fragment) do
   DeserializePipelineTest::Artist.new
 end
 
-Set = ->(object) do
+Sety = ->(object) do
   puts "@@@@@ setting #{object.inspect}"
 end
 
 puts "yo"
-Representable::Pipeline[NotFound, Default, Deserialize, Set].(nil, "yo")
+Representable::Pipeline[NotFound, Default, Deserialize, Sety].(nil, "yo")
 
 puts "Representable::Binding::FragmentNotFound"
-Representable::Pipeline[NotFound, Default, Deserialize, Set].(nil, Representable::Binding::FragmentNotFound)
+Representable::Pipeline[NotFound, Default, Deserialize, Sety].(nil, Representable::Binding::FragmentNotFound)

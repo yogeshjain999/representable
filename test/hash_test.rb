@@ -130,7 +130,7 @@ class HashWithTypedCollectionTest < MiniTest::Spec
     end
   end
 
-  describe "#from_hash" do
+  describe "#from_hashxx" do
     it "parses collection of typed property" do
       album.extend(representer).from_hash("songs" => [{"name" => "One Shot Deal", "track" => 4},
         {"name" => "Three Way Dance", "track" => 5}]).must_equal Album.new([Song.new("One Shot Deal", 4), Song.new("Three Way Dance", 5)])

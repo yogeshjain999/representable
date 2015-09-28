@@ -7,8 +7,9 @@ module Representable
     include Uber::Callable
     # include Representable::Cloneable
 
-    Stop = nil
+    Stop = Class.new
 
+    # DISCUSS: should we use different pipelines for render_filter, etc.?
     def call(context, value, *args)
       inject(value) do |memo, block|
         return memo if memo == Stop # Nil objects here?
