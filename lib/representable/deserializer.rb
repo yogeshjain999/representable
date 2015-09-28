@@ -78,32 +78,6 @@ module Representable
 
 
 
-    # Collection does exactly the same as Deserializer but for a collection.
-    # class Collection < self
-    #   def call(fragment, object)
-    #     collection = [] # this can be replaced, e.g. AR::Collection or whatever.
-
-    #     fragment.each_with_index do |item_fragment, i|
-    #       # add more per-item options here!
-    #       next if @binding.evaluate_option(:skip_parse, item_fragment) # TODO: pass in index!
-
-    #       collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
-    #     end
-
-    #     collection # with parse_strategy: :sync, this is ignored.
-    #   end
-
-    # private
-    #   def deserialize!(*args)
-    #     item_deserializer.call(*args)
-    #   end
-
-    #   def item_deserializer
-    #     @item_deserializer = Deserializer.new(@binding)
-    #   end
-    # end
-
-
     class Hash < self# Collection
       def call(hash)
         {}.tap do |hsh|

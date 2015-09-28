@@ -195,11 +195,7 @@ module Representable
       end
 
       def populator
-        @populator ||= populator_class.new(self)
-      end
-
-      def populator_class
-        Populator
+        @populator ||= Populator.new(self)
       end
 
       def deserializer_class
@@ -221,10 +217,6 @@ module Representable
     # generics for collection bindings.
     module Collection
     private
-      def populator_class
-        Populator
-      end
-
       def serializer_class
         Serializer::Collection
       end
@@ -243,10 +235,6 @@ module Representable
     # and the same for hashes.
     module Hash
     private
-      def populator_class
-        Populator
-      end
-
       def serializer_class
         Serializer::Hash
       end

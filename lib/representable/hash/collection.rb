@@ -27,7 +27,10 @@ module Representable::Hash
       bin   = representable_mapper(format, options).bindings(represented, options).first
       #value = bin.deserialize_from(doc)
       # value = Deserializer::Collection.new(bin).call(doc)
-      value = Populator.new(bin).call(doc, doc)
+
+      # value = Populator.new(bin).call(doc, doc)
+      value = Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]).
+        (doc, doc, bin)
 
       represented.replace(value)
     end
