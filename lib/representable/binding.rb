@@ -230,7 +230,7 @@ module Representable
       end
 
       def deserializer_class
-        Deserializer::Collection
+        Deserializer#::Collection
       end
 
       def skipable_empty_value?(value)

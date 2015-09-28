@@ -14,12 +14,12 @@ module Representable
     end
 
     # Workflow: binding.set(Deserializer.(fragment))
-    def call(fragment, *args) # FIXME: args is always i.
+    def call(fragment, object, *args) # FIXME: args is always i.
       return fragment unless @binding.typed? # customize with :extend. this is not really straight-forward.
-      return fragment if fragment.nil?
+      # return fragment if fragment.nil?
 
       # what if create_object is responsible for providing the deserialize-to object?
-      object        = create_object(fragment, *args) # customize with :instance and :class.
+      # object        = create_object(fragment, *args) # customize with :instance and :class.
       representable = prepare(object) # customize with :prepare and :extend.
 
       deserialize(representable, fragment, @binding.user_options) # deactivate-able via :representable => false.
@@ -80,32 +80,32 @@ module Representable
 
 
     # Collection does exactly the same as Deserializer but for a collection.
-    class Collection < self
-      def call(fragment)
-        collection = [] # this can be replaced, e.g. AR::Collection or whatever.
+    # class Collection < self
+    #   def call(fragment, object)
+    #     collection = [] # this can be replaced, e.g. AR::Collection or whatever.
 
-        fragment.each_with_index do |item_fragment, i|
-          # add more per-item options here!
-          next if @binding.evaluate_option(:skip_parse, item_fragment) # TODO: pass in index!
+    #     fragment.each_with_index do |item_fragment, i|
+    #       # add more per-item options here!
+    #       next if @binding.evaluate_option(:skip_parse, item_fragment) # TODO: pass in index!
 
-          collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
-        end
+    #       collection << deserialize!(item_fragment, i) # FIXME: what if obj nil?
+    #     end
 
-        collection # with parse_strategy: :sync, this is ignored.
-      end
+    #     collection # with parse_strategy: :sync, this is ignored.
+    #   end
 
-    private
-      def deserialize!(*args)
-        item_deserializer.call(*args)
-      end
+    # private
+    #   def deserialize!(*args)
+    #     item_deserializer.call(*args)
+    #   end
 
-      def item_deserializer
-        @item_deserializer = Deserializer.new(@binding)
-      end
-    end
+    #   def item_deserializer
+    #     @item_deserializer = Deserializer.new(@binding)
+    #   end
+    # end
 
 
-    class Hash < Collection
+    class Hash < self# Collection
       def call(hash)
         {}.tap do |hsh|
           hash.each { |key, fragment| hsh[key] = deserialize!(fragment) }

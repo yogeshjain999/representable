@@ -14,9 +14,16 @@ module Representable
     fragment
   end
 
-  Deserialize = ->(fragment, doc, binding) do
+  Deserialize = ->(blaaaaaaa, doc, binding) do
+    fragment, object = blaaaaaaa
     # use a Deserializer to transform fragment to/into object.
-    binding.send(:deserializer).call(fragment)
+    binding.send(:deserializer).call(fragment, object)
+  end
+
+  CreateObject = ->(fragment, doc, binding) do
+    object = binding.send(:deserializer).send(:create_object, fragment)
+
+    [fragment, object]
   end
 
   ParseFilter = ->(value, doc, binding) do
@@ -27,6 +34,29 @@ module Representable
     binding.set(value)
   end
 
+
+
+require "representable/pipeline"
+  typed = Pipeline[SkipParse, CreateObject, Deserialize]
+  Iterate = ->(fragment, doc, binding) do
+          arr = [] # FIXME : THIS happens in collection deserializer.
+          fragment.each_with_index do |item_fragment, i|
+            arr << typed.("blaaaa", item_fragment, doc, binding)
+          end
+
+          arr
+        end
+
+  ScalarIterate = ->(fragment, doc, binding) do
+          arr = [] # FIXME : THIS happens in collection deserializer.
+          fragment.each_with_index do |item_fragment, i|
+            arr << Pipeline[SkipParse, Deserialize].("blaaaa", item_fragment, doc, binding)
+          end
+
+          arr
+        end
+
+
   class Populator
     def initialize(binding)
       @binding = binding
@@ -34,7 +64,19 @@ module Representable
 
     # goal of this is to have this workflow apply-able to collections AND to items per collection, or for items in hashes.
     def call(fragment, doc)
-      Pipeline[Default, SkipParse, Deserialize, ParseFilter, Set].
+      normal = [Default, SkipParse, Deserialize, ParseFilter, Set]
+      typed = [Default, SkipParse, CreateObject, Deserialize, ParseFilter, Set]
+
+      if @binding.array?
+
+        normal = [Default, ScalarIterate, ParseFilter, Set]
+        typed = [Default, Iterate, ParseFilter, Set]
+
+        return Pipeline[*@binding.typed? ? typed : normal].
+                ("blaaaaaaa", fragment, doc, @binding)
+      end
+
+      Pipeline[*@binding.typed? ? typed : normal].
         ("blaaaaaaa", fragment, doc, @binding)
     end
 
@@ -43,8 +85,8 @@ module Representable
     # That also gives us a place to apply options like :parse_filter, etc. per item.
     class Collection < self
     private
-      def deserialize(fragment)
-        return deserializer.call(fragment)
+      def deserialize(fragment, object)
+        return deserializer.call(fragment, object)
       end
     end
 
