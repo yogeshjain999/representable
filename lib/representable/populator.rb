@@ -51,7 +51,7 @@ module Representable
     def call(fragment, doc, binding)
       arr = [] # FIXME : THIS happens in collection deserializer.
       fragment.each_with_index do |item_fragment, i|
-        arr << @item_pipeline.("blaaaa", item_fragment, doc, binding, i)
+        arr << @item_pipeline.(nil, item_fragment, doc, binding, i)
       end
 
       arr
@@ -61,13 +61,14 @@ module Representable
     class Hash < self
       def call(fragment, doc, binding)
         {}.tap do |hsh|
-          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.("blaaaa", item_fragment, doc, binding) }
+          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.(nil, item_fragment, doc, binding) }
         end
       end
     end
   end
 
 
+  # Implements the pipeline that happens after the fragment has been read from the incoming document.
   class Populator
     def initialize(binding)
       @binding = binding
@@ -75,20 +76,7 @@ module Representable
 
     # goal of this is to have this workflow apply-able to collections AND to items per collection, or for items in hashes.
     def call(fragment, doc)
-      normal = [Default, SkipParse, ParseFilter, Set]
-      typed = [Default, SkipParse, CreateObject, Prepare, Deserialize, ParseFilter, Set]
-
-      if @binding.array?
-
-        typed = [Default, Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]), ParseFilter, Set]
-        normal = [Default, Iterate.new([SkipParse]), ParseFilter, Set]
-
-        return Pipeline[*@binding.typed? ? typed : normal].
-                ("blaaaaaaa", fragment, doc, @binding)
-      end
-
-      Pipeline[*@binding.typed? ? typed : normal].
-        ("blaaaaaaa", fragment, doc, @binding)
+      Pipeline[*@binding.functions].("blaaaaaaa", fragment, doc, @binding)
     end
   end
 end

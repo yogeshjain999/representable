@@ -88,8 +88,7 @@ module Representable
       # Populator[Default]
 
       evaluate_option(:populator, fragment) do
-        # populator.("context????", fragment, doc)
-        populator.(fragment, doc)
+        populator.(fragment, doc) # per-binding populator.
       end
     end
 
@@ -162,6 +161,17 @@ module Representable
 
     attr_accessor :cached_representer
 
+    def functions
+      # TODO: make polymorph.
+      if array?
+        return [Default, Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]), ParseFilter, Set] if typed?
+        return [Default, Iterate.new([SkipParse]), ParseFilter, Set]
+      end
+
+      return [Default, SkipParse, CreateObject, Prepare, Deserialize, ParseFilter, Set] if typed?
+      return [Default, SkipParse, ParseFilter, Set]
+    end
+
   private
     def setup_user_options!(user_options)
       @user_options  = user_options
@@ -198,12 +208,8 @@ module Representable
         @populator ||= Populator.new(self)
       end
 
-      def deserializer_class
-        Deserializer
-      end
-
       def deserializer
-        @deserializer ||= deserializer_class.new(self)
+        @deserializer ||= Deserializer.new(self)
       end
     end
     include Factories
