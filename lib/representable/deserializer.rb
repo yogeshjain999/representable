@@ -20,9 +20,9 @@ module Representable
 
       # what if create_object is responsible for providing the deserialize-to object?
       # object        = create_object(fragment, *args) # customize with :instance and :class.
-      representable = prepare(object) # customize with :prepare and :extend.
+      # representable = prepare(object) # customize with :prepare and :extend.
 
-      deserialize(representable, fragment, @binding.user_options) # deactivate-able via :representable => false.
+      deserialize(object, fragment, @binding.user_options) # deactivate-able via :representable => false.
     end
 
   private

@@ -48,7 +48,6 @@ class InstanceTest < BaseTest
     representer!(:inject => :song_representer) do
       collection :songs,
         :instance => lambda { |fragment, i, *args|
-
           fragment["id"] == songs[i].id ? songs[i] : Song.find(fragment["id"])
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
 
