@@ -166,12 +166,12 @@ module Representable
       typed_default << (representable? ? Deserialize : ResolveBecauseDeserializeIsNotHereAndIShouldFixThis)
 
       if array?
-        return [Default, Iterate.new([SkipParse, *typed_default].compact), ParseFilter, Set] if typed?
-        return [Default, Iterate.new([SkipParse]), ParseFilter, Set]
+        return [OverwriteOnNil, Default, Iterate.new([SkipParse, *typed_default].compact), ParseFilter, Set] if typed?
+        return [OverwriteOnNil, Default, Iterate.new([SkipParse]), ParseFilter, Set]
       end
 
-      return [Default, SkipParse, *typed_default, ParseFilter, Set] if typed?
-      return [Default, SkipParse, ParseFilter, Set]
+      return [OverwriteOnNil, Default, SkipParse, *typed_default, ParseFilter, Set] if typed?
+      return [OverwriteOnNil, Default, SkipParse, ParseFilter, Set]
     end
 
   private
@@ -179,8 +179,6 @@ module Representable
       @user_options  = user_options
       # this is the propagated_options.
       @user_options  = user_options.merge(wrap: false) if self[:wrap] == false
-
-      # @user_options  = user_options.merge(wrap: self[:wrap]) if self[:wrap]
     end
 
     #   1.80      0.066     0.027     0.000     0.039    30002   Representable::Binding#setup_exec_context!

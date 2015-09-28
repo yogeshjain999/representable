@@ -3,6 +3,19 @@ module Representable
     return Pipeline::Stop if fragment == Binding::FragmentNotFound
     fragment
   end
+  StopOnNil = -> (fragment, doc, binding, *) do # DISCUSS: Not tested/used, yet.
+    return Pipeline::Stop if fragment.nil?
+    fragment
+  end
+  OverwriteOnNil = -> (fragment, doc, binding, *) do
+    if fragment.nil?
+      Set.(fragment, doc, binding)
+      return Pipeline::Stop
+    end
+    fragment
+  end
+
+
   # FIXME: how to combine those two guys?
   Default = ->(fragment, doc, binding,*) do
     if fragment == Binding::FragmentNotFound
