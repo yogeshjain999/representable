@@ -222,7 +222,7 @@ module Representable
     module Collection
     private
       def populator_class
-        Populator::Collection
+        Populator
       end
 
       def serializer_class
@@ -244,7 +244,7 @@ module Representable
     module Hash
     private
       def populator_class
-        Populator::Hash
+        Populator
       end
 
       def serializer_class

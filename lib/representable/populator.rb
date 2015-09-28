@@ -45,13 +45,13 @@ module Representable
 
   class Iterate
     def initialize(functions)
-      @functions = functions
+      @item_pipeline = Pipeline[*functions]
     end
 
     def call(fragment, doc, binding)
       arr = [] # FIXME : THIS happens in collection deserializer.
       fragment.each_with_index do |item_fragment, i|
-        arr << Pipeline[*@functions].("blaaaa", item_fragment, doc, binding, i)
+        arr << @item_pipeline.("blaaaa", item_fragment, doc, binding, i)
       end
 
       arr
@@ -80,19 +80,6 @@ module Representable
 
       Pipeline[*@binding.typed? ? typed : normal].
         ("blaaaaaaa", fragment, doc, @binding)
-    end
-
-    # A separated collection deserializer/populator allows us better dealing with populating/modifying
-    # collections of models. (e.g. replace, update, push, etc.).
-    # That also gives us a place to apply options like :parse_filter, etc. per item.
-    class Collection < self
-    private
-      def deserialize(fragment, object)
-        return deserializer.call(fragment, object)
-      end
-    end
-
-    class Hash < self
     end
   end
 end
