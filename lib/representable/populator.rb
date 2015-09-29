@@ -33,7 +33,7 @@ module Representable
 
 
   Instance = ->(fragment, doc, binding,*) do # TODO: use in #instance_for.
-    binding.evaluate_option(:instance, fragment)
+    [fragment, binding.evaluate_option(:instance, fragment)]
   end
 
   Deserialize = ->(blaaaaaaa, doc, binding,*) do
