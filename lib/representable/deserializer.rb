@@ -44,23 +44,5 @@ module Representable
       end
     end
     include Prepare
-
-    # todo: throw error here!
-    def create_object(fragment, *args)
-      instance_for(fragment, *args) or class_for(fragment, *args)
-    end
-
-    def class_for(fragment, *args)
-      item_class = class_from(fragment, *args) or raise DeserializeError.new(":class did not return class constant.")
-      item_class.new
-    end
-
-    def class_from(fragment, *args)
-      @binding.evaluate_option(:class, fragment, *args)
-    end
-
-    def instance_for(fragment, *args)
-      Instance.(fragment, nil, @binding, *args).last
-    end
   end
 end

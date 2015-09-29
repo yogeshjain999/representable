@@ -48,11 +48,30 @@ module Representable
     object
   end
 
-  CreateObject = ->(fragment, doc, binding,*args) do
-    object = binding.send(:deserializer).send(:create_object, fragment, *args) # FIXME: stop that shit of passing index as a separate argument and put it in Options.
+  module Function
+    class CreateObject
+      def call(fragment, doc, binding,*args)
+        object = instance_for(fragment, binding, *args) || class_for(fragment, binding, *args)
+        [fragment, object]
+      end
 
-    [fragment, object]
+    private
+      def class_for(fragment, binding, *args)
+        item_class = class_from(fragment, binding, *args) or raise DeserializeError.new(":class did not return class constant.")
+        item_class.new
+      end
+
+      def class_from(fragment, binding, *args)
+        binding.evaluate_option(:class, fragment, *args)
+      end
+
+      def instance_for(fragment, binding, *args)
+        Instance.(fragment, nil, binding, *args).last
+      end
+    end
   end
+
+  CreateObject = Function::CreateObject.new
 
   Prepare = ->(args, doc, binding,*) do
     fragment, object = args
