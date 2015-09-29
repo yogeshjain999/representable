@@ -9,7 +9,7 @@ module Representable
   end
   OverwriteOnNil = -> (fragment, doc, binding, *) do
     if fragment.nil?
-      Set.(fragment, doc, binding)
+      Setter.(fragment, doc, binding)
       return Pipeline::Stop
     end
     fragment
@@ -29,6 +29,11 @@ module Representable
   SkipParse = ->(fragment, doc, binding,*) do
     return Pipeline::Stop if binding.evaluate_option(:skip_parse, fragment)
     fragment
+  end
+
+
+  Instance = ->(fragment, doc, binding,*) do # TODO: use in #instance_for.
+    binding.evaluate_option(:instance, fragment)
   end
 
   Deserialize = ->(blaaaaaaa, doc, binding,*) do
@@ -59,12 +64,16 @@ module Representable
     binding.parse_filter(value, doc) # FIXME: nested pipeline!
   end
 
-  Set = ->(value, doc, binding,*) do
+  Setter = ->(value, doc, binding,*) do
     binding.set(value)
   end
 
 
-  class Iterate
+  class Collect
+    def self.[](*functions)
+      new(functions)
+    end
+
     def initialize(functions)
       @item_pipeline = Pipeline[*functions]
     end

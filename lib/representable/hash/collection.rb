@@ -29,10 +29,10 @@ module Representable::Hash
 
       # Populator.new(bin).call()
       if bin.typed?
-        value = Iterate.new([SkipParse, CreateObject, Prepare, Deserialize]).
+        value = Collect.new([SkipParse, CreateObject, Prepare, Deserialize]).
           (doc, doc, bin)
       else
-value = Iterate.new([SkipParse]).
+value = Collect.new([SkipParse]).
           (doc, doc, bin)
       end
 

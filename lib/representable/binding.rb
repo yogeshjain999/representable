@@ -161,17 +161,19 @@ module Representable
     attr_accessor :cached_representer
 
     def functions
+      return self[:parse_pipeline].() if self[:parse_pipeline]
+
       # TODO: make polymorph.
       typed_default = [CreateObject, Prepare]
       typed_default << (representable? ? Deserialize : ResolveBecauseDeserializeIsNotHereAndIShouldFixThis)
 
       if array?
-        return [OverwriteOnNil, Default, Iterate.new([SkipParse, *typed_default].compact), ParseFilter, Set] if typed?
-        return [OverwriteOnNil, Default, Iterate.new([SkipParse]), ParseFilter, Set]
+        return [OverwriteOnNil, Default, Collect.new([SkipParse, *typed_default].compact), ParseFilter, Setter] if typed?
+        return [OverwriteOnNil, Default, Collect.new([SkipParse]), ParseFilter, Setter]
       end
 
-      return [OverwriteOnNil, Default, SkipParse, *typed_default, ParseFilter, Set] if typed?
-      return [OverwriteOnNil, Default, SkipParse, ParseFilter, Set]
+      return [OverwriteOnNil, Default, SkipParse, *typed_default, ParseFilter, Setter] if typed?
+      return [OverwriteOnNil, Default, SkipParse, ParseFilter, Setter]
     end
 
   private
