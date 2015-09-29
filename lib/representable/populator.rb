@@ -32,17 +32,19 @@ module Representable
   end
 
 
-  Instance = ->(fragment, doc, binding,*) do # TODO: use in #instance_for.
-    [fragment, binding.evaluate_option(:instance, fragment)]
+  # ->(fragment)=> [fragment, object]
+  Instance = ->(fragment, doc, binding,*args) do
+    [fragment, binding.evaluate_option(:instance, fragment, *args)]
   end
 
-  Deserialize = ->(blaaaaaaa, doc, binding,*) do
-    fragment, object = blaaaaaaa
+  # ->(fragment, object)=> object
+  Deserialize = ->(args, doc, binding,*) do
+    fragment, object = args
     # use a Deserializer to transform fragment to/into object.
     binding.send(:deserializer).call(fragment, object)
   end
-  ResolveBecauseDeserializeIsNotHereAndIShouldFixThis = -> (blaaaaaaa, doc, binding,*) do
-    fragment, object = blaaaaaaa
+  ResolveBecauseDeserializeIsNotHereAndIShouldFixThis = -> (args, doc, binding,*) do
+    fragment, object = args
     object
   end
 

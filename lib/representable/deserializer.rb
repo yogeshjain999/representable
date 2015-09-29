@@ -45,6 +45,7 @@ module Representable
     end
     include Prepare
 
+    # todo: throw error here!
     def create_object(fragment, *args)
       instance_for(fragment, *args) or class_for(fragment, *args)
     end
@@ -59,8 +60,7 @@ module Representable
     end
 
     def instance_for(fragment, *args)
-      # cool: if no :instance set, { return } will jump out of this method.
-      @binding.evaluate_option(:instance, fragment, *args) { return } or raise DeserializeError.new(":instance did not return object.")
+      Instance.(fragment, nil, @binding).last
     end
   end
 end
