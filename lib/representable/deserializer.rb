@@ -60,7 +60,7 @@ module Representable
     end
 
     def instance_for(fragment, *args)
-      Instance.(fragment, nil, @binding).last
+      Instance.(fragment, nil, @binding, *args).last
     end
   end
 end
