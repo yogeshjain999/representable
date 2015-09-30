@@ -16,13 +16,13 @@ class PipelineTest < MiniTest::Spec
   it "stopping" do
     pipeline = Representable::Pipeline[SetResult, Stopping, ModifyResult]
     pipeline.(fragment: "oy!").must_equal "modified object from oy!"
-    pipeline.(fragment: "stop!").must_equal({:fragment=>"stop!", :result=>"object from stop!"})
+    pipeline.(fragment: "stop!").must_equal Representable::Pipeline::Stop
   end
 
   describe "nested Collect" do
     let(:pipeline) { Representable::Pipeline[Representable::Collect[SetResult, Stopping, ModifyResult]] }
 
     it { pipeline.(fragment: ["yo!", "oy!"]).must_equal ["modified object from yo!", "modified object from oy!"] }
-    it { pipeline.(fragment: ["yo!", "stop!", "oy!"]).must_equal ["modified object from yo!", {:fragment=>"stop!", :doc=>nil, :binding=>nil, :result=>"object from stop!"}, "modified object from oy!"] }
+    it { pipeline.(fragment: ["yo!", "stop!", "oy!"]).must_equal ["modified object from yo!", "modified object from oy!"] }
   end
 end

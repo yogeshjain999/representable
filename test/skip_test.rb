@@ -9,7 +9,7 @@ class SkipParseTest < MiniTest::Spec
     end
 
     collection :airplays,
-      skip_parse: lambda { |fragment, opts| puts fragment.inspect; opts[:skip?] and fragment["station"].nil? }, class: OpenStruct do
+      skip_parse: lambda { |fragment, opts| opts[:skip?] and fragment["station"].nil? }, class: OpenStruct do
         property :station
     end
   end
@@ -32,7 +32,7 @@ class SkipParseTest < MiniTest::Spec
   # skip parsing.
   let (:airplay) { OpenStruct.new(station: "JJJ") }
 
-  it do
+  it "ficken" do
     song.from_hash({
       "title"    => "skip me",
       "band"     => {},

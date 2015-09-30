@@ -130,10 +130,24 @@ module Representable
         return
       end
 
-      # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
-      options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
+      options = args[0]
 
-      proc.evaluate(exec_context, *(args<<options)) # from Uber::Options::Value.
+      # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
+      __options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
+
+
+      # FIXME: this is to deprecate the old shit positional args.
+      if name==:instance
+        return proc.evaluate(exec_context, options[:fragment], options[:index], __options) if options[:index]
+        return proc.evaluate(exec_context, options[:fragment], __options) # FIXME: no pass_options fixed.
+      end
+
+      if name== :skip_parse
+        # return proc.evaluate(exec_context, options[:fragment], options[:index], __options) if options[:index]
+        return proc.evaluate(exec_context, options[:fragment], __options)
+      end
+
+      proc.evaluate(exec_context, *(args<<__options)) # from Uber::Options::Value.
     end
 
     def [](name)
@@ -168,16 +182,16 @@ module Representable
 
       # TODO: make polymorph.
       typed_default = [CreateObject, Prepare]
-      typed_default << (representable? ? Deserialize : ResolveBecauseDeserializeIsNotHereAndIShouldFixThis)
+      typed_default << Deserialize if representable?
 
       if array?
-        return [OverwriteOnNil, Default, Collect.new([SkipParse, *typed_default].compact), ParseFilter, Setter] if typed?
+        return [OverwriteOnNil, Default, Collect.new([SkipParse, *typed_default]), ParseFilter, Setter] if typed?
         return [OverwriteOnNil, Default, Collect.new([SkipParse]), ParseFilter, Setter]
       end
 
       return [OverwriteOnNil, Default, SkipParse, *typed_default, ParseFilter, Setter] if typed?
-      # return [OverwriteOnNil, Default, SkipParse, ParseFilter, Setter]
-      return [OverwriteOnNil, Default, Setter]
+      return [OverwriteOnNil, Default, SkipParse, ParseFilter, Setter]
+      # return [OverwriteOnNil, Default, Setter]
     end
 
   private

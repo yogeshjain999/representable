@@ -13,7 +13,7 @@ module Representable
     def call(value, *args)
       inject(value) do |memo, block|
         res = block.call(memo)
-        return memo if res == Stop # Nil objects here?
+        return Stop if res == Stop # Nil objects here?
 
         memo[:result] = res
         memo

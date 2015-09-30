@@ -9,7 +9,7 @@ module Representable
   end
   OverwriteOnNil = -> (options) do
     if options[:fragment].nil?
-      Setter.(options)
+      Setter.(options.merge(result: nil))
       return Pipeline::Stop
     end
     options[:fragment] # becomes :result
@@ -25,21 +25,15 @@ module Representable
     fragment
   end
 
-  SkipParse = ->(fragment:, binding:, **o) do
-    Pipeline::Stop if binding.evaluate_option(:skip_parse, fragment)
+  SkipParse = ->(options) do
+    puts "#{options[:binding].name} ret: #{options[:result]}"
+    return Pipeline::Stop if options[:binding].evaluate_option(:skip_parse, options)
+    options[:fragment]
   end
 
 
-  # ->(fragment)=> [fragment, object]
-  # Instance = ->(fragment, doc, binding,*args) do
-  Instance = ->(binding:, fragment:, **args) do
-    return binding.evaluate_option(:instance, fragment, *args)
-
-
-    [fragment, bla=binding.evaluate_option(:instance, fragment, *args)]
-
-    puts "after Instance: #{fragment} #{bla}"
-[fragment, bla]
+  Instance = ->(options) do
+    options[:binding].evaluate_option(:instance, options)
   end
 
   # ->(fragment, object)=> object
@@ -62,13 +56,13 @@ module Representable
       end
 
     private
-      def class_for(fragment, binding, *args)
-        item_class = class_from(fragment, binding, *args) or raise DeserializeError.new(":class did not return class constant.")
+      def class_for(options)
+        item_class = class_from(options) or raise DeserializeError.new(":class did not return class constant.")
         item_class.new
       end
 
-      def class_from(fragment, binding, *args)
-        binding.evaluate_option(:class, fragment, *args)
+      def class_from(options)
+        options[:binding].evaluate_option(:class, options[:fragment]) # FIXME: no additional args passed here, yet.
       end
 
       def instance_for(options)
@@ -93,7 +87,6 @@ module Representable
 
   # Setter = ->(value, doc, binding,*) do
   Setter = ->(binding:, result:, **o) do
-    puts "@@#{result.inspect}"
     binding.set(result)
   end
 
@@ -107,13 +100,14 @@ module Representable
       @item_pipeline = Pipeline[*functions]
     end
 
+    # when stop, the element is skipped. (should that be Skip then?)
     def call(args)
       arr = [] # FIXME : THIS happens in collection deserializer.
       args[:fragment].each_with_index do |item_fragment, i|
         # DISCUSS: we should replace fragment into the existing hash
-        result = @item_pipeline.({fragment: item_fragment, doc: args[:doc], binding: args[:binding]}, i)
-        puts "resuuuuult: #{result}"
-        return Pipeline::Stop if result == Pipeline::Stop
+        result = @item_pipeline.(fragment: item_fragment, doc: args[:doc], binding: args[:binding], index: i)
+
+        next if result == Pipeline::Stop
         arr << result
       end
 
