@@ -137,7 +137,7 @@ module Representable
 
 
       # FIXME: this is to deprecate the old shit positional args.
-      if name==:instance
+      if name==:instance || name==:class
         return proc.evaluate(exec_context, options[:fragment], options[:index], __options) if options[:index]
         return proc.evaluate(exec_context, options[:fragment], __options) # FIXME: no pass_options fixed.
       end

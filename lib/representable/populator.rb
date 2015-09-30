@@ -62,7 +62,7 @@ module Representable
       end
 
       def class_from(options)
-        options[:binding].evaluate_option(:class, options[:fragment]) # FIXME: no additional args passed here, yet.
+        options[:binding].evaluate_option(:class, options) # FIXME: no additional args passed here, yet.
       end
 
       def instance_for(options)
