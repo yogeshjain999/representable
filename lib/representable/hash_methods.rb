@@ -12,7 +12,7 @@ module Representable
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
       # value = Deserializer::Hash.new(bin).call(hash)
-      value = Collect::Hash.new([SkipParse, CreateObject, Prepare, Deserialize]).(hash, doc, bin)
+      value = Collect::Hash.new([SkipParse, CreateObject, Prepare, Deserialize]).(fragment: hash, document: doc, binding: bin)
 
       # value = bin.deserialize_from(hash)
       represented.replace(value)

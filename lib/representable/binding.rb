@@ -98,8 +98,9 @@ module Representable
       evaluate_option(:render_filter, value, doc) { value }
     end
 
-    def parse_filter(value, doc)
-      evaluate_option(:parse_filter, value, doc) { value }
+    def parse_filter(options)
+
+      evaluate_option(:parse_filter, options) { value }
     end
 
     def get
@@ -140,6 +141,11 @@ module Representable
       if name==:instance || name==:class
         return proc.evaluate(exec_context, options[:fragment], options[:index], __options) if options[:index]
         return proc.evaluate(exec_context, options[:fragment], __options) # FIXME: no pass_options fixed.
+      end
+
+      if name==:parse_filter
+        return proc.evaluate(exec_context, options[:fragment], options[:doc], __options)
+
       end
 
       if name== :skip_parse

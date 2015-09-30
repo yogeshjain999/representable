@@ -81,7 +81,7 @@ module Representable
 
   # FIXME: only add when :parse_filter!
   ParseFilter = ->(options) do
-    options[:binding].parse_filter(options[:fragment], options[:doc]) # FIXME: nested pipeline!
+    options[:binding].parse_filter(options) # FIXME: nested pipeline!
     options[:result]
   end
 
@@ -116,9 +116,9 @@ module Representable
 
 
     class Hash < self
-      def call(fragment, doc, binding)
+      def call(fragment:, **o)
         {}.tap do |hsh|
-          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.(item_fragment, doc, binding) }
+          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.(fragment: item_fragment, **o) }
         end
       end
     end

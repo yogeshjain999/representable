@@ -34,12 +34,9 @@ module Representable
 
         puts "Pipeline: #{memo.inspect}"
         # res = block.call(memo, *args)
-        res = block.call(memo)
-        return res if res == Stop # Nil objects here?
+       block.call(memo, *args)
+        # return res if res == Stop # Nil objects here?
 
-        memo[:result] = res
-        puts "afteer pipeline: #{res} for #{block}"
-        memo
       end
     end
   end
