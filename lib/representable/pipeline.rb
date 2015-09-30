@@ -12,9 +12,20 @@ module Representable
     # DISCUSS: should we use different pipelines for render_filter, etc.?
     def call(context, value, *args)
       inject(value) do |memo, block|
-        return memo if memo == Stop # Nil objects here?
-        block.call(memo, *args)
+        #
+
+        puts "Pipeline: #{memo.inspect}"
+        # res = block.call(memo, *args)
+        res = block.call(memo)
+        return res if res == Stop # Nil objects here?
+
+        memo[:result] = res
+        puts "afteer pipeline: #{res} for #{block}"
+        memo
       end # FIXME: aaargh
     end
   end
 end
+
+
+# res, args = block.call(memo, args)

@@ -87,7 +87,10 @@ module Representable
 
       evaluate_option(:populator, fragment) do
         # Implements the pipeline that happens after the fragment has been read from the incoming document.
-        populator.("blaaaaaaa", fragment, doc, self) # per-binding populator.
+
+
+        # populator.("blaaaaaaa", fragment, doc, self) # per-binding populator.
+        populator.("blaaaaaaa", {fragment: fragment, doc: doc, binding: self}) # per-binding populator.
       end
     end
 

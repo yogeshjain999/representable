@@ -7,9 +7,9 @@ module Representable
     return Pipeline::Stop if fragment.nil?
     fragment
   end
-  OverwriteOnNil = -> (fragment, doc, binding, *) do
+  OverwriteOnNil = -> (fragment:, doc:, binding:, **opts) do
     if fragment.nil?
-      Setter.(fragment, doc, binding)
+      Setter.(fragment: fragment, doc: doc, binding: binding)
       return Pipeline::Stop
     end
     fragment
@@ -17,31 +17,39 @@ module Representable
 
 
   # FIXME: how to combine those two guys?
-  Default = ->(fragment, doc, binding,*) do
+  Default = ->(fragment:, binding:, **opts) do
     if fragment == Binding::FragmentNotFound
       return Pipeline::Stop unless binding.has_default?
       return binding[:default]
     end
-
-    fragment
   end
 
-  SkipParse = ->(fragment, doc, binding,*) do
-    return Pipeline::Stop if binding.evaluate_option(:skip_parse, fragment)
-    fragment
+  SkipParse = ->(fragment:, binding:, **o) do
+    Pipeline::Stop if binding.evaluate_option(:skip_parse, fragment)
   end
 
 
   # ->(fragment)=> [fragment, object]
-  Instance = ->(fragment, doc, binding,*args) do
-    [fragment, binding.evaluate_option(:instance, fragment, *args)]
+  # Instance = ->(fragment, doc, binding,*args) do
+  Instance = ->(opts, *args) do
+    puts "@@@@@Instance #{opts[:fragment].inspect}"
+    return opts[:binding].evaluate_option(:instance, opts[:fragment], *args)
+
+
+    [fragment, bla=binding.evaluate_option(:instance, fragment, *args)]
+
+    puts "after Instance: #{fragment} #{bla}"
+[fragment, bla]
   end
 
   # ->(fragment, object)=> object
-  Deserialize = ->(args, doc, binding,*) do
-    fragment, object = args
-    # use a Deserializer to transform fragment to/into object.
-    binding.send(:deserializer).call(fragment, object)
+  # Deserialize = ->(args, doc, binding,*) do
+  Deserialize = ->(args, *) do
+    # puts "Deser: #{args.inspect}"
+    # fragment, object = args
+    args[:binding].send(:deserializer).call(args[:fragment], args[:result]) # object.from_hash
+
+    args
   end
   ResolveBecauseDeserializeIsNotHereAndIShouldFixThis = -> (args, doc, binding,*) do
     fragment, object = args
@@ -73,20 +81,20 @@ module Representable
 
   CreateObject = Function::CreateObject.new
 
-  Prepare = ->(args, doc, binding,*) do
-    fragment, object = args
-
-    representer = binding.send(:deserializer).send(:prepare, object)
+  Prepare = ->(result:, binding:, **bla) do
+    representer = binding.send(:deserializer).send(:prepare, result)
     # raise args.inspect
-    [fragment, representer]
+    representer
   end
 
-  ParseFilter = ->(value, doc, binding,*) do
-    binding.parse_filter(value, doc) # FIXME: nested pipeline!
+  # FIXME: only add when :parse_filter!
+  ParseFilter = ->(fragment:, doc:, binding:, **o) do
+    binding.parse_filter(fragment, doc) # FIXME: nested pipeline!
   end
 
-  Setter = ->(value, doc, binding,*) do
-    binding.set(value)
+  # Setter = ->(value, doc, binding,*) do
+  Setter = ->(binding:, result:, **o) do
+    binding.set(result)
   end
 
 
@@ -99,10 +107,14 @@ module Representable
       @item_pipeline = Pipeline[*functions]
     end
 
-    def call(fragment, doc, binding)
+    def call(args)
       arr = [] # FIXME : THIS happens in collection deserializer.
-      fragment.each_with_index do |item_fragment, i|
-        arr << @item_pipeline.(nil, item_fragment, doc, binding, i)
+      args[:fragment].each_with_index do |item_fragment, i|
+        # DISCUSS: we should replace fragment into the existing hash
+        result = @item_pipeline.(nil, {fragment: item_fragment, doc: args[:doc], binding: args[:binding]}, i)
+        puts "resuuuuult: #{result}"
+        return Pipeline::Stop if result == Pipeline::Stop
+        arr << result
       end
 
       arr
