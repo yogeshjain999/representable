@@ -1,3 +1,25 @@
+# 2.4.0
+
+pipeline
+less ifs, instead: simply remove the "middleware"
+read_fragment
+  represented.set instance.prepare.from_json
+Populator.(fragment)
+  not_found?.default.deserialize.parse_filter.set
+Deserializer.(fragment)
+   instance.class.prepare.deserialize=from_json
+
+OverwriteOnNil vs. StopOnNil
+[Instance, ->(){..}, Bla]
+
+did you ever overwrite #create_object in a binding? you can now simply pass a callable object into the pipeline.
+TODO: deprecate parse strategies in favour of :populator (analogue to Reform)
+
+elegant, easier to understand, and extend
+you know, the whole deserialize stack (same for rendering): you pass in the json, it finds the fragments for each property, passes it to  the binding, the binding deserializes, builds/finds a model, assigns values to it, and so on
+you can partially hook in with :instance or :deserialize or :parse_filter, but it's really awkward. i am now changing the architecture to a pipeline, where you plug in the features you want (e.g. "do not call :prepare, :instance, :class, etc. but run my own :populator")
+and it suddenly is super simple to understand
+
 # 2.3.0
 
 * Remove dependency to Nokogiri and Multi_JSON. You have to add what you need to your `Gemfile`/`gemspec` now.
