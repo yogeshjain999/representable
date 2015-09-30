@@ -36,7 +36,7 @@ class InstanceTest < BaseTest
         :extend => song_representer
     end
 
-    it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
+    it( "xxx") { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
       from_hash("song" => {"id" => 1}).song.must_equal Song.new(1, "The Answer Is Still No") }
 
     it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
@@ -141,7 +141,7 @@ class InstanceTest < BaseTest
         :setter => lambda { |*|  }
     end
 
-    it {
+    it("hooray") {
       album= Struct.new(:songs).new(songs = [
       Song.new(1, "The Answer Is Still No"),
       Song.new(2, "Invncble")])

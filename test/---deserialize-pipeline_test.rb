@@ -32,8 +32,8 @@ class DeserializePipelineTest < MiniTest::Spec
       property :title
     end
 
-    def instance!(fragment, *args)
-      puts "@@@@@ #{args.inspect}"
+    def instance!(*options)
+      puts "@@@@@ #{options.inspect}"
       Song.new
     end
 

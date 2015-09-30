@@ -7,12 +7,12 @@ module Representable
     return Pipeline::Stop if fragment.nil?
     fragment
   end
-  OverwriteOnNil = -> (fragment:, doc:, binding:, **opts) do
-    if fragment.nil?
-      Setter.(fragment: fragment, doc: doc, binding: binding)
+  OverwriteOnNil = -> (options) do
+    if options[:fragment].nil?
+      Setter.(options)
       return Pipeline::Stop
     end
-    fragment
+    options[:fragment] # becomes :result
   end
 
 
@@ -22,6 +22,7 @@ module Representable
       return Pipeline::Stop unless binding.has_default?
       return binding[:default]
     end
+    fragment
   end
 
   SkipParse = ->(fragment:, binding:, **o) do
@@ -31,9 +32,8 @@ module Representable
 
   # ->(fragment)=> [fragment, object]
   # Instance = ->(fragment, doc, binding,*args) do
-  Instance = ->(opts, *args) do
-    puts "@@@@@Instance #{opts[:fragment].inspect}"
-    return opts[:binding].evaluate_option(:instance, opts[:fragment], *args)
+  Instance = ->(binding:, fragment:, **args) do
+    return binding.evaluate_option(:instance, fragment, *args)
 
 
     [fragment, bla=binding.evaluate_option(:instance, fragment, *args)]
@@ -48,8 +48,6 @@ module Representable
     # puts "Deser: #{args.inspect}"
     # fragment, object = args
     args[:binding].send(:deserializer).call(args[:fragment], args[:result]) # object.from_hash
-
-    args
   end
   ResolveBecauseDeserializeIsNotHereAndIShouldFixThis = -> (args, doc, binding,*) do
     fragment, object = args
@@ -58,9 +56,9 @@ module Representable
 
   module Function
     class CreateObject
-      def call(fragment, doc, binding,*args)
-        object = instance_for(fragment, binding, *args) || class_for(fragment, binding, *args)
-        [fragment, object]
+      def call(options)
+        object = instance_for(options) || class_for(options)
+        # [fragment, object]
       end
 
     private
@@ -73,8 +71,8 @@ module Representable
         binding.evaluate_option(:class, fragment, *args)
       end
 
-      def instance_for(fragment, binding, *args)
-        Instance.(fragment, nil, binding, *args).last
+      def instance_for(options)
+        Instance.(options)
       end
     end
   end
@@ -88,12 +86,14 @@ module Representable
   end
 
   # FIXME: only add when :parse_filter!
-  ParseFilter = ->(fragment:, doc:, binding:, **o) do
-    binding.parse_filter(fragment, doc) # FIXME: nested pipeline!
+  ParseFilter = ->(options) do
+    options[:binding].parse_filter(options[:fragment], options[:doc]) # FIXME: nested pipeline!
+    options[:result]
   end
 
   # Setter = ->(value, doc, binding,*) do
   Setter = ->(binding:, result:, **o) do
+    puts "@@#{result.inspect}"
     binding.set(result)
   end
 
@@ -111,7 +111,7 @@ module Representable
       arr = [] # FIXME : THIS happens in collection deserializer.
       args[:fragment].each_with_index do |item_fragment, i|
         # DISCUSS: we should replace fragment into the existing hash
-        result = @item_pipeline.(nil, {fragment: item_fragment, doc: args[:doc], binding: args[:binding]}, i)
+        result = @item_pipeline.({fragment: item_fragment, doc: args[:doc], binding: args[:binding]}, i)
         puts "resuuuuult: #{result}"
         return Pipeline::Stop if result == Pipeline::Stop
         arr << result
@@ -124,7 +124,7 @@ module Representable
     class Hash < self
       def call(fragment, doc, binding)
         {}.tap do |hsh|
-          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.(nil, item_fragment, doc, binding) }
+          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.(item_fragment, doc, binding) }
         end
       end
     end

@@ -10,6 +10,24 @@ module Representable
     Stop = Class.new
 
     # DISCUSS: should we use different pipelines for render_filter, etc.?
+    def call(value, *args)
+      inject(value) do |memo, block|
+        res = block.call(memo)
+        return memo if res == Stop # Nil objects here?
+
+        memo[:result] = res
+        memo
+      end[:result] # FIXME: aaargh
+    end
+  end
+
+  class ShitblaaPipeline < Array
+    include Uber::Callable
+    # include Representable::Cloneable
+
+    Stop = Class.new
+
+    # DISCUSS: should we use different pipelines for render_filter, etc.?
     def call(context, value, *args)
       inject(value) do |memo, block|
         #
@@ -22,7 +40,7 @@ module Representable
         memo[:result] = res
         puts "afteer pipeline: #{res} for #{block}"
         memo
-      end # FIXME: aaargh
+      end
     end
   end
 end

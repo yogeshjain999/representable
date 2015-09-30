@@ -15,8 +15,8 @@ module Representable
       options  = options.clone
 
       # defaults:
-      options[:parse_filter]  = Pipeline[*options[:parse_filter]]
-      options[:render_filter] = Pipeline[*options[:render_filter]]
+      options[:parse_filter]  = ShitblaaPipeline[*options[:parse_filter]]
+      options[:render_filter] = ShitblaaPipeline[*options[:render_filter]]
       options[:as]          ||= @name
 
       setup!(options, &block)

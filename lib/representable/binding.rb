@@ -90,7 +90,7 @@ module Representable
 
 
         # populator.("blaaaaaaa", fragment, doc, self) # per-binding populator.
-        populator.("blaaaaaaa", {fragment: fragment, doc: doc, binding: self}) # per-binding populator.
+        populator.({fragment: fragment, doc: doc, binding: self}) # per-binding populator.
       end
     end
 
@@ -176,7 +176,8 @@ module Representable
       end
 
       return [OverwriteOnNil, Default, SkipParse, *typed_default, ParseFilter, Setter] if typed?
-      return [OverwriteOnNil, Default, SkipParse, ParseFilter, Setter]
+      # return [OverwriteOnNil, Default, SkipParse, ParseFilter, Setter]
+      return [OverwriteOnNil, Default, Setter]
     end
 
   private
