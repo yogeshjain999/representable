@@ -25,4 +25,18 @@ class PipelineTest < MiniTest::Spec
     it { pipeline.(fragment: ["yo!", "oy!"]).must_equal ["modified object from yo!", "modified object from oy!"] }
     it { pipeline.(fragment: ["yo!", "stop!", "oy!"]).must_equal ["modified object from yo!", "modified object from oy!"] }
   end
+
+  describe "passes options to all functions" do
+    PrintOptions = ->(options) { options.to_s }
+    PassOptions = ->(options) { options.to_a }
+
+    it "what" do
+      Representable::Pipeline[PrintOptions, PassOptions].(key: true).must_equal([[:key, true], [:result, "{:key=>true}"]])
+    end
+
+    it do
+      Representable::Pipeline[Representable::Collect[PrintOptions, PassOptions]].(fragment: [{key: true}, {second: true}]).
+        must_equal([[[:fragment, {:key=>true}], [:index, 0], [:result, "{:fragment=>{:key=>true}, :index=>0}"]], [[:fragment, {:second=>true}], [:index, 1], [:result, "{:fragment=>{:second=>true}, :index=>1}"]]])
+    end
+  end
 end

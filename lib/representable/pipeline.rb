@@ -10,8 +10,8 @@ module Representable
     Stop = Class.new
 
     # DISCUSS: should we use different pipelines for render_filter, etc.?
-    def call(value)
-      inject(value) do |memo, block|
+    def call(options)
+      inject(options) do |memo, block|
         res = evaluate(block, memo)
         return Stop if res == Stop # Nil objects here?
 

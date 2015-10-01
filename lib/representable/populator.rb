@@ -95,11 +95,11 @@ module Representable
     end
 
     # when stop, the element is skipped. (should that be Skip then?)
-    def call(args)
+    def call(options)
       arr = [] # FIXME : THIS happens in collection deserializer.
-      args[:fragment].each_with_index do |item_fragment, i|
+      options[:fragment].each_with_index do |item_fragment, i|
         # DISCUSS: we should replace fragment into the existing hash
-        result = @item_pipeline.(fragment: item_fragment, doc: args[:doc], binding: args[:binding], index: i)
+        result = @item_pipeline.(options.merge(fragment: item_fragment, index: i))
 
         next if result == Pipeline::Stop
         arr << result
