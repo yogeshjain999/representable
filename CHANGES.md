@@ -1,5 +1,7 @@
 # 2.4.0
 
+TODO: :representable should be removing Deserialize.
+
 pipeline
 less ifs, instead: simply remove the "middleware"
 read_fragment
