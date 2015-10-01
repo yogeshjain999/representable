@@ -86,10 +86,13 @@ module Representable
       fragment = read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
 
       evaluate_option(:populator, fragment) do
+        options = {fragment: fragment, doc: doc, binding: self}
+        options[:representable_options] = Options.new(self, user_options, represented, parent_decorator)# if self[:pass_options] # FIXME, of course.
+
         # Implements the pipeline that happens after the fragment has been read from the incoming document.
         # TODO: allow debugger to hook in here.
         # populator.extend(Pipeline::Debug) #if name == "songs"
-        populator.({fragment: fragment, doc: doc, binding: self}) # per-binding populator.
+        populator.(options) # per-binding populator.
       end
     end
 
