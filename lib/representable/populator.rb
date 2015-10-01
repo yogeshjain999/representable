@@ -1,12 +1,14 @@
 module Representable
-  StopOnNotFound = -> (fragment:, doc:, binding:, **o) do
+  StopOnNotFound = -> (fragment:, **o) do
     return Pipeline::Stop if fragment == Binding::FragmentNotFound
     fragment
   end
+
   StopOnNil = -> (fragment, doc, binding, *) do # DISCUSS: Not tested/used, yet.
     return Pipeline::Stop if fragment.nil?
     fragment
   end
+
   OverwriteOnNil = -> (options) do
     if options[:fragment].nil?
       Setter.(options.merge(result: nil))
@@ -26,7 +28,7 @@ module Representable
   end
 
   SkipParse = ->(options) do
-    puts "#{options[:binding].name} ret: #{options[:result]}"
+    # puts "#{options[:binding].name} ret: #{options[:result]}"
     return Pipeline::Stop if options[:binding].evaluate_option(:skip_parse, options)
     options[:fragment]
   end
