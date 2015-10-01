@@ -1,5 +1,5 @@
 module Representable
-  StopOnNotFound = -> (fragment, doc, binding, *) do
+  StopOnNotFound = -> (fragment:, doc:, binding:, **o) do
     return Pipeline::Stop if fragment == Binding::FragmentNotFound
     fragment
   end
@@ -36,16 +36,8 @@ module Representable
     options[:binding].evaluate_option(:instance, options)
   end
 
-  # ->(fragment, object)=> object
-  # Deserialize = ->(args, doc, binding,*) do
-  Deserialize = ->(args, *) do
-    # puts "Deser: #{args.inspect}"
-    # fragment, object = args
-    args[:binding].send(:deserializer).call(args[:fragment], args[:result]) # object.from_hash
-  end
-  ResolveBecauseDeserializeIsNotHereAndIShouldFixThis = -> (args, doc, binding,*) do
-    fragment, object = args
-    object
+  Deserialize = ->(options) do
+    options[:binding].send(:deserializer).call(options[:fragment], options[:result]) # object.from_hash
   end
 
   module Function
