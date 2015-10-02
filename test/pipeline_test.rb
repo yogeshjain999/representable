@@ -30,7 +30,7 @@ class PipelineTest < MiniTest::Spec
     PrintOptions = ->(options) { options.to_s }
     PassOptions = ->(options) { options.to_a }
 
-    it "what" do
+    it do
       Representable::Pipeline[PrintOptions, PassOptions].(key: true).must_equal([[:key, true], [:result, "{:key=>true}"]])
     end
 
@@ -39,4 +39,19 @@ class PipelineTest < MiniTest::Spec
         must_equal([[[:fragment, {:key=>true}], [:index, 0], [:result, "{:fragment=>{:key=>true}, :index=>0}"]], [[:fragment, {:second=>true}], [:index, 1], [:result, "{:fragment=>{:second=>true}, :index=>1}"]]])
     end
   end
+
+
+  # describe "Debug" do
+  #   it do
+  #     pipe = Representable::Pipeline[SetResult, Stopping, ModifyResult].extend(Representable::Pipeline::Debug)
+  #     pipe.to_s.must_match "pipeline_test.rb:5 (lambda)>, #<Proc:"
+  #   end
+
+  #   it do
+  #     pipe = Representable::Pipeline[Representable::Collect[SetResult, Stopping, ModifyResult]].extend(Representable::Pipeline::Debug)
+  #     pipe.inspect.must_equal "asd"
+  #   end
+  #   # pipe = Representable::Pipeline[Representable::Collect[SetResult, Stopping, ModifyResult]]
+
+  # end
 end

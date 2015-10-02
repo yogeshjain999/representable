@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
@@ -20,11 +19,11 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.license       = "MIT"
 
-  s.add_dependency "uber", "~> 0.0.7"
+  s.add_dependency "uber", "~> 0.0.15"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "test_xml", "0.1.6"
-  s.add_development_dependency "minitest", ">= 5.4.1"
+  s.add_development_dependency "minitest"
   s.add_development_dependency "mongoid"
   s.add_development_dependency "virtus"
   s.add_development_dependency "json", '>= 1.7.7'

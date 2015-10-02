@@ -1,8 +1,6 @@
 module Representable
   # Allows to implement a pipeline of filters where a value gets passed in and the result gets
   # passed to the next callable object.
-  #
-  # Note: this is still experimental.
   class Pipeline < Array
     include Uber::Callable
     # include Representable::Cloneable
@@ -26,10 +24,15 @@ module Representable
     end
 
     module Debug
+      def call(options)
+        puts "Pipeline#call: #{to_s}"
+        super
+      end
+
       def evaluate(block, memo)
-        puts "Pipeline: calling #{block} "
+        puts "  Pipeline   :   -> #{block} "
         super.tap do |res|
-          puts "Pipeline:   result: #{res.inspect}"
+          puts "  Pipeline   :     result: #{res.inspect}"
         end
       end
     end
@@ -46,7 +49,7 @@ module Representable
       inject(value) do |memo, block|
         #
 
-        puts "Pipeline: #{memo.inspect}"
+        puts "xPipeline: #{memo.inspect}"
         # res = block.call(memo, *args)
        block.call(memo, *args)
         # return res if res == Stop # Nil objects here?

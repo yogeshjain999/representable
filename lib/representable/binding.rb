@@ -91,7 +91,7 @@ module Representable
 
         # Implements the pipeline that happens after the fragment has been read from the incoming document.
         # TODO: allow debugger to hook in here.
-        # populator.extend(Pipeline::Debug) #if name == "songs"
+        populator.extend(Pipeline::Debug) #if name == "songs"
         populator.(options) # per-binding populator.
       end
     end
@@ -144,9 +144,9 @@ module Representable
         return proc.evaluate(exec_context, options[:fragment], __options) # FIXME: no pass_options fixed.
       end
 
-      if name==:parse_filter
-        return proc.evaluate(exec_context, options[:fragment], options[:doc], __options)
-
+      if name==:parse_filter #or name==:render_filter
+        # parse and render filter are no Uber:::Value because they don't need to.
+        return proc.(options)
       end
 
       if name== :skip_parse
@@ -154,7 +154,7 @@ module Representable
         return proc.evaluate(exec_context, options[:fragment], __options)
       end
 
-      proc.evaluate(exec_context, *(args<<__options)) # from Uber::Options::Value.
+      proc.(exec_context, *(args<<__options)) # from Uber::Options::Value.
     end
 
     def [](name)
@@ -185,13 +185,13 @@ module Representable
     attr_accessor :cached_representer
 
     def functions
-      return self[:parse_pipeline].() if self[:parse_pipeline]
+      return self[:parse_pipeline].() if self[:parse_pipeline] # untested.
 
       if array?
-        return [*default_init_functions, Collect[*default_fragment_functions], ParseFilter, Setter]
+        return [*default_init_functions, Collect[*default_fragment_functions], *default_post_functions]
       end
 
-      [*default_init_functions, *default_fragment_functions, ParseFilter, Setter]
+      [*default_init_functions, *default_fragment_functions, *default_post_functions]
     end
 
   private
@@ -211,8 +211,13 @@ module Representable
         functions << Deserialize if representable?
       end
 
-
       functions
+    end
+
+    def default_post_functions
+      funcs = []
+      funcs << ParseFilter if self[:parse_filter]
+      funcs << Setter
     end
 
     def setup_user_options!(user_options)

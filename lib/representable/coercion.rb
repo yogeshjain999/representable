@@ -9,8 +9,8 @@ module Representable
 
       # This gets called when the :render_filter or :parse_filter option is evaluated.
       # Usually the Coercer instance is an element in a Pipeline to allow >1 filters per property.
-      def call(value, doc, options)
-        Virtus::Attribute.build(@type).coerce(value)
+      def call(options)
+        Virtus::Attribute.build(@type).coerce(options[:result])
       end
     end
 

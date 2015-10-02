@@ -1,5 +1,7 @@
 # 2.4.0
 
+* Breaking API change: `:parse_filter` and `:render_filter` have no deprecation as all the other, they receive one options.
+
 TODO: :representable should be removing Deserialize.
 
 pipeline

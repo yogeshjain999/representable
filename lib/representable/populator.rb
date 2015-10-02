@@ -32,11 +32,9 @@ module Representable
   ReturnFragment = ->(options) { options[:fragment] }
 
   SkipParse = ->(options) do
-    # puts "#{options[:binding].name} ret: #{options[:result]}"
     return Pipeline::Stop if options[:binding].evaluate_option(:skip_parse, options)
     options[:fragment]
   end
-
 
   Instance = ->(options) do
     options[:binding].evaluate_option(:instance, options)
@@ -92,7 +90,7 @@ module Representable
     end
 
     def initialize(functions)
-      @item_pipeline = Pipeline[*functions].extend(Pipeline::Debug)
+      @item_pipeline = Pipeline[*functions]#.extend(Pipeline::Debug)
     end
 
     # when stop, the element is skipped. (should that be Skip then?)
