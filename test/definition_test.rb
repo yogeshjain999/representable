@@ -20,7 +20,7 @@ class DefinitionTest < MiniTest::Spec
 
       #
       definition[:awesome].must_equal true
-      definition[:parse_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[1]
+      definition[:parse_filter].must_equal Representable::Pipeline[1]
       definition[:render_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[]
     end
   end
@@ -63,7 +63,7 @@ class DefinitionTest < MiniTest::Spec
       definition[:awesome].must_equal true
       definition[:something].must_equal true
       definition[:render_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[1]
-      definition[:parse_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[]
+      definition[:parse_filter].must_equal Representable::Pipeline[]
     end
 
     describe "with :parse_filter" do
@@ -73,12 +73,12 @@ class DefinitionTest < MiniTest::Spec
       it do
         merged = definition.merge!(:parse_filter => 2)[:parse_filter]
 
-        merged.instance_variable_get(:@value).must_be_kind_of Representable::Pipeline
-        merged.instance_variable_get(:@value).size.must_equal 2
+        merged.must_be_kind_of Representable::Pipeline
+        merged.size.must_equal 2
       end
 
       # :parse_filter can also be array.
-      it { definition.merge!(:parse_filter => [2, 3])[:parse_filter].instance_variable_get(:@value).size.must_equal 3 }
+      it { definition.merge!(:parse_filter => [2, 3])[:parse_filter].size.must_equal 3 }
     end
 
     # does not change arguments
