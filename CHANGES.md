@@ -1,6 +1,7 @@
 # 2.4.0
 
 * Breaking API change: `:parse_filter` and `:render_filter` have no deprecation as all the other, they receive one options.
+TODO: DEPRECATE 4-args? also, allow options[:fragment] instead of options[:result] ?
 
 TODO: :representable should be removing Deserialize.
 

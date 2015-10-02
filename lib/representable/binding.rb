@@ -216,7 +216,7 @@ module Representable
 
     def default_post_functions
       funcs = []
-      funcs << ParseFilter if self[:parse_filter]
+      funcs << ParseFilter if self[:parse_filter].any?
       funcs << Setter
     end
 
