@@ -13,17 +13,6 @@ module Representable
       @binding = binding
     end
 
-    def call(fragment, object, *args) # FIXME: args is always i.
-      @binding.evaluate_option(:deserialize, object, fragment) do
-        demarshal(object, fragment, @binding.user_options) # object.from_hash.
-      end
-    end
-
-  private
-    def demarshal(object, fragment, options)
-      object.send(@binding.deserialize_method, fragment, options)
-    end
-
     module Prepare
       def prepare(object)
         @binding.evaluate_option(:prepare, object) do

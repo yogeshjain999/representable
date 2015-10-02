@@ -40,9 +40,9 @@ module Representable
     options[:binding].evaluate_option(:instance, options)
   end
 
-  Deserialize = ->(options) do
-    options[:binding].send(:deserializer).call(options[:fragment], options[:result]) # object.from_hash
-  end
+  # Deserialize = ->(options) do
+  #   options[:binding].send(:deserializer).call(options[:fragment], options[:result]) # object.from_hash
+  # end
 
   module Function
     class CreateObject
@@ -64,9 +64,25 @@ module Representable
         Instance.(options)
       end
     end
+
+    class Deserialize
+      def call(options)
+        options[:binding].evaluate_option(:deserialize, options) do
+        demarshal(options) # object.from_hash.
+      end
+    end
+
+    private
+      def demarshal(options)
+        binding = options[:binding]
+        object, fragment, user_options = options[:result], options[:fragment], binding.user_options
+        object.send(binding.deserialize_method, fragment, user_options)
+      end
+    end
   end
 
   CreateObject = Function::CreateObject.new
+  Deserialize = Function::Deserialize.new
 
   Prepare = ->(options) do
     options[:binding].send(:deserializer).send(:prepare, options[:result])

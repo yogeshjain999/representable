@@ -154,6 +154,10 @@ module Representable
         return proc.evaluate(exec_context, options[:fragment], __options)
       end
 
+      if name== :deserialize
+        return proc.(exec_context, options[:result], options[:fragment], __options)
+      end
+
       proc.(exec_context, *(args<<__options)) # from Uber::Options::Value.
     end
 
