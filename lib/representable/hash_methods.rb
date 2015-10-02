@@ -11,10 +11,11 @@ module Representable
       hash  = filter_keys_for!(doc, options)
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
-      # value = Deserializer::Hash.new(bin).call(hash)
-      value = Collect::Hash.new([SkipParse, CreateObject, Prepare, Deserialize]).(fragment: hash, document: doc, binding: bin)
+      # TODO: instantiate pipeline via binding so we have central place to inject debugging.
+      value = Collect::Hash.new([SkipParse, CreateObject, Prepare, Deserialize]).(fragment: hash, document: doc, binding: bin) if bin.typed?
+      # FIXME: what's the point of parsing a hash into a hash? :)
+      value = Collect::Hash.new([SkipParse]).(fragment: hash, document: doc, binding: bin) if !bin.typed?
 
-      # value = bin.deserialize_from(hash)
       represented.replace(value)
     end
 
