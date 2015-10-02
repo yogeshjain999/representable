@@ -187,26 +187,31 @@ module Representable
     def functions
       return self[:parse_pipeline].() if self[:parse_pipeline]
 
-      # TODO: make polymorph.
-      # TODO: only include needed functions, eg. when :skip_if.
-
       if array?
-        return [OverwriteOnNil, Default, Collect[*default_fragment_functions], ParseFilter, Setter]
+        return [*default_init_functions, Collect[*default_fragment_functions], ParseFilter, Setter]
       end
 
-      [OverwriteOnNil, Default, *default_fragment_functions, ParseFilter, Setter]
+      [*default_init_functions, *default_fragment_functions, ParseFilter, Setter]
     end
 
   private
     # TODO: move to Pipeline::Builder
+    def default_init_functions
+      functions = [has_default? ? Default : StopOnNotFound]
+      functions << OverwriteOnNil # include StopOnNil if you don't want to erase things.
+      functions
+    end
+
     def default_fragment_functions
-      functions = [ReturnFragment]
+      functions = [ReturnFragment] # TODO: why do we always need that?
       functions << SkipParse if self[:skip_parse]
 
       if typed?
         functions += [CreateObject, Prepare]
         functions << Deserialize if representable?
       end
+
+
       functions
     end
 

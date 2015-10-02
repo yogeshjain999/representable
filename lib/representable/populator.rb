@@ -1,12 +1,15 @@
 module Representable
-  StopOnNotFound = -> (fragment:, **o) do
-    return Pipeline::Stop if fragment == Binding::FragmentNotFound
-    fragment
+  # we don't use keyword args, because i didn't want to discriminate 1.9 users, yet.
+  # this will soon get introduces and remove constructs like options[:binding][:default].
+
+  StopOnNotFound = -> (options) do
+    return Pipeline::Stop if options[:fragment] == Binding::FragmentNotFound
+    options[:fragment]
   end
 
-  StopOnNil = -> (fragment, doc, binding, *) do # DISCUSS: Not tested/used, yet.
-    return Pipeline::Stop if fragment.nil?
-    fragment
+  StopOnNil = -> (options) do # DISCUSS: Not tested/used, yet.
+    return Pipeline::Stop if options[:fragment].nil?
+    options[:fragment]
   end
 
   OverwriteOnNil = -> (options) do
@@ -19,12 +22,11 @@ module Representable
 
 
   # FIXME: how to combine those two guys?
-  Default = ->(fragment:, binding:, **opts) do
-    if fragment == Binding::FragmentNotFound
-      return Pipeline::Stop unless binding.has_default?
-      return binding[:default]
+  Default = ->(options) do
+    if options[:fragment] == Binding::FragmentNotFound
+      return options[:binding].has_default? ? options[:binding][:default] : Pipeline::Stop
     end
-    fragment
+    options[:fragment]
   end
 
   ReturnFragment = ->(options) { options[:fragment] }
