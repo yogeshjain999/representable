@@ -49,8 +49,7 @@ module Representable
   module Function
     class CreateObject
       def call(options)
-        object = instance_for(options) || class_for(options)
-        # [fragment, object]
+        instance_for(options) || class_for(options)
       end
 
     private
@@ -71,10 +70,8 @@ module Representable
 
   CreateObject = Function::CreateObject.new
 
-  Prepare = ->(result:, binding:, **bla) do
-    representer = binding.send(:deserializer).send(:prepare, result)
-    # raise args.inspect
-    representer
+  Prepare = ->(options) do
+    options[:binding].send(:deserializer).send(:prepare, options[:result])
   end
 
   # FIXME: only add when :parse_filter!
@@ -84,8 +81,8 @@ module Representable
   end
 
   # Setter = ->(value, doc, binding,*) do
-  Setter = ->(binding:, result:, **o) do
-    binding.set(result)
+  Setter = ->(options) do
+    options[:binding].set(options[:result])
   end
 
 
@@ -114,9 +111,9 @@ module Representable
 
 
     class Hash < self
-      def call(fragment:, **o)
+      def call(options)
         {}.tap do |hsh|
-          fragment.each { |key, item_fragment| hsh[key] = @item_pipeline.(fragment: item_fragment, **o) }
+          options[:fragment].each { |key, item_fragment| hsh[key] = @item_pipeline.(options.merge(fragment: item_fragment)) }
         end
       end
     end
