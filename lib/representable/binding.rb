@@ -188,20 +188,28 @@ module Representable
       return self[:parse_pipeline].() if self[:parse_pipeline]
 
       # TODO: make polymorph.
-      typed_default = [CreateObject, Prepare]
-      typed_default << Deserialize if representable?
+      # TODO: only include needed functions, eg. when :skip_if.
 
       if array?
-        return [OverwriteOnNil, Default, Collect.new([SkipParse, *typed_default]), ParseFilter, Setter] if typed?
-        return [OverwriteOnNil, Default, Collect.new([SkipParse]), ParseFilter, Setter]
+        return [OverwriteOnNil, Default, Collect[*default_fragment_functions], ParseFilter, Setter]
       end
 
-      return [OverwriteOnNil, Default, SkipParse, *typed_default, ParseFilter, Setter] if typed?
-      return [OverwriteOnNil, Default, SkipParse, ParseFilter, Setter]
-      # return [OverwriteOnNil, Default, Setter]
+      [OverwriteOnNil, Default, *default_fragment_functions, ParseFilter, Setter]
     end
 
   private
+    # TODO: move to Pipeline::Builder
+    def default_fragment_functions
+      functions = [ReturnFragment]
+      functions << SkipParse if self[:skip_parse]
+
+      if typed?
+        functions += [CreateObject, Prepare]
+        functions << Deserialize if representable?
+      end
+      functions
+    end
+
     def setup_user_options!(user_options)
       @user_options  = user_options
       # this is the propagated_options.

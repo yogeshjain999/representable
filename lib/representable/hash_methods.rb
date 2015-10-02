@@ -12,9 +12,7 @@ module Representable
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
       # TODO: instantiate pipeline via binding so we have central place to inject debugging.
-      value = Collect::Hash.new([SkipParse, CreateObject, Prepare, Deserialize]).(fragment: hash, document: doc, binding: bin) if bin.typed?
-      # FIXME: what's the point of parsing a hash into a hash? :)
-      value = Collect::Hash.new([SkipParse]).(fragment: hash, document: doc, binding: bin) if !bin.typed?
+      value = Collect::Hash[*bin.send(:default_fragment_functions)].(fragment: hash, document: doc, binding: bin)
 
       represented.replace(value)
     end
