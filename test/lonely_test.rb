@@ -160,6 +160,33 @@ class LonelyRepresenterTest < MiniTest::Spec
     end
 
 
+    describe "with scalar" do
+      let (:representer) {
+        Module.new do
+          include Representable::JSON::Hash
+        end
+      }
+      let (:json)  { %{{"one":1,"two":2}} }
+      let (:data) { {one: 2, two: 3} }
+
+      describe "#to_json" do
+        it { data.extend(representer).to_json.must_equal %{{"one":2,"two":3}} }
+
+        # it "respects :exclude" do
+        #   assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(representer).to_json(:exclude => [:one])
+        # end
+
+        # it "respects :include" do
+        #   assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(representer).to_json(:include => [:two])
+        # end
+      end
+
+      describe "#from_json" do # FIXME: what's the point of this?
+        it { data.extend(representer).from_hash(data).must_equal data }
+      end
+    end
+
+
     describe "with contained text" do
       before do
         @songs_representer = Module.new do
