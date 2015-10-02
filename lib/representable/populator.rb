@@ -51,7 +51,7 @@ module Representable
 
     private
       def class_for(options)
-        item_class = class_from(options) or raise DeserializeError.new(":class did not return class constant.")
+        item_class = class_from(options) or raise DeserializeError.new(":class did not return class constant for `#{options[:binding].name}`.")
         item_class.new
       end
 
