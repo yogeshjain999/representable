@@ -5,8 +5,9 @@ module Representable
   ReadFragment = ->(options) do
     binding, object, doc, fragment = options[:binding], options[:result], options[:doc]
 
-    options[:fragment] = binding.read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
-    # will be :result.
+    options[:fragment] =  binding.evaluate_option(:reader, doc) do
+      binding.read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
+    end
   end
 
 

@@ -63,12 +63,10 @@ module Representable
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
-      evaluate_option(:reader, doc) do
-        options = {doc: doc, binding: self}
-        options[:representable_options] = Options.new(self, user_options, represented, parent_decorator)
+      options = {doc: doc, binding: self}
+      options[:representable_options] = Options.new(self, user_options, represented, parent_decorator)
 
-        populator.(options)
-      end
+      parse_pipeline.(options)
     end
 
     def write_fragment(doc, value)
@@ -244,8 +242,8 @@ module Representable
         @serializer ||= serializer_class.new(self)
       end
 
-      def populator
-        @populator ||= Pipeline[*functions]
+      def parse_pipeline
+        @parse_pipeline ||= Pipeline[*functions]
       end
     end
     include Factories
