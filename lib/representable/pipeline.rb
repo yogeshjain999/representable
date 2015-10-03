@@ -23,17 +23,30 @@ module Representable
       block.call(memo)
     end
 
+
     module Debug
       def call(options)
-        puts "Pipeline#call: #{to_s}"
+        puts "Pipeline#call: #{inspect}"
         super
       end
 
       def evaluate(block, memo)
-        puts "  Pipeline   :   -> #{block} "
+        puts "  Pipeline   :   -> #{_inspect_function(block)} "
         super.tap do |res|
           puts "  Pipeline   :     result: #{res.inspect}"
         end
+      end
+
+      def inspect
+        collect do |func|
+          _inspect_function(func)
+        end.join(", ")
+      end
+
+      # prints SkipParse instead of <Proc>. i know, i can make this better, but not now.
+      def _inspect_function(func)
+        return func unless func.is_a?(Proc)
+        File.readlines(func.source_location[0])[func.source_location[1]-1].match(/^\s+(\w+)/)[1]
       end
     end
   end
