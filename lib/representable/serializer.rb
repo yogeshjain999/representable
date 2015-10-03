@@ -1,8 +1,10 @@
-require "representable/deserializer"
 
 module Representable
   # serialize -> serialize! -> marshal. # TODO: same flow in deserialize.
-  class Serializer < Deserializer
+  class Serializer
+    def initialize(binding)
+      @binding = binding
+    end
     def call(object, &block)
       return object if object.nil? # DISCUSS: move to Object#serialize ?
 
@@ -18,7 +20,7 @@ module Representable
 
     # Serialize one object by calling to_json etc. on it.
     def serialize!(object, user_options)
-      object = prepare(object)
+      object = Prepare.(result: object, binding: @binding)
 
       return object unless @binding.representable?
 
