@@ -89,12 +89,6 @@ module Representable
       end
     end
 
-    def set(value)
-      evaluate_option(:setter, value) do
-        exec_context.send(setter, value)
-      end
-    end
-
     # DISCUSS: do we really need that?
     #   1.38      0.104     0.021     0.000     0.083    40001   Representable::Binding#representer_module_for
     #   1.13      0.044     0.017     0.000     0.027    40001   Representable::Binding#representer_module_for (with memoize).

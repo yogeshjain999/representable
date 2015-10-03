@@ -117,7 +117,6 @@ module Representable
   Deserialize  = Function::Deserialize.new
   Prepare      = Function::Prepare.new
 
-  # FIXME: only add when :parse_filter!
   ParseFilter = ->(options) do
     options[:binding].evaluate_option(:parse_filter, options)
     options[:result]
@@ -125,7 +124,11 @@ module Representable
 
   # Setter = ->(value, doc, binding,*) do
   Setter = ->(options) do
-    options[:binding].set(options[:result])
+    binding = options[:binding]
+
+    binding.evaluate_option(:setter, options[:result]) do
+      binding.send(:exec_context).send(binding.setter, options[:result])
+    end
   end
 
 
@@ -140,9 +143,8 @@ module Representable
 
     # when stop, the element is skipped. (should that be Skip then?)
     def call(options)
-      arr = [] # FIXME : THIS happens in collection deserializer.
+      arr = []
       options[:fragment].each_with_index do |item_fragment, i|
-        # DISCUSS: we should replace fragment into the existing hash
         result = @item_pipeline.(options.merge(fragment: item_fragment, index: i))
 
         next if result == Pipeline::Stop
