@@ -91,7 +91,7 @@ module Representable
 
         # Implements the pipeline that happens after the fragment has been read from the incoming document.
         # TODO: allow debugger to hook in here.
-        populator.extend(Pipeline::Debug) #if name == "songs"
+        # populator.extend(Pipeline::Debug) #if name == "songs"
         populator.(options) # per-binding populator.
       end
     end
@@ -255,10 +255,6 @@ module Representable
 
       def populator
         @populator ||= Pipeline[*functions]
-      end
-
-      def deserializer
-        @deserializer ||= Deserializer.new(self)
       end
     end
     include Factories

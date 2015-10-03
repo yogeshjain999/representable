@@ -65,6 +65,7 @@ module Representable
       end
     end
 
+
     class Deserialize
       def call(options)
         options[:binding].evaluate_option(:deserialize, options) do
@@ -79,14 +80,33 @@ module Representable
         object.send(binding.deserialize_method, fragment, user_options)
       end
     end
+
+
+    class Prepare
+      def call(options)
+        binding, object = options[:binding], options[:result]
+        binding.evaluate_option(:prepare, object) do
+          prepare!(object, binding)
+        end
+      end
+
+      def prepare!(object, binding)
+        mod = binding.representer_module_for(object)
+
+        return object unless mod
+
+        prepare_for(mod, object)
+      end
+
+      def prepare_for(mod, object)
+        mod.prepare(object)
+      end
+    end
   end
 
   CreateObject = Function::CreateObject.new
-  Deserialize = Function::Deserialize.new
-
-  Prepare = ->(options) do
-    options[:binding].send(:deserializer).send(:prepare, options[:result])
-  end
+  Deserialize  = Function::Deserialize.new
+  Prepare      = Function::Prepare.new
 
   # FIXME: only add when :parse_filter!
   ParseFilter = ->(options) do
