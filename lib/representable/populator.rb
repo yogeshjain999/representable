@@ -119,7 +119,7 @@ module Representable
 
   # FIXME: only add when :parse_filter!
   ParseFilter = ->(options) do
-    options[:binding].parse_filter(options) # FIXME: nested pipeline!
+    options[:binding].evaluate_option(:parse_filter, options)
     options[:result]
   end
 

@@ -83,16 +83,6 @@ module Representable
       write(doc, fragment)
     end
 
-
-
-    def render_filter(value, doc)
-      evaluate_option(:render_filter, value, doc) { value }
-    end
-
-    def parse_filter(options)
-      evaluate_option(:parse_filter, options) { value }
-    end
-
     def get
       evaluate_option(:getter) do
         exec_context.send(getter)
@@ -148,6 +138,9 @@ module Representable
       end
 
       proc.(exec_context, *(args<<__options)) # from Uber::Options::Value.
+    end
+    def render_filter(value, doc)
+      evaluate_option(:render_filter, value, doc) { value }
     end
 
     def [](name)
