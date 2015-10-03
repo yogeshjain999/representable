@@ -2,6 +2,14 @@ module Representable
   # we don't use keyword args, because i didn't want to discriminate 1.9 users, yet.
   # this will soon get introduces and remove constructs like options[:binding][:default].
 
+  ReadFragment = ->(options) do
+    binding, object, doc, fragment = options[:binding], options[:result], options[:doc]
+
+    options[:fragment] = binding.read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
+    # will be :result.
+  end
+
+
   StopOnNotFound = -> (options) do
     return Pipeline::Stop if options[:fragment] == Binding::FragmentNotFound
     options[:fragment]
@@ -69,9 +77,9 @@ module Representable
     class Deserialize
       def call(options)
         options[:binding].evaluate_option(:deserialize, options) do
-        demarshal(options) # object.from_hash.
+          demarshal(options) # object.from_hash.
+        end
       end
-    end
 
     private
       def demarshal(options)

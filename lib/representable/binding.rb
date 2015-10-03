@@ -64,7 +64,10 @@ module Representable
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
       evaluate_option(:reader, doc) do
-        read_fragment(doc)
+        options = {doc: doc, binding: self}
+        options[:representable_options] = Options.new(self, user_options, represented, parent_decorator)
+
+        populator.(options)
       end
     end
 
@@ -82,19 +85,7 @@ module Representable
       write(doc, fragment)
     end
 
-    def read_fragment(doc)
-      fragment = read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
 
-      evaluate_option(:populator, fragment) do
-        options = {fragment: fragment, doc: doc, binding: self}
-        options[:representable_options] = Options.new(self, user_options, represented, parent_decorator)# if self[:pass_options] # FIXME, of course.
-
-        # Implements the pipeline that happens after the fragment has been read from the incoming document.
-        # TODO: allow debugger to hook in here.
-        # populator.extend(Pipeline::Debug) #if name == "songs"
-        populator.(options) # per-binding populator.
-      end
-    end
 
     def render_filter(value, doc)
       evaluate_option(:render_filter, value, doc) { value }
@@ -201,7 +192,7 @@ module Representable
   private
     # TODO: move to Pipeline::Builder
     def default_init_functions
-      functions = [has_default? ? Default : StopOnNotFound]
+      functions = [ReadFragment, has_default? ? Default : StopOnNotFound]
       functions << OverwriteOnNil # include StopOnNil if you don't want to erase things.
       functions
     end
