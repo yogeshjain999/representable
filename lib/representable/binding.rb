@@ -186,7 +186,7 @@ module Representable
         return [*default_render_init_functions, ResultToFragment, StopOnSkipable, StopOnNil, Collect[FragmentToResult, *default_render_fragment_functions], Write]
       end
 
-      [*default_render_init_functions, RenderFilter, StopOnSkipable, *default_render_fragment_functions, Write]
+      [*default_render_init_functions, RenderFilter, RenderDefault, StopOnSkipable, *default_render_fragment_functions, Write]
     end
 
     def default_render_fragment_functions
@@ -231,7 +231,7 @@ module Representable
     def default_render_init_functions
       # functions = [has_default? ? Default : StopOnNotFound]
       functions = [Getter]
-      functions << Writer if self[:write]
+      functions << Writer if self[:writer]
       functions
     end
 

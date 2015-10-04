@@ -8,9 +8,27 @@ class DefaultTest < MiniTest::Spec
     property :title, default: "Huber Breeze" #->(options) { options[:default] }
   end
 
-  it { Song.new.extend(representer).from_hash({}).must_equal Song.new(nil, "Huber Breeze") }
-  # default doesn't apply when empty string.
-  it { Song.new.extend(representer).from_hash({"title"=>""}).must_equal Song.new(nil, "") }
-  it { Song.new.extend(representer).from_hash({"title"=>nil}).must_equal Song.new(nil, nil) }
-  it { Song.new.extend(representer).from_hash({"title"=>"Blindfold"}).must_equal Song.new(nil, "Blindfold") }
+  describe "#from_hash" do
+    let (:song) { Song.new.extend(representer) }
+
+    it { song.from_hash({}).must_equal Song.new(nil, "Huber Breeze") }
+    # default doesn't apply when empty string.
+    it { song.from_hash({"title"=>""}).must_equal Song.new(nil, "") }
+    it { song.from_hash({"title"=>nil}).must_equal Song.new(nil, nil) }
+    it { song.from_hash({"title"=>"Blindfold"}).must_equal Song.new(nil, "Blindfold") }
+  end
+
+  describe "#to_json" do
+    it "uses :default when not available from object" do
+      Song.new.extend(representer).to_hash.must_equal({"title"=>"Huber Breeze"})
+    end
+
+    it "uses value from represented object when present" do
+      Song.new(nil, "After The War").extend(representer).to_hash.must_equal({"title"=>"After The War"})
+    end
+
+    it "uses value from represented object when emtpy string" do
+      Song.new(nil, "").extend(representer).to_hash.must_equal({"title"=>""})
+    end
+  end
 end

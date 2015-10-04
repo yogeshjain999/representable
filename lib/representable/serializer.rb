@@ -9,7 +9,18 @@ module Representable
   end
 
   Writer = ->(options) do
-    options[:binding].evaluate_option(:writer, options[:doc])
+    res = options[:binding].evaluate_option(:writer, options[:doc]) do
+      return
+    end
+    Pipeline::Stop
+  end
+
+  # TODO: evaluate this, if we need this.
+  RenderDefault = ->(options) do
+    binding = options[:binding]
+
+    return binding[:default] if binding.skipable_empty_value?(options[:result])
+    options[:result]
   end
 
   StopOnSkipable = ->(options) do
