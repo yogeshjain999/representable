@@ -22,9 +22,8 @@ module Representable
     options[:fragment]
   end
 
-  StopOnNil = -> (options) do # DISCUSS: Not tested/used, yet.
-    return Pipeline::Stop if options[:fragment].nil?
-    options[:fragment]
+  StopOnNil = -> (input, options) do # DISCUSS: Not tested/used, yet.
+    input.nil? ? Pipeline::Stop : input
   end
 
   OverwriteOnNil = -> (options) do

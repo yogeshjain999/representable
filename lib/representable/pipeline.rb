@@ -61,10 +61,10 @@ module Representable
     end
 
     # when stop, the element is skipped. (should that be Skip then?)
-    def call(options)
+    def call(input, options)
       arr = []
-      options[:fragment].each_with_index do |item_fragment, i|
-        result = @item_pipeline.(options.merge(fragment: item_fragment, index: i))
+      input.each_with_index do |item_fragment, i|
+        result = @item_pipeline.(item_fragment, options.merge(index: i)) # DISCUSS: NO :fragment set.
 
         next if result == Pipeline::Stop
         arr << result
