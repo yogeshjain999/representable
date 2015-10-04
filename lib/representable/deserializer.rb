@@ -7,7 +7,7 @@ module Representable
   #   => binding.evaluate_option(:reader, options) # always pass in options.
 
   ReadFragment = ->(options) do
-    binding, object, doc, fragment = options[:binding], options[:result], options[:doc]
+    binding, doc, fragment = options[:binding], options[:doc]
 
     options[:fragment] = binding.evaluate_option_with_deprecation(:reader, options, :doc, :user_options) do
       binding.read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
