@@ -252,15 +252,6 @@ module JsonTest
     end
 
     describe "#from_json" do
-      it "uses default when property nil in doc" do
-        album = @Album.new.from_json({}.to_json)
-        assert_equal "30 Years Live", album.name
-      end
-
-      it "uses value from doc when present" do
-        album = @Album.new.from_json({:name => "Live At The Wireless"}.to_json)
-        assert_equal "Live At The Wireless", album.name
-      end
 
       it "uses value from doc when empty string" do
         album = @Album.new.from_json({:name => ""}.to_json)

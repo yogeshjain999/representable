@@ -37,7 +37,8 @@ module Representable
   # FIXME: how to combine those two guys?
   Default = ->(options) do
     if options[:fragment] == Binding::FragmentNotFound
-      return options[:binding].has_default? ? options[:binding][:default] : Pipeline::Stop
+      return Pipeline::Stop unless options[:binding].has_default?
+      options[:fragment] = options[:binding][:default]
     end
     options[:fragment]
   end
@@ -52,10 +53,6 @@ module Representable
   Instance = ->(options) do
     options[:binding].evaluate_option_with_deprecation(:instance, options, :fragment, :index, :user_options)
   end
-
-  # Deserialize = ->(options) do
-  #   options[:binding].send(:deserializer).call(options[:fragment], options[:result]) # object.from_hash
-  # end
 
   module Function
     class CreateObject
