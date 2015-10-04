@@ -57,14 +57,15 @@ module Representable
     def compile_fragment(doc)
       options = {doc: doc, binding: self}
 
-      render_pipeline.extend(Pipeline::Debug).(options)
+      render_pipeline.extend(Pipeline::Debug).(nil, options)
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
       options = {doc: doc, binding: self}
 
-      parse_pipeline.(options)
+      puts " ................. #{name}"
+      parse_pipeline.extend(Pipeline::Debug).(options)
     end
 
 
@@ -119,7 +120,7 @@ module Representable
       if proc.send(:proc?) or proc.send(:method?)
         arity = proc.instance_variable_get(:@value).arity if proc.send(:proc?)
         arity = exec_context.method(proc.instance_variable_get(:@value)).arity if proc.send(:method?)
-        if arity  != 1
+        if arity  != 1 or name==:getter
           warn %{[Representable] Positional arguments for `:#{name}` are deprecated. Please use options or keyword arguments.
   #{name}: ->(options) { options[:#{positional_arguments.join(" | :")}] } or
   #{name}: ->(#{positional_arguments.join(":, ")}:) {  }
@@ -183,10 +184,10 @@ module Representable
       # return self[:parse_pipelinerender_pipeline].() if self[:render_pipeline] # untested. # FIXME.
 
       if array?
-        return [*default_render_init_functions, ResultToFragment, StopOnSkipable, StopOnNil, Collect[FragmentToResult, *default_render_fragment_functions], Write]
+        return [*default_render_init_functions, ResultToFragment, StopOnSkipable, StopOnNil, Collect[FragmentToResult, *default_render_fragment_functions], WriteFragment]
       end
 
-      [*default_render_init_functions, RenderFilter, RenderDefault, StopOnSkipable, *default_render_fragment_functions, Write]
+      [*default_render_init_functions, RenderFilter, RenderDefault, StopOnSkipable, *default_render_fragment_functions, WriteFragment]
     end
 
     def default_render_fragment_functions
@@ -199,6 +200,11 @@ module Representable
         functions << Serialize if representable?
       end
 
+      functions
+    end
+    def default_render_init_functions
+      functions = [Getter]
+      functions << Writer if self[:writer]
       functions
     end
 
@@ -228,11 +234,6 @@ module Representable
       funcs << Setter
     end
 
-    def default_render_init_functions
-      functions = [Getter]
-      functions << Writer if self[:writer]
-      functions
-    end
 
     def setup_user_options!(user_options)
       @user_options  = user_options

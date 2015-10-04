@@ -6,6 +6,8 @@ module Representable
   # binding.evaluate_option_with_deprecation(:reader, options, :doc)
   #   => binding.evaluate_option(:reader, options) # always pass in options.
 
+  AssignFragment = ->(input, options) { options[:fragment] = input }
+
   ReadFragment = ->(options) do
     binding, doc, fragment = options[:binding], options[:doc]
 
@@ -51,13 +53,15 @@ module Representable
   end
 
   Instance = ->(options) do
-    options[:binding].evaluate_option_with_deprecation(:instance, options, :fragment, :index, :user_options)
+    options[:result] =
+      options[:binding].evaluate_option_with_deprecation(:instance, options, :fragment, :index, :user_options)
   end
 
   module Function
     class CreateObject
       def call(options)
-        instance_for(options) || class_for(options)
+        options[:result] =
+          instance_for(options) || class_for(options)
       end
 
     private
@@ -94,11 +98,12 @@ module Representable
 
 
     class Prepare
-      def call(options)
-        binding, object = options[:binding], options[:result]
+      def call(input, options)
+        binding = options[:binding]
+        options[:result] = input
 
         binding.evaluate_option_with_deprecation(:prepare, options, :result, :user_options) do
-          prepare!(object, binding)
+          prepare!(input, binding)
         end
       end
 
@@ -122,7 +127,7 @@ module Representable
 
   ParseFilter = ->(options) do
     options[:binding][:parse_filter].(options)
-    options[:result]
+    # options[:result]
   end
 
   # Setter = ->(value, doc, binding,*) do
@@ -130,6 +135,7 @@ module Representable
     binding = options[:binding]
 
     binding.evaluate_option_with_deprecation(:setter, options, :result, :user_options) do
+      # raise options[:result].inspect
       binding.send(:exec_context).send(binding.setter, options[:result])
     end
   end

@@ -7,30 +7,29 @@ module Representable
 
     Stop = Class.new
 
-    # DISCUSS: should we use different pipelines for render_filter, etc.?
-    def call(options)
-      inject(options) do |memo, block|
-        res = evaluate(block, memo)
-        return Stop if res == Stop # Nil objects here?
-
-        memo[:result] = res
-        memo
-      end[:result] # FIXME: aaargh
+    # options is mutuable.
+    def call(input, options)
+      inject(input) do |memo, block|
+        evaluate(block, memo, options).tap do |res|
+          return Stop if res == Stop
+        end
+      end
     end
 
   private
-    def evaluate(block, memo)
-      block.call(memo)
+    def evaluate(block, input, options)
+      block.call(input, options)
     end
 
 
     module Debug
-      def call(options)
+      def call(input, options)
         puts "Pipeline#call: #{inspect}"
+        puts "               input: #{input.inspect}"
         super
       end
 
-      def evaluate(block, memo)
+      def evaluate(block, memo, options)
         puts "  Pipeline   :   -> #{_inspect_function(block)} "
         super.tap do |res|
           puts "  Pipeline   :     result: #{res.inspect}"
