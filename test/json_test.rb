@@ -242,41 +242,6 @@ module JsonTest
       end
     end
 
-    describe ":default => :value" do
-      before do
-        @Album = Class.new do
-        include Representable::JSON
-        property :name, :default => "30 Years Live"
-        attr_accessor :name
-      end
-    end
-
-    describe "#from_json" do
-
-      it "uses value from doc when empty string" do
-        album = @Album.new.from_json({:name => ""}.to_json)
-        assert_equal "", album.name
-      end
-    end
-
-    describe "#to_json" do
-      it "uses default when not available in object" do
-        assert_json "{\"name\":\"30 Years Live\"}", @Album.new.to_json
-      end
-
-      it "uses value from represented object when present" do
-        album = @Album.new
-        album.name = "Live At The Wireless"
-        assert_json "{\"name\":\"Live At The Wireless\"}", album.to_json
-      end
-
-      it "uses value from represented object when emtpy string" do
-        album = @Album.new
-        album.name = ""
-        assert_json "{\"name\":\"\"}", album.to_json
-      end
-    end
-  end
 end
 
 
@@ -293,7 +258,7 @@ end
         assert_equal ["Out in the cold", "Microphone"], cd.songs
       end
 
-      it "#to_json serializes correctly" do
+      it "zzz#to_json serializes correctly" do
         cd = CD.new
         cd.songs = ["Out in the cold", "Microphone"]
 
