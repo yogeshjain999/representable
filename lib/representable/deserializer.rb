@@ -105,7 +105,7 @@ module Representable
       def prepare!(object, binding)
         mod = binding.representer_module_for(object)
 
-        return object unless mod
+        return object unless mod and object # object might be nil.
 
         prepare_for(mod, object)
       end

@@ -367,34 +367,6 @@ class RepresentableTest < MiniTest::Spec
       assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.to_hash)
     end
 
-    describe "when :render_nil is true" do
-      it "includes nil attribute" do
-        mod = Module.new do
-          include Representable::JSON
-          property :name
-          property :groupies, :render_nil => true
-        end
-
-        @band.extend(mod) # FIXME: use clean object.
-        @band.groupies = nil
-        hash = @band.to_hash
-        assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
-      end
-
-      it "includes nil attribute without extending" do
-        mod = Module.new do
-          include Representable::JSON
-          property :name
-          property :groupies, :render_nil => true, :extend => BandRepresentation
-        end
-
-        @band.extend(mod) # FIXME: use clean object.
-        @band.groupies = nil
-        hash = @band.to_hash
-        assert_equal({"name"=>"No One's Choice", "groupies" => nil}, hash)
-      end
-    end
-
     it "does not propagate private options to nested objects" do
       cover_rpr = Module.new do
         include Representable::Hash

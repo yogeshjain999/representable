@@ -180,7 +180,7 @@ module Representable
     FragmentToResult = ->(options) { options[:result] = options[:fragment] } # FIXME, OF COURSE!!
 
     def render_functions
-      # return self[:parse_pipeline].() if self[:parse_pipeline] # untested. # FIXME.
+      # return self[:parse_pipelinerender_pipeline].() if self[:render_pipeline] # untested. # FIXME.
 
       if array?
         return [*default_render_init_functions, ResultToFragment, StopOnSkipable, StopOnNil, Collect[FragmentToResult, *default_render_fragment_functions], Write]
@@ -229,7 +229,6 @@ module Representable
     end
 
     def default_render_init_functions
-      # functions = [has_default? ? Default : StopOnNotFound]
       functions = [Getter]
       functions << Writer if self[:writer]
       functions
