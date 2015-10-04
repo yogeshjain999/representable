@@ -1,8 +1,18 @@
 
 module Representable
+  Getter = ->(options) do
+    binding = options[:binding]
+
+    binding.evaluate_option(:getter) do
+      binding.send(:exec_context).send(binding.getter)
+    end
+  end
+
   Writer = ->(options) do
     options[:binding].evaluate_option(:writer, options[:doc]) do
-      value = options[:binding].render_filter(options[:binding].get, options[:doc])
+      value = options[:result]
+
+      value = options[:binding].render_filter(value, options[:doc])
       options[:binding].write_fragment(options[:doc], value)
       value
     end

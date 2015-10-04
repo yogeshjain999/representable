@@ -81,10 +81,8 @@ module Representable
       write(doc, fragment)
     end
 
-    def get
-      evaluate_option(:getter) do
-        exec_context.send(getter)
-      end
+    def get # DISCUSS: evluate if we really need this.
+      Getter.(binding: self)
     end
 
     # DISCUSS: do we really need that?
@@ -251,7 +249,7 @@ module Representable
       end
 
       def render_pipeline
-        @render_pipeline ||= Pipeline[Writer]
+        @render_pipeline ||= Pipeline[Getter, Writer]
       end
     end
     include Factories
