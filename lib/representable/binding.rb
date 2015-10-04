@@ -105,36 +105,50 @@ module Representable
         return
       end
 
-      options = args[0]
-
       # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
       __options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
-
-
-      # FIXME: this is to deprecate the old shit positional args.
-      if name==:instance || name==:class
-        return proc.evaluate(exec_context, options[:fragment], options[:index], __options) if options[:index]
-        return proc.evaluate(exec_context, options[:fragment], __options) # FIXME: no pass_options fixed.
-      end
-
-      if name==:parse_filter #or name==:render_filter
-        # parse and render filter are no Uber:::Value because they don't need to.
-        return proc.(options)
-      end
-
-      if name== :skip_parse
-        # return proc.evaluate(exec_context, options[:fragment], options[:index], __options) if options[:index]
-        return proc.evaluate(exec_context, options[:fragment], __options)
-      end
-
-      if name== :deserialize
-        return proc.(exec_context, options[:result], options[:fragment], __options)
-      end
 
       proc.(exec_context, *(args<<__options)) # from Uber::Options::Value.
     end
     def render_filter(value, doc)
       evaluate_option(:render_filter, value, doc) { value }
+    end
+
+    def evaluate_option_with_deprecation(name, options, *positional_arguments)
+      unless proc = @definition[name]
+        return yield if block_given?
+        return
+      end
+
+      __options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
+      options[:user_options] = __options
+
+
+      # FIXME: make sure to only do that with Proc.
+      if proc.send(:proc?) or proc.send(:method?)
+        arity = proc.instance_variable_get(:@value).arity if proc.send(:proc?)
+        arity = exec_context.method(proc.instance_variable_get(:@value)).arity if proc.send(:method?)
+        if arity  != 1
+          warn %{[Representable] Positional arguments for `:#{name}` are deprecated. Please use options or keyword arguments.
+    #{name}: ->(options) { options[:#{positional_arguments.join(" | :")}] } or
+    #{name}: ->(#{positional_arguments.join(":, ")}:) {  }
+  }
+
+          # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
+          # TODO: deprecate :pass_options
+
+          deprecated_args = []
+          positional_arguments.each do |arg|
+            next if arg == :index && options[:index].nil?
+            deprecated_args << __options  and next if arg == :user_options# either hash or Options object.
+            deprecated_args << options[arg]
+          end
+
+          return proc.(exec_context, *deprecated_args)
+        end
+      end
+
+      proc.(exec_context, options)
     end
 
     def [](name)
