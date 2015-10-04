@@ -9,9 +9,7 @@ module Representable
   end
 
   Writer = ->(options) do
-    options[:binding].evaluate_option(:writer, options[:doc]) do
-      options[:result]
-    end
+    options[:binding].evaluate_option(:writer, options[:doc])
   end
 
   StopOnSkipable = ->(options) do

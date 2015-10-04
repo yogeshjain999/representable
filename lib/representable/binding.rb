@@ -57,7 +57,7 @@ module Representable
     def compile_fragment(doc)
       options = {doc: doc, binding: self}
 
-      render_pipeline.(options)
+      render_pipeline.extend(Pipeline::Debug).(options)
     end
 
     # Parse value from doc and update the model property.
@@ -176,14 +176,22 @@ module Representable
       [*default_init_functions, *default_fragment_functions, *default_post_functions]
     end
 
-    def render_functions
-      # return self[:parse_pipeline].() if self[:parse_pipeline] # untested.
+    ResultToFragment = ->(options) { options[:fragment] = options[:result] } # FIXME, OF COURSE!!
+    FragmentToResult = ->(options) { options[:result] = options[:fragment] } # FIXME, OF COURSE!!
 
-      [Getter, Writer, RenderFilter, StopOnSkipable, *default_render_fragment_functions, Write]
+    def render_functions
+      # return self[:parse_pipeline].() if self[:parse_pipeline] # untested. # FIXME.
+
+      if array?
+        return [*default_render_init_functions, ResultToFragment, StopOnSkipable, StopOnNil, Collect[FragmentToResult, *default_render_fragment_functions], Write]
+      end
+
+      [*default_render_init_functions, RenderFilter, StopOnSkipable, *default_render_fragment_functions, Write]
     end
 
     def default_render_fragment_functions
       functions = []
+
       functions << SkipRender if self[:skip_render]
 
       if typed?
@@ -218,6 +226,13 @@ module Representable
       funcs = []
       funcs << ParseFilter if self[:parse_filter].any?
       funcs << Setter
+    end
+
+    def default_render_init_functions
+      # functions = [has_default? ? Default : StopOnNotFound]
+      functions = [Getter]
+      functions << Writer if self[:write]
+      functions
     end
 
     def setup_user_options!(user_options)

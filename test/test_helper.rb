@@ -1,4 +1,8 @@
 require 'representable'
+
+require "json"
+require "psych"
+
 require 'representable/json'
 require 'representable/xml'
 require 'representable/yaml'

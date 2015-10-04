@@ -5,7 +5,17 @@ module Representable
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
       # FIXME: not finished, yet!
-      return Pipeline[Serialize, Write].({doc: doc, result: hash, user_options: options, binding: bin})
+      if bin.typed?
+        return Collect::Hash[ReturnFragment, Prepare, Serialize, Write].
+          ({fragment: hash, doc: doc, result: hash, user_options: options, binding: bin})
+          doc
+      else
+        # FIXME: we have to allow more here, filtering etc and then return a new hash from doc[:_self]
+        Pipeline[Write].({doc: doc, result: hash, user_options: options, binding: bin}).dup
+      end
+
+
+
     end
 
     def update_properties_from(doc, options, format)

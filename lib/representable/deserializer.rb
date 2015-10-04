@@ -133,37 +133,4 @@ module Representable
       binding.send(:exec_context).send(binding.setter, options[:result])
     end
   end
-
-
-  # Collect applies a pipeline to each element of options[:fragment].
-  class Collect
-    def self.[](*functions)
-      new(Pipeline[*functions])
-    end
-
-    def initialize(functions)
-      @item_pipeline = functions#.extend(Pipeline::Debug)
-    end
-
-    # when stop, the element is skipped. (should that be Skip then?)
-    def call(options)
-      arr = []
-      options[:fragment].each_with_index do |item_fragment, i|
-        result = @item_pipeline.(options.merge(fragment: item_fragment, index: i))
-
-        next if result == Pipeline::Stop
-        arr << result
-      end
-      arr
-    end
-
-
-    class Hash < self
-      def call(options)
-        {}.tap do |hsh|
-          options[:fragment].each { |key, item_fragment| hsh[key] = @item_pipeline.(options.merge(fragment: item_fragment)) }
-        end
-      end
-    end
-  end
 end

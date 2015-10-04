@@ -23,7 +23,13 @@ module Representable::Hash
 
       # FIXME: not finished, yet!
       # return Collect[Serialize, Write].({doc: doc, result: hash, user_options: options, binding: bin})
-      return Collect[ReturnFragment, Serialize, Write].({doc: doc, fragment: represented, user_options: options, binding: bin})
+      if bin.typed?
+        Collect[ReturnFragment, StopOnSkipable, Prepare, Serialize, Write].
+          ({doc: doc, fragment: represented, user_options: options, binding: bin})
+      else
+        Collect[ReturnFragment, StopOnSkipable, Write].
+          ({doc: doc, fragment: represented, user_options: options, binding: bin})
+      end
     end
 
     def update_properties_from(doc, options, format)
