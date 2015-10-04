@@ -120,23 +120,26 @@ module Representable
         return
       end
 
-      __options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
-      options[:user_options] = __options
+
+      __options = if self[:pass_options]
+        warn %{[Representable] The :pass_options option is deprecated. Please access environment objects via options[:binding].
+  Learn more here: http://trailblazerb.org/gems/representable/upgrading-guide.html#pass-options}
+        Options.new(self, user_options, represented, parent_decorator)
+      else
+        user_options
+      end
+      options[:user_options] = __options # TODO: always make this user_options in Representable 3.0.
 
 
-      # FIXME: make sure to only do that with Proc.
       if proc.send(:proc?) or proc.send(:method?)
         arity = proc.instance_variable_get(:@value).arity if proc.send(:proc?)
         arity = exec_context.method(proc.instance_variable_get(:@value)).arity if proc.send(:method?)
         if arity  != 1
           warn %{[Representable] Positional arguments for `:#{name}` are deprecated. Please use options or keyword arguments.
-    #{name}: ->(options) { options[:#{positional_arguments.join(" | :")}] } or
-    #{name}: ->(#{positional_arguments.join(":, ")}:) {  }
+  #{name}: ->(options) { options[:#{positional_arguments.join(" | :")}] } or
+  #{name}: ->(#{positional_arguments.join(":, ")}:) {  }
+  Learn more here: http://trailblazerb.org/gems/representable/upgrading-guide.html#positional-arguments
   }
-
-          # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
-          # TODO: deprecate :pass_options
-
           deprecated_args = []
           positional_arguments.each do |arg|
             next if arg == :index && options[:index].nil?
