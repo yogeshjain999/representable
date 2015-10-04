@@ -55,7 +55,7 @@ class LonelyRepresenterTest < MiniTest::Spec
         assert_json json, songs.extend(representer).to_json
       end
 
-      it "renders array with decorator xxx" do
+      it "renders array with decorator" do
         assert_json json, decorator.new(songs).to_json
       end
 
