@@ -67,19 +67,6 @@ module Representable
       parse_pipeline.(options)
     end
 
-    def write_fragment(doc, value)
-      value = default_for(value)
-
-      return if skipable_empty_value?(value)
-
-      render_fragment(value, doc)
-    end
-
-    def render_fragment(value, doc)
-      fragment = serialize(value) { return } # render fragments of hash, xml, yaml.
-
-      write(doc, fragment)
-    end
 
     def get # DISCUSS: evluate if we really need this.
       Getter.(binding: self)
@@ -189,6 +176,24 @@ module Representable
       [*default_init_functions, *default_fragment_functions, *default_post_functions]
     end
 
+    def render_functions
+      # return self[:parse_pipeline].() if self[:parse_pipeline] # untested.
+
+      [Getter, Writer, RenderFilter, StopOnSkipable, *default_render_fragment_functions, Write]
+    end
+
+    def default_render_fragment_functions
+      functions = []
+      functions << SkipRender if self[:skip_render]
+
+      if typed?
+        functions << Prepare
+        functions << Serialize if representable?
+      end
+
+      functions
+    end
+
   private
     # TODO: move to Pipeline::Builder
     def default_init_functions
@@ -231,25 +236,13 @@ module Representable
 
     attr_reader :exec_context, :parent_decorator
 
-    def serialize(object, &block)
-      serializer.call(object, &block)
-    end
-
     module Factories
-      def serializer_class
-        Serializer
-      end
-
-      def serializer
-        @serializer ||= serializer_class.new(self)
-      end
-
       def parse_pipeline
         @parse_pipeline ||= Pipeline[*parse_functions]
       end
 
       def render_pipeline
-        @render_pipeline ||= Pipeline[Getter, Writer]
+        @render_pipeline ||= Pipeline[*render_functions]
       end
     end
     include Factories
@@ -262,23 +255,10 @@ module Representable
 
     # generics for collection bindings.
     module Collection
-    private
-      def serializer_class
-        Serializer::Collection
-      end
-
       def skipable_empty_value?(value)
         # TODO: this can be optimized, again.
         return true if value.nil? and not self[:render_nil] # FIXME: test this without the "and"
         return true if self[:render_empty] == false and value and value.size == 0  # TODO: change in 2.0, don't render emtpy.
-      end
-    end
-
-    # and the same for hashes.
-    module Hash
-    private
-      def serializer_class
-        Serializer::Hash
       end
     end
   end

@@ -20,7 +20,10 @@ module Representable::Hash
 
     def create_representation_with(doc, options, format)
       bin   = representable_mapper(format, options).bindings(represented, options).first
-      bin.render_fragment(represented, doc)
+
+      # FIXME: not finished, yet!
+      # return Collect[Serialize, Write].({doc: doc, result: hash, user_options: options, binding: bin})
+      return Collect[ReturnFragment, Serialize, Write].({doc: doc, fragment: represented, user_options: options, binding: bin})
     end
 
     def update_properties_from(doc, options, format)

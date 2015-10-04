@@ -34,7 +34,6 @@ module Representable
 
 
       class Hash < self
-        include Representable::Binding::Hash
       end
     end
   end

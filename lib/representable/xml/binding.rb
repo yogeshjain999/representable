@@ -102,7 +102,6 @@ module Representable
 
 
       class Hash < Collection
-        include Representable::Binding::Hash
 
         def serialize_for(value, parent)
           set_for(parent, value.collect do |k, v|

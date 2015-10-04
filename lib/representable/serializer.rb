@@ -10,13 +10,37 @@ module Representable
 
   Writer = ->(options) do
     options[:binding].evaluate_option(:writer, options[:doc]) do
-      value = options[:result]
-
-      value = options[:binding].render_filter(value, options[:doc])
-      options[:binding].write_fragment(options[:doc], value)
-      value
+      options[:result]
     end
   end
+
+  StopOnSkipable = ->(options) do
+    return Pipeline::Stop if options[:binding].send(:skipable_empty_value?, options[:result])
+    options[:result]
+  end
+
+  RenderFilter = ->(options) do
+    options[:binding].render_filter(options[:result], options[:doc]) # FIXME.
+  end
+
+  SkipRender = ->(options) do
+    return Pipeline::Stop if options[:binding].evaluate_option_with_deprecation(:skip_render, options, :result, :user_options)
+    options[:result]
+  end
+
+  # FIXME: Collect always assigns :fragment as input. how are we gonna handle that?
+  Serialize = ->(options) do
+    object, binding = options[:result], options[:binding]
+    return object if object.nil?
+
+    binding.evaluate_option(:serialize, object) do
+      object.send(binding.serialize_method, binding.user_options) # FIXME: what options here?
+    end
+  end
+
+
+  Write = ->(options) { options[:binding].write(options[:doc], options[:result]) }
+
 
   # serialize -> serialize! -> marshal. # TODO: same flow in deserialize.
   class Serializer
@@ -24,34 +48,12 @@ module Representable
       @binding = binding
     end
     def call(object, &block)
-      return object if object.nil? # DISCUSS: move to Object#serialize ?
+       # DISCUSS: move to Object#serialize ?
 
       serialize(object, @binding.user_options, &block)
     end
 
   private
-    def serialize(object, user_options, &block)
-      return yield if @binding.evaluate_option(:skip_render, object) # this will jump out of #render_fragment. introduce Skip object here.
-
-      serialize!(object, user_options)
-    end
-
-    # Serialize one object by calling to_json etc. on it.
-    def serialize!(object, user_options)
-      object = Prepare.(result: object, binding: @binding)
-
-      return object unless @binding.representable?
-
-      @binding.evaluate_option(:serialize, object) do
-        marshal(object, user_options)
-      end
-    end
-
-    #   0.33      0.004     0.004     0.000     0.000    20001   Hash#merge!
-    #   0.00      0.000     0.000     0.000     0.000        1   Hash#merge!
-    def marshal(object, user_options)
-      object.send(@binding.serialize_method, user_options)
-    end
 
 
     class Collection < self

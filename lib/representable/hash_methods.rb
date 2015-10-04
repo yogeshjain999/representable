@@ -4,7 +4,8 @@ module Representable
       hash  = filter_keys_for!(represented, options) # FIXME: this modifies options and replicates logic from Representable.
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
-      bin.render_fragment(hash, doc) # TODO: Use something along Populator, which does
+      # FIXME: not finished, yet!
+      return Pipeline[Serialize, Write].({doc: doc, result: hash, user_options: options, binding: bin})
     end
 
     def update_properties_from(doc, options, format)
