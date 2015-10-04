@@ -57,10 +57,7 @@ module Representable
     def compile_fragment(doc)
       options = {doc: doc, binding: self}
 
-      evaluate_option(:writer, doc) do
-        value = render_filter(get, doc)
-        write_fragment(doc, value)
-      end
+      render_pipeline.(options)
     end
 
     # Parse value from doc and update the model property.
@@ -184,7 +181,7 @@ module Representable
 
     attr_accessor :cached_representer
 
-    def functions
+    def parse_functions
       return self[:parse_pipeline].() if self[:parse_pipeline] # untested.
 
       if array?
@@ -250,7 +247,11 @@ module Representable
       end
 
       def parse_pipeline
-        @parse_pipeline ||= Pipeline[*functions]
+        @parse_pipeline ||= Pipeline[*parse_functions]
+      end
+
+      def render_pipeline
+        @render_pipeline ||= Pipeline[Writer]
       end
     end
     include Factories

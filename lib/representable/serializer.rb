@@ -1,5 +1,13 @@
 
 module Representable
+  Writer = ->(options) do
+    options[:binding].evaluate_option(:writer, options[:doc]) do
+      value = options[:binding].render_filter(options[:binding].get, options[:doc])
+      options[:binding].write_fragment(options[:doc], value)
+      value
+    end
+  end
+
   # serialize -> serialize! -> marshal. # TODO: same flow in deserialize.
   class Serializer
     def initialize(binding)
