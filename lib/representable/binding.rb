@@ -55,6 +55,8 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
+      options = {doc: doc, binding: self}
+
       evaluate_option(:writer, doc) do
         value = render_filter(get, doc)
         write_fragment(doc, value)
@@ -64,7 +66,6 @@ module Representable
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
       options = {doc: doc, binding: self}
-      options[:representable_options] = Options.new(self, user_options, represented, parent_decorator)
 
       parse_pipeline.(options)
     end
@@ -109,6 +110,8 @@ module Representable
       __options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
 
       proc.(exec_context, *(args<<__options)) # from Uber::Options::Value.
+
+      # raise
     end
     def render_filter(value, doc)
       evaluate_option(:render_filter, value, doc) { value }
