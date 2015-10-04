@@ -132,13 +132,15 @@ module Representable
   end
 
 
+  # Collect applies a pipeline to each element of options[:fragment].
+  # DISCUSS: this could be unified with Pipeline at some point, but right now, it overcomplicates it.
   class Collect
     def self.[](*functions)
-      new(functions)
+      new(Pipeline[*functions])
     end
 
     def initialize(functions)
-      @item_pipeline = Pipeline[*functions]#.extend(Pipeline::Debug)
+      @item_pipeline = functions#.extend(Pipeline::Debug)
     end
 
     # when stop, the element is skipped. (should that be Skip then?)
