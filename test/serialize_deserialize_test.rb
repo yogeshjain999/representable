@@ -7,7 +7,7 @@ class SerializeDeserializeTest < BaseTest
     representer! do
       property :song,
         :instance => lambda { |fragment, *| fragment.to_s.upcase },
-        :prepare  => lambda { |fragment, *| fragment }, # TODO: allow false.
+        :prepare  => lambda { |fragment, *| fragment },
         :deserialize => lambda { |object, fragment, args|
           "#{object} #{fragment} #{args.inspect}"
         }
@@ -20,7 +20,7 @@ class SerializeDeserializeTest < BaseTest
     representer! do
       property :song,
         :representable => true,
-        :prepare  => lambda { |fragment, *| fragment }, # TODO: allow false.
+        :prepare  => lambda { |fragment, *| fragment },
         :serialize => lambda { |object, args|
           "#{object} #{args.inspect}"
         }

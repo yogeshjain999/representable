@@ -42,7 +42,7 @@ module Representable
 
     return if input.nil?
 
-    binding.evaluate_option(:serialize, input) do
+    binding.evaluate_option_with_deprecation(:serialize, input, options, :input, :user_options) do
       input.send(binding.serialize_method, binding.user_options) # FIXME: what options here?
     end
   end

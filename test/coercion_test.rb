@@ -40,7 +40,7 @@ class VirtusCoercionTest < MiniTest::Spec
       include Representable::Coercion
 
       property :length, :type => Float,
-      :parse_filter  => lambda { |options| "#{options[:result]}.1" }, # happens BEFORE coercer.
+      :parse_filter  => lambda { |input, options| "#{input}.1" }, # happens BEFORE coercer.
       :render_filter => lambda { |fragment,*| "#{fragment}.1" }
     end
 

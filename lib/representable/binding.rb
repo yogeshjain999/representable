@@ -193,8 +193,8 @@ module Representable
 
       if typed?
         functions << Prepare
-        functions << Serialize if representable?
       end
+      functions << Serialize if representable?
 
       functions
     end

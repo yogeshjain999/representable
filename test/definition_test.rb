@@ -21,7 +21,7 @@ class DefinitionTest < MiniTest::Spec
       #
       definition[:awesome].must_equal true
       definition[:parse_filter].must_equal Representable::Pipeline[1]
-      definition[:render_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[]
+      definition[:render_filter].must_equal Representable::Pipeline[]
     end
   end
 
@@ -62,7 +62,7 @@ class DefinitionTest < MiniTest::Spec
 
       definition[:awesome].must_equal true
       definition[:something].must_equal true
-      definition[:render_filter].instance_variable_get(:@value).must_equal Representable::Pipeline[1]
+      definition[:render_filter].must_equal Representable::Pipeline[1]
       definition[:parse_filter].must_equal Representable::Pipeline[]
     end
 
@@ -194,8 +194,8 @@ class DefinitionTest < MiniTest::Spec
           subject.instance_variable_get(:@options)[:render_filter].must_equal [1]
           cloned.instance_variable_get(:@options)[:render_filter].must_equal [1,2]
 
-          subject[:render_filter].instance_variable_get(:@value).must_equal [1]
-          cloned[:render_filter].instance_variable_get(:@value).must_equal [1,2]
+          subject[:render_filter].must_equal [1]
+          cloned[:render_filter].must_equal [1,2]
         end
       end
     end
