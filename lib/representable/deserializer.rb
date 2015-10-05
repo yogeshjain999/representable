@@ -31,12 +31,11 @@ module Representable
 
 
   # FIXME: how to combine those two guys?
-  Default = ->(options) do
-    if options[:fragment] == Binding::FragmentNotFound
-      return Pipeline::Stop unless options[:binding].has_default?
-      options[:fragment] = options[:binding][:default]
+  Default = ->(input, options) do
+    if input == Binding::FragmentNotFound
+      return options[:binding].has_default? ?  options[:binding][:default] : Pipeline::Stop
     end
-    options[:fragment]
+    input
   end
 
   # ReturnFragment = ->(options) { options[:fragment] }
