@@ -21,7 +21,6 @@ module Representable::Hash
     def create_representation_with(doc, options, format)
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
-      # FIXME: not finished, yet!
       Collect[*bin.default_render_fragment_functions].
         (represented, {doc: doc, fragment: represented, user_options: options, binding: bin})
     end

@@ -10,19 +10,15 @@ module Representable
           (hash, {doc: doc, user_options: options, binding: bin})
           doc
       else
-        # FIXME: we have to allow more here, filtering etc and then return a new hash from doc[:_self]
+        # FIXME: we have to return a new hash from doc[:_self]
         Pipeline[*bin.default_render_fragment_functions].(hash, {doc: doc, user_options: options, binding: bin}).dup
       end
-
-
-
     end
 
     def update_properties_from(doc, options, format)
       hash  = filter_keys_for!(doc, options)
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
-      # TODO: instantiate pipeline via binding so we have central place to inject debugging.
       value = Collect::Hash[*bin.default_parse_fragment_functions].(hash, fragment: hash, document: doc, binding: bin)
 
       represented.replace(value)
