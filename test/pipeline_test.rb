@@ -163,11 +163,9 @@ class PipelineTest < MiniTest::Spec
     doc.must_equal({"ratings"=>[1,2,3]})
   end
 
-
-
 ######### collection :songs, extend: SongRepresenter
   let (:artists) {
-    dfn = R::Definition.new(:artists, collection: true, extend: ArtistRepresenter)
+    dfn = R::Definition.new(:artists, collection: true, extend: ArtistRepresenter, class: Artist)
 
     R::Hash::Binding::Collection.new(dfn, "parent decorator").tap do |bin|
       bin.update!(Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")]), {}) # FIXME: how do i do that again in representable?
@@ -189,6 +187,27 @@ class PipelineTest < MiniTest::Spec
 
     doc.must_equal({"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]})
   end
+
+
+  it "parse typed collection" do
+    doc = {"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]}
+    P[
+      R::ReadFragment,
+      R::StopOnNotFound,
+      R::OverwriteOnNil,
+      # R::SkipParse,
+      R::Collect[
+        R::SkipRender,
+        R::CreateObject,
+        R::Prepare,
+        R::Deserialize,
+      ],
+      R::Setter,
+    ].extend(P::Debug).(doc, {binding: artists, doc: doc}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
+
+    artists.represented.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
+  end
+
   # describe "passes options to all functions" do
   #   PrintOptions = ->(options) { options.to_s }
   #   PassOptions = ->(options) { options.to_a }
