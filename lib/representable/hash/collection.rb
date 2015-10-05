@@ -22,14 +22,8 @@ module Representable::Hash
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
       # FIXME: not finished, yet!
-      # return Collect[Serialize, Write].({doc: doc, result: hash, user_options: options, binding: bin})
-      if bin.typed?
-        Collect[StopOnSkipable, Prepare, Serialize, WriteFragment].
-          (represented, {doc: doc, fragment: represented, user_options: options, binding: bin})
-      else
-        Collect[StopOnSkipable, WriteFragment].
-          (represented, {doc: doc, fragment: represented, user_options: options, binding: bin})
-      end
+      Collect[*bin.default_render_fragment_functions].
+        (represented, {doc: doc, fragment: represented, user_options: options, binding: bin})
     end
 
     def update_properties_from(doc, options, format)
