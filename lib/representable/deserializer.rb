@@ -41,50 +41,51 @@ module Representable
 
   # ReturnFragment = ->(options) { options[:fragment] }
 
-  SkipParse = ->(options) do
-    return Pipeline::Stop if options[:binding].evaluate_option_with_deprecation(:skip_parse, input, options, :fragment, :user_options)
-    options[:fragment]
+  SkipParse = ->(input, options) do
+    options[:binding].evaluate_option_with_deprecation(:skip_parse, input, options, :input, :user_options) ? Pipeline::Stop : input
   end
 
-  Instance = ->(options) do
-    options[:binding].evaluate_option_with_deprecation(:instance, input, options, :fragment, :index, :user_options)
+  Instance = ->(input, options) do
+    options[:binding].evaluate_option_with_deprecation(:instance, input, options, :input, :index, :user_options)
   end
 
   module Function
     class CreateObject
-      def call(options)
-        instance_for(options) || class_for(options)
+      def call(input, options)
+        options[:fragment] = input # FIXME: separate function?
+
+        instance_for(input, options) || class_for(input, options)
       end
 
     private
-      def class_for(options)
-        item_class = class_from(options) or raise DeserializeError.new(":class did not return class constant for `#{options[:binding].name}`.")
+      def class_for(input, options)
+        item_class = class_from(input, options) or raise DeserializeError.new(":class did not return class constant for `#{options[:binding].name}`.")
         item_class.new
       end
 
-      def class_from(options)
-        options[:binding].evaluate_option_with_deprecation(:class, input, options, :fragment, :index, :user_options) # FIXME: no additional args passed here, yet.
+      def class_from(input, options)
+        options[:binding].evaluate_option_with_deprecation(:class, input, options, :input, :index, :user_options) # FIXME: no additional args passed here, yet.
       end
 
-      def instance_for(options)
-        Instance.(options)
+      def instance_for(input, options)
+        Instance.(input, options)
       end
     end
 
 
     class Deserialize
-      def call(options)
+      def call(input, options)
         options[:binding].evaluate_option_with_deprecation(:deserialize, input, options, :input, :fragment, :user_options) do
-          demarshal(options) # object.from_hash.
+          demarshal(input, options) # object.from_hash.
         end
       end
 
     private
-      def demarshal(options)
+      def demarshal(input, options)
         binding = options[:binding]
 
-        object, fragment, user_options = options[:result], options[:fragment], binding.user_options
-        object.send(binding.deserialize_method, fragment, user_options)
+        fragment, user_options = options[:fragment], binding.user_options
+        input.send(binding.deserialize_method, fragment, user_options)
       end
     end
 

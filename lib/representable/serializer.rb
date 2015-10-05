@@ -35,7 +35,7 @@ module Representable
   end
 
   SkipRender = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:skip_render, input, options, :result, :user_options) ? Pipeline::Stop : input
+    options[:binding].evaluate_option_with_deprecation(:skip_render, input, options, :input, :user_options) ? Pipeline::Stop : input
   end
 
   # FIXME: Collect always assigns :fragment as input. how are we gonna handle that?

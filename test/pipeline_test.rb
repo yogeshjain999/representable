@@ -101,7 +101,7 @@ class PipelineTest < MiniTest::Spec
   end
 
   let (:artist) {
-    dfn = R::Definition.new(:artist, extend: ArtistRepresenter)
+    dfn = R::Definition.new(:artist, extend: ArtistRepresenter, class: Artist)
 
     R::Hash::Binding.new(dfn, "parent decorator").tap do |bin|
       bin.update!(Song.new("Lime Green", Artist.new("Diesel Boy")), {}) # FIXME: how do i do that again in representable?
@@ -122,6 +122,20 @@ class PipelineTest < MiniTest::Spec
     ].extend(P::Debug).(nil, {binding: artist, doc: doc}).must_equal({"name" => "Diesel Boy"})
 
     doc.must_equal({"artist"=>{"name"=>"Diesel Boy"}})
+  end
+
+  it "parsing typed property" do
+    P[
+      R::ReadFragment,
+      R::StopOnNotFound,
+      R::OverwriteOnNil,
+      # R::SkipParse,
+      R::CreateObject,
+      R::Prepare,
+      R::Deserialize,
+      R::Setter,
+    ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {binding: artist, doc: doc}).must_equal model=Artist.new("Doobie Brothers")
+    artist.represented.artist.must_equal model
   end
 
 

@@ -32,7 +32,7 @@ class SkipParseTest < MiniTest::Spec
   # skip parsing.
   let (:airplay) { OpenStruct.new(station: "JJJ") }
 
-  it "ficken" do
+  it do
     song.from_hash({
       "title"    => "skip me",
       "band"     => {},

@@ -180,14 +180,12 @@ module Representable
       [*default_init_functions, *default_fragment_functions, *default_post_functions]
     end
 
-    ResultToFragment = ->(options) { options[:fragment] = options[:result] } # FIXME, OF COURSE!!
-    FragmentToResult = ->(options) { options[:result] = options[:fragment] } # FIXME, OF COURSE!!
 
     def render_functions
       # return self[:parse_pipelinerender_pipeline].() if self[:render_pipeline] # untested. # FIXME.
 
       if array?
-        return [*default_render_init_functions, ResultToFragment, StopOnSkipable, StopOnNil, Collect[FragmentToResult, *default_render_fragment_functions], WriteFragment]
+        return [*default_render_init_functions, StopOnSkipable, StopOnNil, Collect[*default_render_fragment_functions], WriteFragment]
       end
 
       [*default_render_init_functions, RenderFilter, RenderDefault, StopOnSkipable, *default_render_fragment_functions, WriteFragment]
@@ -225,6 +223,7 @@ module Representable
 
       if typed?
         functions += [CreateObject, Prepare]
+        # TODO: Insert InputToFragment
         functions << Deserialize if representable?
       end
 
