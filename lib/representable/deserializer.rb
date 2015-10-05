@@ -117,8 +117,8 @@ module Representable
   Deserialize  = Function::Deserialize.new
   Prepare      = Function::Prepare.new
 
-  ParseFilter = ->(options) do
-    options[:binding][:parse_filter].(options)
+  ParseFilter = ->(input, options) do
+    options[:binding][:parse_filter].(input, options)
     # options[:result]
   end
 

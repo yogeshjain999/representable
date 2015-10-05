@@ -70,7 +70,7 @@ module Representable
 
 
     def get # DISCUSS: evluate if we really need this.
-      Getter.(binding: self)
+      Getter.(nil, binding: self)
     end
 
     # DISCUSS: do we really need that?

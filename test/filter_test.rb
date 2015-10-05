@@ -1,12 +1,12 @@
 require 'test_helper'
 
 class FilterPipelineTest < MiniTest::Spec
-  let (:block1) { lambda { |options| "1: #{options[:result]}" } }
-  let (:block2) { lambda { |options| "2: #{options[:result]}" } }
+  let (:block1) { lambda { |input, options| "1: #{input}" } }
+  let (:block2) { lambda { |input, options| "2: #{input}" } }
 
   subject { Representable::Pipeline[block1, block2] }
 
-  it { subject.call(result: "Horowitz").must_equal "2: 1: Horowitz" }
+  it { subject.call("Horowitz", {}).must_equal "2: 1: Horowitz" }
 end
 
 
@@ -14,7 +14,7 @@ class FilterTest < MiniTest::Spec
   representer! do
     property :title
     property :track,
-      :parse_filter  => lambda { |options| "#{options[:result].downcase},#{options[:doc]}" },
+      :parse_filter  => lambda { |input, options| "#{input.downcase},#{options[:doc]}" },
       :render_filter => lambda { |val, doc, options| "#{val.upcase},#{doc},#{options}" }
   end
 
@@ -32,8 +32,8 @@ class FilterTest < MiniTest::Spec
     representer! do
       property :track,
         :parse_filter => [
-          lambda { |options| "#{options[:result]}-1" },
-          lambda { |options| "#{options[:result]}-2" }],
+          lambda { |input, options| "#{input}-1" },
+          lambda { |input, options| "#{input}-2" }],
         :render_filter => [
           lambda { |val, doc, options| "#{val}-1" },
           lambda { |val, doc, options| "#{val}-2" }]
