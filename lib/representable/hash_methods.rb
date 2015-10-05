@@ -6,12 +6,12 @@ module Representable
 
       # FIXME: not finished, yet!
       if bin.typed?
-        return Collect::Hash[ReturnFragment, Prepare, Serialize, Write].
-          ({fragment: hash, doc: doc, result: hash, user_options: options, binding: bin})
+        return Collect::Hash[Prepare, Serialize, WriteFragment].
+          (hash, {fragment: hash, doc: doc, result: hash, user_options: options, binding: bin})
           doc
       else
         # FIXME: we have to allow more here, filtering etc and then return a new hash from doc[:_self]
-        Pipeline[Write].({doc: doc, result: hash, user_options: options, binding: bin}).dup
+        Pipeline[WriteFragment].(hash, {doc: doc, result: hash, user_options: options, binding: bin}).dup
       end
 
 
@@ -23,7 +23,7 @@ module Representable
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
       # TODO: instantiate pipeline via binding so we have central place to inject debugging.
-      value = Collect::Hash[*bin.send(:default_fragment_functions)].(fragment: hash, document: doc, binding: bin)
+      value = Collect::Hash[*bin.send(:default_fragment_functions)].(hash, fragment: hash, document: doc, binding: bin)
 
       represented.replace(value)
     end

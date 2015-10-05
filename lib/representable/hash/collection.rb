@@ -24,11 +24,11 @@ module Representable::Hash
       # FIXME: not finished, yet!
       # return Collect[Serialize, Write].({doc: doc, result: hash, user_options: options, binding: bin})
       if bin.typed?
-        Collect[ReturnFragment, StopOnSkipable, Prepare, Serialize, Write].
-          ({doc: doc, fragment: represented, user_options: options, binding: bin})
+        Collect[StopOnSkipable, Prepare, Serialize, WriteFragment].
+          (represented, {doc: doc, fragment: represented, user_options: options, binding: bin})
       else
-        Collect[ReturnFragment, StopOnSkipable, Write].
-          ({doc: doc, fragment: represented, user_options: options, binding: bin})
+        Collect[StopOnSkipable, WriteFragment].
+          (represented, {doc: doc, fragment: represented, user_options: options, binding: bin})
       end
     end
 
@@ -39,10 +39,10 @@ module Representable::Hash
       # Populator.new(bin).call()
       if bin.typed?
         value = Collect[SkipParse, CreateObject, Prepare, Deserialize].
-          (fragment: doc, document: doc, binding: bin)
+          (doc, fragment: doc, document: doc, binding: bin)
       else
 value = Collect[SkipParse].
-          (fragment: doc, document: doc, binding: bin)
+          (doc, fragment: doc, document: doc, binding: bin)
       end
 
 

@@ -74,10 +74,11 @@ module Representable
 
 
     class Hash < self
-      def call(options)
+      def call(input, options)
         {}.tap do |hsh|
-          options[:fragment].each { |key, item_fragment|
-            hsh[key] = @item_pipeline.(options.merge(fragment: item_fragment)) }
+          input.each { |key, item_fragment|
+            hsh[key] = @item_pipeline.(item_fragment, options) }# DISCUSS: NO :fragment set.
+
         end
       end
     end
