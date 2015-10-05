@@ -16,7 +16,7 @@ module Representable
 
       # defaults:
       options[:parse_filter]  = Pipeline[*options[:parse_filter]]
-      options[:render_filter] = ShitblaaPipeline[*options[:render_filter]]
+      options[:render_filter] = Pipeline[*options[:render_filter]]
       options[:as]          ||= @name
 
       setup!(options, &block)
@@ -110,7 +110,7 @@ module Representable
     end
 
     def dynamic_options
-      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend, :prepare, :if, :deserialize, :serialize, :skip_parse, :skip_render, :render_filter]
+      [:as, :getter, :setter, :class, :instance, :reader, :writer, :extend, :prepare, :if, :deserialize, :serialize, :skip_parse, :skip_render]
     end
 
     def handle_extend!(options)

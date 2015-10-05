@@ -29,7 +29,7 @@ module Representable
   end
 
   RenderFilter = ->(input, options) do
-    options[:binding].render_filter(input, options[:doc]) # FIXME.
+    options[:binding][:render_filter].(input, options)
   end
 
   SkipRender = ->(input, options) do

@@ -119,7 +119,6 @@ module Representable
 
   ParseFilter = ->(input, options) do
     options[:binding][:parse_filter].(input, options)
-    # options[:result]
   end
 
   # Setter = ->(value, doc, binding,*) do

@@ -13,9 +13,10 @@ end
 class FilterTest < MiniTest::Spec
   representer! do
     property :title
+
     property :track,
       :parse_filter  => lambda { |input, options| "#{input.downcase},#{options[:doc]}" },
-      :render_filter => lambda { |val, doc, options| "#{val.upcase},#{doc},#{options}" }
+      :render_filter => lambda { |val, options| "#{val.upcase},#{options[:doc]},#{options[:binding].user_options}" }
   end
 
   # gets doc and options.
@@ -35,8 +36,8 @@ class FilterTest < MiniTest::Spec
           lambda { |input, options| "#{input}-1" },
           lambda { |input, options| "#{input}-2" }],
         :render_filter => [
-          lambda { |val, doc, options| "#{val}-1" },
-          lambda { |val, doc, options| "#{val}-2" }]
+          lambda { |val, options| "#{val}-1" },
+          lambda { |val, options| "#{val}-2" }]
     end
 
     # order matters.
@@ -48,8 +49,8 @@ end
 
 class RenderFilterTest < MiniTest::Spec
   representer! do
-    property :track, :render_filter => [lambda { |val, doc, options| "#{val}-1" } ]
-    property :track, :render_filter => [lambda { |val, doc, options| "#{val}-2" } ], :inherit => true
+    property :track, :render_filter => [lambda { |val, options| "#{val}-1" } ]
+    property :track, :render_filter => [lambda { |val, options| "#{val}-2" } ], :inherit => true
   end
 
   it { OpenStruct.new("track" => "Nine").extend(representer).to_hash.must_equal({"track"=>"Nine-1-2"}) }

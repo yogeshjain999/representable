@@ -93,11 +93,6 @@ module Representable
       __options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
 
       proc.(exec_context, *(args<<__options)) # from Uber::Options::Value.
-
-      # raise
-    end
-    def render_filter(value, doc)
-      evaluate_option(:render_filter, value, doc) { value }
     end
 
     def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
@@ -188,7 +183,7 @@ module Representable
         return [*default_render_init_functions, StopOnSkipable, StopOnNil, Collect[*default_render_fragment_functions], WriteFragment]
       end
 
-      [*default_render_init_functions, RenderFilter, RenderDefault, StopOnSkipable, *default_render_fragment_functions, WriteFragment]
+      [*default_render_init_functions, RenderDefault, StopOnSkipable, *default_render_fragment_functions, WriteFragment]
     end
 
     def default_render_fragment_functions
@@ -206,6 +201,7 @@ module Representable
     def default_render_init_functions
       functions = [Getter]
       functions << Writer if self[:writer]
+      functions << RenderFilter if self[:render_filter].any?
       functions
     end
 
