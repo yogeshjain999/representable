@@ -28,17 +28,9 @@ module Representable::Hash
 
     def update_properties_from(doc, options, format)
       bin   = representable_mapper(format, options).bindings(represented, options).first
-      # value = Deserializer::Collection.new(bin).call(doc)
 
-      # Populator.new(bin).call()
-      if bin.typed?
-        value = Collect[SkipParse, CreateObject, Prepare, Deserialize].
-          (doc, fragment: doc, document: doc, binding: bin)
-      else
-value = Collect[SkipParse].
-          (doc, fragment: doc, document: doc, binding: bin)
-      end
-
+      value = Collect[*bin.default_parse_fragment_functions].
+        (doc, fragment: doc, document: doc, binding: bin)
 
       represented.replace(value)
     end

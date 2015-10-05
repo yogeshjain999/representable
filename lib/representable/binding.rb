@@ -169,13 +169,13 @@ module Representable
       return self[:parse_pipeline].() if self[:parse_pipeline] # untested.
 
       if array?
-        return [*default_init_functions, Collect[*default_fragment_functions], *default_post_functions]
+        return [*default_init_functions, Collect[*default_parse_fragment_functions], *default_post_functions]
       end
       if self[:hash] # FIXME: fuckin' merge with array?
-        return [*default_init_functions, Collect::Hash[*default_fragment_functions], *default_post_functions]
+        return [*default_init_functions, Collect::Hash[*default_parse_fragment_functions], *default_post_functions]
       end
 
-      [*default_init_functions, *default_fragment_functions, *default_post_functions]
+      [*default_init_functions, *default_parse_fragment_functions, *default_post_functions]
     end
 
 
@@ -212,7 +212,6 @@ module Representable
       functions
     end
 
-  private
     # TODO: move to Pipeline::Builder
     def default_init_functions
       functions = [ReadFragment, has_default? ? Default : StopOnNotFound]
@@ -220,7 +219,7 @@ module Representable
       functions
     end
 
-    def default_fragment_functions
+    def default_parse_fragment_functions
       functions = [] # TODO: why do we always need that?
       functions << SkipParse if self[:skip_parse]
 
@@ -239,6 +238,7 @@ module Representable
       funcs << Setter
     end
 
+  private
 
     def setup_user_options!(user_options)
       @user_options  = user_options
