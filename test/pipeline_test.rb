@@ -3,7 +3,7 @@ require "test_helper"
 class PipelineTest < MiniTest::Spec
   Song   = Struct.new(:title, :artist)
   Artist = Struct.new(:name)
-  Album  = Struct.new(:ratings)
+  Album  = Struct.new(:ratings, :artists)
 
   R = Representable
   P = R::Pipeline
@@ -58,6 +58,10 @@ class PipelineTest < MiniTest::Spec
   end
 
 
+
+
+  ######### scalar property
+
   let (:title) {
     dfn = R::Definition.new(:title)
 
@@ -77,6 +81,18 @@ class PipelineTest < MiniTest::Spec
 
     doc.must_equal({"title"=>"Lime Green"})
   end
+
+  it "parsing scalar property" do
+    P[
+      R::ReadFragment,
+      R::StopOnNotFound,
+      R::OverwriteOnNil,
+      # R::SkipParse,
+      R::Setter,
+    ].extend(P::Debug).(doc={"title"=>"Eruption"}, {binding: title, doc: doc}).must_equal "Eruption"
+    title.represented.title.must_equal "Eruption"
+  end
+
 
 
   module ArtistRepresenter
@@ -126,8 +142,6 @@ class PipelineTest < MiniTest::Spec
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,
-        # R::Prepare,
-        # R::Serialize,
       ],
       R::WriteFragment
     ].extend(P::Debug).(nil, {binding: ratings, doc: doc}).must_equal([1,2,3])
@@ -138,10 +152,28 @@ class PipelineTest < MiniTest::Spec
 
 
 ######### collection :songs, extend: SongRepresenter
+  let (:artists) {
+    dfn = R::Definition.new(:artists, collection: true, extend: ArtistRepresenter)
 
-
+    R::Hash::Binding::Collection.new(dfn, "parent decorator").tap do |bin|
+      bin.update!(Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")]), {}) # FIXME: how do i do that again in representable?
+    end
+  }
   it "render typed collection" do
+    doc = {}
+    P[
+      R::Getter,
+      R::Writer,
+      R::StopOnSkipable,
+      R::Collect[
+        R::SkipRender,
+        R::Prepare,
+        R::Serialize,
+      ],
+      R::WriteFragment
+    ].extend(P::Debug).(nil, {binding: artists, doc: doc}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
 
+    doc.must_equal({"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]})
   end
   # describe "passes options to all functions" do
   #   PrintOptions = ->(options) { options.to_s }

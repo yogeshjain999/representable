@@ -14,15 +14,8 @@ class GetterSetterTest < BaseTest
     subject.to_hash(:welcome => "Hi").must_equal({"name" => "Hi Mony Mony"})
   end
 
-  it "does not call original reader when rendering" do
-    subject.instance_eval { def name; raise; end; self }.to_hash({})
-  end
-
   it "uses :setter when parsing" do
+    subject.instance_eval { def name=(*); raise; end; self }
     subject.from_hash({"name" => "Eyes Without A Face"}, :welcome => "Hello").song_name.must_equal "Hello Eyes Without A Face"
-  end
-
-  it "does not call original writer when parsing" do
-    subject.instance_eval { def name=(*); raise; end; self }.from_hash({"name"=>"Dana D And Talle T"}, {})
   end
 end

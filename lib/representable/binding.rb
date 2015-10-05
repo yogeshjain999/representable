@@ -65,7 +65,7 @@ module Representable
       options = {doc: doc, binding: self}
 
       puts " ................. #{name}"
-      parse_pipeline.extend(Pipeline::Debug).(options)
+      parse_pipeline.extend(Pipeline::Debug).(doc, options)
     end
 
 
@@ -100,11 +100,14 @@ module Representable
       evaluate_option(:render_filter, value, doc) { value }
     end
 
-    def evaluate_option_with_deprecation(name, options, *positional_arguments)
+    def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
       unless proc = @definition[name]
         return yield if block_given?
         return
       end
+
+
+      options[:input] = input # DISCUSS: can we save time here?
 
 
       __options = if self[:pass_options]
@@ -217,7 +220,7 @@ module Representable
     end
 
     def default_fragment_functions
-      functions = [ReturnFragment] # TODO: why do we always need that?
+      functions = [] # TODO: why do we always need that?
       functions << SkipParse if self[:skip_parse]
 
       if typed?

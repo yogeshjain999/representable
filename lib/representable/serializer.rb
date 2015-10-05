@@ -5,7 +5,7 @@ module Representable
   Getter = ->(input, options) do
     binding = options[:binding]
 
-    binding.evaluate_option_with_deprecation(:getter, options, :user_options) do # TODO: should we have binding.get doing the block content?
+    binding.evaluate_option_with_deprecation(:getter, input, options, :user_options) do # TODO: should we have binding.get doing the block content?
       binding.send(:exec_context).send(binding.getter)
     end
   end
@@ -13,7 +13,7 @@ module Representable
   # FIXME: we don't need to evaluate here but can run the option straight away, because
   # we only add Writer when :writer is present!
   Writer = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:writer, options, :doc, :user_options) do
+    options[:binding].evaluate_option_with_deprecation(:writer, input, options, :doc, :user_options) do
       return input
     end
     Pipeline::Stop
@@ -35,7 +35,7 @@ module Representable
   end
 
   SkipRender = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:skip_render, options, :result, :user_options) ? Pipeline::Stop : input
+    options[:binding].evaluate_option_with_deprecation(:skip_render, input, options, :result, :user_options) ? Pipeline::Stop : input
   end
 
   # FIXME: Collect always assigns :fragment as input. how are we gonna handle that?

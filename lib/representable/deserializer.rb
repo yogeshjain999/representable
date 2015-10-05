@@ -8,30 +8,25 @@ module Representable
 
   AssignFragment = ->(input, options) { options[:fragment] = input }
 
-  ReadFragment = ->(options) do
-    binding, doc, fragment = options[:binding], options[:doc]
+  ReadFragment = ->(input, options) do
+    binding = options[:binding]
 
-    options[:fragment] = binding.evaluate_option_with_deprecation(:reader, options, :doc, :user_options) do
-      binding.read(doc) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
+    binding.evaluate_option_with_deprecation(:reader, input, options, :doc, :user_options) do
+      binding.read(input) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
     end
   end
 
 
-  StopOnNotFound = -> (options) do
-    return Pipeline::Stop if options[:fragment] == Binding::FragmentNotFound
-    options[:fragment]
+  StopOnNotFound = -> (input, options) do
+    input == Binding::FragmentNotFound ? Pipeline::Stop : input
   end
 
   StopOnNil = -> (input, options) do # DISCUSS: Not tested/used, yet.
     input.nil? ? Pipeline::Stop : input
   end
 
-  OverwriteOnNil = -> (options) do
-    if options[:fragment].nil?
-      Setter.(options.merge(result: nil))
-      return Pipeline::Stop
-    end
-    options[:fragment] # becomes :result
+  OverwriteOnNil = -> (input, options) do
+    input.nil? ? (Setter.(input, options); Pipeline::Stop) : input
   end
 
 
@@ -44,23 +39,21 @@ module Representable
     options[:fragment]
   end
 
-  ReturnFragment = ->(options) { options[:fragment] }
+  # ReturnFragment = ->(options) { options[:fragment] }
 
   SkipParse = ->(options) do
-    return Pipeline::Stop if options[:binding].evaluate_option_with_deprecation(:skip_parse, options, :fragment, :user_options)
+    return Pipeline::Stop if options[:binding].evaluate_option_with_deprecation(:skip_parse, input, options, :fragment, :user_options)
     options[:fragment]
   end
 
   Instance = ->(options) do
-    options[:result] =
-      options[:binding].evaluate_option_with_deprecation(:instance, options, :fragment, :index, :user_options)
+    options[:binding].evaluate_option_with_deprecation(:instance, input, options, :fragment, :index, :user_options)
   end
 
   module Function
     class CreateObject
       def call(options)
-        options[:result] =
-          instance_for(options) || class_for(options)
+        instance_for(options) || class_for(options)
       end
 
     private
@@ -70,7 +63,7 @@ module Representable
       end
 
       def class_from(options)
-        options[:binding].evaluate_option_with_deprecation(:class, options, :fragment, :index, :user_options) # FIXME: no additional args passed here, yet.
+        options[:binding].evaluate_option_with_deprecation(:class, input, options, :fragment, :index, :user_options) # FIXME: no additional args passed here, yet.
       end
 
       def instance_for(options)
@@ -81,7 +74,7 @@ module Representable
 
     class Deserialize
       def call(options)
-        options[:binding].evaluate_option_with_deprecation(:deserialize, options, :result, :fragment, :user_options) do
+        options[:binding].evaluate_option_with_deprecation(:deserialize, input, options, :input, :fragment, :user_options) do
           demarshal(options) # object.from_hash.
         end
       end
@@ -101,7 +94,7 @@ module Representable
         binding = options[:binding]
         options[:result] = input
 
-        binding.evaluate_option_with_deprecation(:prepare, options, :result, :user_options) do
+        binding.evaluate_option_with_deprecation(:prepare, input, options, :result, :user_options) do
           prepare!(input, binding)
         end
       end
@@ -130,12 +123,11 @@ module Representable
   end
 
   # Setter = ->(value, doc, binding,*) do
-  Setter = ->(options) do
+  Setter = ->(input, options) do
     binding = options[:binding]
 
-    binding.evaluate_option_with_deprecation(:setter, options, :result, :user_options) do
-      # raise options[:result].inspect
-      binding.send(:exec_context).send(binding.setter, options[:result])
+    binding.evaluate_option_with_deprecation(:setter, input, options, :input, :user_options) do
+      binding.send(:exec_context).send(binding.setter, input)
     end
   end
 end
