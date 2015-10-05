@@ -171,6 +171,9 @@ module Representable
       if array?
         return [*default_init_functions, Collect[*default_fragment_functions], *default_post_functions]
       end
+      if self[:hash] # FIXME: fuckin' merge with array?
+        return [*default_init_functions, Collect::Hash[*default_fragment_functions], *default_post_functions]
+      end
 
       [*default_init_functions, *default_fragment_functions, *default_post_functions]
     end
@@ -181,6 +184,10 @@ module Representable
 
       if array?
         return [*default_render_init_functions, StopOnSkipable, StopOnNil, Collect[*default_render_fragment_functions], WriteFragment]
+      end
+
+      if self[:hash]
+        return [*default_render_init_functions, StopOnSkipable, StopOnNil, Collect::Hash[*default_render_fragment_functions], WriteFragment]
       end
 
       [*default_render_init_functions, RenderDefault, StopOnSkipable, *default_render_fragment_functions, WriteFragment]
