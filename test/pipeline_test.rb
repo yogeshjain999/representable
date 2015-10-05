@@ -74,7 +74,6 @@ class PipelineTest < MiniTest::Spec
     doc = {}
     P[
       R::Getter,
-      R::Writer,
       R::StopOnSkipable,
       R::WriteFragment
     ].(nil, {binding: title, doc: doc}).must_equal "Lime Green"
@@ -112,7 +111,6 @@ class PipelineTest < MiniTest::Spec
     doc = {}
     P[
       R::Getter,
-      R::Writer,
       R::StopOnSkipable,
       R::StopOnNil,
       R::SkipRender,
@@ -152,7 +150,6 @@ class PipelineTest < MiniTest::Spec
     doc = {}
     P[
       R::Getter,
-      R::Writer,
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,
@@ -175,7 +172,6 @@ class PipelineTest < MiniTest::Spec
     doc = {}
     P[
       R::Getter,
-      R::Writer,
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,

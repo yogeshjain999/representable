@@ -13,9 +13,7 @@ module Representable
   # FIXME: we don't need to evaluate here but can run the option straight away, because
   # we only add Writer when :writer is present!
   Writer = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:writer, input, options, :doc, :user_options) do
-      return input
-    end
+    options[:binding].evaluate_option_with_deprecation(:writer, input, options, :doc, :user_options)
     Pipeline::Stop
   end
 
