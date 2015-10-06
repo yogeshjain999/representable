@@ -10,8 +10,7 @@ module Representable
           (hash, {doc: doc, user_options: options, binding: bin})
           doc
       else
-        # FIXME: we have to return a new hash from doc[:_self]
-        Pipeline[*bin.default_render_fragment_functions].(hash, {doc: doc, user_options: options, binding: bin}).dup
+        Collect::Hash[*bin.default_render_fragment_functions].(hash, {doc: doc, user_options: options, binding: bin})
       end
     end
 
