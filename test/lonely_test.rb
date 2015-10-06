@@ -98,6 +98,23 @@ class LonelyRepresenterTest < MiniTest::Spec
     end
   end
 
+  describe "Hash::Collection with dynamic options" do
+    class One < Representable::Decorator
+      def to_hash(*); "One: #{represented}"; end
+    end
+
+    class Two < Representable::Decorator
+      def to_hash(*); "Two: #{represented}"; end
+    end
+
+    representer!(module: Representable::Hash::Collection) do
+      items extend: ->(options) { options[:input] == 1 ? options[:user_options][:one] : options[:user_options][:two] }
+    end
+
+
+    it { [1,2].extend(representer).to_hash(one: One, two: Two).must_equal(["One: 1", "Two: 2"]) }
+  end
+
 
   describe "JSON::Hash" do  # TODO: move to HashTest.
     describe "with contained objects" do
