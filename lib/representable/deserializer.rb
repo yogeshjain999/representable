@@ -94,13 +94,13 @@ module Representable
         binding = options[:binding]
         options[:result] = input
 
-        binding.evaluate_option_with_deprecation(:prepare, input, options, :result, :user_options) do
-          prepare!(input, binding)
+        binding.evaluate_option_with_deprecation(:prepare, input, options, :result, :user_options) do # FIXME: must be :input, right?
+          prepare!(input, binding, options)
         end
       end
 
-      def prepare!(object, binding)
-        mod = binding.representer_module_for(object)
+      def prepare!(object, binding, options)
+        mod = binding.evaluate_option_with_deprecation(:extend, object, options, :input, :user_options) # FIXME: write test for extend with lambda
 
         return object unless mod and object # object might be nil.
 
