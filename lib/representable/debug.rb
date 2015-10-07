@@ -51,32 +51,6 @@ module Representable
       end
     end
 
-    module Populator
-      def deserialize(fragment)
-        puts "                  Populator#deserialize: #{fragment.inspect}"
-        puts "                                       : typed? is false, skipping Deserializer." if ! @binding.typed?
-        super
-      end
-
-      def deserializer
-        super.extend(Deserializer)
-      end
-    end
-
-    module Deserializer
-      def create_object(fragment, *args)
-        value = super
-          puts "                    Deserializer#create_object: --> #{value.inspect}"
-        value
-      end
-    end
-
-    module Serializer
-      def marshal(object, user_options)
-        puts "                    Serializer#marshal: --> #{object.inspect}"
-        super
-      end
-    end
 
     module Mapper
       def uncompile_fragment(bin, doc)
@@ -92,4 +66,33 @@ module Representable
       end
     end
   end
+
+
 end
+
+module Representable::Pipeline::Debug
+      def call(input, options)
+        puts "Pipeline#call: #{inspect}"
+        puts "               input: #{input.inspect}"
+        super
+      end
+
+      def evaluate(block, memo, options)
+        puts "  Pipeline   :   -> #{_inspect_function(block)} "
+        super.tap do |res|
+          puts "  Pipeline   :     result: #{res.inspect}"
+        end
+      end
+
+      def inspect
+        collect do |func|
+          _inspect_function(func)
+        end.join(", ")
+      end
+
+      # prints SkipParse instead of <Proc>. i know, i can make this better, but not now.
+      def _inspect_function(func)
+        return func unless func.is_a?(Proc)
+        File.readlines(func.source_location[0])[func.source_location[1]-1].match(/^\s+(\w+)/)[1]
+      end
+    end

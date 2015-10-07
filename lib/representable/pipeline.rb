@@ -20,34 +20,6 @@ module Representable
     def evaluate(block, input, options)
       block.call(input, options)
     end
-
-
-    module Debug
-      def call(input, options)
-        puts "Pipeline#call: #{inspect}"
-        puts "               input: #{input.inspect}"
-        super
-      end
-
-      def evaluate(block, memo, options)
-        puts "  Pipeline   :   -> #{_inspect_function(block)} "
-        super.tap do |res|
-          puts "  Pipeline   :     result: #{res.inspect}"
-        end
-      end
-
-      def inspect
-        collect do |func|
-          _inspect_function(func)
-        end.join(", ")
-      end
-
-      # prints SkipParse instead of <Proc>. i know, i can make this better, but not now.
-      def _inspect_function(func)
-        return func unless func.is_a?(Proc)
-        File.readlines(func.source_location[0])[func.source_location[1]-1].match(/^\s+(\w+)/)[1]
-      end
-    end
   end
 
   # Collect applies a pipeline to each element of options[:fragment].
@@ -65,9 +37,7 @@ module Representable
       arr = []
       input.each_with_index do |item_fragment, i|
         result = @item_pipeline.(item_fragment, options.merge(index: i)) # DISCUSS: NO :fragment set.
-
-        next if result == Pipeline::Stop
-        arr << result
+        result == Pipeline::Stop ? next : arr << result
       end
       arr
     end
