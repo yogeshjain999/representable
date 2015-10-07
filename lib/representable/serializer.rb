@@ -1,7 +1,4 @@
-
 module Representable
-  # AssignDoc = ->(input, options) { options[:doc] = input }
-
   Getter = ->(input, options) do
     binding = options[:binding]
 
@@ -10,8 +7,6 @@ module Representable
     end
   end
 
-  # FIXME: we don't need to evaluate here but can run the option straight away, because
-  # we only add Writer when :writer is present!
   Writer = ->(input, options) do
     options[:binding].evaluate_option_with_deprecation(:writer, input, options, :doc, :user_options)
     Pipeline::Stop
@@ -36,7 +31,6 @@ module Representable
     options[:binding].evaluate_option_with_deprecation(:skip_render, input, options, :input, :user_options) ? Pipeline::Stop : input
   end
 
-  # FIXME: Collect always assigns :fragment as input. how are we gonna handle that?
   Serialize = ->(input, options) do
     binding = options[:binding]
 
@@ -46,7 +40,6 @@ module Representable
       input.send(binding.serialize_method, binding.user_options) # FIXME: what options here?
     end
   end
-
 
   WriteFragment = ->(input, options) { options[:binding].write(options[:doc], input) }
 end
