@@ -169,10 +169,8 @@ module Representable
 
     attr_reader :exec_context, :parent_decorator
 
-    #
     def parse_pipeline
-      return Pipeline[*self[:parse_pipeline].()] if self[:parse_pipeline] # untested. # FIXME.
-      @parse_pipeline ||= Pipeline[*parse_functions]
+      @parse_pipeline ||= Pipeline[*evaluate_option(:parse_pipeline) { Pipeline[*parse_functions] }] # untested. # FIXME.
     end
 
     def render_pipeline
