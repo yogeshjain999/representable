@@ -11,4 +11,5 @@ end
 group :test do
   gem "nokogiri", require: false
   gem "multi_json", require: false
+  gem "minitest-line"
 end
