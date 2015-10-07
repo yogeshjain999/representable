@@ -91,22 +91,10 @@ module JsonTest
           assert_kind_of Representable::Hash::Binding, Representable::Hash::Binding.build_for(Def.new(:band), nil)
         end
 
-        it "returns HashBinding" do
-          assert_kind_of Representable::Hash::Binding::Hash, Representable::Hash::Binding.build_for(Def.new(:band, :hash => true), nil)
-        end
-
         it "returns CollectionBinding" do
           assert_kind_of Representable::Hash::Binding::Collection, Representable::Hash::Binding.build_for(Def.new(:band, :collection => true), nil)
         end
       end
-
-      # describe "#representable_bindings_for" do
-      #   it "returns bindings for each property" do
-      #     bins = @band.send(:representable_bindings_for, Representable::JSON::Binding, {})
-      #     assert_equal 2, bins.size
-      #     assert_equal "name", bins.first.name
-      #   end
-      # end
     end
 
 

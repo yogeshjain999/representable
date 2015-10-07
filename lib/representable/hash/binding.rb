@@ -3,17 +3,13 @@ require 'representable/binding'
 module Representable
   module Hash
     class Binding < Representable::Binding
-      def self.build_for(definition, *args)  # TODO: remove default arg.
-        # puts "@@@build@@ #{definition.inspect}"
+      def self.build_for(definition, *args)
         return Collection.new(definition, *args)  if definition.array?
-        return Hash.new(definition, *args)        if definition.hash?
         new(definition, *args)
       end
 
       def read(hash)
-        return FragmentNotFound unless hash.has_key?(as)
-
-        hash[as] # fragment
+        hash.has_key?(as) ? hash[as] : FragmentNotFound
       end
 
       def write(hash, fragment)
@@ -30,10 +26,6 @@ module Representable
 
       class Collection < self
         include Representable::Binding::Collection
-      end
-
-
-      class Hash < self
       end
     end
   end

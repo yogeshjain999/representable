@@ -56,7 +56,7 @@ class HashBindingTest < MiniTest::Spec
   describe "HashBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::Hash::Binding::Hash.new(Representable::Definition.new(:songs, :hash => true), nil)
+        @property = Representable::Hash::Binding.new(Representable::Definition.new(:songs, :hash => true), nil)
       end
 
       it "extracts with #read" do
@@ -72,7 +72,7 @@ class HashBindingTest < MiniTest::Spec
 
     describe "with objects" do
       before do
-        @property = Representable::Hash::Binding::Hash.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter), nil)
+        @property = Representable::Hash::Binding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter), nil)
       end
 
       it "doesn't change the represented hash in #write" do
