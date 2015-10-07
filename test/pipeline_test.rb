@@ -15,7 +15,7 @@ class PipelineTest < MiniTest::Spec
   Prepare       = ->(input, options) { "Prepare(#{input})" }
   Deserialize   = ->(input, options) { "Deserialize(#{input}, #{options[:fragment]})" }
 
-  SkipParse     = ->(input, fragment:) { input }
+  SkipParse     = ->(input, options) { input }
   CreateObject  = ->(input, options) { OpenStruct.new }
 
 
