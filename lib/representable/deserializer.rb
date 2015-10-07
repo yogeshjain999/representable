@@ -17,15 +17,15 @@ module Representable
   end
 
 
-  StopOnNotFound = -> (input, options) do
+  StopOnNotFound = ->(input, options) do
     input == Binding::FragmentNotFound ? Pipeline::Stop : input
   end
 
-  StopOnNil = -> (input, options) do # DISCUSS: Not tested/used, yet.
+  StopOnNil = ->(input, options) do # DISCUSS: Not tested/used, yet.
     input.nil? ? Pipeline::Stop : input
   end
 
-  OverwriteOnNil = -> (input, options) do
+  OverwriteOnNil = ->(input, options) do
     input.nil? ? (Setter.(input, options); Pipeline::Stop) : input
   end
 

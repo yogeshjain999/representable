@@ -13,7 +13,7 @@ class DeserializePipelineTest < MiniTest::Spec
     #   property :email
     # end
     # DISCUSS: rename to populator_pipeline ?
-    collection :songs, parse_pipeline: -> (*) { [Collect[Instance, Prepare, Deserialize], Setter] }, instance: :instance!, exec_context: :decorator, pass_options: true do
+    collection :songs, parse_pipeline: ->(*) { [Collect[Instance, Prepare, Deserialize], Setter] }, instance: :instance!, exec_context: :decorator, pass_options: true do
       property :title
     end
 
