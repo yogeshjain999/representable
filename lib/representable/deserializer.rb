@@ -104,10 +104,10 @@ module Representable
 
         return object unless mod and object # object might be nil.
 
-        prepare_for(mod, object)
+        prepare_for(mod, object, binding)
       end
 
-      def prepare_for(mod, object)
+      def prepare_for(mod, object, binding)
         mod.prepare(object)
       end
     end
