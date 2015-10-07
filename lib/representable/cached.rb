@@ -29,7 +29,6 @@ module Representable
         pipeline = super
         prepare = pipeline.find { |func| puts func; func.instance_of?(Function::Prepare) } or return pipeline
 
-        # raise
         index = pipeline.index(prepare)
         pipeline[index] = CachedPrepare.new
         pipeline

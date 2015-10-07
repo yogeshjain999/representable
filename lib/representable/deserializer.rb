@@ -16,7 +16,6 @@ module Representable
     end
   end
 
-
   StopOnNotFound = ->(input, options) do
     input == Binding::FragmentNotFound ? Pipeline::Stop : input
   end
@@ -29,16 +28,12 @@ module Representable
     input.nil? ? (Setter.(input, options); Pipeline::Stop) : input
   end
 
-
-  # FIXME: how to combine those two guys?
   Default = ->(input, options) do
     if input == Binding::FragmentNotFound
       return options[:binding].has_default? ?  options[:binding][:default] : Pipeline::Stop
     end
     input
   end
-
-  # ReturnFragment = ->(options) { options[:fragment] }
 
   SkipParse = ->(input, options) do
     options[:binding].evaluate_option_with_deprecation(:skip_parse, input, options, :input, :user_options) ? Pipeline::Stop : input
