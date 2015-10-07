@@ -10,6 +10,11 @@ module Representable::XML
 
 
     module Methods
+      def create_representation_with(doc, options, format)
+        bin = representable_mapper(format, options).bindings(represented, options).first
+        bin.write(doc, super)
+      end
+
       def update_properties_from(doc, *args)
         super(doc.search("./*"), *args) # pass the list of collection items to Hash::Collection#update_properties_from.
       end

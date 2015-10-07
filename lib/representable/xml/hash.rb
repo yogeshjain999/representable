@@ -7,6 +7,7 @@ module Representable::XML
     include Representable::HashMethods
 
     def self.included(base)
+      raise "[Representable] Sorry, XML::AttributeHash is no longer working in Representable 2.4. This is because the authors are too busy working on other OSS stuff, for free. You can sponsor improving Representable's XML layer: http://trailblazerb.org/inc/sponsoring.html"
       base.class_eval do
         include Representable
         extend ClassMethods
@@ -19,6 +20,11 @@ module Representable::XML
       def values(options)
         hash :_self, options.merge!(:use_attributes => true)
       end
+    end
+
+    def method_name
+      bin = representable_mapper(format, options).bindings(represented, options).first
+      bin.write(doc, super)
     end
   end
 

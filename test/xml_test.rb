@@ -418,48 +418,48 @@ class CollectionTest < MiniTest::Spec
     end
 
     describe "XML::AttributeHash" do  # TODO: move to HashTest.
-      representer!(:module => Representable::XML::AttributeHash) do
-        self.representation_wrap= :songs
-      end
+    #   representer!(:module => Representable::XML::AttributeHash) do
+    #     self.representation_wrap= :songs
+    #   end
 
-      let (:songs) { {"one" => "Graveyards", "two" => "Can't Take Them All"} }
-      let (:xml_doc)   { "<favs one=\"Graveyards\" two=\"Can't Take Them All\" />" }
+    #   let (:songs) { {"one" => "Graveyards", "two" => "Can't Take Them All"} }
+    #   let (:xml_doc)   { "<favs one=\"Graveyards\" two=\"Can't Take Them All\" />" }
 
-      describe "#to_xml" do
-        it "renders hash" do
-          songs.extend(representer).to_xml.must_equal_xml xml_doc
-        end
+    #   describe "#to_xml" do
+    #     it "renders hash" do
+    #       songs.extend(representer).to_xml.must_equal_xml xml_doc
+    #     end
 
-        it "respects :exclude" do
-          assert_xml_equal "<favs two=\"Can't Take Them All\" />", songs.extend(representer).to_xml(:exclude => [:one])
-        end
+    #     it "respects :exclude" do
+    #       assert_xml_equal "<favs two=\"Can't Take Them All\" />", songs.extend(representer).to_xml(:exclude => [:one])
+    #     end
 
-        it "respects :include" do
-          assert_xml_equal "<favs two=\"Can't Take Them All\" />", songs.extend(representer).to_xml(:include => [:two])
-        end
+    #     it "respects :include" do
+    #       assert_xml_equal "<favs two=\"Can't Take Them All\" />", songs.extend(representer).to_xml(:include => [:two])
+    #     end
 
-        it "renders hash with decorator" do
-          decorator.new(songs).to_xml.must_equal_xml xml_doc
-        end
-      end
+    #     it "renders hash with decorator" do
+    #       decorator.new(songs).to_xml.must_equal_xml xml_doc
+    #     end
+    #   end
 
-      describe "#from_json" do
-        it "returns hash" do
-          {}.extend(representer).from_xml(xml_doc).must_equal songs
-        end
+      # describe "#from_json" do
+      #   it "returns hash" do
+      #     {}.extend(representer).from_xml(xml_doc).must_equal songs
+      #   end
 
-        it "respects :exclude" do
-          assert_equal({"two" => "Can't Take Them All"}, {}.extend(representer).from_xml(xml_doc, :exclude => [:one]))
-        end
+      #   it "respects :exclude" do
+      #     assert_equal({"two" => "Can't Take Them All"}, {}.extend(representer).from_xml(xml_doc, :exclude => [:one]))
+      #   end
 
-        it "respects :include" do
-          assert_equal({"one" => "Graveyards"}, {}.extend(representer).from_xml(xml_doc, :include => [:one]))
-        end
+      #   it "respects :include" do
+      #     assert_equal({"one" => "Graveyards"}, {}.extend(representer).from_xml(xml_doc, :include => [:one]))
+      #   end
 
-        it "parses hash with decorator" do
-          decorator.new({}).from_xml(xml_doc).must_equal songs
-        end
-      end
+      #   it "parses hash with decorator" do
+      #     decorator.new({}).from_xml(xml_doc).must_equal songs
+      #   end
+      # end
     end
   end
 end
