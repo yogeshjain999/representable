@@ -22,7 +22,7 @@ module Representable
     end
   end
 
-  # Collect applies a pipeline to each element of options[:fragment].
+  # Collect applies a pipeline to each element of input.
   class Collect
     def self.[](*functions)
       new(Pipeline[*functions])
