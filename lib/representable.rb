@@ -15,6 +15,7 @@ require "representable/cached"
 
 require "uber/callable"
 require "representable/pipeline"
+require "representable/insert" # Pipeline::Insert
 
 module Representable
   attr_writer :representable_attrs

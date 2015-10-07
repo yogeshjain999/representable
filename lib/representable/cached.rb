@@ -23,25 +23,13 @@ module Representable
       self
     end
 
-    # FIXME: this is, of course, WIP.
     module Binding
-      def default_parse_fragment_functions # TODO: make injecting/replacing filters simple.
-        pipeline = super
-        prepare = pipeline.find { |func| puts func; func.instance_of?(Function::Prepare) } or return pipeline
-
-        index = pipeline.index(prepare)
-        pipeline[index] = CachedPrepare.new
-        pipeline
+      def default_parse_fragment_functions
+        Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
       end
 
-      def default_render_fragment_functions # TODO: make injecting/replacing filters simple.
-        pipeline = super
-        prepare = pipeline.find { |func| puts func; func.instance_of?(Function::Prepare) } or return pipeline
-
-        # raise
-        index = pipeline.index(prepare)
-        pipeline[index] = CachedPrepare.new
-        pipeline
+      def default_render_fragment_functions
+        Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
       end
     end
 

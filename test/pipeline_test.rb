@@ -204,32 +204,25 @@ class PipelineTest < MiniTest::Spec
     artists.represented.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
   end
 
-  # describe "passes options to all functions" do
-  #   PrintOptions = ->(options) { options.to_s }
-  #   PassOptions = ->(options) { options.to_a }
+  # TODO: test with arrays, too, not "only" Pipeline instances.
+  describe "#Insert Pipeline[], Function, replace: OldFunction" do
+    let (:pipeline) { P[R::Getter, R::StopOnSkipable, R::StopOnNil] }
 
-  #   it do
-  #     Representable::Pipeline[PrintOptions, PassOptions].(key: true).must_equal([[:key, true], [:result, "{:key=>true}"]])
-  #   end
+    it "replaces if exists" do
+      # pipeline.insert!(R::Default, replace: R::StopOnSkipable)
+      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_equal P[R::Getter, R::Default, R::StopOnNil]
+      pipeline.must_equal P[R::Getter, R::StopOnSkipable, R::StopOnNil]
+    end
 
-  #   it do
-  #     Representable::Pipeline[Representable::Collect[PrintOptions, PassOptions]].(fragment: [{key: true}, {second: true}]).
-  #       must_equal([[[:fragment, {:key=>true}], [:index, 0], [:result, "{:fragment=>{:key=>true}, :index=>0}"]], [[:fragment, {:second=>true}], [:index, 1], [:result, "{:fragment=>{:second=>true}, :index=>1}"]]])
-  #   end
-  # end
+    it "replaces Function instance" do
+      pipeline = P[R::Prepare, R::StopOnSkipable, R::StopOnNil]
+      P::Insert.(pipeline, R::Default, replace: R::Prepare).must_equal P[R::Default, R::StopOnSkipable, R::StopOnNil]
+      pipeline.must_equal P[R::Prepare, R::StopOnSkipable, R::StopOnNil]
+    end
 
-
-  # describe "Debug" do
-  #   it do
-  #     pipe = Representable::Pipeline[SetResult, Stopping, ModifyResult].extend(Representable::Pipeline::Debug)
-  #     pipe.to_s.must_match "pipeline_test.rb:5 (lambda)>, #<Proc:"
-  #   end
-
-  #   it do
-  #     pipe = Representable::Pipeline[Representable::Collect[SetResult, Stopping, ModifyResult]].extend(Representable::Pipeline::Debug)
-  #     pipe.inspect.must_equal "asd"
-  #   end
-  #   # pipe = Representable::Pipeline[Representable::Collect[SetResult, Stopping, ModifyResult]]
-
-  # end
+    it "does not replace when not existing" do
+      P::Insert.(pipeline, R::Default, replace: R::Prepare)
+      pipeline.must_equal P[R::Getter, R::StopOnSkipable, R::StopOnNil]
+    end
+  end
 end
