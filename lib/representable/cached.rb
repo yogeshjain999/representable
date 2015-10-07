@@ -56,24 +56,5 @@ module Representable
         binding.cached_representer = super
       end
     end
-
-    module Serializer
-      def prepare_for(mod, object)
-        if representer = @binding.cached_representer
-          return representer.update!(object)
-        end
-
-        # puts "--------> caching representer for #{object} in #{@binding.object_id}"
-        @binding.cached_representer = super(mod, object)
-      end
-
-      # for Deserializer::Collection.
-      # TODO: this is a temporary solution.
-      def item_deserializer
-        @__item_deserializer ||= super.tap do |deserializer|
-          deserializer.extend(Serializer)
-        end
-      end
-    end
   end
 end
