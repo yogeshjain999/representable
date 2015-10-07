@@ -39,7 +39,7 @@ class PipelineTest < MiniTest::Spec
     # pipeline.(fragment: "yo!").must_equal "modified object from yo!"
   end
 
-  Stopping      = ->(input, fragment:, **o) { return P::Stop if fragment == "stop!"; input }
+  Stopping      = ->(input, options) { return P::Stop if options[:fragment] == "stop!"; input }
 
 
   it "stopping" do
