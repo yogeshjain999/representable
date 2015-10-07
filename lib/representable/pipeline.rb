@@ -29,7 +29,7 @@ module Representable
     end
 
     def initialize(functions)
-      @item_pipeline = functions.extend(Pipeline::Debug)
+      @item_pipeline = functions#.extend(Pipeline::Debug)
     end
 
     # when stop, the element is skipped. (should that be Skip then?)
@@ -48,7 +48,6 @@ module Representable
         {}.tap do |hsh|
           input.each { |key, item_fragment|
             hsh[key] = @item_pipeline.(item_fragment, options) }# DISCUSS: NO :fragment set.
-
         end
       end
     end
