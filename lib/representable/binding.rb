@@ -131,10 +131,6 @@ module Representable
       @definition[name]
     end
 
-    #   1.55      0.031     0.022     0.000     0.009    60004   Representable::Binding#skipable_empty_value?
-    #   1.51      0.030     0.022     0.000     0.008    60004   Representable::Binding#skipable_empty_value?
-    # after polymorphism:
-    # 1.44      0.031     0.022     0.000     0.009    60002   Representable::Binding#skipable_empty_value?
     def skipable_empty_value?(value)
       value.nil? and not self[:render_nil]
     end
@@ -165,8 +161,6 @@ module Representable
       @user_options  = user_options.merge(wrap: false) if self[:wrap] == false
     end
 
-    #   1.80      0.066     0.027     0.000     0.039    30002   Representable::Binding#setup_exec_context!
-    #   0.98      0.034     0.014     0.000     0.020    30002   Representable::Binding#setup_exec_context!
     def setup_exec_context!
       return @exec_context = @represented unless self[:exec_context]
       @exec_context = self             if self[:exec_context] == :binding
