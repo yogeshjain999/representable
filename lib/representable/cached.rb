@@ -10,7 +10,10 @@ module Representable
     # Decorator -> Mapper -> [Binding->Decorator, Binding]
     def representable_mapper(format, options)
       @mapper ||= super.tap do |mapper|
-        mapper.bindings(represented, options).each { |binding| binding.extend(Binding) }
+        mapper.bindings(represented, options).each { |binding|
+          binding.extend(Binding)
+          # raise binding.parse_pipeline.extend(Pipeline::Debug).inspect if binding.typed?
+        }
       end
     end
 
@@ -20,19 +23,37 @@ module Representable
       self
     end
 
-    # TODO: also for deserializer.
-    # TODO: create Populator in Binding, too (easier to override).
+    # FIXME: this is, of course, WIP.
     module Binding
-      def serializer
-        @__serializer ||= super.tap do |serializer|
-          serializer.extend(Serializer)
-        end
+      def default_parse_fragment_functions # TODO: make injecting/replacing filters simple.
+        pipeline = super
+        prepare = pipeline.find { |func| puts func; func.instance_of?(Function::Prepare) } or return pipeline
+
+        # raise
+        index = pipeline.index(prepare)
+        pipeline[index] = CachedPrepare.new
+        pipeline
       end
 
-      def deserializer
-        @__deserializer ||= super.tap do |deserializer|
-          deserializer.extend(Serializer)
+      def default_render_fragment_functions # TODO: make injecting/replacing filters simple.
+        pipeline = super
+        prepare = pipeline.find { |func| puts func; func.instance_of?(Function::Prepare) } or return pipeline
+
+        # raise
+        index = pipeline.index(prepare)
+        pipeline[index] = CachedPrepare.new
+        pipeline
+      end
+    end
+
+    class CachedPrepare < Function::Prepare
+      def prepare_for(mod, object, binding)
+        if representer = binding.cached_representer
+          return representer.update!(object)
         end
+
+        # puts "--------> caching representer for #{object} in #{binding.object_id}"
+        binding.cached_representer = super
       end
     end
 
