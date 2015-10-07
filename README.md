@@ -2,6 +2,11 @@
 
 Representable maps Ruby objects to documents and back.
 
+[![Gitter Chat](https://badges.gitter.im/trailblazer/chat.svg)](https://gitter.im/trailblazer/chat)
+[![Build
+Status](https://travis-ci.org/apotonick/representable.svg)](https://travis-ci.org/apotonick/representable)
+[![Gem Version](https://badge.fury.io/rb/representable.svg)](http://badge.fury.io/rb/representable)
+
 In other words: Take an object and decorate it with a representer module. This will allow you to render a JSON, XML or YAML document from that object. But that's only half of it! You can also use representers to parse a document and create or populate an object.
 
 Representable is helpful for all kind of mappings, rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [Roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
