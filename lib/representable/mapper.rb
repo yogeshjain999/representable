@@ -61,7 +61,7 @@ module Representable
       def skip_conditional_property?(binding)
         return unless condition = binding[:if]
 
-        not binding.evaluate_option_with_deprecation(:if, nil, {}, :user_options)
+        not binding.evaluate_option(:if)
       end
 
       # DISCUSS: this could be just another :if option in a Pipeline?

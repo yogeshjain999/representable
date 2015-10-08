@@ -5,6 +5,7 @@ module Representable::Binding::Deprecation
 
   def evaluate_option(name, options={})
     return evaluate_option_with_deprecation(name, nil, options, :user_options) if name==:as
+    return evaluate_option_with_deprecation(name, nil, options, :user_options) if name==:if
     super
   end
 
