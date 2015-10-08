@@ -9,10 +9,19 @@ module Representable::Binding::Deprecation
     return evaluate_option_with_deprecation(name, input, options, :user_options, &block) if name==:getter
     return evaluate_option_with_deprecation(name, input, options, :doc, :user_options, &block) if name==:writer
     return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:skip_render
+    return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:skip_parse
     return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:serialize
+    return evaluate_option_with_deprecation(name, input, options, :doc, :user_options, &block) if name==:reader
+    return evaluate_option_with_deprecation(name, input, options, :input, :index, :user_options, &block) if name==:instance
+    return evaluate_option_with_deprecation(name, input, options, :input, :index, :user_options, &block) if name==:class
+    return evaluate_option_with_deprecation(name, input, options, :input, :fragment, :user_options, &block) if name==:deserialize
+    return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:prepare
+    return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:extend
+    return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:setter
     super
   end
 
+private
   def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
       unless proc = @definition[name]
         return yield if block_given?

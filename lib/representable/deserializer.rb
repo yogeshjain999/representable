@@ -11,7 +11,7 @@ module Representable
   ReadFragment = ->(input, options) do
     binding = options[:binding]
 
-    binding.evaluate_option_with_deprecation(:reader, input, options, :doc, :user_options) do
+    binding.evaluate_option(:reader, input, options) do
       binding.read(input) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
     end
   end
@@ -36,11 +36,11 @@ module Representable
   end
 
   SkipParse = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:skip_parse, input, options, :input, :user_options) ? Pipeline::Stop : input
+    options[:binding].evaluate_option(:skip_parse, input, options) ? Pipeline::Stop : input
   end
 
   Instance = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:instance, input, options, :input, :index, :user_options)
+    options[:binding].evaluate_option(:instance, input, options)
   end
 
   module Function
@@ -58,7 +58,7 @@ module Representable
       end
 
       def class_from(input, options)
-        options[:binding].evaluate_option_with_deprecation(:class, input, options, :input, :index, :user_options) # FIXME: no additional args passed here, yet.
+        options[:binding].evaluate_option(:class, input, options) # FIXME: no additional args passed here, yet.
       end
 
       def instance_for(input, options)
@@ -69,7 +69,7 @@ module Representable
 
     class Deserialize
       def call(input, options)
-        options[:binding].evaluate_option_with_deprecation(:deserialize, input, options, :input, :fragment, :user_options) do
+        options[:binding].evaluate_option(:deserialize, input, options) do
           demarshal(input, options) # object.from_hash.
         end
       end
@@ -89,13 +89,13 @@ module Representable
         binding = options[:binding]
         options[:result] = input
 
-        binding.evaluate_option_with_deprecation(:prepare, input, options, :result, :user_options) do # FIXME: must be :input, right?
+        binding.evaluate_option(:prepare, input, options) do
           prepare!(input, binding, options)
         end
       end
 
       def prepare!(object, binding, options)
-        mod = binding.evaluate_option_with_deprecation(:extend, object, options, :input, :user_options) # FIXME: write test for extend with lambda
+        mod = binding.evaluate_option(:extend, object, options) # FIXME: write test for extend with lambda
 
         return object unless mod and object # object might be nil.
 
@@ -119,7 +119,7 @@ module Representable
   Setter = ->(input, options) do
     binding = options[:binding]
 
-    binding.evaluate_option_with_deprecation(:setter, input, options, :input, :user_options) do
+    binding.evaluate_option(:setter, input, options) do
       binding.send(:exec_context).send(binding.setter, input)
     end
   end
