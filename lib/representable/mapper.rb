@@ -39,8 +39,6 @@ module Representable
       end
 
       def skip_property?(binding, private_options)
-        return unless private_options[:include] || private_options[:exclude] || binding.skip_filters?
-
         return true if skip_excluded_property?(binding, private_options)  # no need for further evaluation when :exclude'ed
       end
 

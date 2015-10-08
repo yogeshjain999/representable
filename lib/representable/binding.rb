@@ -18,7 +18,6 @@ module Representable
       # static options. do this once.
       @representable    = @definition.representable?
       @name             = @definition.name
-      @skip_filters     = self[:readable]==false || self[:writeable]==false || self[:if] # Does this binding contain :if, :readable or :writeable settings?
       @getter           = @definition.getter
       @setter           = @definition.setter
       @array            = @definition.array?
@@ -32,7 +31,6 @@ module Representable
     alias_method :representable?, :representable
     alias_method :array?, :array
     alias_method :typed?, :typed
-    alias_method :skip_filters?, :skip_filters
     alias_method :has_default?, :has_default
 
     def as # DISCUSS: private?
