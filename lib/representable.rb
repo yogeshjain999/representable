@@ -36,14 +36,14 @@ module Representable
 private
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
-    propagated_options = normalize_options!(options)
+    propagated_options = normalize_options(options)
 
     representable_mapper(format, propagated_options).deserialize(represented, doc, propagated_options)
   end
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    propagated_options = normalize_options!(options)
+    propagated_options = normalize_options(options)
 
     representable_mapper(format, propagated_options).serialize(represented, doc, propagated_options)
   end
@@ -58,16 +58,15 @@ private
 
   # Make sure we do not change original options. However, private options like :include or :wrap are
   # not passed on to child representers.
-  def normalize_options!(options)
+  def normalize_options(options)
     # here, we could also filter out local options e.g. like options[:band].
     return options unless options.any?
-
-    private_options = {}
 
     propagated_options = options.dup
     propagated_options.delete(:wrap) # FIXME.
     propagated_options.delete(:_private)
 
+    private_options = {}
     private_options[:include] = propagated_options.delete(:include) if options[:include]
     private_options[:exclude] = propagated_options.delete(:exclude) if options[:exclude]
 
