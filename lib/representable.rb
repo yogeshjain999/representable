@@ -69,6 +69,9 @@ private
     private_options[:exclude] = propagated_options.delete(:exclude) if options[:exclude]
     propagated_options.delete(:wrap) # FIXME.
 
+    propagated_options.delete(:_private)
+    propagated_options[:_private] = private_options if private_options.any?
+
     [propagated_options, private_options]
   end
 

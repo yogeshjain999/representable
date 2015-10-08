@@ -28,6 +28,7 @@ module Representable
     def default_render_init_functions
       functions = []
       functions << Stop if self[:readable]==false
+      functions << StopOnExcluded
       functions << If if self[:if]
       functions << Getter
       functions << Writer if self[:writer]
@@ -39,6 +40,7 @@ module Representable
     def default_parse_init_functions
       functions = []
       functions << Stop if self[:writeable]==false
+      functions << StopOnExcluded
       functions << If if self[:if]
       functions << ReadFragment
       functions << (has_default? ? Default : StopOnNotFound)

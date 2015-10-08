@@ -48,14 +48,14 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(doc)
-      options = {doc: doc, binding: self}
+      options = {doc: doc, binding: self, _private: user_options[:_private]}
 
       render_pipeline.extend(Pipeline::Debug).(nil, options)
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
-      options = {doc: doc, binding: self}
+      options = {doc: doc, binding: self, _private: user_options[:_private]}
 
       parse_pipeline.extend(Pipeline::Debug).(doc, options)
     end

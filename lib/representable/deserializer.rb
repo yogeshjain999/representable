@@ -126,5 +126,17 @@ module Representable
 
 
   Stop = ->(*) { Pipeline::Stop }
+
   If = ->(input, options) { options[:binding].evaluate_option(:if) ? input : Pipeline::Stop }
+
+  StopOnExcluded = ->(input, options) do
+    return input unless private = options[:_private]
+    return input unless props = (private[:exclude] || private[:include])
+
+    res = props.include?(options[:binding].name.to_sym) # false with include: Stop. false with exclude: go!
+
+    return input if private[:include]&&res
+    return input if private[:exclude]&&!res
+    Pipeline::Stop
+  end
 end

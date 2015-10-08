@@ -15,39 +15,19 @@ module Representable
 
       def deserialize(represented, doc, options, private_options)
         bindings(represented, options).each do |bin|
-          deserialize_property(bin, doc, options, private_options)
+          uncompile_fragment(bin, doc)
         end
         represented
       end
 
       def serialize(represented, doc, options, private_options)
         bindings(represented, options).each do |bin|
-          serialize_property(bin, doc, options, private_options)
+          compile_fragment(bin, doc)
         end
         doc
       end
 
     private
-      def serialize_property(binding, doc, options, private_options)
-        return if skip_property?(binding, private_options)
-        compile_fragment(binding, doc)
-      end
-
-      def deserialize_property(binding, doc, options, private_options)
-        return if skip_property?(binding, private_options)
-        uncompile_fragment(binding, doc)
-      end
-
-      def skip_property?(binding, private_options)
-        return true if skip_excluded_property?(binding, private_options)  # no need for further evaluation when :exclude'ed
-      end
-
-      def skip_excluded_property?(binding, private_options)
-        return unless props = private_options[:exclude] || private_options[:include]
-        res   = props.include?(binding.name.to_sym)
-        private_options[:include] ? !res : res
-      end
-
       def compile_fragment(bin, doc)
         bin.compile_fragment(doc)
       end
