@@ -36,7 +36,7 @@ module Representable
     alias_method :has_default?, :has_default
 
     def as # DISCUSS: private?
-      @as ||= evaluate_option(:as)
+      @as ||= evaluate_option_with_deprecation(:as, nil, {}, :user_options)
     end
 
     # Single entry points for rendering and parsing a property are #compile_fragment
@@ -74,10 +74,10 @@ module Representable
         return
       end
 
-      # TODO: it would be better if user_options was nil per default and then we just don't pass it into lambdas.
-      __options = self[:pass_options] ? Options.new(self, user_options, represented, parent_decorator) : user_options
+      options = args[0] || {} # TODO: this is time consuming, i guess.
+      options[:user_options] = user_options
 
-      proc.(exec_context, *(args<<__options)) # from Uber::Options::Value.
+      proc.(exec_context, options) # from Uber::Options::Value.
     end
 
     def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
@@ -103,7 +103,7 @@ module Representable
       if proc.send(:proc?) or proc.send(:method?)
         arity = proc.instance_variable_get(:@value).arity if proc.send(:proc?)
         arity = exec_context.method(proc.instance_variable_get(:@value)).arity if proc.send(:method?)
-        if arity  != 1 or name==:getter
+        if arity  != 1 or name==:getter or name==:if or name==:as
           warn %{[Representable] Positional arguments for `:#{name}` are deprecated. Please use options or keyword arguments.
   #{name}: ->(options) { options[:#{positional_arguments.join(" | :")}] } or
   #{name}: ->(#{positional_arguments.join(":, ")}:) {  }
