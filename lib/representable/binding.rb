@@ -66,10 +66,6 @@ module Representable
       Getter.(nil, binding: self)
     end
 
-    def representer_module_for(object, *args)
-      evaluate_option(:extend, object) # TODO: pass args? do we actually have args at the time this is called (compile-time)?
-    end
-
     # Evaluate the option (either nil, static, a block or an instance method call) or
     # executes passed block when option not defined.
     def evaluate_option(name, *args)
