@@ -36,7 +36,7 @@ module Representable
     alias_method :has_default?, :has_default
 
     def as # DISCUSS: private?
-      @as ||= evaluate_option_with_deprecation(:as, nil, {}, :user_options)
+      @as ||= evaluate_option(:as)
     end
 
     # Single entry points for rendering and parsing a property are #compile_fragment
@@ -66,19 +66,22 @@ module Representable
       Getter.(nil, binding: self)
     end
 
-    # Evaluate the option (either nil, static, a block or an instance method call) or
-    # executes passed block when option not defined.
-    def evaluate_option(name, *args)
-      unless proc = @definition[name] # TODO: this could dispatch directly to the @definition using #send?
-        return yield if block_given?
-        return
+    module EvaluateOption
+      # Evaluate the option (either nil, static, a block or an instance method call) or
+      # executes passed block when option not defined.
+      def evaluate_option(name, *args)
+        unless proc = @definition[name] # TODO: this could dispatch directly to the @definition using #send?
+          return yield if block_given?
+          return
+        end
+
+        options = args[0] || {} # TODO: this is time consuming, i guess.
+        options[:user_options] = user_options
+
+        proc.(exec_context, options) # from Uber::Options::Value.
       end
-
-      options = args[0] || {} # TODO: this is time consuming, i guess.
-      options[:user_options] = user_options
-
-      proc.(exec_context, options) # from Uber::Options::Value.
     end
+    include EvaluateOption # make it overridable for Deprecation. will be removed in 3.0.
 
     require "representable/deprecations"
     include Deprecation

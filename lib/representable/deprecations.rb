@@ -3,6 +3,11 @@ module Representable::Binding::Deprecation
   # This is considered the new standard way and should be used everywhere for forward-compat.
   Options = Struct.new(:binding, :user_options, :represented, :decorator)
 
+  def evaluate_option(name, options={})
+    return evaluate_option_with_deprecation(name, nil, options, :user_options) if name==:as
+    super
+  end
+
   def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
       unless proc = @definition[name]
         return yield if block_given?
@@ -43,6 +48,6 @@ module Representable::Binding::Deprecation
         end
       end
 
-      evaluate_option(name, options)
+      proc.(name, options)
     end
 end
