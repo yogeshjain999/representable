@@ -29,12 +29,12 @@ module Representable
 
     private
       def serialize_property(binding, doc, options, private_options)
-        return if skip_property?(binding, private_options.merge(:action => :serialize))
+        return if skip_property?(binding, private_options)
         compile_fragment(binding, doc)
       end
 
       def deserialize_property(binding, doc, options, private_options)
-        return if skip_property?(binding, private_options.merge(:action => :deserialize))
+        return if skip_property?(binding, private_options)
         uncompile_fragment(binding, doc)
       end
 
