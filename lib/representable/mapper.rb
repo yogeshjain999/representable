@@ -42,20 +42,12 @@ module Representable
         return unless private_options[:include] || private_options[:exclude] || binding.skip_filters?
 
         return true if skip_excluded_property?(binding, private_options)  # no need for further evaluation when :exclude'ed
-
-        skip_conditional_property?(binding)
       end
 
       def skip_excluded_property?(binding, private_options)
         return unless props = private_options[:exclude] || private_options[:include]
         res   = props.include?(binding.name.to_sym)
         private_options[:include] ? !res : res
-      end
-
-      def skip_conditional_property?(binding)
-        return unless condition = binding[:if]
-
-        not binding.evaluate_option(:if)
       end
 
       def compile_fragment(bin, doc)

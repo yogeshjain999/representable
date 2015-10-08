@@ -124,5 +124,7 @@ module Representable
     end
   end
 
+
   Stop = ->(*) { Pipeline::Stop }
+  If = ->(input, options) { options[:binding].evaluate_option(:if) ? input : Pipeline::Stop }
 end
