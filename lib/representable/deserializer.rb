@@ -123,4 +123,6 @@ module Representable
       binding.send(:exec_context).send(binding.setter, input)
     end
   end
+
+  Stop = ->(*) { Pipeline::Stop }
 end

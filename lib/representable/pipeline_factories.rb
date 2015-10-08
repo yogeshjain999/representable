@@ -26,7 +26,9 @@ module Representable
     end
 
     def default_render_init_functions
-      functions = [Getter]
+      functions = []
+      functions << Stop if self[:readable]==false
+      functions << Getter
       functions << Writer if self[:writer]
       functions << RenderFilter if self[:render_filter].any?
       functions << RenderDefault if has_default?
@@ -34,7 +36,9 @@ module Representable
     end
 
     def default_parse_init_functions
-      functions = [ReadFragment]
+      functions = []
+      functions << Stop if self[:writeable]==false
+      functions << ReadFragment
       functions << (has_default? ? Default : StopOnNotFound)
       functions << OverwriteOnNil # include StopOnNil if you don't want to erase things.
     end
