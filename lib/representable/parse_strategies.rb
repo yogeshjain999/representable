@@ -7,6 +7,8 @@ module Representable
     def self.apply!(options)
       return unless strategy = options[:parse_strategy]
 
+      warn "[Representable] :parse_strategy is deprecated. Please use a populator."
+
       strategy = :proc if strategy.is_a?(::Proc)
 
       parse_strategies[strategy].apply!(name, options)
