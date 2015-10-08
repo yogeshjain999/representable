@@ -36,16 +36,16 @@ module Representable
 private
   # Reads values from +doc+ and sets properties accordingly.
   def update_properties_from(doc, options, format)
-    propagated_options, private_options = normalize_options!(options)
+    propagated_options = normalize_options!(options)
 
-    representable_mapper(format, propagated_options).deserialize(represented, doc, propagated_options, private_options)
+    representable_mapper(format, propagated_options).deserialize(represented, doc, propagated_options)
   end
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    propagated_options, private_options = normalize_options!(options)
+    propagated_options = normalize_options!(options)
 
-    representable_mapper(format, propagated_options).serialize(represented, doc, propagated_options, private_options)
+    representable_mapper(format, propagated_options).serialize(represented, doc, propagated_options)
   end
 
   def representable_bindings_for(format, options)
@@ -60,19 +60,20 @@ private
   # not passed on to child representers.
   def normalize_options!(options)
     # here, we could also filter out local options e.g. like options[:band].
+    return options unless options.any?
+
     private_options = {}
-    return [options, private_options] if options.size == 0
 
     propagated_options = options.dup
+    propagated_options.delete(:wrap) # FIXME.
+    propagated_options.delete(:_private)
 
     private_options[:include] = propagated_options.delete(:include) if options[:include]
     private_options[:exclude] = propagated_options.delete(:exclude) if options[:exclude]
-    propagated_options.delete(:wrap) # FIXME.
 
-    propagated_options.delete(:_private)
     propagated_options[:_private] = private_options if private_options.any?
 
-    [propagated_options, private_options]
+    propagated_options
   end
 
   def representable_attrs

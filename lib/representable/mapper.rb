@@ -13,14 +13,14 @@ module Representable
         end
       end
 
-      def deserialize(represented, doc, options, private_options)
+      def deserialize(represented, doc, options)
         bindings(represented, options).each do |bin|
           uncompile_fragment(bin, doc)
         end
         represented
       end
 
-      def serialize(represented, doc, options, private_options)
+      def serialize(represented, doc, options)
         bindings(represented, options).each do |bin|
           compile_fragment(bin, doc)
         end
