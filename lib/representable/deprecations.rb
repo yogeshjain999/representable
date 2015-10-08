@@ -3,9 +3,13 @@ module Representable::Binding::Deprecation
   # This is considered the new standard way and should be used everywhere for forward-compat.
   Options = Struct.new(:binding, :user_options, :represented, :decorator)
 
-  def evaluate_option(name, options={})
-    return evaluate_option_with_deprecation(name, nil, options, :user_options) if name==:as
-    return evaluate_option_with_deprecation(name, nil, options, :user_options) if name==:if
+  def evaluate_option(name, input=nil, options={}, &block)
+    return evaluate_option_with_deprecation(name, input, options, :user_options, &block) if name==:as
+    return evaluate_option_with_deprecation(name, input, options, :user_options, &block) if name==:if
+    return evaluate_option_with_deprecation(name, input, options, :user_options, &block) if name==:getter
+    return evaluate_option_with_deprecation(name, input, options, :doc, :user_options, &block) if name==:writer
+    return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:skip_render
+    return evaluate_option_with_deprecation(name, input, options, :input, :user_options, &block) if name==:serialize
     super
   end
 

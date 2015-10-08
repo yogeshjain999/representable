@@ -2,13 +2,13 @@ module Representable
   Getter = ->(input, options) do
     binding = options[:binding]
 
-    binding.evaluate_option_with_deprecation(:getter, input, options, :user_options) do # TODO: should we have binding.get doing the block content?
+    binding.evaluate_option(:getter, input, options) do # TODO: should we have binding.get doing the block content?
       binding.send(:exec_context).send(binding.getter)
     end
   end
 
   Writer = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:writer, input, options, :doc, :user_options)
+    options[:binding].evaluate_option(:writer, input, options)
     Pipeline::Stop
   end
 
@@ -28,7 +28,7 @@ module Representable
   end
 
   SkipRender = ->(input, options) do
-    options[:binding].evaluate_option_with_deprecation(:skip_render, input, options, :input, :user_options) ? Pipeline::Stop : input
+    options[:binding].evaluate_option(:skip_render, input, options) ? Pipeline::Stop : input
   end
 
   Serialize = ->(input, options) do
@@ -36,7 +36,7 @@ module Representable
 
     return if input.nil?
 
-    binding.evaluate_option_with_deprecation(:serialize, input, options, :input, :user_options) do
+    binding.evaluate_option(:serialize, input, options) do
       input.send(binding.serialize_method, binding.user_options) # FIXME: what options here?
     end
   end

@@ -69,7 +69,7 @@ module Representable
     module EvaluateOption
       # Evaluate the option (either nil, static, a block or an instance method call) or
       # executes passed block when option not defined.
-      def evaluate_option(name, *args)
+      def evaluate_option(name, input=nil, *args)
         unless proc = @definition[name] # TODO: this could dispatch directly to the @definition using #send?
           return yield if block_given?
           return
