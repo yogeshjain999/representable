@@ -77,9 +77,9 @@ module Representable
 
     private
       def demarshal(input, options)
-        binding = options[:binding]
+        binding, fragment, user_options = options[:binding], options[:fragment], options[:user_options]
 
-        fragment, user_options = options[:fragment], options[:user_options]
+        user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
         input.send(binding.deserialize_method, fragment, user_options)
       end
     end

@@ -32,12 +32,14 @@ module Representable
   end
 
   Serialize = ->(input, options) do
-    binding = options[:binding]
+    return if input.nil? # DISCUSS: how can we prevent that?
 
-    return if input.nil?
+    binding, user_options = options[:binding], options[:user_options]
 
     binding.evaluate_option(:serialize, input, options) do
-      input.send(binding.serialize_method, options[:user_options]) # FIXME: what options here?
+      user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
+
+      input.send(binding.serialize_method, user_options)
     end
   end
 
