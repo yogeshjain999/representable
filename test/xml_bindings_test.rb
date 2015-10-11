@@ -33,7 +33,7 @@ class XMLBindingTest < MiniTest::Spec
       end
 
       it "extracts with #read" do
-        assert_equal "The Gargoyle", @property.read(Nokogiri::XML("<song name=\"The Gargoyle\" />").root, "song")
+        assert_equal "The Gargoyle", @property.read(Nokogiri::XML("<song name=\"The Gargoyle\" />").root, "name")
       end
 
       it "inserts with #write" do
