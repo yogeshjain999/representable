@@ -6,7 +6,7 @@ class StopWhenIncomingObjectFragmentIsNilTest < MiniTest::Spec
 
   representer!(decorator: true) do
     property :id
-    collection :songs, class: Song, parse_pipeline: ->(options) { # TODO: test if :doc is set for parsing. test if options are ok and contain :user_options!
+    collection :songs, class: Song, parse_pipeline: ->(input, options) { # TODO: test if :doc is set for parsing. test if options are ok and contain :user_options!
                 Representable::Pipeline[*parse_functions.insert(3, Representable::StopOnNil)]
                 } do
       property :title
@@ -30,11 +30,40 @@ class RenderPipelineOptionTest < MiniTest::Spec
   NilToNA = ->(input, options) { input.nil? ? "n/a" : input }
 
   representer!(decorator: true) do
-    property :id, render_pipeline: ->(options) do
-      Representable::Pipeline[*render_functions.insert(2, NilToNA)]
-    end# TODO: test if options are ok
+    include Representable::Cached
+    property :id, render_pipeline: ->(input, options) do
+      Representable::Pipeline[*render_functions.insert(2, options[:user_options][:function])]
+    end
   end
 
-  it { representer.new(Album.new).extend(Representable::Debug).to_hash.must_equal({"id"=>"n/a"}) }
-  it { representer.new(Album.new(1)).to_hash.must_equal({"id"=>1}) }
+  it { representer.new(Album.new).to_hash(function: NilToNA).must_equal({"id"=>"n/a"}) }
+  it { representer.new(Album.new(1)).to_hash(function: NilToNA).must_equal({"id"=>1}) }
+
+  it "is cached" do
+    decorator = representer.new(Album.new)
+    decorator.to_hash(function: NilToNA).must_equal({"id"=>"n/a"})
+    decorator.to_hash(function: nil).must_equal({"id"=>"n/a"}) # non-sense function is not applied.
+  end
+
+end
+
+class ParsePipelineOptionTest < MiniTest::Spec
+  Album   = Struct.new(:id, :songs)
+  NilToNA = ->(input, options) { input.nil? ? "n/a" : input }
+
+  representer!(decorator: true) do
+    include Representable::Cached
+    property :id, parse_pipeline: ->(input, options) do
+      Representable::Pipeline[*parse_functions.insert(2, options[:user_options][:function])].extend(Representable::Pipeline::Debug)
+    end
+  end
+
+  it { representer.new(Album.new).from_hash({"id"=>nil}, function: NilToNA).id.must_equal "n/a" }
+  it { representer.new(Album.new(1)).to_hash(function: NilToNA).must_equal({"id"=>1}) }
+
+  it "is cached" do
+    decorator = representer.new(Album.new)
+    decorator.from_hash({"id"=>nil}, function: NilToNA).id.must_equal "n/a"
+    decorator.from_hash({"id"=>nil}, function: nil).id.must_equal "n/a" # non-sense function is not applied.
+  end
 end

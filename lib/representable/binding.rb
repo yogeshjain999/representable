@@ -44,12 +44,12 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(options)
-      render_pipeline.(nil, options)
+      render_pipeline(nil, options).(nil, options)
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(options)
-      parse_pipeline.(options[:doc], options)
+      parse_pipeline(options[:doc], options).(options[:doc], options)
     end
 
     def get # DISCUSS: evluate if we really need this.
@@ -107,12 +107,12 @@ module Representable
 
     attr_reader :exec_context, :parent_decorator
 
-    def parse_pipeline# TODO: pass options and input
-      @parse_pipeline ||= pipeline_for(:parse_pipeline, nil, {}) { Pipeline[*parse_functions] } # untested. # FIXME.
+    def parse_pipeline(input, options)
+      @parse_pipeline ||= pipeline_for(:parse_pipeline, input, options) { Pipeline[*parse_functions] }
     end
 
-    def render_pipeline
-      @render_pipeline ||= pipeline_for(:render_pipeline, nil, {}) { Pipeline[*render_functions] } # untested. # FIXME.
+    def render_pipeline(input, options)
+      @render_pipeline ||= pipeline_for(:render_pipeline, input, options) { Pipeline[*render_functions] }
     end
 
     # generics for collection bindings.

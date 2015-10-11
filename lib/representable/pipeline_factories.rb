@@ -4,7 +4,7 @@ module Representable
     def pipeline_for(name, input, options)
       return yield unless proc = @definition[name]
       # proc.(self, options)
-      instance_exec(options, &proc)
+      instance_exec(input, options, &proc)
     end
 
     # i decided not to use polymorphism here for the sake of clarity.
