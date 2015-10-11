@@ -33,11 +33,6 @@ module Representable
     alias_method :typed?, :typed
     alias_method :has_default?, :has_default
 
-    def as # DISCUSS: private?
-      # raise
-      @as ||= evaluate_option(:as, nil, {})
-    end
-
     # Single entry points for rendering and parsing a property are #compile_fragment
     # and #uncompile_fragment in Mapper.
     #
@@ -49,15 +44,11 @@ module Representable
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(options)
-      # options = {doc: doc, binding: self, _private: user_options[:_private]}
-
       render_pipeline.(nil, options)
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(options)
-      # options = {doc: doc, binding: self, _private: user_options[:_private]}
-
       parse_pipeline.(options[:doc], options)
     end
 

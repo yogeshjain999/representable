@@ -20,18 +20,18 @@ module Representable
           parent << wrap_node = node_for(parent, wrap)
         end
 
-        wrap_node << serialize_for(fragments, parent)
+        wrap_node << serialize_for(fragments, parent, as)
       end
 
       def read(node, as)
-        nodes = find_nodes(node)
+        nodes = find_nodes(node, as)
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
 
         deserialize_from(nodes)
       end
 
       # Creates wrapped node for the property.
-      def serialize_for(value, parent)
+      def serialize_for(value, parent, as)
         node = node_for(parent, as)
         serialize_node(node, value)
       end
@@ -57,13 +57,9 @@ module Representable
       end
 
     private
-      def xpath
-        as
-      end
-
-      def find_nodes(doc)
-        selector  = xpath
-        selector  = "#{self[:wrap]}/#{xpath}" if self[:wrap]
+      def find_nodes(doc, as)
+        selector  = as
+        selector  = "#{self[:wrap]}/#{as}" if self[:wrap]
         nodes     = doc.xpath(selector)
       end
 
@@ -81,9 +77,9 @@ module Representable
       class Collection < self
         include Representable::Binding::Collection
 
-        def serialize_for(value, parent)
+        def serialize_for(value, parent, as)
           # return NodeSet so << works.
-          set_for(parent, value.collect { |item| super(item, parent) })
+          set_for(parent, value.collect { |item| super(item, parent, as) })
         end
 
         def deserialize_from(nodes)
@@ -103,7 +99,7 @@ module Representable
 
       class Hash < Collection
 
-        def serialize_for(value, parent)
+        def serialize_for(value, parent, as)
           set_for(parent, value.collect do |k, v|
             node = node_for(parent, k)
             serialize_node(node, v)
@@ -142,12 +138,12 @@ module Representable
           node[as]
         end
 
-        def serialize_for(value, parent)
+        def serialize_for(value, parent, as)
           parent[as] = value.to_s
         end
 
         def write(parent, value, as)
-          serialize_for(value, parent)
+          serialize_for(value, parent, as)
         end
       end
 
