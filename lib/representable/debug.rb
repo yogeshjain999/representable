@@ -42,12 +42,12 @@ module Representable
         value
       end
 
-      def populator
-        super.extend(Populator)
+      def parse_pipeline(*)
+        super.extend(Pipeline::Debug)
       end
 
-      def serializer
-        super.extend(Serializer)
+      def render_pipeline(*)
+        super.extend(Pipeline::Debug)
       end
     end
 

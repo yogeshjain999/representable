@@ -50,14 +50,14 @@ module Representable
     def compile_fragment(doc)
       options = {doc: doc, binding: self, _private: user_options[:_private]}
 
-      render_pipeline.extend(Pipeline::Debug).(nil, options)
+      render_pipeline.(nil, options)
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(doc)
       options = {doc: doc, binding: self, _private: user_options[:_private]}
 
-      parse_pipeline.extend(Pipeline::Debug).(doc, options)
+      parse_pipeline.(doc, options)
     end
 
     def get # DISCUSS: evluate if we really need this.

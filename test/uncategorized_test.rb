@@ -26,8 +26,7 @@ class StopWhenIncomingObjectFragmentIsNilTest < MiniTest::Spec
 end
 
 class RenderPipelineOptionTest < MiniTest::Spec
-  Album = Struct.new(:id, :songs)
-
+  Album   = Struct.new(:id, :songs)
   NilToNA = ->(input, options) { input.nil? ? "n/a" : input }
 
   representer!(decorator: true) do
@@ -36,6 +35,6 @@ class RenderPipelineOptionTest < MiniTest::Spec
     end# TODO: test if options are ok
   end
 
-  it { representer.new(Album.new).to_hash.must_equal({"id"=>"n/a"}) }
+  it { representer.new(Album.new).extend(Representable::Debug).to_hash.must_equal({"id"=>"n/a"}) }
   it { representer.new(Album.new(1)).to_hash.must_equal({"id"=>1}) }
 end
