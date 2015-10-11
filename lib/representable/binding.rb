@@ -67,8 +67,8 @@ module Representable
     module EvaluateOption
       # Evaluate the option (either nil, static, a block or an instance method call) or
       # executes passed block when option not defined.
-      def evaluate_option(name, input=nil)
-        unless proc = @definition[name] # TODO: this could dispatch directly to the @definition using #send?
+      def evaluate_option(name, input=nil) # TODO: remove this, we don't need a decider anymore.
+        unless proc = @definition[name]
           return yield if block_given?
           return
         end
@@ -125,12 +125,12 @@ module Representable
 
     attr_reader :exec_context, :parent_decorator
 
-    def parse_pipeline
-      @parse_pipeline ||= evaluate_option(:parse_pipeline) { Pipeline[*parse_functions] } # untested. # FIXME.
+    def parse_pipeline# TODO: pass options and input
+      @parse_pipeline ||= pipeline_for(:parse_pipeline, nil, {}) { Pipeline[*parse_functions] } # untested. # FIXME.
     end
 
     def render_pipeline
-      @render_pipeline ||= Pipeline[*render_functions]
+      @render_pipeline ||= pipeline_for(:render_pipeline, nil, {}) { Pipeline[*render_functions] } # untested. # FIXME.
     end
 
     # generics for collection bindings.

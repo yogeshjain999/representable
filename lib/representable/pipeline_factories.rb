@@ -1,6 +1,12 @@
 # NOTE: this might become a separate class, that's why it's in a separate file.
 module Representable
   module Binding::Factories
+    def pipeline_for(name, input, options)
+      return yield unless proc = @definition[name]
+      # proc.(self, options)
+      instance_exec(options, &proc)
+    end
+
     # i decided not to use polymorphism here for the sake of clarity.
     def collect_for(item_functions)
       return Collect[*item_functions] if array?
