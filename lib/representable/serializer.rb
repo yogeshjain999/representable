@@ -37,9 +37,11 @@ module Representable
     return if input.nil?
 
     binding.evaluate_option(:serialize, input, options) do
-      input.send(binding.serialize_method, binding.user_options) # FIXME: what options here?
+      input.send(binding.serialize_method, options[:user_options]) # FIXME: what options here?
     end
   end
 
-  WriteFragment = ->(input, options) { options[:binding].write(options[:doc], input) }
+  WriteFragment = ->(input, options) { options[:binding].write(options[:doc], input, As.(input, options)) }
+
+  As = ->(input, options) { options[:binding].evaluate_option(:as, input, options) }
 end

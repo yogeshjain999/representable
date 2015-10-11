@@ -6,7 +6,7 @@ class RepresentTest < MiniTest::Spec
 
   for_formats(
     :hash => [Representable::Hash, out=[{"name" => "Days Go By"}, {"name"=>"Can't Take Them All"}], out],
-    :json => [Representable::JSON, out="[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]", out],
+    # :json => [Representable::JSON, out="[{\"name\":\"Days Go By\"},{\"name\":\"Can't Take Them All\"}]", out],
     # :xml  => [Representable::XML,  out="<a><song></song><song></song></a>", out]
   ) do |format, mod, output, input|
 
@@ -40,7 +40,7 @@ class RepresentTest < MiniTest::Spec
       }
 
       it { render(representer.represent(songs)).must_equal_document output }
-      it { parse(representer.represent([]), input).must_equal songs }
+      it("ficken") { parse(representer.represent([]), input).must_equal songs }
     end
   end
 

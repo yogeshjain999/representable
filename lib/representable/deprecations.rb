@@ -35,12 +35,12 @@ private
       __options = if self[:pass_options]
         warn %{[Representable] The :pass_options option is deprecated. Please access environment objects via options[:binding].
   Learn more here: http://trailblazerb.org/gems/representable/upgrading-guide.html#pass-options}
-        Options.new(self, user_options, represented, parent_decorator)
+        Options.new(self, options[:user_options], represented, parent_decorator)
       else
-        user_options
+        # user_options
+        options[:user_options]
       end
-      options[:user_options] = __options # TODO: always make this user_options in Representable 3.0.
-
+      # options[:user_options] = __options # TODO: always make this user_options in Representable 3.0.
 
       if proc.send(:proc?) or proc.send(:method?)
         arity = proc.instance_variable_get(:@value).arity if proc.send(:proc?)

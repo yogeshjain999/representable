@@ -34,7 +34,8 @@ module Representable
     alias_method :has_default?, :has_default
 
     def as # DISCUSS: private?
-      @as ||= evaluate_option(:as)
+      # raise
+      @as ||= evaluate_option(:as, nil, {})
     end
 
     # Single entry points for rendering and parsing a property are #compile_fragment
@@ -47,17 +48,17 @@ module Representable
     # goal is to have two objects for 2 entirely different tasks.
 
     # Retrieve value and write fragment to the doc.
-    def compile_fragment(doc)
-      options = {doc: doc, binding: self, _private: user_options[:_private]}
+    def compile_fragment(options)
+      # options = {doc: doc, binding: self, _private: user_options[:_private]}
 
       render_pipeline.(nil, options)
     end
 
     # Parse value from doc and update the model property.
-    def uncompile_fragment(doc)
-      options = {doc: doc, binding: self, _private: user_options[:_private]}
+    def uncompile_fragment(options)
+      # options = {doc: doc, binding: self, _private: user_options[:_private]}
 
-      parse_pipeline.(doc, options)
+      parse_pipeline.(options[:doc], options)
     end
 
     def get # DISCUSS: evluate if we really need this.
@@ -73,7 +74,7 @@ module Representable
           return
         end
 
-        options = {user_options: user_options} # TODO: this is time consuming, i guess.
+        # options = {user_options: user_options} # TODO: this is time consuming, i guess.
 
         proc.(exec_context, options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end

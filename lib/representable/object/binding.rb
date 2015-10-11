@@ -6,14 +6,14 @@ module Representable
         new(definition, *args)
       end
 
-      def read(hash)
+      def read(hash, as)
         fragment = hash.send(as) # :getter? no, that's for parsing!
 
         return FragmentNotFound if fragment.nil? and typed?
         fragment
       end
 
-      def write(hash, fragment)
+      def write(hash, fragment, as)
         true
       end
 

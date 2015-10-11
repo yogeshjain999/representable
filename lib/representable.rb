@@ -43,7 +43,7 @@ private
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    propagated_options = normalize_options(options)
+    propagated_options = normalize_options(options) # {_private: {include: }, is_admin: true}
 
     representable_mapper(format, propagated_options).serialize(represented, doc, propagated_options)
   end

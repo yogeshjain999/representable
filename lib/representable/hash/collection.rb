@@ -29,7 +29,7 @@ module Representable::Hash
       bin   = representable_mapper(format, options).bindings(represented, options).first
 
       value = Collect[*bin.default_parse_fragment_functions].
-        (doc, fragment: doc, document: doc, binding: bin)
+        (doc, fragment: doc, document: doc, user_options: options, binding: bin)
 
       represented.replace(value)
     end

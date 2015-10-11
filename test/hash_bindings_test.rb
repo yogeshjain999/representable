@@ -19,13 +19,13 @@ class HashBindingTest < MiniTest::Spec
       end
 
       it "returns fragment if present" do
-        assert_equal "Stick The Flag Up Your Goddamn Ass, You Sonofabitch", @property.read({"song" => "Stick The Flag Up Your Goddamn Ass, You Sonofabitch"})
-        assert_equal "", @property.read({"song" => ""})
-        assert_equal nil, @property.read({"song" => nil})
+        assert_equal "Stick The Flag Up Your Goddamn Ass, You Sonofabitch", @property.read({"song" => "Stick The Flag Up Your Goddamn Ass, You Sonofabitch"}, "song")
+        assert_equal "", @property.read({"song" => ""}, "song")
+        assert_equal nil, @property.read({"song" => nil}, "song")
       end
 
       it "returns FRAGMENT_NOT_FOUND if not in document" do
-        assert_equal Representable::Binding::FragmentNotFound, @property.read({})
+        assert_equal Representable::Binding::FragmentNotFound, @property.read({}, "song")
       end
 
     end
@@ -39,12 +39,12 @@ class HashBindingTest < MiniTest::Spec
       end
 
       it "extracts with #read" do
-        assert_equal ["The Gargoyle", "Bronx"], @property.read("songs" => ["The Gargoyle", "Bronx"])
+        assert_equal ["The Gargoyle", "Bronx"], @property.read({"songs" => ["The Gargoyle", "Bronx"]}, "songs")
       end
 
       it "inserts with #write" do
         doc = {}
-        assert_equal(["The Gargoyle", "Bronx"], @property.write(doc, ["The Gargoyle", "Bronx"]))
+        assert_equal(["The Gargoyle", "Bronx"], @property.write(doc, ["The Gargoyle", "Bronx"], "songs"))
         assert_equal({"songs"=>["The Gargoyle", "Bronx"]}, doc)
       end
     end
@@ -60,12 +60,12 @@ class HashBindingTest < MiniTest::Spec
       end
 
       it "extracts with #read" do
-        assert_equal({"first" => "The Gargoyle", "second" => "Bronx"} , @property.read("songs" => {"first" => "The Gargoyle", "second" => "Bronx"}))
+        assert_equal({"first" => "The Gargoyle", "second" => "Bronx"} , @property.read({"songs" => {"first" => "The Gargoyle", "second" => "Bronx"}}, "songs"))
       end
 
       it "inserts with #write" do
         doc = {}
-        assert_equal({"first" => "The Gargoyle", "second" => "Bronx"}, @property.write(doc, {"first" => "The Gargoyle", "second" => "Bronx"}))
+        assert_equal({"first" => "The Gargoyle", "second" => "Bronx"}, @property.write(doc, {"first" => "The Gargoyle", "second" => "Bronx"}, "songs"))
         assert_equal({"songs"=>{"first" => "The Gargoyle", "second" => "Bronx"}}, doc)
       end
     end
@@ -78,7 +78,7 @@ class HashBindingTest < MiniTest::Spec
       it "doesn't change the represented hash in #write" do
         song = Song.new("Better Than That")
         hash = {"first" => song}
-        @property.write({}, hash)
+        @property.write({}, hash, "song")
         assert_equal({"first" => song}, hash)
       end
     end

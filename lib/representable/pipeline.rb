@@ -29,7 +29,7 @@ module Representable
     end
 
     def initialize(functions)
-      @item_pipeline = functions#.extend(Pipeline::Debug)
+      @item_pipeline = functions.extend(Pipeline::Debug)
     end
 
     # when stop, the element is skipped. (should that be Skip then?)

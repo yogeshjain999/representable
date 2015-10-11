@@ -8,11 +8,11 @@ module Representable
         new(definition, *args)
       end
 
-      def read(hash)
+      def read(hash, as)
         hash.has_key?(as) ? hash[as] : FragmentNotFound
       end
 
-      def write(hash, fragment)
+      def write(hash, fragment, as)
         hash[as] = fragment
       end
 

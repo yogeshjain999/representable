@@ -8,7 +8,7 @@ module Representable
         new(definition, *args)
       end
 
-      def write(map, fragment)
+      def write(map, fragment, as)
         map.children << Psych::Nodes::Scalar.new(as)
         map.children << node_for(fragment)  # FIXME: should be serialize.
       end

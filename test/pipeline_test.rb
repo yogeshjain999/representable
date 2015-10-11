@@ -117,7 +117,7 @@ class PipelineTest < MiniTest::Spec
       R::Prepare,
       R::Serialize,
       R::WriteFragment
-    ].extend(P::Debug).(nil, {binding: artist, doc: doc}).must_equal({"name" => "Diesel Boy"})
+    ].extend(P::Debug).(nil, {binding: artist, doc: doc, user_options: {}}).must_equal({"name" => "Diesel Boy"})
 
     doc.must_equal({"artist"=>{"name"=>"Diesel Boy"}})
   end
@@ -132,7 +132,7 @@ class PipelineTest < MiniTest::Spec
       R::Prepare,
       R::Deserialize,
       R::Setter,
-    ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {binding: artist, doc: doc}).must_equal model=Artist.new("Doobie Brothers")
+    ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {binding: artist, doc: doc, user_options: {}}).must_equal model=Artist.new("Doobie Brothers")
     artist.represented.artist.must_equal model
   end
 
@@ -179,7 +179,7 @@ class PipelineTest < MiniTest::Spec
         R::Serialize,
       ],
       R::WriteFragment
-    ].extend(P::Debug).(nil, {binding: artists, doc: doc}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
+    ].extend(P::Debug).(nil, {binding: artists, doc: doc, user_options: {}}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
 
     doc.must_equal({"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]})
   end
@@ -199,7 +199,7 @@ class PipelineTest < MiniTest::Spec
         R::Deserialize,
       ],
       R::Setter,
-    ].extend(P::Debug).(doc, {binding: artists, doc: doc}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
+    ].extend(P::Debug).(doc, {binding: artists, doc: doc, user_options: {}}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
 
     artists.represented.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
   end

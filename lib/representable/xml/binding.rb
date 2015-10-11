@@ -13,7 +13,7 @@ module Representable
         new(definition, *args)
       end
 
-      def write(parent, fragments)
+      def write(parent, fragments, as)
         wrap_node = parent
 
         if wrap = self[:wrap]
@@ -23,7 +23,7 @@ module Representable
         wrap_node << serialize_for(fragments, parent)
       end
 
-      def read(node)
+      def read(node, as)
         nodes = find_nodes(node)
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
 
@@ -122,7 +122,7 @@ module Representable
 
       class AttributeHash < Collection
         # DISCUSS: use AttributeBinding here?
-        def write(parent, value)  # DISCUSS: is it correct overriding #write here?
+        def write(parent, value, as)  # DISCUSS: is it correct overriding #write here?
           value.collect do |k, v|
             parent[k] = v.to_s
           end
@@ -138,7 +138,7 @@ module Representable
 
       # Represents a tag attribute. Currently this only works on the top-level tag.
       class Attribute < self
-        def read(node)
+        def read(node, as)
           node[as]
         end
 
@@ -146,14 +146,14 @@ module Representable
           parent[as] = value.to_s
         end
 
-        def write(parent, value)
+        def write(parent, value, as)
           serialize_for(value, parent)
         end
       end
 
       # Represents tag content.
       class Content < self
-        def read(node)
+        def read(node, as)
           node.content
         end
 
@@ -161,7 +161,7 @@ module Representable
           parent.content = value.to_s
         end
 
-        def write(parent, value)
+        def write(parent, value, as)
           serialize_for(value, parent)
         end
       end

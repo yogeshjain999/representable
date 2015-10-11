@@ -33,12 +33,12 @@ class XMLBindingTest < MiniTest::Spec
       end
 
       it "extracts with #read" do
-        assert_equal "The Gargoyle", @property.read(Nokogiri::XML("<song name=\"The Gargoyle\" />").root)
+        assert_equal "The Gargoyle", @property.read(Nokogiri::XML("<song name=\"The Gargoyle\" />").root, "song")
       end
 
       it "inserts with #write" do
         parent = Nokogiri::XML::Node.new("song", @doc)
-        @property.write(parent, "The Gargoyle")
+        @property.write(parent, "The Gargoyle", "song")
         assert_xml_equal("<song name=\"The Gargoyle\" />", parent.to_s)
       end
     end
@@ -50,12 +50,12 @@ class XMLBindingTest < MiniTest::Spec
     end
 
     it "extracts with #read" do
-      assert_equal "The Gargoyle", @property.read(Nokogiri::XML("<song>The Gargoyle</song>").root)
+      assert_equal "The Gargoyle", @property.read(Nokogiri::XML("<song>The Gargoyle</song>").root, "song")
     end
 
     it "inserts with #write" do
       parent = Nokogiri::XML::Node.new("song", @doc)
-      @property.write(parent, "The Gargoyle")
+      @property.write(parent, "The Gargoyle", "song")
       assert_xml_equal("<song>The Gargoyle</song>", parent.to_s)
     end
   end

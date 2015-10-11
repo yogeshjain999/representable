@@ -158,7 +158,7 @@ class LonelyRepresenterTest < MiniTest::Spec
           assert_equal({"two" => Song.new("Can't Take Them All")}, {}.extend(representer).from_json(json, :exclude => [:one]))
         end
 
-        it "respects :include" do
+        it "xxxrespects :include" do
           assert_equal({"one" => Song.new("Days Go By")}, {}.extend(representer).from_json(json, :include => [:one]))
         end
       end

@@ -12,7 +12,8 @@ module Representable
     binding = options[:binding]
 
     binding.evaluate_option(:reader, input, options) do
-      binding.read(input) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
+      as = As.(input, options)
+      binding.read(input, as) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
     end
   end
 
@@ -78,7 +79,7 @@ module Representable
       def demarshal(input, options)
         binding = options[:binding]
 
-        fragment, user_options = options[:fragment], binding.user_options
+        fragment, user_options = options[:fragment], options[:user_options]
         input.send(binding.deserialize_method, fragment, user_options)
       end
     end
@@ -126,7 +127,7 @@ module Representable
 
   Stop = ->(*) { Pipeline::Stop }
 
-  If = ->(input, options) { options[:binding].evaluate_option(:if) ? input : Pipeline::Stop }
+  If = ->(input, options) { options[:binding].evaluate_option(:if, nil, options) ? input : Pipeline::Stop }
 
   StopOnExcluded = ->(input, options) do
     return input unless private = options[:_private]

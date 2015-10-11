@@ -9,31 +9,39 @@ module Representable
 
       def bindings(represented, options)
         @bindings.each do |binding|
-          binding.update!(represented, options)
+          binding.update!(represented, options[:user_options])
         end
       end
 
       def deserialize(represented, doc, options)
+        options = {doc: doc, _private: options[:_private], user_options: options}
+
         bindings(represented, options).each do |bin|
-          uncompile_fragment(bin, doc)
+          uncompile_fragment(bin, options)
         end
         represented
       end
 
-      def serialize(represented, doc, options)
+      def serialize(represented, doc, options) # options {is_admin: true, _private: {}}
+        options = {doc: doc, _private: options[:_private], user_options: options}
+
         bindings(represented, options).each do |bin|
-          compile_fragment(bin, doc)
+          compile_fragment(bin, options)
         end
         doc
       end
 
     private
-      def compile_fragment(bin, doc)
-        bin.compile_fragment(doc)
+      def compile_fragment(bin, options)
+        options[:binding] = bin
+
+        bin.compile_fragment(options)
       end
 
-      def uncompile_fragment(bin, doc)
-        bin.uncompile_fragment(doc)
+      def uncompile_fragment(bin, options)
+        options[:binding] = bin
+
+        bin.uncompile_fragment(options)
       end
     end
 
