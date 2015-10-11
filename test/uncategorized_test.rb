@@ -28,9 +28,11 @@ end
 class RenderPipelineOptionTest < MiniTest::Spec
   Album = Struct.new(:id, :songs)
 
+  NilToNA = ->(input, options) { input.nil? ? "n/a" : input }
+
   representer!(decorator: true) do
     property :id, render_pipeline: ->(options) do
-      Representable::Pipeline[*render_functions.insert(2, ->(input, options) { input.nil? ? "n/a" : input })]
+      Representable::Pipeline[*render_functions.insert(2, NilToNA)]
     end# TODO: test if options are ok
   end
 
