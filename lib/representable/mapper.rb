@@ -9,7 +9,7 @@ module Representable
 
       def bindings(represented, options)
         @bindings.each do |binding|
-          binding.update!(represented, options[:user_options])
+          binding.update!(represented)
         end
       end
 

@@ -25,7 +25,7 @@ module Representable
       @has_default      = @definition.has_default?
     end
 
-    attr_reader :user_options, :represented # TODO: make private/remove.
+    attr_reader :represented # TODO: make private/remove.
 
     attr_reader :representable, :name, :getter, :setter, :array, :typed, :skip_filters, :has_default
     alias_method :representable?, :representable
@@ -74,8 +74,6 @@ module Representable
           return
         end
 
-        # options = {user_options: user_options} # TODO: this is time consuming, i guess.
-
         proc.(exec_context, options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
@@ -98,10 +96,8 @@ module Representable
     end
 
     # Note: this method is experimental.
-    def update!(represented, user_options)
+    def update!(represented)
       @represented = represented
-
-      setup_user_options!(user_options)
       setup_exec_context!
     end
 
@@ -111,12 +107,6 @@ module Representable
     include Factories
 
   private
-
-    def setup_user_options!(user_options)
-      @user_options  = user_options
-      # this is the propagated_options.
-      @user_options  = user_options.merge(wrap: false) if self[:wrap] == false
-    end
 
     def setup_exec_context!
       return @exec_context = @represented unless self[:exec_context]

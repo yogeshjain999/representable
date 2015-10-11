@@ -66,7 +66,7 @@ class PipelineTest < MiniTest::Spec
     dfn = R::Definition.new(:title)
 
     R::Hash::Binding.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Song.new("Lime Green"), {}) # FIXME: how do i do that again in representable?
+      bin.update!(Song.new("Lime Green")) # FIXME: how do i do that again in representable?
     end
   }
 
@@ -103,7 +103,7 @@ class PipelineTest < MiniTest::Spec
     dfn = R::Definition.new(:artist, extend: ArtistRepresenter, class: Artist)
 
     R::Hash::Binding.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Song.new("Lime Green", Artist.new("Diesel Boy")), {}) # FIXME: how do i do that again in representable?
+      bin.update!(Song.new("Lime Green", Artist.new("Diesel Boy"))) # FIXME: how do i do that again in representable?
     end
   }
 
@@ -143,7 +143,7 @@ class PipelineTest < MiniTest::Spec
     dfn = R::Definition.new(:ratings, collection: true)
 
     R::Hash::Binding::Collection.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Album.new([1,2,3]), {}) # FIXME: how do i do that again in representable?
+      bin.update!(Album.new([1,2,3])) # FIXME: how do i do that again in representable?
     end
   }
   it "render scalar collection" do
@@ -165,7 +165,7 @@ class PipelineTest < MiniTest::Spec
     dfn = R::Definition.new(:artists, collection: true, extend: ArtistRepresenter, class: Artist)
 
     R::Hash::Binding::Collection.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")]), {}) # FIXME: how do i do that again in representable?
+      bin.update!(Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")])) # FIXME: how do i do that again in representable?
     end
   }
   it "render typed collection" do
