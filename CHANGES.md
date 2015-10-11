@@ -30,6 +30,8 @@ you know, the whole deserialize stack (same for rendering): you pass in the json
 you can partially hook in with :instance or :deserialize or :parse_filter, but it's really awkward. i am now changing the architecture to a pipeline, where you plug in the features you want (e.g. "do not call :prepare, :instance, :class, etc. but run my own :populator")
 and it suddenly is super simple to understand
 
+* Removed `Binding#user_options` removed. This is now available via `->(options[:user_options])`.
+
 # 2.3.0
 
 * Remove dependency to Nokogiri and Multi_JSON. You have to add what you need to your `Gemfile`/`gemspec` now.
