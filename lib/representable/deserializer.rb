@@ -87,7 +87,6 @@ module Representable
     class Prepare
       def call(input, options)
         binding = options[:binding]
-        options[:result] = input
 
         binding.evaluate_option(:prepare, input, options) do
           prepare!(input, binding, options)
