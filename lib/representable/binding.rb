@@ -67,16 +67,15 @@ module Representable
     module EvaluateOption
       # Evaluate the option (either nil, static, a block or an instance method call) or
       # executes passed block when option not defined.
-      def evaluate_option(name, input=nil, *args)
+      def evaluate_option(name, input=nil)
         unless proc = @definition[name] # TODO: this could dispatch directly to the @definition using #send?
           return yield if block_given?
           return
         end
 
-        options = args[0] || {} # TODO: this is time consuming, i guess.
-        options[:user_options] = user_options
+        options = {user_options: user_options} # TODO: this is time consuming, i guess.
 
-        proc.(exec_context, options) # from Uber::Options::Value.
+        proc.(exec_context, options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
     include EvaluateOption # make it overridable for Deprecation. will be removed in 3.0.
