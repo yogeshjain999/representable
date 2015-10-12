@@ -37,12 +37,6 @@ module Representable
 
     # Single entry points for rendering and parsing a property are #compile_fragment
     # and #uncompile_fragment in Mapper.
-    #
-    # DISCUSS:
-    # currently, we need to call B#update! before compile_fragment/uncompile_fragment.
-    # this will change to B#renderer(represented, options).call
-    #                     B#parser  (represented, options).call
-    # goal is to have two objects for 2 entirely different tasks.
 
     # Retrieve value and write fragment to the doc.
     def compile_fragment(options)

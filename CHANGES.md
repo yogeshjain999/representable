@@ -32,6 +32,8 @@ and it suddenly is super simple to understand
 
 * Removed `Binding#user_options`. This is now available via `->(options[:user_options])`.
 * Removed `Binding#as`.
+* Removed `Binding#parent_decorator`.
+
 
 # 2.3.0
 
