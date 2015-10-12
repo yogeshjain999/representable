@@ -36,15 +36,17 @@ module AlbumRepresenter
   collection :songs, extend: SongDecorator
 end
 
+Song  = Struct.new(*SONG_PROPERTIES.map(&:to_sym))
+Album = Struct.new(:songs)
+
 def random_song
-  attrs = Hash[SONG_PROPERTIES.collect { |n| [n,n] }]
-  OpenStruct.new(attrs)
+  Song.new(*SONG_PROPERTIES)
 end
 
 times = []
 
 3.times.each do
-  album = OpenStruct.new(songs: 1000.times.collect { random_song })
+  album = Album.new(1000.times.collect { random_song })
 
   times << Benchmark.measure do
     puts "================ next!"
@@ -54,7 +56,7 @@ end
 
 puts times.join("")
 
-album = OpenStruct.new(songs: 1000.times.collect { random_song })
+album = Album.new(1000.times.collect { random_song })
 require 'ruby-prof'
 RubyProf.start
 album.extend(AlbumRepresenter).to_hash
