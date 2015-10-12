@@ -8,12 +8,12 @@ require 'representable/declarative'
 require 'representable/apply'
 require "representable/deserializer"
 require "representable/serializer"
-require "representable/cached"
 
 
 require "uber/callable"
 require "representable/pipeline"
 require "representable/insert" # Pipeline::Insert
+require "representable/cached"
 
 module Representable
   attr_writer :representable_attrs

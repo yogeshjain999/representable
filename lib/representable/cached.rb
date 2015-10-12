@@ -25,11 +25,11 @@ module Representable
 
     module Binding
       def default_parse_fragment_functions
-        Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
+        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
       end
 
       def default_render_fragment_functions
-        Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
+        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
       end
     end
 

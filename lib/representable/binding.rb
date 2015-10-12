@@ -59,7 +59,7 @@ module Representable
     module EvaluateOption
       # Evaluate the option (either nil, static, a block or an instance method call) or
       # executes passed block when option not defined.
-      def evaluate_option(name, input=nil) # TODO: remove this, we don't need a decider anymore.
+      def evaluate_option(name, input=nil, options={}) # TODO: remove this, we don't need a decider anymore.
         unless proc = @definition[name]
           return yield if block_given?
           return
