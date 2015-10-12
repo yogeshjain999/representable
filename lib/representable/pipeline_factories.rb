@@ -36,7 +36,7 @@ module Representable
       functions << Stop if self[:readable]==false
       functions << StopOnExcluded
       functions << If if self[:if]
-      functions << Getter
+      functions << (self[:getter] ? Getter : Get)
       functions << Writer if self[:writer]
       functions << RenderFilter if self[:render_filter].any?
       functions << RenderDefault if has_default?

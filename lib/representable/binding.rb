@@ -53,6 +53,7 @@ module Representable
     end
 
     def get # DISCUSS: evluate if we really need this.
+      warn "[Representable] Binding#get is deprecated."
       Getter.(nil, binding: self)
     end
 
