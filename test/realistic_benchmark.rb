@@ -1,6 +1,15 @@
 require 'test_helper'
 require 'benchmark'
 
+# Kernel.class_eval do
+#   alias_method :orig_hash, :hash
+#   def hash
+#     puts "hash in #{self.class}"
+#     raise self.inspect if self.class == Symbol
+#     orig_hash
+#   end
+# end
+
 SONG_PROPERTIES = 50.times.collect do |i|
   "property_#{i}"
 end
@@ -14,12 +23,14 @@ end
 
 class SongDecorator < Representable::Decorator
   include Representable::JSON
+  include Representable::Cached
 
   SONG_PROPERTIES.each { |p| property p }
 end
 
 module AlbumRepresenter
   include Representable::JSON
+  feature Representable::Cached
 
   # collection :songs, extend: SongRepresenter
   collection :songs, extend: SongDecorator
@@ -42,6 +53,16 @@ times = []
 end
 
 puts times.join("")
+
+album = OpenStruct.new(songs: 1000.times.collect { random_song })
+require 'ruby-prof'
+RubyProf.start
+album.extend(AlbumRepresenter).to_hash
+res = RubyProf.stop
+printer = RubyProf::FlatPrinter.new(res)
+printer.print(array = [])
+
+array[0..20].each { |a| puts a }
 
 # 100 songs, 100 attrs
 #  0.050000   0.000000   0.050000 (  0.093157)
