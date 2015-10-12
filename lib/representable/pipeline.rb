@@ -9,9 +9,8 @@ module Representable
     # options is mutuable.
     def call(input, options)
       inject(input) do |memo, block|
-        evaluate(block, memo, options).tap do |res|
-          return Stop if Stop == res
-        end
+        res = evaluate(block, memo, options)
+        Stop == res ? Stop : res
       end
     end
 
