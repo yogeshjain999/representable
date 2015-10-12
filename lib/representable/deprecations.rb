@@ -35,7 +35,7 @@ private
       __options = if self[:pass_options]
         warn %{[Representable] The :pass_options option is deprecated. Please access environment objects via options[:binding].
   Learn more here: http://trailblazerb.org/gems/representable/upgrading-guide.html#pass-options}
-        Options.new(self, options[:user_options], represented, parent_decorator)
+        Options.new(self, options[:user_options], represented, @parent_decorator)
       else
         # user_options
         options[:user_options]

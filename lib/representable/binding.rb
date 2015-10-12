@@ -104,14 +104,12 @@ module Representable
     def setup_exec_context!
       @exec_context = -> { @represented }     unless self[:exec_context]
       @exec_context = -> { self }             if self[:exec_context] == :binding
-      @exec_context = -> { parent_decorator } if self[:exec_context] == :decorator
+      @exec_context = -> { @parent_decorator } if self[:exec_context] == :decorator
     end
 
     def exec_context
       @exec_context.()
     end
-
-    attr_reader :parent_decorator
 
     def parse_pipeline(input, options)
       @parse_pipeline ||= pipeline_for(:parse_pipeline, input, options) { Pipeline[*parse_functions] }
