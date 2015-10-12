@@ -23,6 +23,8 @@ module Representable
       @array            = @definition.array?
       @typed            = @definition.typed?
       @has_default      = @definition.has_default?
+
+      setup_exec_context!
     end
 
     attr_reader :represented # TODO: make private/remove.
@@ -90,7 +92,6 @@ module Representable
     # Note: this method is experimental.
     def update!(represented)
       @represented = represented
-      setup_exec_context!
     end
 
     attr_accessor :cached_representer
@@ -101,12 +102,16 @@ module Representable
   private
 
     def setup_exec_context!
-      return @exec_context = @represented unless self[:exec_context]
-      @exec_context = self             if self[:exec_context] == :binding
-      @exec_context = parent_decorator if self[:exec_context] == :decorator
+      @exec_context = -> { @represented }     unless self[:exec_context]
+      @exec_context = -> { self }             if self[:exec_context] == :binding
+      @exec_context = -> { parent_decorator } if self[:exec_context] == :decorator
     end
 
-    attr_reader :exec_context, :parent_decorator
+    def exec_context
+      @exec_context.()
+    end
+
+    attr_reader :parent_decorator
 
     def parse_pipeline(input, options)
       @parse_pipeline ||= pipeline_for(:parse_pipeline, input, options) { Pipeline[*parse_functions] }
