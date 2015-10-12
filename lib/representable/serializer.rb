@@ -31,16 +31,19 @@ module Representable
     options[:binding].evaluate_option(:skip_render, input, options) ? Pipeline::Stop : input
   end
 
-  Serialize = ->(input, options) do
+  Serializer = ->(input, options) do
     return if input.nil? # DISCUSS: how can we prevent that?
 
+    options[:binding].evaluate_option(:serialize, input, options)
+  end
+
+  Serialize = ->(input, options) do
+    return if input.nil? # DISCUSS: how can we prevent that?
     binding, user_options = options[:binding], options[:user_options]
 
-    binding.evaluate_option(:serialize, input, options) do
-      user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
+    user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
 
-      input.send(binding.serialize_method, user_options)
-    end
+    input.send(binding.serialize_method, user_options)
   end
 
   WriteFragment = ->(input, options) { options[:binding].write(options[:doc], input, As.(input, options)) }

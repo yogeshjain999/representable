@@ -27,7 +27,9 @@ module Representable
       functions = []
       functions << SkipRender if self[:skip_render]
       functions << Prepare    if typed?
-      functions << Serialize  if representable?
+      if representable?
+        functions << (self[:serialize] ? Serializer : Serialize)
+      end
       functions
     end
 
