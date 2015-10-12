@@ -33,7 +33,7 @@ end
 times = []
 
 3.times.each do
-  album = OpenStruct.new(songs: 50.times.collect { random_song })
+  album = OpenStruct.new(songs: 1000.times.collect { random_song })
 
   times << Benchmark.measure do
     puts "================ next!"
