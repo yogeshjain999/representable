@@ -10,7 +10,7 @@ module Representable
     def call(input, options)
       inject(input) do |memo, block|
         evaluate(block, memo, options).tap do |res|
-          return Stop if res == Stop
+          return Stop if Stop == res
         end
       end
     end
@@ -37,7 +37,7 @@ module Representable
       arr = []
       input.each_with_index do |item_fragment, i|
         result = @item_pipeline.(item_fragment, options.merge(index: i)) # DISCUSS: NO :fragment set.
-        result == Pipeline::Stop ? next : arr << result
+        Pipeline::Stop == result ? next : arr << result
       end
       arr
     end
