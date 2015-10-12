@@ -1,3 +1,4 @@
+require "forwardable"
 # Caching of Bindings
 # in Decorators, this could be an instance class var. when inherited, it is automatically busted.
 # however, in modules we can't do that. we never know when a module is "finalised", so we don't really know when to bust the cache.

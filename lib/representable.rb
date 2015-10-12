@@ -1,5 +1,3 @@
-require 'forwardable'
-
 require 'representable/inheritable'
 require 'representable/config'
 require 'representable/definition'

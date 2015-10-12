@@ -8,9 +8,7 @@ module Representable
       end
 
       def bindings(represented, options)
-        @bindings.each do |binding|
-          binding.update!(represented)
-        end
+        @bindings.each { |binding| binding.update!(represented) }
       end
 
       def deserialize(represented, doc, options)

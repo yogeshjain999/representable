@@ -3,7 +3,6 @@ module Representable
   # passed to the next callable object.
   class Pipeline < Array
     include Uber::Callable
-    # include Representable::Cloneable
 
     Stop = Class.new
 
@@ -22,6 +21,7 @@ module Representable
     end
   end
 
+
   # Collect applies a pipeline to each element of input.
   class Collect
     def self.[](*functions)
@@ -29,7 +29,7 @@ module Representable
     end
 
     def initialize(functions)
-      @item_pipeline = functions.extend(Pipeline::Debug)
+      @item_pipeline = functions#.extend(Pipeline::Debug)
     end
 
     # when stop, the element is skipped. (should that be Skip then?)
@@ -41,7 +41,6 @@ module Representable
       end
       arr
     end
-
 
     class Hash < self
       def call(input, options)
