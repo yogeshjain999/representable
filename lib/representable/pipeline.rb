@@ -10,7 +10,8 @@ module Representable
     def call(input, options)
       inject(input) do |memo, block|
         res = evaluate(block, memo, options)
-        Stop == res ? Stop : res
+        return(Stop)if Stop == res
+        res
       end
     end
 
