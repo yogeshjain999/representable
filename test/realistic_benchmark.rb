@@ -12,6 +12,7 @@ Kernel.class_eval do
 #     orig_hash
 #   end
 end
+Representable.deprecations = false
 
 SONG_PROPERTIES = 50.times.collect do |i|
   "property_#{i}"

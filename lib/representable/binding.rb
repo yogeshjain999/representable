@@ -53,22 +53,29 @@ module Representable
       Getter.(nil, binding: self)
     end
 
-    module EvaluateOption
+    def evaluate_option(name, input=nil, options={}, &block)
+      Representable.evaluate_option.(self, name, input, options, &block) # TODO: change this to a normal method once deprecation cycle is over.
+    end
+
+
+    class EvaluateOption
+      def call(binding, name, input, options, &block)
+        evaluate_option(binding, name, input, options, &block)
+      end
+
+    private
       # Evaluate the option (either nil, static, a block or an instance method call) or
       # executes passed block when option not defined.
-      def evaluate_option(name, input=nil, options={}) # TODO: remove this, we don't need a decider anymore.
-        unless proc = @definition[name]
+      def evaluate_option(binding, name, input, options) # TODO: remove this, we don't need a decider anymore.
+        unless proc = binding[name]
           return yield if block_given?
           return
         end
 
-        proc.(exec_context, options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
+        proc.(binding.send(:exec_context), options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
-    include EvaluateOption # make it overridable for Deprecation. will be removed in 3.0.
 
-    require "representable/deprecations"
-    include Deprecation
 
     def [](name)
       @definition[name]

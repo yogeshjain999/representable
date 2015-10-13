@@ -9,6 +9,7 @@ require 'representable/apply'
 require "representable/deserializer"
 require "representable/serializer"
 
+require "representable/binding"
 
 require "uber/callable"
 require "representable/pipeline"
@@ -139,6 +140,22 @@ private
       representable_attrs[:features][mod] = true
     end
   end
+
+
+  require "representable/deprecations"
+  def self.evaluate_option
+    @@evaluate_option
+  end
+
+  def self.deprecations=(value)
+    evaluator = value==false ? Binding::EvaluateOption.new : Binding::Deprecation::EvaluateOption.new
+
+    ::Representable::Binding.class_eval do
+      @@evaluate_option = evaluator
+    end
+
+  end
+  self.deprecations = true # TODO: change to false in 2.5 or remove entirely.
 end
 
 require 'representable/autoload'
