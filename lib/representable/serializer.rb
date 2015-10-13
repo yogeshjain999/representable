@@ -46,7 +46,10 @@ module Representable
     input.send(binding.serialize_method, user_options)
   end
 
-  WriteFragment = ->(input, options) { options[:binding].write(options[:doc], input, As.(input, options)) }
+  WriteFragment = ->(input, options) { options[:binding].write(options[:doc], input, options[:as]) }
 
   As = ->(input, options) { options[:binding].evaluate_option(:as, input, options) }
+
+  AssignAs   = ->(input, options) { options[:as] = As.(input, options); input }
+  AssignName = ->(input, options) { options[:as] = options[:binding].name; input }
 end

@@ -12,8 +12,7 @@ module Representable
     binding = options[:binding]
 
     binding.evaluate_option(:reader, input, options) do
-      as = As.(input, options)
-      binding.read(input, as) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
+      binding.read(input, options[:as]) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
     end
   end
 

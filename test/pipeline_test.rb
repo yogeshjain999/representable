@@ -75,6 +75,7 @@ class PipelineTest < MiniTest::Spec
     P[
       R::Getter,
       R::StopOnSkipable,
+      R::AssignName,
       R::WriteFragment
     ].(nil, {binding: title, doc: doc}).must_equal "Lime Green"
 
@@ -83,6 +84,7 @@ class PipelineTest < MiniTest::Spec
 
   it "parsing scalar property" do
     P[
+      R::AssignName,
       R::ReadFragment,
       R::StopOnNotFound,
       R::OverwriteOnNil,
@@ -116,6 +118,7 @@ class PipelineTest < MiniTest::Spec
       R::SkipRender,
       R::Prepare,
       R::Serialize,
+      R::AssignName,
       R::WriteFragment
     ].extend(P::Debug).(nil, {binding: artist, doc: doc, user_options: {}}).must_equal({"name" => "Diesel Boy"})
 
@@ -124,6 +127,7 @@ class PipelineTest < MiniTest::Spec
 
   it "parsing typed property" do
     P[
+      R::AssignName,
       R::ReadFragment,
       R::StopOnNotFound,
       R::OverwriteOnNil,
@@ -154,6 +158,7 @@ class PipelineTest < MiniTest::Spec
       R::Collect[
         R::SkipRender,
       ],
+      R::AssignName,
       R::WriteFragment
     ].extend(P::Debug).(nil, {binding: ratings, doc: doc}).must_equal([1,2,3])
 
@@ -178,6 +183,7 @@ class PipelineTest < MiniTest::Spec
         R::Prepare,
         R::Serialize,
       ],
+      R::AssignName,
       R::WriteFragment
     ].extend(P::Debug).(nil, {binding: artists, doc: doc, user_options: {}}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
 
@@ -188,6 +194,7 @@ class PipelineTest < MiniTest::Spec
   it "parse typed collection" do
     doc = {"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]}
     P[
+      R::AssignName,
       R::ReadFragment,
       R::StopOnNotFound,
       R::OverwriteOnNil,

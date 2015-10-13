@@ -43,6 +43,7 @@ module Representable
       functions << RenderFilter if self[:render_filter].any?
       functions << RenderDefault if has_default?
       functions << StopOnSkipable
+      functions << (self[:as] ? AssignAs : AssignName)
     end
 
     def default_parse_init_functions
@@ -50,6 +51,7 @@ module Representable
       functions << Stop if self[:writeable]==false
       functions << StopOnExcluded
       functions << If if self[:if]
+      functions << (self[:as] ? AssignAs : AssignName)
       functions << ReadFragment
       functions << (has_default? ? Default : StopOnNotFound)
       functions << OverwriteOnNil # include StopOnNil if you don't want to erase things.

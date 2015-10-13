@@ -17,7 +17,6 @@ module Representable
       # defaults:
       options[:parse_filter]  = Pipeline[*options[:parse_filter]]
       options[:render_filter] = Pipeline[*options[:render_filter]]
-      options[:as]          ||= @name
 
       setup!(options, &block)
     end

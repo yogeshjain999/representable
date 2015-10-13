@@ -14,9 +14,10 @@ class DefinitionTest < MiniTest::Spec
         options[:parse_filter] << 1
 
         # default variables
-        options[:as].must_equal "song"
+        options[:as].must_equal nil
         options[:extend].must_equal Module
       end
+      definition.name.must_equal "song"
 
       #
       definition[:awesome].must_equal true
@@ -100,7 +101,7 @@ class DefinitionTest < MiniTest::Spec
 
   # #inspect
   describe "#inspect" do
-    it { Definition.new(:songs).inspect.must_equal "#<Representable::Definition ==>songs @options={:parse_filter=>[], :render_filter=>[], :as=>\"songs\"}>" }
+    it { Definition.new(:songs).inspect.must_equal "#<Representable::Definition ==>songs @options={:parse_filter=>[], :render_filter=>[]}>" }
   end
 
 

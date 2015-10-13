@@ -54,7 +54,7 @@ class ParsePipelineOptionTest < MiniTest::Spec
   representer!(decorator: true) do
     include Representable::Cached
     property :id, parse_pipeline: ->(input, options) do
-      Representable::Pipeline[*parse_functions.insert(2, options[:user_options][:function])].extend(Representable::Pipeline::Debug)
+      Representable::Pipeline[*parse_functions.insert(3, options[:user_options][:function])].extend(Representable::Pipeline::Debug)
     end
   end
 
