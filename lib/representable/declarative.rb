@@ -9,8 +9,7 @@ module Representable
     end
 
     def collection(name, options={}, &block)
-      options[:collection] = true # FIXME: don't override original.
-      property(name, options, &block)
+      property(name, options.merge(collection: true), &block)
     end
 
     def hash(name=nil, options={}, &block)
