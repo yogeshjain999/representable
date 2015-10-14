@@ -18,7 +18,6 @@ module Representable::Binding::Deprecation
       return evaluate_option_with_deprecation(name, input, options, :input, :user_options) if name==:prepare
       return evaluate_option_with_deprecation(name, input, options, :input, :user_options) if name==:extend
       return evaluate_option_with_deprecation(name, input, options, :input, :user_options) if name==:setter
-      super
     end
 
   private
