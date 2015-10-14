@@ -58,7 +58,7 @@ module Representable
       functions << StopOnExcluded
       functions << If if self[:if]
       functions << (self[:as] ? AssignAs : AssignName)
-      functions << ReadFragment
+      functions << (self[:reader] ? Reader : ReadFragment)
       functions << (has_default? ? Default : StopOnNotFound)
       functions << OverwriteOnNil # include StopOnNil if you don't want to erase things.
     end

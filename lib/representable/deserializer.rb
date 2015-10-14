@@ -8,13 +8,8 @@ module Representable
 
   AssignFragment = ->(input, options) { options[:fragment] = input }
 
-  ReadFragment = ->(input, options) do
-    binding = options[:binding]
-
-    binding.evaluate_option(:reader, input, options) do
-      binding.read(input, options[:as]) # scalar, Array, or Hash (abstract format) or un-deserialised fragment(s).
-    end
-  end
+  ReadFragment = ->(input, options) { options[:binding].read(input, options[:as]) }
+  Reader = ->(input, options) { options[:binding].evaluate_option(:reader, input, options) }
 
   StopOnNotFound = ->(input, options) do
     Binding::FragmentNotFound == input ? Pipeline::Stop : input
