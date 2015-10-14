@@ -9,6 +9,7 @@ require 'representable/apply'
 require "representable/deserializer"
 require "representable/serializer"
 
+require "uber/delegates"
 require "representable/binding"
 
 require "uber/callable"

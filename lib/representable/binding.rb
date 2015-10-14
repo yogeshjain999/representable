@@ -14,24 +14,16 @@ module Representable
     def initialize(definition, parent_decorator)
       @definition       = definition
       @parent_decorator = parent_decorator # DISCUSS: where's this needed?
-
-      # static options. do this once.
-      @representable    = @definition.representable?
       @name             = @definition.name
       @getter           = @definition.getter
       @setter           = @definition.setter
-      @array            = @definition.array?
-      @typed            = @definition.typed?
-      @has_default      = @definition.has_default?
 
       setup_exec_context!
     end
 
-    attr_reader :representable, :name, :getter, :setter, :array, :typed, :skip_filters, :has_default
-    alias_method :representable?, :representable
-    alias_method :array?, :array
-    alias_method :typed?, :typed
-    alias_method :has_default?, :has_default
+    attr_reader :name, :getter, :setter
+    extend Uber::Delegates
+    delegates :@definition, :has_default?, :representable?, :array?, :typed?
 
     # Single entry points for rendering and parsing a property are #compile_fragment
     # and #uncompile_fragment in Mapper.
