@@ -54,13 +54,12 @@ module Representable
     end
 
     module EvaluateOption
-      def evaluate_option(name, input=nil, options={})
+      private def evaluate_option(name, input=nil, options={})
         proc = self[name]
         proc.(send(:exec_context), options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
     # include EvaluateOption
-
 
     def [](name)
       @definition[name]
@@ -114,7 +113,6 @@ module Representable
       end
     end
   end
-
 
   class DeserializeError < RuntimeError
   end
