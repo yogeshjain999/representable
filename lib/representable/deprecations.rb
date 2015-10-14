@@ -21,7 +21,7 @@ module Representable::Binding::Deprecation
     end
 
 
-    private def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
+    def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
       unless proc = self[name]
         return # FIXME: why do we need this?
       end
@@ -61,6 +61,7 @@ module Representable::Binding::Deprecation
 
       proc.(name, options)
     end
+    private :evaluate_option_with_deprecation
 
 
     def represented
