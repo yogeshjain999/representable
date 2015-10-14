@@ -500,7 +500,7 @@ class RepresentableTest < MiniTest::Spec
       representer! do
         class MyBinding < Representable::Binding
           def write(doc, *args)
-            doc[:title] = @represented.title
+            doc[:title] = represented.title
           end
         end
         property :title, :binding => lambda { |*args| MyBinding.new(*args) }

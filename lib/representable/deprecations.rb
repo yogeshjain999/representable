@@ -20,8 +20,8 @@ module Representable::Binding::Deprecation
       return evaluate_option_with_deprecation(name, input, options, :input, :user_options) if name==:setter
     end
 
-  private
-    def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
+
+    private def evaluate_option_with_deprecation(name, input, options, *positional_arguments)
       unless proc = self[name]
         return # FIXME: why do we need this?
       end
@@ -32,7 +32,7 @@ module Representable::Binding::Deprecation
       __options = if self[:pass_options]
         warn %{[Representable] The :pass_options option is deprecated. Please access environment objects via options[:binding].
   Learn more here: http://trailblazerb.org/gems/representable/upgrading-guide.html#pass-options}
-        Options.new(self, options[:user_options], represented, instance_variable_get(:@parent_decorator))
+        Options.new(self, options[:user_options], options[:represented], instance_variable_get(:@parent_decorator))
       else
         # user_options
         options[:user_options]
@@ -41,7 +41,7 @@ module Representable::Binding::Deprecation
 
       if proc.send(:proc?) or proc.send(:method?)
         arity = proc.instance_variable_get(:@value).arity if proc.send(:proc?)
-        arity = send(:exec_context).method(proc.instance_variable_get(:@value)).arity if proc.send(:method?)
+        arity = send(:exec_context, options).method(proc.instance_variable_get(:@value)).arity if proc.send(:method?)
         if arity  != 1 or name==:getter or name==:if or name==:as
           warn %{[Representable] Positional arguments for `:#{name}` are deprecated. Please use options or keyword arguments.
   #{name}: ->(options) { options[:#{positional_arguments.join(" | :")}] } or
@@ -55,11 +55,34 @@ module Representable::Binding::Deprecation
             deprecated_args << options[arg]
           end
 
-          return proc.(send(:exec_context), *deprecated_args)
+          return proc.(send(:exec_context, options), *deprecated_args)
         end
       end
 
       proc.(name, options)
+    end
+
+
+    def represented
+      warn "[Representable] Binding#represented is deprecated. Use options[:represented] instead."
+      @represented
+    end
+
+    def compile_fragment(options)
+      @represented = options[:represented]
+      super
+    end
+
+    # Parse value from doc and update the model property.
+    def uncompile_fragment(options)
+      puts "setting #{options[:represented]} in #{options[:binding].name}"
+      @represented = options[:represented]
+      super
+    end
+
+    def get(options={}) # DISCUSS: evluate if we really need this.
+      warn "[Representable] Binding#get is deprecated."
+      self[:getter] ? Representable::Getter.(nil, options.merge(binding: self)) : Representable::Get.(nil, options.merge(binding: self))
     end
   end
 end

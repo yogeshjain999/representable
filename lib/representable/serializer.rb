@@ -3,7 +3,7 @@ module Representable
     options[:binding].evaluate_option(:getter, input, options)
   end
 
-  Get = ->(input, options) { options[:binding].send(:exec_context).send(options[:binding].getter) }
+  Get = ->(input, options) { options[:binding].send(:exec_context, options).send(options[:binding].getter) }
 
   Writer = ->(input, options) do
     options[:binding].evaluate_option(:writer, input, options)

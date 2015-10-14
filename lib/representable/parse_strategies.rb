@@ -35,11 +35,11 @@ module Representable
 
     class Sync
       def self.apply!(name, options)
-        options[:setter]       = lambda { |*| }
+        options[:setter]       = lambda { |*args| }
         options[:pass_options] = true
         options[:instance]     = options[:collection] ?
-          lambda { |fragment, i, options| options.binding.get[i] } :
-          lambda { |fragment, options|    options.binding.get }
+          lambda { |fragment, i, options| options.binding.get(represented: options.represented)[i] } :
+          lambda { |fragment, options|    options.binding.get(represented: options.represented) }
       end
     end
 

@@ -103,7 +103,7 @@ module Representable
   end
 
   Setter = ->(input, options) { options[:binding].evaluate_option(:setter, input, options) }
-  Set = ->(input, options) { options[:binding].send(:exec_context).send(options[:binding].setter, input) }
+  Set = ->(input, options) { options[:binding].send(:exec_context, options).send(options[:binding].setter, input) }
 
 
   Stop = ->(*) { Pipeline::Stop }

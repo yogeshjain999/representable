@@ -19,14 +19,14 @@ module Representable::Hash
 
 
     def create_representation_with(doc, options, format)
-      bin   = representable_mapper(format, options).bindings(represented, options).first
+      bin   = representable_mapper(format, options).bindings.first
 
       Collect[*bin.default_render_fragment_functions].
         (represented, {doc: doc, fragment: represented, user_options: options, binding: bin})
     end
 
     def update_properties_from(doc, options, format)
-      bin   = representable_mapper(format, options).bindings(represented, options).first
+      bin   = representable_mapper(format, options).bindings.first
 
       value = Collect[*bin.default_parse_fragment_functions].
         (doc, fragment: doc, document: doc, user_options: options, binding: bin)

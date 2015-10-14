@@ -10,7 +10,7 @@ module Representable
     # Decorator -> Mapper -> [Binding->Decorator, Binding]
     def representable_mapper(format, options)
       @mapper ||= super.tap do |mapper|
-        mapper.bindings(represented, options).each { |binding|
+        mapper.bindings.each { |binding|
           binding.extend(Binding)
           # raise binding.parse_pipeline.extend(Pipeline::Debug).inspect if binding.typed?
         }

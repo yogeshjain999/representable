@@ -36,6 +36,9 @@ and it suddenly is super simple to understand
 * Removed `Binding#as`.
 * Removed `Binding#parent_decorator`.
 
+Deprecation
+* Removed `Binding@represented` (which was never public anyway). Use `Binding#represented`.
+
 
 # 2.3.0
 

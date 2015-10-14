@@ -7,23 +7,21 @@ module Representable
         @bindings = bindings
       end
 
-      def bindings(represented, options)
-        @bindings.each { |binding| binding.update!(represented) }
-      end
+      attr_reader :bindings
 
       def deserialize(represented, doc, options)
-        options = {doc: doc, _private: options[:_private], user_options: options}
+        options = {doc: doc, _private: options[:_private], user_options: options, represented: represented}
 
-        bindings(represented, options).each do |bin|
+        bindings.each do |bin|
           uncompile_fragment(bin, options)
         end
         represented
       end
 
       def serialize(represented, doc, options) # options {is_admin: true, _private: {}}
-        options = {doc: doc, _private: options[:_private], user_options: options}
+        options = {doc: doc, _private: options[:_private], user_options: options, represented: represented}
 
-        bindings(represented, options).each do |bin|
+        bindings.each do |bin|
           compile_fragment(bin, options)
         end
         doc

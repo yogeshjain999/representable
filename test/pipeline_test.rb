@@ -65,9 +65,7 @@ class PipelineTest < MiniTest::Spec
   let (:title) {
     dfn = R::Definition.new(:title)
 
-    R::Hash::Binding.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Song.new("Lime Green")) # FIXME: how do i do that again in representable?
-    end
+    R::Hash::Binding.new(dfn, "parent decorator")
   }
 
   it "rendering scalar property" do
@@ -77,7 +75,7 @@ class PipelineTest < MiniTest::Spec
       R::StopOnSkipable,
       R::AssignName,
       R::WriteFragment
-    ].(nil, {binding: title, doc: doc}).must_equal "Lime Green"
+    ].(nil, {represented: Song.new("Lime Green"), binding: title, doc: doc}).must_equal "Lime Green"
 
     doc.must_equal({"title"=>"Lime Green"})
   end
@@ -90,8 +88,8 @@ class PipelineTest < MiniTest::Spec
       R::OverwriteOnNil,
       # R::SkipParse,
       R::Set,
-    ].extend(P::Debug).(doc={"title"=>"Eruption"}, {binding: title, doc: doc}).must_equal "Eruption"
-    title.represented.title.must_equal "Eruption"
+    ].extend(P::Debug).(doc={"title"=>"Eruption"}, {represented: song=Song.new("Lime Green"), binding: title, doc: doc}).must_equal "Eruption"
+    song.title.must_equal "Eruption"
   end
 
 
@@ -104,10 +102,10 @@ class PipelineTest < MiniTest::Spec
   let (:artist) {
     dfn = R::Definition.new(:artist, extend: ArtistRepresenter, class: Artist)
 
-    R::Hash::Binding.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Song.new("Lime Green", Artist.new("Diesel Boy"))) # FIXME: how do i do that again in representable?
-    end
+    R::Hash::Binding.new(dfn, "parent decorator")
   }
+
+  let (:song_model) { Song.new("Lime Green", Artist.new("Diesel Boy")) }
 
   it "rendering typed property" do
     doc = {}
@@ -120,7 +118,7 @@ class PipelineTest < MiniTest::Spec
       R::Serialize,
       R::AssignName,
       R::WriteFragment
-    ].extend(P::Debug).(nil, {binding: artist, doc: doc, user_options: {}}).must_equal({"name" => "Diesel Boy"})
+    ].extend(P::Debug).(nil, {represented: song_model, binding: artist, doc: doc, user_options: {}}).must_equal({"name" => "Diesel Boy"})
 
     doc.must_equal({"artist"=>{"name"=>"Diesel Boy"}})
   end
@@ -136,8 +134,8 @@ class PipelineTest < MiniTest::Spec
       R::Decorate,
       R::Deserialize,
       R::Set,
-    ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {binding: artist, doc: doc, user_options: {}}).must_equal model=Artist.new("Doobie Brothers")
-    artist.represented.artist.must_equal model
+    ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {represented: song_model, binding: artist, doc: doc, user_options: {}}).must_equal model=Artist.new("Doobie Brothers")
+    song_model.artist.must_equal model
   end
 
 
@@ -146,9 +144,7 @@ class PipelineTest < MiniTest::Spec
   let (:ratings) {
     dfn = R::Definition.new(:ratings, collection: true)
 
-    R::Hash::Binding::Collection.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Album.new([1,2,3])) # FIXME: how do i do that again in representable?
-    end
+    R::Hash::Binding::Collection.new(dfn, "parent decorator")
   }
   it "render scalar collection" do
     doc = {}
@@ -160,7 +156,7 @@ class PipelineTest < MiniTest::Spec
       ],
       R::AssignName,
       R::WriteFragment
-    ].extend(P::Debug).(nil, {binding: ratings, doc: doc}).must_equal([1,2,3])
+    ].extend(P::Debug).(nil, {represented: Album.new([1,2,3]), binding: ratings, doc: doc}).must_equal([1,2,3])
 
     doc.must_equal({"ratings"=>[1,2,3]})
   end
@@ -169,9 +165,7 @@ class PipelineTest < MiniTest::Spec
   let (:artists) {
     dfn = R::Definition.new(:artists, collection: true, extend: ArtistRepresenter, class: Artist)
 
-    R::Hash::Binding::Collection.new(dfn, "parent decorator").tap do |bin|
-      bin.update!(Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")])) # FIXME: how do i do that again in representable?
-    end
+    R::Hash::Binding::Collection.new(dfn, "parent decorator")
   }
   it "render typed collection" do
     doc = {}
@@ -185,11 +179,12 @@ class PipelineTest < MiniTest::Spec
       ],
       R::AssignName,
       R::WriteFragment
-    ].extend(P::Debug).(nil, {binding: artists, doc: doc, user_options: {}}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
+    ].extend(P::Debug).(nil, {represented: Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")]), binding: artists, doc: doc, user_options: {}}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
 
     doc.must_equal({"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]})
   end
 
+let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")]) }
 
   it "parse typed collection" do
     doc = {"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]}
@@ -206,9 +201,9 @@ class PipelineTest < MiniTest::Spec
         R::Deserialize,
       ],
       R::Set,
-    ].extend(P::Debug).(doc, {binding: artists, doc: doc, user_options: {}}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
+    ].extend(P::Debug).(doc, {represented: album_model, binding: artists, doc: doc, user_options: {}}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
 
-    artists.represented.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
+    album_model.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
   end
 
   # TODO: test with arrays, too, not "only" Pipeline instances.

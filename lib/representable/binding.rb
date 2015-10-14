@@ -27,8 +27,6 @@ module Representable
       setup_exec_context!
     end
 
-    attr_reader :represented # TODO: make private/remove.
-
     attr_reader :representable, :name, :getter, :setter, :array, :typed, :skip_filters, :has_default
     alias_method :representable?, :representable
     alias_method :array?, :array
@@ -38,25 +36,23 @@ module Representable
     # Single entry points for rendering and parsing a property are #compile_fragment
     # and #uncompile_fragment in Mapper.
 
-    # Retrieve value and write fragment to the doc.
-    def compile_fragment(options)
-      render_pipeline(nil, options).(nil, options)
-    end
+    module Deprecatable
+      # Retrieve value and write fragment to the doc.
+      def compile_fragment(options)
+        render_pipeline(nil, options).(nil, options)
+      end
 
-    # Parse value from doc and update the model property.
-    def uncompile_fragment(options)
-      parse_pipeline(options[:doc], options).(options[:doc], options)
+      # Parse value from doc and update the model property.
+      def uncompile_fragment(options)
+        parse_pipeline(options[:doc], options).(options[:doc], options)
+      end
     end
-
-    def get # DISCUSS: evluate if we really need this.
-      warn "[Representable] Binding#get is deprecated."
-      self[:getter] ? Getter.(nil, binding: self) : Get.(nil, binding: self)
-    end
+    include Deprecatable
 
     module EvaluateOption
-      private def evaluate_option(name, input=nil, options={})
+      def evaluate_option(name, input=nil, options={})
         proc = self[name]
-        proc.(send(:exec_context), options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
+        proc.(send(:exec_context, options), options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
     # include EvaluateOption
@@ -74,11 +70,6 @@ module Representable
       value
     end
 
-    # Note: this method is experimental.
-    def update!(represented)
-      @represented = represented
-    end
-
     attr_accessor :cached_representer
 
     require "representable/pipeline_factories"
@@ -87,13 +78,13 @@ module Representable
   private
 
     def setup_exec_context!
-      @exec_context = -> { @represented }     unless self[:exec_context]
-      @exec_context = -> { self }             if self[:exec_context] == :binding
-      @exec_context = -> { @parent_decorator } if self[:exec_context] == :decorator
+      @exec_context = ->(options) { options[:represented] }     unless self[:exec_context]
+      @exec_context = ->(options) { self }             if self[:exec_context] == :binding
+      @exec_context = ->(options) { @parent_decorator } if self[:exec_context] == :decorator
     end
 
-    def exec_context
-      @exec_context.()
+    def exec_context(options)
+      @exec_context.(options)
     end
 
     def parse_pipeline(input, options)

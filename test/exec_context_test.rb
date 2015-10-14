@@ -86,7 +86,7 @@ class ExecContextTest < MiniTest::Spec
         end
 
         it { render(song).must_equal_document({Representable::Hash::Binding => "name"}) }
-        it { parse(song, {Representable::Hash::Binding => "Rebel Fate"}).name.must_equal "Rebel Fate" }
+        it("xxx") { parse(song, {Representable::Hash::Binding => "Rebel Fate"}).name.must_equal "Rebel Fate" }
       end
     end
   end
