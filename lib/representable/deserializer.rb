@@ -61,24 +61,6 @@ module Representable
       end
     end
 
-
-    class Deserialize
-      def call(input, options)
-        options[:binding].evaluate_option(:deserialize, input, options) do
-          demarshal(input, options) # object.from_hash.
-        end
-      end
-
-    private
-      def demarshal(input, options)
-        binding, fragment, user_options = options[:binding], options[:fragment], options[:user_options]
-
-        user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
-        input.send(binding.deserialize_method, fragment, user_options)
-      end
-    end
-
-
     class Prepare
       def call(input, options)
         binding = options[:binding]
@@ -105,9 +87,16 @@ module Representable
   end
 
   CreateObject = Function::CreateObject.new
-  Deserialize  = Function::Deserialize.new
   Prepare      = Function::Prepare.new
   Decorate     = Function::Decorate.new
+  Deserializer =  ->(input, options) { options[:binding].evaluate_option(:deserialize, input, options) }
+
+  Deserialize  =  ->(input, options) do
+    binding, fragment, user_options = options[:binding], options[:fragment], options[:user_options]
+
+    user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
+    input.send(binding.deserialize_method, fragment, user_options)
+  end
 
   ParseFilter = ->(input, options) do
     options[:binding][:parse_filter].(input, options)

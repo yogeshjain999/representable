@@ -71,7 +71,9 @@ module Representable
         functions << CreateObject
         functions << Prepare     if self[:prepare]
         functions << Decorate    if self[:extend]
-        functions << Deserialize if representable?
+        if representable?
+          functions << (self[:deserialize] ? Deserializer : Deserialize)
+        end
       end
 
       functions
