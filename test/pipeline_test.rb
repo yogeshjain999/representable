@@ -116,7 +116,7 @@ class PipelineTest < MiniTest::Spec
       R::StopOnSkipable,
       R::StopOnNil,
       R::SkipRender,
-      R::Prepare,
+      R::Decorate,
       R::Serialize,
       R::AssignName,
       R::WriteFragment
@@ -133,7 +133,7 @@ class PipelineTest < MiniTest::Spec
       R::OverwriteOnNil,
       # R::SkipParse,
       R::CreateObject,
-      R::Prepare,
+      R::Decorate,
       R::Deserialize,
       R::Setter,
     ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {binding: artist, doc: doc, user_options: {}}).must_equal model=Artist.new("Doobie Brothers")
@@ -180,7 +180,7 @@ class PipelineTest < MiniTest::Spec
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,
-        R::Prepare,
+        R::Decorate,
         R::Serialize,
       ],
       R::AssignName,
@@ -202,7 +202,7 @@ class PipelineTest < MiniTest::Spec
       R::Collect[
         R::SkipRender,
         R::CreateObject,
-        R::Prepare,
+        R::Decorate,
         R::Deserialize,
       ],
       R::Setter,

@@ -50,6 +50,7 @@ module Representable
 
   As = ->(input, options) { options[:binding].evaluate_option(:as, input, options) }
 
+  # Warning: don't rely on AssignAs/AssignName, i am not sure if i leave that as functions.
   AssignAs   = ->(input, options) { options[:as] = As.(input, options); input }
   AssignName = ->(input, options) { options[:as] = options[:binding].name; input }
 end

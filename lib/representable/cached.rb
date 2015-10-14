@@ -25,15 +25,15 @@ module Representable
 
     module Binding
       def default_parse_fragment_functions
-        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
+        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Decorate)
       end
 
       def default_render_fragment_functions
-        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Prepare)
+        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Decorate)
       end
     end
 
-    class CachedPrepare < Function::Prepare
+    class CachedPrepare < Function::Decorate
       def prepare_for(mod, object, binding)
         if representer = binding.cached_representer
           return representer.update!(object)

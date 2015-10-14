@@ -88,15 +88,18 @@ module Representable
       def call(input, options)
         binding = options[:binding]
 
-        binding.evaluate_option(:prepare, input, options) do
-          prepare!(input, binding, options)
-        end
+        binding.evaluate_option(:prepare, input, options)
       end
+    end
 
-      def prepare!(object, binding, options)
-        mod = binding.evaluate_option(:extend, object, options) # FIXME: write test for extend with lambda
+    class Decorate
+      def call(object, options)
+        binding = options[:binding]
 
-        return object unless mod and object # object might be nil.
+        return object unless object # object might be nil.
+
+        mod = binding.evaluate_option(:extend, object, options)
+
 
         prepare_for(mod, object, binding)
       end
@@ -110,6 +113,7 @@ module Representable
   CreateObject = Function::CreateObject.new
   Deserialize  = Function::Deserialize.new
   Prepare      = Function::Prepare.new
+  Decorate     = Function::Decorate.new
 
   ParseFilter = ->(input, options) do
     options[:binding][:parse_filter].(input, options)

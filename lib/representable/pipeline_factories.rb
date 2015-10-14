@@ -26,7 +26,13 @@ module Representable
     def default_render_fragment_functions
       functions = []
       functions << SkipRender if self[:skip_render]
-      functions << Prepare    if typed?
+      if typed? # TODO: allow prepare regardless of :extend, which makes it independent of typed?
+        if self[:prepare]
+          functions << Prepare
+        end
+        # functions << (self[:prepare] ? Prepare : Decorate)
+      end
+      functions << Decorate if self[:extend] and !self[:prepare]
       if representable?
         functions << (self[:serialize] ? Serializer : Serialize)
       end
@@ -62,7 +68,9 @@ module Representable
       functions << SkipParse if self[:skip_parse]
 
       if typed?
-        functions += [CreateObject, Prepare]
+        functions << CreateObject
+        functions << Prepare     if self[:prepare]
+        functions << Decorate    if self[:extend]
         functions << Deserialize if representable?
       end
 
