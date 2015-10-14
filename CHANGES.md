@@ -36,8 +36,9 @@ and it suddenly is super simple to understand
 * Removed `Binding#as`.
 * Removed `Binding#parent_decorator`.
 
-Deprecation
+## Internal Changes
 * Removed `Binding@represented` (which was never public anyway). Use `Binding#represented`.
+* Changed signature: `Binding#get(represented:)`. In now needs a hash `{represented: ..}`.
 
 
 # 2.3.0
