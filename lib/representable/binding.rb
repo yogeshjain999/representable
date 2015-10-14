@@ -50,7 +50,7 @@ module Representable
 
     def get # DISCUSS: evluate if we really need this.
       warn "[Representable] Binding#get is deprecated."
-      Getter.(nil, binding: self)
+      self[:getter] ? Getter.(nil, binding: self) : Get.(nil, binding: self)
     end
 
     def evaluate_option(name, input=nil, options={}, &block)

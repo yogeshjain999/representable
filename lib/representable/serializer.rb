@@ -1,8 +1,6 @@
 module Representable
   Getter = ->(input, options) do
-    options[:binding].evaluate_option(:getter, input, options) do # TODO: should we have binding.get doing the block content?
-      Get.(input, options)
-    end
+    options[:binding].evaluate_option(:getter, input, options)
   end
 
   Get = ->(input, options) { options[:binding].send(:exec_context).send(options[:binding].getter) }

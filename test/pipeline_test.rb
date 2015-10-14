@@ -73,7 +73,7 @@ class PipelineTest < MiniTest::Spec
   it "rendering scalar property" do
     doc = {}
     P[
-      R::Getter,
+      R::Get,
       R::StopOnSkipable,
       R::AssignName,
       R::WriteFragment
@@ -112,7 +112,7 @@ class PipelineTest < MiniTest::Spec
   it "rendering typed property" do
     doc = {}
     P[
-      R::Getter,
+      R::Get,
       R::StopOnSkipable,
       R::StopOnNil,
       R::SkipRender,
@@ -153,7 +153,7 @@ class PipelineTest < MiniTest::Spec
   it "render scalar collection" do
     doc = {}
     P[
-      R::Getter,
+      R::Get,
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,
@@ -176,7 +176,7 @@ class PipelineTest < MiniTest::Spec
   it "render typed collection" do
     doc = {}
     P[
-      R::Getter,
+      R::Get,
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,
@@ -213,12 +213,12 @@ class PipelineTest < MiniTest::Spec
 
   # TODO: test with arrays, too, not "only" Pipeline instances.
   describe "#Insert Pipeline[], Function, replace: OldFunction" do
-    let (:pipeline) { P[R::Getter, R::StopOnSkipable, R::StopOnNil] }
+    let (:pipeline) { P[R::Get, R::StopOnSkipable, R::StopOnNil] }
 
     it "replaces if exists" do
       # pipeline.insert!(R::Default, replace: R::StopOnSkipable)
-      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_equal P[R::Getter, R::Default, R::StopOnNil]
-      pipeline.must_equal P[R::Getter, R::StopOnSkipable, R::StopOnNil]
+      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_equal P[R::Get, R::Default, R::StopOnNil]
+      pipeline.must_equal P[R::Get, R::StopOnSkipable, R::StopOnNil]
     end
 
     it "replaces Function instance" do
@@ -229,7 +229,7 @@ class PipelineTest < MiniTest::Spec
 
     it "does not replace when not existing" do
       P::Insert.(pipeline, R::Default, replace: R::Prepare)
-      pipeline.must_equal P[R::Getter, R::StopOnSkipable, R::StopOnNil]
+      pipeline.must_equal P[R::Get, R::StopOnSkipable, R::StopOnNil]
     end
   end
 end
