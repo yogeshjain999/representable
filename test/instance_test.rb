@@ -249,7 +249,7 @@ class InstanceTest < BaseTest
   describe "new syntax for instance: true" do
     representer!(:inject => :song_representer) do
       property :song, :pass_options => true,
-        :extend => song_representer, :instance => lambda { |fragment, args| args.binding.get }
+        :extend => song_representer, :instance => lambda { |fragment, args| args.binding.get(represented: args.represented) }
     end
 
     it "uses Binding#get instead of creating an instance, but deprecates" do
