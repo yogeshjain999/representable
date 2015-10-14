@@ -24,10 +24,7 @@ module Representable
   end
 
   Default = ->(input, options) do
-    if input == Binding::FragmentNotFound
-      return options[:binding].has_default? ?  options[:binding][:default] : Pipeline::Stop
-    end
-    input
+    Binding::FragmentNotFound == input ? options[:binding][:default] : input
   end
 
   SkipParse = ->(input, options) do
