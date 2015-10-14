@@ -53,24 +53,13 @@ module Representable
       self[:getter] ? Getter.(nil, binding: self) : Get.(nil, binding: self)
     end
 
-    def evaluate_option(name, input=nil, options={})
-      Representable.evaluate_option.(self, name, input, options) # TODO: change this to a normal method once deprecation cycle is over.
-    end
-
-
-    class EvaluateOption
-      def call(binding, name, input, options)
-        evaluate_option(binding, name, input, options)
-      end
-
-    private
-      # Evaluate the option (either nil, static, a block or an instance method call) or
-      # executes passed block when option not defined.
-      def evaluate_option(binding, name, input, options) # TODO: remove this, we don't need a decider anymore.
-        proc = binding[name]
-        proc.(binding.send(:exec_context), options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
+    module EvaluateOption
+      def evaluate_option(name, input=nil, options={})
+        proc = self[name]
+        proc.(send(:exec_context), options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
+    # include EvaluateOption
 
 
     def [](name)

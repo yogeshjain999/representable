@@ -148,12 +148,8 @@ private
   end
 
   def self.deprecations=(value)
-    evaluator = value==false ? Binding::EvaluateOption.new : Binding::Deprecation::EvaluateOption.new
-
-    ::Representable::Binding.class_eval do
-      @@evaluate_option = evaluator
-    end
-
+    evaluator = value==false ? Binding::EvaluateOption : Binding::Deprecation::EvaluateOption
+    ::Representable::Binding.send :include, evaluator
   end
   self.deprecations = true # TODO: change to false in 2.5 or remove entirely.
 end
