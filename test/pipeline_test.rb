@@ -89,7 +89,7 @@ class PipelineTest < MiniTest::Spec
       R::StopOnNotFound,
       R::OverwriteOnNil,
       # R::SkipParse,
-      R::Setter,
+      R::Set,
     ].extend(P::Debug).(doc={"title"=>"Eruption"}, {binding: title, doc: doc}).must_equal "Eruption"
     title.represented.title.must_equal "Eruption"
   end
@@ -135,7 +135,7 @@ class PipelineTest < MiniTest::Spec
       R::CreateObject,
       R::Decorate,
       R::Deserialize,
-      R::Setter,
+      R::Set,
     ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {binding: artist, doc: doc, user_options: {}}).must_equal model=Artist.new("Doobie Brothers")
     artist.represented.artist.must_equal model
   end
@@ -205,7 +205,7 @@ class PipelineTest < MiniTest::Spec
         R::Decorate,
         R::Deserialize,
       ],
-      R::Setter,
+      R::Set,
     ].extend(P::Debug).(doc, {binding: artists, doc: doc, user_options: {}}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
 
     artists.represented.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])

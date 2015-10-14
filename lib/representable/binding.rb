@@ -54,6 +54,7 @@ module Representable
     end
 
     def evaluate_option(name, input=nil, options={}, &block)
+      # raise if block_given?
       Representable.evaluate_option.(self, name, input, options, &block) # TODO: change this to a normal method once deprecation cycle is over.
     end
 
