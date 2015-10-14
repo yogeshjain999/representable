@@ -4,14 +4,14 @@ module Representable
       hash  = filter_keys_for!(represented, options) # FIXME: this modifies options and replicates logic from Representable.
       bin   = representable_mapper(format, options).bindings.first
 
-      Collect::Hash[*bin.default_render_fragment_functions].(hash, {doc: doc, user_options: options, binding: bin})
+      Collect::Hash[*bin.default_render_fragment_functions].(hash, {doc: doc, user_options: options, binding: bin, represented: represented})
     end
 
     def update_properties_from(doc, options, format)
       hash  = filter_keys_for!(doc, options)
       bin   = representable_mapper(format, options).bindings.first
 
-      value = Collect::Hash[*bin.default_parse_fragment_functions].(hash, fragment: hash, document: doc, binding: bin, user_options: options)
+      value = Collect::Hash[*bin.default_parse_fragment_functions].(hash, fragment: hash, document: doc, binding: bin, represented: represented, user_options: options)
 
       represented.replace(value)
     end
