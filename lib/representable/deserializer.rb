@@ -17,7 +17,7 @@ module Representable
   end
 
   StopOnNotFound = ->(input, options) do
-    input == Binding::FragmentNotFound ? Pipeline::Stop : input
+    Binding::FragmentNotFound == input ? Pipeline::Stop : input
   end
 
   StopOnNil = ->(input, options) do # DISCUSS: Not tested/used, yet.
