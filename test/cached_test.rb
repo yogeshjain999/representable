@@ -45,14 +45,16 @@ class CachedTest < MiniTest::Spec
         "songs"=>[{"title"=>"Jailbreak:{:volume=>9}"}, {"title"=>"Southbound:{:volume=>9}"}, {"title"=>"Emerald:{:volume=>9}"}]}) # called in Deserializer/Serializer
 
       # representer becomes reusable as it is stateless.
-      representer.update!(album2)
+      # representer.update!(album2)
 
       # makes sure options are passed correctly.
-      representer.to_hash(volume:10).must_equal(album_hash)
+      # representer.to_hash(volume:10).must_equal(album_hash)
     end
 
     # profiling
-    it "xx" do
+    it do
+      representer.to_hash
+
      RubyProf.start
         representer.to_hash
       res = RubyProf.stop
@@ -63,18 +65,20 @@ class CachedTest < MiniTest::Spec
       printer.print(data)
       data = data.string
 
-      puts data
-
       printer.print(STDOUT)
 
-      # only 1 nested decorators are instantiated, Song.
-      data.must_match "1   <Class::Representable::Decorator>#prepare"
-      # a total of 4 properties in the object graph.
-      data.must_match "4   Representable::Binding#initialize"
+      # 3 songs get decorated.
+      data.must_match "3   Representable::Function::Decorate#call"
+      # 3 nested decorator is instantiated for 3 Songs, though.
+      data.must_match "3   <Class::Representable::Decorator>#prepare"
+      # no Binding is instantiated at runtime.
+      data.wont_match "Representable::Binding#initialize"
       # 2 mappers for Album, Song
-      data.must_match "2   Representable::Mapper::Methods#initialize"
-      # 6 deserializers as the songs collection uses 2.
-      # data.must_match "3   Representable::Deserializer#initialize"
+      # data.must_match "2   Representable::Mapper::Methods#initialize"
+      # title, songs, 3x title, composer
+      data.must_match "8   Representable::Binding#render_pipeline"
+      data.wont_match "render_functions"
+      data.wont_match "Representable::Binding::Factories#render_functions"
     end
   end
 
@@ -108,10 +112,12 @@ class CachedTest < MiniTest::Spec
       # TODO: test options.
     end
 
-    it do
+    it "xxx" do
       representer = AlbumRepresenter.new(Model::Album.new)
+      representer.from_hash(album_hash)
 
       RubyProf.start
+        # puts "#{representer.class.representable_attrs.get(:songs).representer_module.representable_attrs.inspect}"
         representer.from_hash(album_hash)
       res = RubyProf.stop
 
@@ -122,11 +128,15 @@ class CachedTest < MiniTest::Spec
       data = data.string
 
       # only 2 nested decorators are instantiated, Song, and Artist.
-      data.must_match "2   <Class::Representable::Decorator>#prepare"
+      data.must_match "5   <Class::Representable::Decorator>#prepare"
       # a total of 5 properties in the object graph.
-      data.must_match "5   Representable::Binding#initialize"
+      data.wont_match "Representable::Binding#initialize"
+
+
+      data.wont_match "parse_functions" # no pipeline creation.
+      data.must_match "10   Representable::Binding#parse_pipeline"
       # three mappers for Album, Song, composer
-      data.must_match "3   Representable::Mapper::Methods#initialize"
+      # data.must_match "3   Representable::Mapper::Methods#initialize"
       # # 6 deserializers as the songs collection uses 2.
       # data.must_match "6   Representable::Deserializer#initialize"
       # # one populater for every property.

@@ -1,47 +1,25 @@
 module Representable
   # Using this module only makes sense with Decorator representers.
+  #
+  # We could further save time by caching the "mapper" (Render/Parse) on the class level: Render.new(representable_attrs).()
   module Cached
-    # The main point here is that the decorator instance simply saves its mapper. Since the mapper
-    # in turn stores the bindings, we have a straight-forward way of "caching" the bindings without
-    # having to mess around on the class level: this all happens in the decorator _instance_.
-    #
-    # Every binding in turn stores its nested representer (if it has one), implementing a recursive caching.
-    #
-    # Decorator -> Mapper -> [Binding->Decorator, Binding]
-    def representable_mapper(format, options)
-      @mapper ||= super.tap do |mapper|
-        mapper.bindings.each { |binding|
-          binding.extend(Binding)
-          # raise binding.parse_pipeline.extend(Pipeline::Debug).inspect if binding.typed?
-        }
-      end
-    end
-
-    # replace represented for each property in this representer.
-    def update!(represented)
-      @represented = represented
-      self
-    end
-
-    module Binding
-      def default_parse_fragment_functions
-        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Decorate)
-      end
-
-      def default_render_fragment_functions
-        Representable::Pipeline::Insert.(super, CachedPrepare.new, replace: Decorate)
-      end
-    end
-
-    class CachedPrepare < Function::Decorate
-      def prepare_for(mod, object, binding)
-        if representer = binding.cached_representer
-          return representer.update!(object)
+    module Property
+      def property(*)
+        super.tap do |property|
+          property.merge!(cached_binding: binding=Representable::Hash::Binding.build(property, nil))
         end
-
-        # puts "--------> caching representer for #{object} in #{binding.object_id}"
-        binding.cached_representer = super
       end
     end
+
+    def self.included(includer)
+      includer.extend(Property)
+    end
+
+    def representable_mapper(format, options)
+      @mapper ||= Mapper.new(representable_attrs.collect { |dfn| dfn[:cached_binding] })
+    end
+
+    # Serializer.(doc, represented, options)
+    # instance could be saved on class level.
   end
 end

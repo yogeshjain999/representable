@@ -68,7 +68,7 @@ res = RubyProf.stop
 printer = RubyProf::FlatPrinter.new(res)
 printer.print(array = [])
 
-array[0..20].each { |a| puts a }
+array[0..60].each { |a| puts a }
 
 # 100 songs, 100 attrs
 #  0.050000   0.000000   0.050000 (  0.093157)

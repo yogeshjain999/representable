@@ -1,6 +1,6 @@
 module Representable
-  # The Binding wraps the Definition instance for this property and provides methods to read/write fragments.
-
+  # The Binding provides methods to read/write the fragment for one property.
+  #
   # Actually parsing the fragment from the document happens in Binding#read, everything after that is generic.
   class Binding
     class FragmentNotFound
@@ -13,7 +13,7 @@ module Representable
 
     def initialize(definition, parent_decorator)
       @definition       = definition
-      @parent_decorator = parent_decorator # DISCUSS: where's this needed?
+      @parent_decorator = parent_decorator # FIXME: make this another argument like `represented`.
       @name             = @definition.name
       @getter           = @definition.getter
       @setter           = @definition.setter

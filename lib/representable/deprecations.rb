@@ -76,7 +76,6 @@ module Representable::Binding::Deprecation
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(options)
-      puts "setting #{options[:represented]} in #{options[:binding].name}"
       @represented = options[:represented]
       super
     end
