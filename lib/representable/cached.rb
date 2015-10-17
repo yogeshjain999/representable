@@ -6,7 +6,10 @@ module Representable
     module Property
       def property(*)
         super.tap do |property|
-          property.merge!(cached_binding: binding=Representable::Hash::Binding.build(property, nil))
+          # this line is ugly, but for caching, there's no need to introduce complex polymorphic code as 99% use Hash/JSON anyway.
+          binding_builder = self<Representable::Hash ? Representable::Hash::Binding : Representable::XML::Binding
+
+          property.merge!(cached_binding: binding=binding_builder.build(property, nil))
         end
       end
     end
