@@ -52,7 +52,7 @@ private
      # DISCUSS: can we save this hash allocation?
     options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented}
 
-    serializer(options, format).(options)
+    representable_map(options, format).(:compile_fragment, options)
     doc
   end
 
@@ -60,42 +60,22 @@ private
      # DISCUSS: can we save this hash allocation?
     options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented}
 
-    deserializer(options, format).(options)
+    representable_map(options, format).(:uncompile_fragment, options)
     represented
   end
 
-  class Render < Array
-    def call(options)
+
+  class Binding::Map < Array
+    def call(method, options)
       each do |bin|
         options[:binding] = bin
-        bin.compile_fragment(options)
+        bin.send(method, options)
       end
     end
   end
 
-  class Parse < Array
-    def call(options)
-      each do |bin|
-        options[:binding] = bin
-        bin.uncompile_fragment(options)
-      end
-    end
-  end
-
-  def parse(doc, propagated_options, format)
-     # DISCUSS: can we save this hash allocation?
-    options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented}
-
-    deserializer(options, format).(options)
-    doc
-  end
-
-  def serializer(options, format)
-    Render.new(representable_bindings_for(format, options))
-  end
-
-  def deserializer(options, format)
-    Parse.new(representable_bindings_for(format, options))
+  def representable_map(options, format)
+    Binding::Map.new(representable_bindings_for(format, options))
   end
 
   def representable_bindings_for(format, options)

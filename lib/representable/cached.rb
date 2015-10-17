@@ -9,8 +9,8 @@ module Representable
           # this line is ugly, but for caching, there's no need to introduce complex polymorphic code as 99% use Hash/JSON anyway.
           binding_builder = self<Representable::Hash ? Representable::Hash::Binding : Representable::XML::Binding
 
-          serializer << binding_builder.build(property, nil)
-          deserializer << binding_builder.build(property, nil)
+          # TODO: this will cause trouble with inheritance, as inherited properties don't go through the property method.
+          map << binding_builder.build(property, nil)
         end
       end
     end
@@ -21,20 +21,14 @@ module Representable
       includer.class_eval do
         require "uber/inheritable_attr"
         extend Uber::InheritableAttr
-        inheritable_attr :serializer
-        inheritable_attr :deserializer
+        inheritable_attr :map
 
-        self.serializer = Render.new
-        self.deserializer = Parse.new
+        self.map = Binding::Map.new
       end
     end
 
-    def serializer(*)
-      self.class.serializer
-    end
-
-    def deserializer(*)
-      self.class.deserializer
+    def representable_map(*)
+      self.class.map
     end
   end
 end
