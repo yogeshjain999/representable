@@ -37,7 +37,7 @@ private
   def update_properties_from(doc, options, format)
     propagated_options = normalize_options(options)
 
-    parse(doc, propagated_options, format)
+    representable_map!(doc, propagated_options, format, :uncompile_fragment)
     represented
   end
 
@@ -45,25 +45,9 @@ private
   def create_representation_with(doc, options, format)
     propagated_options = normalize_options(options) # {_private: {include: }, is_admin: true}
 
-    render(doc, propagated_options, format)
-  end
-
-  def render(doc, propagated_options, format)
-     # DISCUSS: can we save this hash allocation?
-    options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented}
-
-    representable_map(options, format).(:compile_fragment, options)
+    representable_map!(doc, propagated_options, format, :compile_fragment)
     doc
   end
-
-  def parse(doc, propagated_options, format)
-     # DISCUSS: can we save this hash allocation?
-    options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented}
-
-    representable_map(options, format).(:uncompile_fragment, options)
-    represented
-  end
-
 
   class Binding::Map < Array
     def call(method, options)
@@ -76,6 +60,12 @@ private
 
   def representable_map(options, format)
     Binding::Map.new(representable_bindings_for(format, options))
+  end
+
+  def representable_map!(doc, propagated_options, format, method)
+    options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented}
+
+    representable_map(options, format).(method, options) # .(:uncompile_fragment, options)
   end
 
   def representable_bindings_for(format, options)
