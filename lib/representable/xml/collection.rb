@@ -11,7 +11,7 @@ module Representable::XML
 
     module Methods
       def create_representation_with(doc, options, format)
-        bin = representable_mapper(format, options).bindings.first
+        bin = representable_bindings_for(format, options).first
         bin.write(doc, super, bin.name)
       end
 
