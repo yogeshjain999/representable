@@ -52,7 +52,7 @@ private
   class Binding::Map < Array
     def call(method, options)
       each do |bin|
-        options[:binding] = bin
+        options[:binding] = bin # this is so much faster than options.merge().
         bin.send(method, options)
       end
     end
@@ -69,11 +69,7 @@ private
   end
 
   def representable_bindings_for(format, options)
-    representable_attrs.collect {|definition| representable_binding_for(definition, format, options) }
-  end
-
-  def representable_binding_for(definition, format, options)
-    format.build(definition, self)
+    representable_attrs.collect {|definition| format.build(definition, self) }
   end
 
   # Make sure we do not change original options. However, private options like :include or :wrap are
