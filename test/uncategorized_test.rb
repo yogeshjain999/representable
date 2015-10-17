@@ -64,6 +64,6 @@ class ParsePipelineOptionTest < MiniTest::Spec
   it "is cached" do
     decorator = representer.new(Album.new)
     decorator.from_hash({"id"=>nil}, function: NilToNA).id.must_equal "n/a"
-    decorator.from_hash({"id"=>nil}, function: nil).id.must_equal "n/a" # non-sense function is not applied.
+    decorator.from_hash({"id"=>nil}, function: "nonsense").id.must_equal "n/a" # non-sense function is not applied.
   end
 end
