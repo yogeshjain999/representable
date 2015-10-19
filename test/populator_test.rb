@@ -9,7 +9,34 @@ class PopulatorFindOrInstantiateTest < MiniTest::Spec
     end
   end
 
-  describe "collection" do
+  describe "FindOrInstantiate with property" do
+    representer! do
+      property :song, populator: Representable::FindOrInstantiate, class: Song do
+        property :id
+        property :title
+      end
+    end
+
+    let (:album) { Struct.new(:song).new().extend(representer) }
+
+    it "finds by :id and creates new without :id" do
+      album.from_hash({"song"=>{"id" => 1, "title"=>"Resist Stance"}})
+
+      album.song.title.must_equal "Resist Stance" # note how title is updated from "Resist Stan"
+      album.song.id.must_equal 1
+      album.song.uid.must_equal "abcd" # not changed via populator, indicating this is a formerly "persisted" object.
+    end
+
+    it "creates new without :id" do
+      album.from_hash({"song"=>{"title"=>"Resist Stance"}})
+
+      album.song.title.must_equal "Resist Stance"
+      album.song.id.must_equal nil
+      album.song.uid.must_equal nil
+    end
+  end
+
+  describe "FindOrInstantiate with collection" do
     representer! do
       collection :songs, populator: Representable::FindOrInstantiate, class: Song do
         property :id
@@ -18,7 +45,6 @@ class PopulatorFindOrInstantiateTest < MiniTest::Spec
     end
 
     let (:album) { Struct.new(:songs).new([]).extend(representer) }
-
 
     it "finds by :id and creates new without :id" do
       album.from_hash({"songs"=>[

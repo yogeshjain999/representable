@@ -1,21 +1,29 @@
 module Representable
   class Populator
-    NoOp = ->(input, options) { input }
-
     FindOrInstantiate = ->(input, options) {
       AssignFragment.(input, options)
 
-      object_class = options[:binding][:class].(input, options)
-      options[:represented].songs[options[:index]] = object_class.find_by({id: input["id"]}) || object_class.new
+      binding = options[:binding]
+
+      object_class = binding[:class].(input, options)
+      object       = object_class.find_by(id: input["id"]) || object_class.new
+
+      if options[:binding].array?
+        # represented.songs[i] = model
+        options[:represented].send(binding.getter)[options[:index]] = object
+      else
+        # represented.song = model
+        options[:represented].send(binding.setter, object)
+      end
      }
 
     def self.apply!(options)
       return unless populator = options[:populator]
 
       options[:parse_pipeline] = ->(input, options) do
-        pipeline = Pipeline[*parse_functions] # AssignFragment
-        pipeline = Pipeline::Insert.(pipeline, Set, delete: true)
-        pipeline = Pipeline::Insert.(pipeline, populator, replace: CreateObject)
+        pipeline = Pipeline[*parse_functions] # TODO: AssignFragment
+        pipeline = Pipeline::Insert.(pipeline, Set, delete: true) # remove the setter function.
+        pipeline = Pipeline::Insert.(pipeline, populator, replace: CreateObject) # let the populator do CreateObject's job.
       end
     end
   end
