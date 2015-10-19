@@ -51,10 +51,16 @@ class PipelineTest < MiniTest::Spec
   end
 
   describe "Collect" do
-  #   let(:pipeline) { Representable::Pipeline[Representable::Collect[SetResult, Stopping, ModifyResult]] }
+    Reverse = ->(input, options) { input.reverse }
+    Add = ->(input, options) { "#{input}+" }
+    let(:pipeline) { R::Collect[Reverse, Add] }
 
-  #   it { pipeline.(fragment: ["yo!", "oy!"]).must_equal ["modified object from yo!", "modified object from oy!"] }
-  #   it { pipeline.(fragment: ["yo!", "stop!", "oy!"]).must_equal ["modified object from yo!", "modified object from oy!"] }
+    it { pipeline.(["yo!", "oy!"], {}).must_equal ["!oy+", "!yo+"] }
+
+    describe "Pipeline with Collect" do
+      let(:pipeline) { P[Reverse, R::Collect[Reverse, Add]] }
+      it { pipeline.(["yo!", "oy!"], {}).must_equal ["!yo+", "!oy+"] }
+    end
   end
 
 
@@ -225,6 +231,16 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
     it "does not replace when not existing" do
       P::Insert.(pipeline, R::Default, replace: R::Prepare)
       pipeline.must_equal P[R::Get, R::StopOnSkipable, R::StopOnNil]
+    end
+
+    it "applies on nested Collect" do
+      pipeline = P[R::Get, R::Collect[R::Get, R::StopOnSkipable], R::StopOnNil]
+
+      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, Default], StopOnNil]"
+      pipeline.must_equal P[R::Get, R::Collect[R::Get, R::StopOnSkipable], R::StopOnNil]
+
+
+      P::Insert.(pipeline, R::Default, replace: R::StopOnNil).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, StopOnSkipable], Default]"
     end
   end
 end

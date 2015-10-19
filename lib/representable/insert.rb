@@ -10,10 +10,13 @@ module Representable
 
       private
         def replace!(arr, old_func, new_func)
-          # FIXME: hate the is_a?
-          arr.find { |func| old_func.is_a?(Proc)? (func==old_func) : old_func.instance_of?(func.class) } or return
+          arr.each_with_index { |func, index|
+            if func.is_a?(Collect)
+              arr[index] = Collect[*Pipeline::Insert.(func, new_func, replace: old_func)]
+            end
 
-          arr[arr.index(old_func)] = new_func
+            arr[index] = new_func if old_func.is_a?(Proc)? (func==old_func) : old_func.instance_of?(func.class)
+          }
         end
       end
     end
