@@ -216,6 +216,10 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
   describe "#Insert Pipeline[], Function, replace: OldFunction" do
     let (:pipeline) { P[R::Get, R::StopOnSkipable, R::StopOnNil] }
 
+    it "returns Pipeline instance when passing in Pipeline instance" do
+      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_be_instance_of(R::Pipeline)
+    end
+
     it "replaces if exists" do
       # pipeline.insert!(R::Default, replace: R::StopOnSkipable)
       P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_equal P[R::Get, R::Default, R::StopOnNil]
@@ -241,6 +245,15 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
 
 
       P::Insert.(pipeline, R::Default, replace: R::StopOnNil).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, StopOnSkipable], Default]"
+    end
+  end
+
+  describe "Insert delete: true" do
+    let(:pipeline) { P[R::Get, R::Collect[R::Get, R::StopOnSkipable], R::StopOnNil] }
+
+    it do
+      P::Insert.(pipeline, R::Get, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[Collect[Get, StopOnSkipable], StopOnNil]"
+      pipeline.extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, StopOnSkipable], StopOnNil]"
     end
   end
 end

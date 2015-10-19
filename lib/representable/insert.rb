@@ -4,7 +4,8 @@ module Representable
       class Insert
         def call(arr, func, options)
           arr = arr.dup
-          replace!(arr, options[:replace], func)
+          delete!(arr, func) if options[:delete]
+          replace!(arr, options[:replace], func) if options[:replace]
           arr
         end
 
@@ -17,6 +18,10 @@ module Representable
 
             arr[index] = new_func if old_func.is_a?(Proc)? (func==old_func) : old_func.instance_of?(func.class)
           }
+        end
+
+        def delete!(arr, func)
+          arr.delete(func)
         end
       end
     end
