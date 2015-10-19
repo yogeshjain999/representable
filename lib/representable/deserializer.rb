@@ -38,7 +38,7 @@ module Representable
   module Function
     class CreateObject
       def call(input, options)
-        options[:fragment] = input # FIXME: separate function?
+        AssignFragment.(input, options)
 
         instance_for(input, options) || class_for(input, options)
       end

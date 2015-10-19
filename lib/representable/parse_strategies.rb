@@ -2,17 +2,21 @@ module Representable
   class Populator
     NoOp = ->(input, options) { input }
 
-    Bla = ->(input, options) { raise input }
+    FindOrInstantiate = ->(input, options) {
+      AssignFragment.(input, options)
+
+      object_class = options[:binding][:class].(input, options)
+      options[:represented].songs[options[:index]] = object_class.find_by({id: input["id"]}) || object_class.new
+     }
 
     def self.apply!(options)
       return unless strategy = options[:populator]
 
       options[:parse_pipeline] = ->(input, options) do
-        Pipeline[*Pipeline::Insert.(parse_functions, NoOp, replace: Set)]
-        raise Pipeline[*Pipeline::Insert.(parse_functions, Bla, replace: CreateObject)].inspect
+        pipeline = [*parse_functions] # AssignFragment
+        pipeline = Pipeline[*Pipeline::Insert.(pipeline, NoOp, replace: Set)]
+        pipeline = Pipeline[*Pipeline::Insert.(pipeline, FindOrInstantiate, replace: CreateObject)].extend(Pipeline::Debug)
       end
-
-      # strategy = :proc if strategy.is_a?(::Proc)
     end
   end
   # Parse strategies are just a combination of representable's options. They save you from memoizing the
