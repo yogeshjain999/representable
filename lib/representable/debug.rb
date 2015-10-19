@@ -76,6 +76,8 @@ module Representable
     end
 
     def evaluate(block, memo, options)
+      block.extend(Pipeline::Debug) if block.is_a?(Collect)
+
       puts "  Pipeline   :   -> #{_inspect_function(block)} "
       super.tap do |res|
         puts "  Pipeline   :     result: #{res.inspect}"
@@ -83,13 +85,15 @@ module Representable
     end
 
     def inspect
-      collect do |func|
+      functions = collect do |func|
         _inspect_function(func)
       end.join(", ")
+      "#{self.class.to_s.split("::").last}[#{functions}]"
     end
 
     # prints SkipParse instead of <Proc>. i know, i can make this better, but not now.
     def _inspect_function(func)
+      return func.extend(Pipeline::Debug).inspect if func.is_a?(Collect)
       return func unless func.is_a?(Proc)
       File.readlines(func.source_location[0])[func.source_location[1]-1].match(/^\s+(\w+)/)[1]
     end
