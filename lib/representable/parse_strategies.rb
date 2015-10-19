@@ -10,15 +10,18 @@ module Representable
      }
 
     def self.apply!(options)
-      return unless strategy = options[:populator]
+      return unless populator = options[:populator]
 
       options[:parse_pipeline] = ->(input, options) do
-        pipeline = [*parse_functions] # AssignFragment
-        pipeline = Pipeline[*Pipeline::Insert.(pipeline, NoOp, replace: Set)]
-        pipeline = Pipeline[*Pipeline::Insert.(pipeline, FindOrInstantiate, replace: CreateObject)].extend(Pipeline::Debug)
+        pipeline = Pipeline[*parse_functions] # AssignFragment
+        pipeline = Pipeline::Insert.(pipeline, Set, delete: true)
+        pipeline = Pipeline::Insert.(pipeline, populator, replace: CreateObject)
       end
     end
   end
+
+  FindOrInstantiate = Populator::FindOrInstantiate
+
   # Parse strategies are just a combination of representable's options. They save you from memoizing the
   # necessary parameters.
   #
