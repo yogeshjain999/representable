@@ -9,8 +9,8 @@ module Representable
 
     # i decided not to use polymorphism here for the sake of clarity.
     def collect_for(item_functions)
-      return Collect[*item_functions] if array?
-      return Collect::Hash[*item_functions] if self[:hash]
+      return [Collect[*item_functions]] if array?
+      return [Collect::Hash[*item_functions]] if self[:hash]
       item_functions
     end
 

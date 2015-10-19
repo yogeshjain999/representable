@@ -23,30 +23,22 @@ module Representable
 
 
   # Collect applies a pipeline to each element of input.
-  class Collect
-    def self.[](*functions)
-      new(Pipeline[*functions])
-    end
-
-    def initialize(functions)
-      @item_pipeline = functions#.extend(Pipeline::Debug)
-    end
-
+  class Collect < Pipeline
     # when stop, the element is skipped. (should that be Skip then?)
     def call(input, options)
       arr = []
       input.each_with_index do |item_fragment, i|
-        result = @item_pipeline.(item_fragment, options.merge(index: i)) # DISCUSS: NO :fragment set.
+        result = super(item_fragment, options.merge(index: i)) # DISCUSS: NO :fragment set.
         Pipeline::Stop == result ? next : arr << result
       end
       arr
     end
 
-    class Hash < self
+    class Hash < Pipeline
       def call(input, options)
         {}.tap do |hsh|
           input.each { |key, item_fragment|
-            hsh[key] = @item_pipeline.(item_fragment, options) }# DISCUSS: NO :fragment set.
+            hsh[key] = super(item_fragment, options) }# DISCUSS: NO :fragment set.
         end
       end
     end
