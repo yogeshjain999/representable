@@ -90,6 +90,7 @@ module Representable
 
       # DISCUSS: we could call more macros here (e.g. for :nested).
       Representable::ParseStrategy.apply!(options)
+      Representable::Populator.apply!(options)
 
       yield options if block_given?
       @options.merge!(options)

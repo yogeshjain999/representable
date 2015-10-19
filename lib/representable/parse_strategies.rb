@@ -1,4 +1,20 @@
 module Representable
+  class Populator
+    NoOp = ->(input, options) { input }
+
+    Bla = ->(input, options) { raise input }
+
+    def self.apply!(options)
+      return unless strategy = options[:populator]
+
+      options[:parse_pipeline] = ->(input, options) do
+        Pipeline[*Pipeline::Insert.(parse_functions, NoOp, replace: Set)]
+        raise Pipeline[*Pipeline::Insert.(parse_functions, Bla, replace: CreateObject)].inspect
+      end
+
+      # strategy = :proc if strategy.is_a?(::Proc)
+    end
+  end
   # Parse strategies are just a combination of representable's options. They save you from memoizing the
   # necessary parameters.
   #
