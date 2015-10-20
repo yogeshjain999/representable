@@ -1,12 +1,21 @@
 require "test_helper"
 
 class PopulatorFindOrInstantiateTest < MiniTest::Spec
-  Song = Struct.new(:id, :title, :uid)
-  Song.class_eval do
+  Song = Struct.new(:id, :title, :uid) do
     def self.find_by(attributes={})
       return new(1, "Resist Stan", "abcd") if attributes[:id]==1# we should return the same object here
       new
     end
+  end
+
+  Composer = Struct.new(:song)
+  Composer.class_eval do
+    def song=(v)
+      @song = v
+      "Absolute nonsense" # this tests that the populator always returns the correct object.
+    end
+
+    attr_reader :song
   end
 
   describe "FindOrInstantiate with property" do
@@ -17,7 +26,7 @@ class PopulatorFindOrInstantiateTest < MiniTest::Spec
       end
     end
 
-    let (:album) { Struct.new(:song).new().extend(representer) }
+    let (:album) { Composer.new.extend(representer) }
 
     it "finds by :id and creates new without :id" do
       album.from_hash({"song"=>{"id" => 1, "title"=>"Resist Stance"}})
@@ -28,9 +37,9 @@ class PopulatorFindOrInstantiateTest < MiniTest::Spec
     end
 
     it "creates new without :id" do
-      album.from_hash({"song"=>{"title"=>"Resist Stance"}})
+      album.from_hash({"song"=>{"title"=>"Lower"}})
 
-      album.song.title.must_equal "Resist Stance"
+      album.song.title.must_equal "Lower"
       album.song.id.must_equal nil
       album.song.uid.must_equal nil
     end

@@ -98,7 +98,6 @@ module Representable
 
 
       class Hash < Collection
-
         def serialize_for(value, parent, as)
           set_for(parent, value.collect do |k, v|
             node = node_for(parent, k)

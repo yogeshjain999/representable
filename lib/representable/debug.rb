@@ -25,12 +25,6 @@ module Representable
     end
 
     module Binding
-      def read(doc)
-        value = super
-        puts "                #read --> #{value.inspect}"
-        value
-      end
-
       def evaluate_option(name, *args, &block)
         puts "=====#{self[name]}" if name ==:prepare
         puts (evaled = self[name]) ?
