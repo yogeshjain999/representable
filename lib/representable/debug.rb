@@ -1,27 +1,21 @@
 module Representable
   module Debug
-    def self.extended(represented)
-      represented.extend Representable
+    def update_properties_from(doc, options, format)
+      puts
+      puts "[Deserialize]........."
+      puts "[Deserialize] document #{doc.inspect}"
+      super
     end
 
-    module Representable
-      def update_properties_from(doc, options, format)
-        puts
-        puts "[Deserialize]........."
-        puts "[Deserialize] document #{doc.inspect}"
-        super
-      end
+    def create_representation_with(doc, options, format)
+      puts
+      puts "[Serialize]........."
+      puts "[Serialize]"
+      super
+    end
 
-      def create_representation_with(doc, options, format)
-        puts
-        puts "[Serialize]........."
-        puts "[Serialize]"
-        super
-      end
-
-      def representable_bindings_for(*)
-        super.collect { |bin| bin.extend(Binding) }
-      end
+    def representable_bindings_for(*)
+      super.collect { |bin| bin.extend(Binding) }
     end
 
     module Binding
