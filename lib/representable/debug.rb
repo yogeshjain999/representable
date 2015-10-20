@@ -19,8 +19,8 @@ module Representable
         super
       end
 
-      def representable_mapper(*args)
-        super.extend(Mapper)
+      def representable_bindings_for(*)
+        super.collect { |bin| bin.extend(Binding) }
       end
     end
 
@@ -48,21 +48,6 @@ module Representable
 
       def render_pipeline(*)
         super.extend(Pipeline::Debug)
-      end
-    end
-
-
-    module Mapper
-      def uncompile_fragment(bin, doc)
-        bin.extend(Binding)
-        puts "              uncompile_fragment: #{bin.name}"
-        super
-      end
-
-      def compile_fragment(bin, doc)
-        bin.extend(Binding)
-        puts "              compile_fragment: #{bin.name}"
-        super
       end
     end
   end
