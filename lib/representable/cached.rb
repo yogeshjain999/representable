@@ -17,14 +17,6 @@ module Representable
 
     def self.included(includer)
       includer.extend(Property)
-
-      includer.class_eval do
-        require "uber/inheritable_attr"
-        extend Uber::InheritableAttr
-        inheritable_attr :map
-
-        self.map = Binding::Map.new
-      end
     end
 
     def representable_map(*)

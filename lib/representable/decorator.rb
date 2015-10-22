@@ -1,4 +1,5 @@
 require "representable"
+require "uber/inheritable_attr"
 
 module Representable
   class Decorator
@@ -23,6 +24,10 @@ module Representable
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
     include Cached
+
+    extend Uber::InheritableAttr
+    inheritable_attr :map
+    self.map = Binding::Map.new
 
     def initialize(represented)
       @represented = represented
