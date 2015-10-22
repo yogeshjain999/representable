@@ -1,4 +1,3 @@
-require 'representable/inheritable'
 require 'representable/config'
 require 'representable/definition'
 require 'representable/for_collection'
@@ -104,16 +103,14 @@ private
   end
 
   module ClassInclusions
-    def included(base)
+    def included(includer)
       super
-      base.inherit_module!(self)
+      heritage.(includer)
     end
 
     def inherited(subclass) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
       super
-      # FIXME: subclass.representable_attrs is ALWAYS empty at this point.
-      subclass.representable_attrs.inherit!(representable_attrs) # this should be inherit_class!
-      # DISCUSS: this could also just be: subclass.inheritable_attr :representable_attrs --> superclass.representable_attrs.clone
+      heritage.(subclass)
     end
   end
 
@@ -128,11 +125,6 @@ private
 
 
   module ClassMethods
-    # Gets overridden by Decorator as inheriting representers via include in Decorator means a bit more work (manifesting).
-    def inherit_module!(parent)
-      representable_attrs.inherit!(parent.representable_attrs) # Module just inherits.
-    end
-
     def prepare(represented)
       represented.extend(self)
     end
@@ -149,16 +141,15 @@ private
 
   private
     def register_feature(mod)
+      heritage[:feature] ||= []
+      heritage[:feature] << {args: [mod]}
+
       representable_attrs[:features][mod] = true
     end
   end
 
 
   require "representable/deprecations"
-  def self.evaluate_option
-    @@evaluate_option
-  end
-
   def self.deprecations=(value)
     evaluator = value==false ? Binding::EvaluateOption : Binding::Deprecation::EvaluateOption
     ::Representable::Binding.send :include, evaluator

@@ -13,7 +13,7 @@ module Representable
   # * definitions, [options], wrap: "vertically" inherited (class inheritance, module inclusion)
   #
   # Inheritance works via Config#inherit!(parent).
-  class Config < Inheritable::Hash
+  class Config < Hash
     # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
     # at compile-time.
 
@@ -22,7 +22,7 @@ module Representable
     #
     # Overwrite definition_class if you need a custom Definition object (helpful when using
     # representable in other gems).
-    class Definitions < Inheritable::Hash # TODO: cloneable!
+    class Definitions < Hash # TODO: cloneable!
       def initialize(definition_class)
         @definition_class = definition_class
         super()
@@ -56,9 +56,9 @@ module Representable
     def initialize(definition_class=Definition)
       super()
       merge!(
-        :features    => @features     = Inheritable::Hash.new,
+        :features    => @features     = {},
         :definitions => @definitions  = Definitions.new(definition_class),
-        :options     => @options      = Inheritable::Hash.new,
+        :options     => @options      = {},
         :wrap        => nil )
     end
     attr_reader :options

@@ -4,13 +4,11 @@ require "representable/parse_strategies"
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
   class Definition
-    include Representable::Cloneable
-
     attr_reader :name
     alias_method :getter, :name
 
     def initialize(sym, options={}, &block)
-      @options = Cloneable::Hash.new # allows deep cloning. we then had to set Pipeline cloneable.
+      @options = {}
       @name    = sym.to_s
       options  = options.clone
 
@@ -39,10 +37,6 @@ module Representable
 
     def [](name)
       @runtime_options[name]
-    end
-
-    def clone
-      self.class.new(name, @options.clone)
     end
 
     def setter

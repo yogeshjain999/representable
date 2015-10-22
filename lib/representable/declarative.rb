@@ -5,6 +5,9 @@ module Representable
     end
 
     def representation_wrap=(name)
+      heritage[:representation_wrap=] ||= []
+      heritage[:representation_wrap=] << {args: [name]}
+
       representable_attrs.wrap = name
     end
 
@@ -32,9 +35,17 @@ module Representable
     end
 
     def property(name, options={}, &block)
+      heritage[:property] ||= []
+      heritage[:property] << {args: [name, options], block: block}
+
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
         build_definition(name, default_options, &block)
       end
+    end
+
+    require "declarative"
+    def heritage
+      @heritage ||= ::Declarative::Heritage.new
     end
 
     def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
