@@ -15,7 +15,7 @@ end
 Representable.deprecations = false
 
 SONG_PROPERTIES = 50.times.collect do |i|
-  "property_#{i}"
+  "song_property_#{i}"
 end
 
 
@@ -25,11 +25,19 @@ module SongRepresenter
   SONG_PROPERTIES.each { |p| property p }
 end
 
-class SongDecorator < Representable::Decorator
+class NestedProperty < Representable::Decorator
   include Representable::JSON
   include Representable::Cached
 
   SONG_PROPERTIES.each { |p| property p }
+end
+
+
+class SongDecorator < Representable::Decorator
+  include Representable::JSON
+  include Representable::Cached
+
+  SONG_PROPERTIES.each { |p| property p, extend: NestedProperty }
 end
 
 class AlbumRepresenter < Representable::Decorator
@@ -44,13 +52,13 @@ Song  = Struct.new(*SONG_PROPERTIES.map(&:to_sym))
 Album = Struct.new(:songs)
 
 def random_song
-  Song.new(*SONG_PROPERTIES)
+  Song.new(*SONG_PROPERTIES.collect { |p| Song.new(*SONG_PROPERTIES) })
 end
 
 times = []
 
 3.times.each do
-  album = Album.new(1000.times.collect { random_song })
+  album = Album.new(100.times.collect { random_song })
 
   times << Benchmark.measure do
     puts "================ next!"
@@ -60,7 +68,7 @@ end
 
 puts times.join("")
 
-album = Album.new(1000.times.collect { random_song })
+album = Album.new(100.times.collect { random_song })
 require 'ruby-prof'
 RubyProf.start
 AlbumRepresenter.new(album).to_hash

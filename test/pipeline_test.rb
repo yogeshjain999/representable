@@ -71,7 +71,7 @@ class PipelineTest < MiniTest::Spec
   let (:title) {
     dfn = R::Definition.new(:title)
 
-    R::Hash::Binding.new(dfn, "parent decorator")
+    R::Hash::Binding.new(dfn)
   }
 
   it "rendering scalar property" do
@@ -108,7 +108,7 @@ class PipelineTest < MiniTest::Spec
   let (:artist) {
     dfn = R::Definition.new(:artist, extend: ArtistRepresenter, class: Artist)
 
-    R::Hash::Binding.new(dfn, "parent decorator")
+    R::Hash::Binding.new(dfn)
   }
 
   let (:song_model) { Song.new("Lime Green", Artist.new("Diesel Boy")) }
@@ -150,7 +150,7 @@ class PipelineTest < MiniTest::Spec
   let (:ratings) {
     dfn = R::Definition.new(:ratings, collection: true)
 
-    R::Hash::Binding::Collection.new(dfn, "parent decorator")
+    R::Hash::Binding::Collection.new(dfn)
   }
   it "render scalar collection" do
     doc = {}
@@ -171,7 +171,7 @@ class PipelineTest < MiniTest::Spec
   let (:artists) {
     dfn = R::Definition.new(:artists, collection: true, extend: ArtistRepresenter, class: Artist)
 
-    R::Hash::Binding::Collection.new(dfn, "parent decorator")
+    R::Hash::Binding::Collection.new(dfn)
   }
   it "render typed collection" do
     doc = {}

@@ -6,14 +6,13 @@ module Representable
     class FragmentNotFound
     end
 
-    def self.build(definition, *args)
-      return definition.create_binding(*args) if definition[:binding]
-      build_for(definition, *args)
+    def self.build(definition)
+      return definition.create_binding if definition[:binding]
+      build_for(definition)
     end
 
-    def initialize(definition, parent_decorator)
+    def initialize(definition)
       @definition       = definition
-      @parent_decorator = parent_decorator # FIXME: make this another argument like `represented`.
       @name             = @definition.name
       @getter           = @definition.getter
       @setter           = @definition.setter
@@ -71,8 +70,8 @@ module Representable
 
     def setup_exec_context!
       @exec_context = ->(options) { options[:represented] }     unless self[:exec_context]
-      @exec_context = ->(options) { self }             if self[:exec_context] == :binding
-      @exec_context = ->(options) { @parent_decorator } if self[:exec_context] == :decorator
+      @exec_context = ->(options) { self }                      if self[:exec_context] == :binding
+      @exec_context = ->(options) { options[:decorator] }       if self[:exec_context] == :decorator
     end
 
     def exec_context(options)

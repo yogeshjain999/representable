@@ -4,13 +4,13 @@ require 'representable/hash/binding.rb'
 module Representable
   module XML
     class Binding < Representable::Binding
-      def self.build_for(definition, *args)
-        return Collection.new(definition, *args)      if definition.array?
-        return Hash.new(definition, *args)            if definition.hash? and not definition[:use_attributes] # FIXME: hate this.
-        return AttributeHash.new(definition, *args)   if definition.hash? and definition[:use_attributes]
-        return Attribute.new(definition, *args)       if definition[:attribute]
-        return Content.new(definition, *args)         if definition[:content]
-        new(definition, *args)
+      def self.build_for(definition)
+        return Collection.new(definition)      if definition.array?
+        return Hash.new(definition)            if definition.hash? and not definition[:use_attributes] # FIXME: hate this.
+        return AttributeHash.new(definition)   if definition.hash? and definition[:use_attributes]
+        return Attribute.new(definition)       if definition[:attribute]
+        return Content.new(definition)         if definition[:content]
+        new(definition)
       end
 
       def write(parent, fragments, as)

@@ -3,9 +3,9 @@ require 'representable/binding'
 module Representable
   module Hash
     class Binding < Representable::Binding
-      def self.build_for(definition, *args)
-        return Collection.new(definition, *args)  if definition.array?
-        new(definition, *args)
+      def self.build_for(definition)
+        return Collection.new(definition)  if definition.array?
+        new(definition)
       end
 
       def read(hash, as)

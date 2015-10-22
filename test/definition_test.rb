@@ -171,34 +171,6 @@ class DefinitionTest < MiniTest::Spec
         assert_equal @def[:volume], 9
         assert_equal cloned[:volume], 8
       end
-
-      # cloning of Cloneables in @options.
-      it do
-        definition = Representable::Definition.new(:title)
-        definition.merge!(deserializer: Representable::Inheritable::Hash.new)
-
-        clone = definition.clone
-        clone[:deserializer].merge!(b: 2)
-
-        definition[:deserializer].object_id.wont_equal clone[:deserializer].object_id
-      end
-
-      # pipeline gets cloned properly
-      describe "pipeline cloning" do
-        subject { Definition.new(:title, :render_filter => 1) }
-
-        it ("yy")do
-          cloned = subject.clone
-
-          cloned.merge!(:render_filter => 2)
-
-          subject.instance_variable_get(:@options)[:render_filter].must_equal [1]
-          cloned.instance_variable_get(:@options)[:render_filter].must_equal [1,2]
-
-          subject[:render_filter].must_equal [1]
-          cloned[:render_filter].must_equal [1,2]
-        end
-      end
     end
   end
 
@@ -226,8 +198,7 @@ class DefinitionTest < MiniTest::Spec
   describe "#create_binding" do
     it "executes the block (without special context)" do
       definition = Representable::Definition.new(:title, :binding => lambda { |*args| @binding = Representable::Binding.new(*args) })
-      definition.create_binding(object=Object.new).must_equal @binding
-      @binding.instance_variable_get(:@parent_decorator).must_equal object
+      definition.create_binding.must_equal @binding
     end
   end
 

@@ -62,13 +62,13 @@ private
   end
 
   def representable_map!(doc, propagated_options, format, method)
-    options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented}
+    options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented, decorator: self}
 
     representable_map(options, format).(method, options) # .(:uncompile_fragment, options)
   end
 
   def representable_bindings_for(format, options)
-    representable_attrs.collect {|definition| format.build(definition, self) }
+    representable_attrs.collect {|definition| format.build(definition) }
   end
 
   # Make sure we do not change original options. However, private options like :include or :wrap are
@@ -141,8 +141,7 @@ private
 
   private
     def register_feature(mod)
-      heritage[:feature] ||= []
-      heritage[:feature] << {args: [mod]}
+      heritage.record(:feature, mod) # TODO: move to ::feature.
 
       representable_attrs[:features][mod] = true
     end

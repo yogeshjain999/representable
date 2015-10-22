@@ -104,20 +104,20 @@ class XmlTest < MiniTest::Spec
 
     describe "XML::Binding#build_for" do
       it "returns AttributeBinding" do
-        assert_kind_of XML::Binding::Attribute, XML::Binding.build_for(Def.new(:band, :as => "band", :attribute => true), nil)
+        assert_kind_of XML::Binding::Attribute, XML::Binding.build_for(Def.new(:band, :as => "band", :attribute => true))
       end
 
       it "returns Binding" do
-        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :class => Hash), nil)
-        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :as => :content), nil)
+        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :class => Hash))
+        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :as => :content))
       end
 
       it "returns CollectionBinding" do
-        assert_kind_of XML::Binding::Collection, XML::Binding.build_for(Def.new(:band, :collection => :true), nil)
+        assert_kind_of XML::Binding::Collection, XML::Binding.build_for(Def.new(:band, :collection => :true))
       end
 
       it "returns HashBinding" do
-        assert_kind_of XML::Binding::Hash, XML::Binding.build_for(Def.new(:band, :hash => :true), nil)
+        assert_kind_of XML::Binding::Hash, XML::Binding.build_for(Def.new(:band, :hash => :true))
       end
     end
 

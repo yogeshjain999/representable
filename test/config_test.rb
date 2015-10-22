@@ -120,52 +120,6 @@ class ConfigTest < MiniTest::Spec
     end
   end
 
-
-  describe "#inherit!" do
-    let (:title)  { Definition.new(:title) }
-    let (:length) { Definition.new(:length) }
-    let (:stars)  { Definition.new(:stars) }
-
-    it do
-      parent = Representable::Config.new
-      parent.add(:title, {:alias => "Callname"})
-      parent[:features][Object] = true
-      # DISCUSS: build Inheritable::Hash automatically in options? is there a gem for that?
-      parent.options[:additional_features] = Representable::Inheritable::Hash[Object => true]
-
-      subject.inherit!(parent)
-
-      # add to inherited config:
-      subject.add(:stars, {})
-      subject[:features][Module] = true
-      subject.options[:additional_features][Module] = true
-
-      subject[:features].must_equal({Object => true, Module => true})
-
-      parent.options[:additional_features].must_equal({Object => true})
-      subject.options[:additional_features].must_equal({Object => true, Module => true})
-
-      # test Definition interface:
-
-      # definitions.size.must_equal([subject.get(:title), subject.get(:stars)])
-      subject.get(:title).object_id.wont_equal parent.get(:title).object_id
-      # subject.get(:stars).object_id.must_equal stars.object_id
-    end
-
-    # Config with Inheritable::Array
-    it "xx" do
-      parent = Representable::Config.new
-      parent.options[:links] = Representable::Inheritable::Array.new
-      parent.options[:links] << "//1"
-
-      subject.options[:links] = Representable::Inheritable::Array.new
-      subject.options[:links] << "//2"
-
-      subject.inherit!(parent)
-      subject.options[:links].must_equal ["//2", "//1"]
-    end
-  end
-
   describe "#features" do
     it do
       subject[:features][Object] = true

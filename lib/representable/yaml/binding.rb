@@ -3,9 +3,9 @@ require 'representable/hash/binding'
 module Representable
   module YAML
     class Binding < Representable::Hash::Binding
-      def self.build_for(definition, *args)
-        return Collection.new(definition, *args) if definition.array?
-        new(definition, *args)
+      def self.build_for(definition)
+        return Collection.new(definition) if definition.array?
+        new(definition)
       end
 
       def write(map, fragment, as)

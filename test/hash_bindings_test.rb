@@ -15,7 +15,7 @@ class HashBindingTest < MiniTest::Spec
   describe "PropertyBinding" do
     describe "#read" do
       before do
-        @property = Representable::Hash::Binding.new(Representable::Definition.new(:song), nil)
+        @property = Representable::Hash::Binding.new(Representable::Definition.new(:song))
       end
 
       it "returns fragment if present" do
@@ -35,7 +35,7 @@ class HashBindingTest < MiniTest::Spec
   describe "CollectionBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::Hash::Binding::Collection.new(Representable::Definition.new(:songs, :collection => true), Album.new)
+        @property = Representable::Hash::Binding::Collection.new(Representable::Definition.new(:songs, :collection => true))
       end
 
       it "extracts with #read" do
@@ -56,7 +56,7 @@ class HashBindingTest < MiniTest::Spec
   describe "HashBinding" do
     describe "with plain text items" do
       before do
-        @property = Representable::Hash::Binding.new(Representable::Definition.new(:songs, :hash => true), nil)
+        @property = Representable::Hash::Binding.new(Representable::Definition.new(:songs, :hash => true))
       end
 
       it "extracts with #read" do
@@ -72,7 +72,7 @@ class HashBindingTest < MiniTest::Spec
 
     describe "with objects" do
       before do
-        @property = Representable::Hash::Binding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter), nil)
+        @property = Representable::Hash::Binding.new(Representable::Definition.new(:songs, :hash => true, :class => Song, :extend => SongRepresenter))
       end
 
       it "doesn't change the represented hash in #write" do
