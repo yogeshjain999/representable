@@ -9,7 +9,6 @@ module Representable
           binding_builder = Representable::XML::Binding  if self<Representable::XML
           binding_builder = Representable::YAML::Binding if self<Representable::YAML
 
-          # TODO: this will cause trouble with inheritance, as inherited properties don't go through the property method.
           map << binding_builder.build(property)
         end
       end

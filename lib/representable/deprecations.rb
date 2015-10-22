@@ -71,12 +71,14 @@ module Representable::Binding::Deprecation
 
     def compile_fragment(options)
       @represented = options[:represented]
+      @parent_decorator = options[:decorator]
       super
     end
 
     # Parse value from doc and update the model property.
     def uncompile_fragment(options)
       @represented = options[:represented]
+      @parent_decorator = options[:decorator]
       super
     end
 
