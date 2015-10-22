@@ -6,7 +6,7 @@ module Representable::Hash
       base.class_eval do
         include Representable::Hash
         extend ClassMethods
-        representable_attrs.add(:_self, {:collection => true})
+        property(:_self, {:collection => true})
       end
     end
 

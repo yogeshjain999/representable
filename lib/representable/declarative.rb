@@ -36,8 +36,6 @@ module Representable
     def property(name, options={}, &block)
       heritage.record(:property, name, options, &block)
 
-
-
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
         build_definition(name, default_options, &block)
       end

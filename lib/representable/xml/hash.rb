@@ -10,7 +10,7 @@ module Representable::XML
       base.class_eval do
         include Representable
         extend ClassMethods
-        representable_attrs.add(:_self, hash: true, use_attributes: true)
+        property(:_self, hash: true, use_attributes: true)
       end
     end
 
@@ -35,7 +35,7 @@ module Representable::XML
       base.class_eval do
         include Representable
         extend ClassMethods
-        representable_attrs.add(:_self, {:hash => true})
+        property(:_self, {:hash => true})
       end
     end
 

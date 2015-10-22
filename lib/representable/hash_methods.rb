@@ -2,16 +2,16 @@ module Representable
   module HashMethods
     def create_representation_with(doc, options, format)
       hash  = filter_keys_for!(represented, options) # FIXME: this modifies options and replicates logic from Representable.
-      bin   = representable_bindings_for(format, options).first
+      bin   = representable_map(options, format).first
 
-      Collect::Hash[*bin.default_render_fragment_functions].(hash, {doc: doc, user_options: options, binding: bin, represented: represented})
+      Collect::Hash[*bin.default_render_fragment_functions].extend(Pipeline::Debug).(hash, {doc: doc, user_options: options, binding: bin, represented: represented, decorator: self})
     end
 
     def update_properties_from(doc, options, format)
       hash  = filter_keys_for!(doc, options)
-      bin   = representable_bindings_for(format, options).first
+      bin   = representable_map(options, format).first
 
-      value = Collect::Hash[*bin.default_parse_fragment_functions].(hash, fragment: hash, document: doc, binding: bin, represented: represented, user_options: options)
+      value = Collect::Hash[*bin.default_parse_fragment_functions].(hash, fragment: hash, document: doc, binding: bin, represented: represented, user_options: options, decorator: self)
 
       represented.replace(value)
     end
