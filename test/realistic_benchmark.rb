@@ -27,7 +27,6 @@ end
 
 class NestedProperty < Representable::Decorator
   include Representable::JSON
-  include Representable::Cached
 
   SONG_PROPERTIES.each { |p| property p }
 end
@@ -35,14 +34,12 @@ end
 
 class SongDecorator < Representable::Decorator
   include Representable::JSON
-  include Representable::Cached
 
   SONG_PROPERTIES.each { |p| property p, extend: NestedProperty }
 end
 
 class AlbumRepresenter < Representable::Decorator
   include Representable::JSON
-  feature Representable::Cached
 
   # collection :songs, extend: SongRepresenter
   collection :songs, extend: SongDecorator

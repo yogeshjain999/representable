@@ -22,7 +22,7 @@ module Representable
     end
 
     include Representable # include after class methods so Decorator::prepare can't be overwritten by Representable::prepare.
-    # include Cached
+    include Cached
 
     def initialize(represented)
       @represented = represented

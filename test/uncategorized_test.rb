@@ -30,7 +30,6 @@ class RenderPipelineOptionTest < MiniTest::Spec
   NilToNA = ->(input, options) { input.nil? ? "n/a" : input }
 
   representer!(decorator: true) do
-    include Representable::Cached
     property :id, render_pipeline: ->(input, options) do
       Representable::Pipeline[*render_functions.insert(2, options[:user_options][:function])]
     end
@@ -52,7 +51,6 @@ class ParsePipelineOptionTest < MiniTest::Spec
   NilToNA = ->(input, options) { input.nil? ? "n/a" : input }
 
   representer!(decorator: true) do
-    include Representable::Cached
     property :id, parse_pipeline: ->(input, options) do
       Representable::Pipeline[*parse_functions.insert(3, options[:user_options][:function])].extend(Representable::Pipeline::Debug)
     end
