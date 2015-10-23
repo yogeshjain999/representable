@@ -14,8 +14,10 @@ module Representable
       super
     end
 
-    def representable_bindings_for(*)
-      super.collect { |bin| bin.extend(Binding) }
+    def representable_map(*)
+      super.tap do |arr|
+        arr.collect { |bin| bin.extend(Binding) }
+      end
     end
 
     module Binding
