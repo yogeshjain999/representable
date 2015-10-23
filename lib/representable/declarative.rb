@@ -2,15 +2,16 @@ module Representable
   module Declarative
     class Defaults
       def setup!(hash, &block)
-        @default_declarative_options = hash if hash.any?
-        @strategic_declarative_options = block if block_given?
+        @static_options  = hash if hash.any?
+        @dynamic_options = block if block_given?
         self
       end
 
+      # TODO: allow to receive rest of options/block in dynamic block.
       def options_for_property(property_name, given_options)
-        options = @default_declarative_options || {}
-        unless @strategic_declarative_options.nil?
-          dynamic_options = @strategic_declarative_options.call(property_name, given_options)
+        options = @static_options || {}
+        unless @dynamic_options.nil?
+          dynamic_options = @dynamic_options.call(property_name, given_options)
           options.merge!(dynamic_options)
         end
         options.merge!(given_options)
@@ -22,8 +23,9 @@ module Representable
       @representable_attrs ||= build_config
     end
 
-    def defaults(hash={}, &block)
-      (@defaults ||= Defaults.new).setup!(hash, &block)
+    def defaults(options={}, &block)
+      # @defaults get inherited using Declarative::Heritage.
+      (@defaults ||= Defaults.new).setup!(options, &block) # FIXME: what if called twice?
     end
 
     def representation_wrap=(name)
