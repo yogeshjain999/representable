@@ -1,17 +1,14 @@
 module Representable::XML
   module Collection
-    include Representable::XML
-
     def self.included(base)
       base.send :include, Representable::XML
       base.send :include, Representable::Hash::Collection
       base.send :include, Methods
     end
 
-
     module Methods
       def create_representation_with(doc, options, format)
-        bin = representable_bindings_for(format, options).first
+        bin = representable_map(options, format).first
         bin.write(doc, super, bin.name)
       end
 
