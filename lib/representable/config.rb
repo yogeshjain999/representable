@@ -1,22 +1,7 @@
 require "forwardable"
-# Caching of Bindings
-# in Decorators, this could be an instance class var. when inherited, it is automatically busted.
-# however, in modules we can't do that. we never know when a module is "finalised", so we don't really know when to bust the cache.
 
 module Representable
-  # Config contains three independent, inheritable directives: features, options and definitions.
-  # It is a hash - just add directives if you need them.
-  #
-  # You may access/alter the property Definitions using #each, #collect, #add, #get.
-  #
-  # * features, [options]: "horizontally"+"vertically" inherited values (inline representer)
-  # * definitions, [options], wrap: "vertically" inherited (class inheritance, module inclusion)
-  #
-  # Inheritance works via Config#inherit!(parent).
   class Config < Hash
-    # Keep in mind that performance doesn't matter here as 99.9% of all representers are created
-    # at compile-time.
-
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
     # Same-named properties get overridden, just like in a Hash.
     #
