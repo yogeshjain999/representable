@@ -34,10 +34,12 @@ module Representable
     end
 
     def property(name, options={}, &block)
+      _opts = {module_includes: representable_attrs.features}
+
       heritage.record(:property, name, options, &block)
 
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
-        build_definition(name, default_options, &block)
+        build_definition(name, default_options.merge!(_opts), &block)
       end
     end
 
@@ -76,15 +78,17 @@ module Representable
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block
+        includes = options[:module_includes]
+
         options[:_inline] = true
-        options[:extend]  = inline_representer_for(base, representable_attrs.features, name, options, &block)
+        options[:extend]  = inline_representer_for(base, includes, name, options, &block)
       end
     end
 
-    def inline_representer_for(base, features, name, options, &block)
+    def inline_representer_for(base, includes, name, options, &block)
       representer = options[:use_decorator] ? Decorator : self
 
-      representer.build_inline(base, features, name, options, &block)
+      representer.build_inline(base, includes, name, options, &block)
     end
 
     def build_config

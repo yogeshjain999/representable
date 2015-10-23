@@ -146,8 +146,7 @@ private
 
   private
     def register_feature(mod)
-      heritage.record(:feature, mod) # TODO: move to ::feature.
-
+        heritage.record(:feature, mod) # TODO: move to ::feature.
       representable_attrs[:features][mod] = true
     end
   end
