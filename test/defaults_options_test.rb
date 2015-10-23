@@ -8,7 +8,7 @@ class DefaultsOptionsTest < BaseTest
   describe "hash options combined with dynamic options" do
     representer! do
       defaults render_nil: true do |name|
-        { as: name.to_s.camelize }
+        { as: name.to_s.upcase }
       end
 
       property :title
@@ -17,13 +17,13 @@ class DefaultsOptionsTest < BaseTest
       property :song_volume
     end
 
-    it { render(prepared).must_equal_document({"Title" => "Revolution", "AuthorName" => "Some author", "Description" => nil, "SongVolume" => 20}) }
+    it { render(prepared).must_equal_document({"TITLE" => "Revolution", "AUTHOR_NAME" => "Some author", "DESCRIPTION" => nil, "SONG_VOLUME" => 20}) }
   end
 
   describe "with only dynamic property options" do
     representer! do
       defaults do |name|
-        { as: name.to_s.camelize }
+        { as: name.to_s.upcase }
       end
 
       property :title
@@ -32,7 +32,7 @@ class DefaultsOptionsTest < BaseTest
       property :song_volume
     end
 
-    it { render(prepared).must_equal_document({"Title" => "Revolution", "AuthorName" => "Some author", "SongVolume" => 20}) }
+    it { render(prepared).must_equal_document({"TITLE" => "Revolution", "AUTHOR_NAME" => "Some author", "SONG_VOLUME" => 20}) }
   end
 
   describe "with only hashes" do
@@ -64,7 +64,7 @@ class DefaultsOptionsTest < BaseTest
   describe "direct defaults hash with dynamic options" do
     representer! do
       defaults render_nil: true do |name|
-        { as: name.to_s.camelize }
+        { as: name.to_s.upcase }
       end
 
       property :title
@@ -73,13 +73,13 @@ class DefaultsOptionsTest < BaseTest
       property :song_volume
     end
 
-    it { render(prepared).must_equal_document({"Title" => "Revolution", "AuthorName" => "Some author", "Description" => nil, "SongVolume" => 20}) }
+    it { render(prepared).must_equal_document({"TITLE" => "Revolution", "AUTHOR_NAME" => "Some author", "DESCRIPTION" => nil, "SONG_VOLUME" => 20}) }
   end
 
   describe "prioritizes specific options" do
     representer! do
       defaults render_nil: true do |name|
-        { as: name.to_s.camelize }
+        { as: name.to_s.upcase }
       end
 
       property :title
@@ -88,6 +88,6 @@ class DefaultsOptionsTest < BaseTest
       property :song_volume, as: :volume
     end
 
-    it { render(prepared).must_equal_document({"Title" => "Revolution", "AuthorName" => "Some author", "volume" => 20}) }
+    it { render(prepared).must_equal_document({"TITLE" => "Revolution", "AUTHOR_NAME" => "Some author", "volume" => 20}) }
   end
 end
