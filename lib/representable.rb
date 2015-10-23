@@ -145,13 +145,14 @@ private
 
   private
     def register_feature(mod)
-        # heritage.record(:feature, mod) # TODO: move to ::feature.
-
       # this will be something along defaults {feature_modules: [mod]} at some point soon.
       @features ||= {} # this is what goes into the nested representers.
       @features[mod]=true
 
 
+      # do _not_ include that module again in subclass/includer! this is already handled by ruby.
+      # however, it needs to be registered for the nested representers.
+      # this could simply be `defaults: {feature_modules: [mod]}`
       heritage.record(:add_to_my_local_features, mod) # this is only for inheritance between decorators and modules!!! ("horizontal and vertical")
     end
 

@@ -46,6 +46,7 @@ module Representable
       puts "@@@@@ #{name.inspect}: #{_opts.inspect}"
       # end
 
+      # TODO: heritage does not contain module_includes (it could, be this will come via the inherited defaults)
       heritage.record(:property, name, options.merge(_opts), &block)
 
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
@@ -69,17 +70,6 @@ module Representable
     end
 
   private
-    # This method is meant to be overridden if you want to add or change DSL options.
-    # The options hash is already initialized, add or change elements as you need.
-    #
-    # Example:
-    #
-    # def build_definition(name, options, &block)
-    #   options[:pass_options] = true
-    #   options[:render_filter] << Sanitizer.new if options[:sanitize]
-    #   options[:setter] << lambda { |fragment, options| send("set_#{options.binding.name}=", fragment) }
-    #   super # don't forget to call super
-    # end
     def build_definition(name, options, &block)
       base = nil
 
