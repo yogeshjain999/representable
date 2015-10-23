@@ -74,17 +74,17 @@ module Representable
 
       # wenn default da is, kann man einfach default m_i mit options[m_i] mergen.
 
-      mi = options[:module_includes] || []
+      mi = options[:include_modules] || []
 
-      # if  && options[:module_includes].any? # TODO: when calling ::feature, don't save it, make it a options default for this representer.
+      # if  && options[:include_modules].any? # TODO: when calling ::feature, don't save it, make it a options default for this representer.
       #   _opts = {}
       # else
         @features ||= {}
-        _opts = {module_includes: @features.keys+mi}
+        _opts = {include_modules: @features.keys+mi}
       puts "@@@@@ #{name.inspect}: #{_opts.inspect}"
       # end
 
-      # TODO: heritage does not contain module_includes (it could, be this will come via the inherited defaults)
+      # TODO: heritage does not contain include_modules (it could, be this will come via the inherited defaults)
       heritage.record(:property, name, options.merge(_opts), &block)
 
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
@@ -116,7 +116,7 @@ module Representable
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block
-        includes = options[:module_includes]
+        includes = options[:include_modules]
 
         options[:_inline] = true
         options[:extend]  = inline_representer_for(base, includes, name, options, &block)

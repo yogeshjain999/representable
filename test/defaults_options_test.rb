@@ -101,8 +101,8 @@ class DefaultsOptionsTest < BaseTest
 
     # TODO test this interface explicitly.
     representer! do
-      defaults[:module_includes] ||= []
-      defaults[:module_includes] += [Hello]
+      defaults[:include_modules] ||= []
+      defaults[:include_modules] += [Hello]
 
       defaults do |name, options|
         { as: name.to_s.upcase }
