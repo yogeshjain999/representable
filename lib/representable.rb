@@ -26,8 +26,7 @@ module Representable
       extend Feature
       extend ForCollection
       extend Represent
-      extend Apply
-      # register_feature Representable # Representable gets included automatically when creating inline representer.
+      extend Apply # FIXME: REMOVE!
     end
   end
 
@@ -146,8 +145,18 @@ private
 
   private
     def register_feature(mod)
-        heritage.record(:feature, mod) # TODO: move to ::feature.
-      @features ||= {}
+        # heritage.record(:feature, mod) # TODO: move to ::feature.
+
+      # this will be something along defaults {feature_modules: [mod]} at some point soon.
+      @features ||= {} # this is what goes into the nested representers.
+      @features[mod]=true
+
+
+      heritage.record(:add_to_my_local_features, mod) # this is only for inheritance between decorators and modules!!! ("horizontal and vertical")
+    end
+
+    def add_to_my_local_features(mod)
+      @features ||= {} # this is what goes into the nested representers.
       @features[mod]=true
     end
   end

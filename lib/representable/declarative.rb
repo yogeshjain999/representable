@@ -34,10 +34,19 @@ module Representable
     end
 
     def property(name, options={}, &block)
-      @features ||= {}
-      _opts = {module_includes: @features.keys}
+      # wenn default da is, kann man einfach default m_i mit options[m_i] mergen.
 
-      heritage.record(:property, name, options, &block)
+      mi = options[:module_includes] || []
+
+      # if  && options[:module_includes].any? # TODO: when calling ::feature, don't save it, make it a options default for this representer.
+      #   _opts = {}
+      # else
+        @features ||= {}
+        _opts = {module_includes: @features.keys+mi}
+      puts "@@@@@ #{name.inspect}: #{_opts.inspect}"
+      # end
+
+      heritage.record(:property, name, options.merge(_opts), &block)
 
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
         build_definition(name, default_options.merge!(_opts), &block)

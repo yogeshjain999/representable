@@ -109,13 +109,15 @@ class SchemaTest < MiniTest::Spec
 
 
   class InheritFromDecorator < InheritDecorator
-
     property :label, inherit: true do
       collection :employees do
         property :name
       end
     end
   end
+
+  require "pp"
+  pp InheritFromDecorator.representable_attrs.get(:label)[:extend].(nil).representable_attrs
 
   it do
     InheritFromDecorator.new(band).to_hash.must_equal({"genre"=>"Punkrock", "label"=>{"name"=>"Fat Wreck", "city"=>"San Francisco", "employees"=>[{"name"=>"Mike"}], "location"=>{"city"=>"Sanfran"}}})
