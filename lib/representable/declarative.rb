@@ -34,7 +34,8 @@ module Representable
     end
 
     def property(name, options={}, &block)
-      _opts = {module_includes: representable_attrs.features}
+      @features ||= {}
+      _opts = {module_includes: @features.keys}
 
       heritage.record(:property, name, options, &block)
 

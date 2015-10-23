@@ -119,13 +119,4 @@ class ConfigTest < MiniTest::Spec
       subject.get(:length).must_equal length
     end
   end
-
-  describe "#features" do
-    it do
-      subject[:features][Object] = true
-      subject[:features][Module] = true
-
-      subject.features.must_equal [Object, Module]
-    end
-  end
 end

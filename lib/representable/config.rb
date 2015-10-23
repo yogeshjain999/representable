@@ -41,16 +41,11 @@ module Representable
     def initialize(definition_class=Definition)
       super()
       merge!(
-        :features    => @features     = {},
         :definitions => @definitions  = Definitions.new(definition_class),
         :options     => @options      = {},
         :wrap        => nil )
     end
     attr_reader :options
-
-    def features
-      @features.keys
-    end
 
     # delegate #collect etc to Definitions instance.
     extend Forwardable
