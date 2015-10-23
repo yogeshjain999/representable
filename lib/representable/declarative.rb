@@ -1,21 +1,33 @@
+require "uber/delegates"
+
 module Representable
   module Declarative
+    # DSL object.
     class Defaults
-      def setup!(hash, &block)
-        @static_options  = hash if hash.any?
+      def initialize
+        @static_options = {}
+      end
+
+      def merge!(hash, &block)
+        @static_options.merge!(hash) if hash.any?
         @dynamic_options = block if block_given?
         self
       end
 
-      # TODO: allow to receive rest of options/block in dynamic block.
-      def options_for_property(property_name, given_options)
-        options = @static_options || {}
-        unless @dynamic_options.nil?
-          dynamic_options = @dynamic_options.call(property_name, given_options)
-          options.merge!(dynamic_options)
-        end
-        options.merge!(given_options)
-        options
+      extend Uber::Delegates
+      delegates :@static_options, :[], :[]= # mutuable API!
+
+      # TODO: allow to receive rest of options/block in dynamic block. or, rather, test it as it was already implemented.
+      def call(name, given_options)
+        options = @static_options
+        options = options.merge(dynamic_options(name, given_options))
+        options = options.merge(given_options)
+      end
+
+    private
+      def dynamic_options(name, given_options)
+        return {} if @dynamic_options.nil?
+        @dynamic_options.call(name, given_options)
       end
     end
 
@@ -25,7 +37,7 @@ module Representable
 
     def defaults(options={}, &block)
       # @defaults get inherited using Declarative::Heritage.
-      (@defaults ||= Defaults.new).setup!(options, &block) # FIXME: what if called twice?
+      (@defaults ||= Defaults.new).merge!(options, &block) # FIXME: what if called twice?
     end
 
     def representation_wrap=(name)
@@ -58,7 +70,7 @@ module Representable
     end
 
     def property(name, options={}, &block)
-      options = defaults.options_for_property(name, options)
+      options = defaults.(name, options)
 
       # wenn default da is, kann man einfach default m_i mit options[m_i] mergen.
 
