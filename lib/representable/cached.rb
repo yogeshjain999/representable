@@ -4,10 +4,7 @@ module Representable
     module Property
       def property(*)
         super.tap do |property|
-          # this line is ugly, but for caching, there's no need to introduce complex polymorphic code as 99% use Hash/JSON anyway.
-          binding_builder = Representable::Hash::Binding
-          binding_builder = Representable::XML::Binding  if self<Representable::XML
-          binding_builder = Representable::YAML::Binding if self<Representable::YAML
+          binding_builder = format_engine::Binding
 
           map << binding_builder.build(property)
         end

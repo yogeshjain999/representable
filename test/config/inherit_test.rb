@@ -16,13 +16,14 @@ class ConfigInheritTest < MiniTest::Spec
 
   # end
   module GenreModule
-    include Representable
+    include Representable::Hash
     property :genre
   end
 
 
   # in Decorator ------------------------------------------------
   class Decorator < Representable::Decorator
+    include Representable::Hash
     property :title
     property :artist do
       property :id

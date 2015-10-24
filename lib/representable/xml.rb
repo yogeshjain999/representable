@@ -25,6 +25,10 @@ module Representable
         representable_attrs.options[:remove_namespaces] = true
       end
 
+      def format_engine
+        Representable::XML
+      end
+
       def collection_representer_class
         Collection
       end

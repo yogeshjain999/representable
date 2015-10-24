@@ -14,6 +14,8 @@ class HeritageTest < Minitest::Spec
 
 
   class A < Representable::Decorator
+    include Representable::Hash
+
     feature Hello
 
     property :id do

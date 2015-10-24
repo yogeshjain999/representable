@@ -36,7 +36,7 @@ class LonelyRepresenterTest < MiniTest::Spec
     property :name
   end
 
-  let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include rpr } }
+  let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include Representable::Hash; include rpr } }
 
   describe "JSON::Collection" do
     let (:songs) { [Song.new("Days Go By"), Song.new("Can't Take Them All")] }

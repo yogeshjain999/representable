@@ -387,7 +387,7 @@ class CollectionTest < MiniTest::Spec
       self.representation_wrap = :song
     end
 
-    let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include rpr } }
+    let (:decorator) { rpr = representer; Class.new(Representable::Decorator) { include Representable::XML; include rpr } }
 
     describe "XML::Collection" do
       describe "with contained objects" do

@@ -1,8 +1,8 @@
-require 'representable/hash'
-require 'representable/json/collection'
+require "representable/hash"
+require "representable/json/collection"
 
 begin
-  require 'multi_json'
+  require "multi_json"
 rescue LoadError => _
   abort "Missing dependency 'multi_json' for Representable::JSON. See dependencies section in README.md for details."
 end
@@ -23,6 +23,10 @@ module Representable
 
 
     module ClassMethods
+      def format_engine
+        Representable::Hash
+      end
+
       def collection_representer_class
         JSON::Collection
       end

@@ -14,13 +14,15 @@ module Representable
       end
     end
 
-
     module ClassMethods
+      def format_engine
+        Representable::Hash
+      end
+
       def collection_representer_class
         Collection
       end
     end
-
 
     def from_hash(data, options={}, binding_builder=Binding)
       data = filter_wrap(data, options)

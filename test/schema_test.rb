@@ -127,6 +127,8 @@ end
 
 class ApplyTest < MiniTest::Spec
   class AlbumDecorator < Representable::Decorator
+    include Representable::Hash
+
     property :title
 
     property :hit do

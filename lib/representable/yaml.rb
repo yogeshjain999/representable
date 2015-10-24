@@ -8,11 +8,16 @@ module Representable
     def self.included(base)
       base.class_eval do
         include Representable
-        #self.representation_wrap = true # let representable compute it.
         register_feature Representable::YAML
+        extend ClassMethods
       end
     end
 
+    module ClassMethods
+      def format_engine
+        Representable::YAML
+      end
+    end
 
     def from_yaml(doc, options={})
       hash = Psych.load(doc)
@@ -21,8 +26,6 @@ module Representable
 
     # Returns a Nokogiri::XML object representing this object.
     def to_ast(options={})
-      #root_tag = options[:wrap] || representation_wrap
-
       Psych::Nodes::Mapping.new.tap do |map|
         create_representation_with(map, options, Binding)
       end

@@ -55,6 +55,7 @@ class IfTest < MiniTest::Spec
     it "works with decorator" do
       rpr = representer
       Class.new(Representable::Decorator) do
+        include Representable::Hash
         include rpr
       end.new(subject).to_hash.must_equal({})
     end

@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class DecoratorTest < MiniTest::Spec
-  # TODO: Move to global place since it's used twice.
   class SongRepresentation < Representable::Decorator
     include Representable::JSON
     property :name
@@ -79,7 +78,7 @@ class InheritanceWithDecoratorTest < MiniTest::Spec
   class Twin
     extend Uber::InheritableAttr
     inheritable_attr :representer_class
-    self.representer_class = Representable::Decorator
+    self.representer_class = Class.new(Representable::Decorator){ include Representable::Hash }
   end
 
   class Album < Twin
