@@ -44,6 +44,8 @@ module Representable
 
       heritage.record(:property, name, options, &block)
 
+      # FIXME: DO WE REALLY NEED THE Definition.new&block detour?
+      # options[:extend] = options[:extend] || options[:decorator]
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
         build_definition(name, default_options, &block)
       end
@@ -68,13 +70,12 @@ module Representable
     def build_definition(name, options, &block)
       base = nil
 
-      if options[:inherit] # TODO: move this to Definition.
+      if options[:inherit]
         base = representable_attrs.get(name).representer_module
-      end # FIXME: can we handle this in super/Definition.new ?
+      end
 
       if block
-        options[:_inline] = true
-        options[:extend]  = inline_representer_for(base, options[:include_modules], name, options, &block)
+        options[:extend] = inline_representer_for(base, options[:include_modules], name, options, &block)
       end
     end
 

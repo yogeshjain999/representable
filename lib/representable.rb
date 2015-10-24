@@ -92,11 +92,11 @@ private
   end
 
   def representable_attrs
-    @representable_attrs ||= self.class.representable_attrs # DISCUSS: copy, or better not? what about "freezing"?
+    @representable_attrs ||= self.class.representable_attrs
   end
 
   def representation_wrap(*args)
-    representable_attrs.wrap_for(nil, represented, *args) { self.class.name }
+    representable_attrs.wrap_for(represented, *args)
   end
 
   def represented
