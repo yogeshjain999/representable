@@ -1,9 +1,10 @@
-require 'representable/config'
-require 'representable/definition'
-require 'representable/for_collection'
-require 'representable/represent'
-require 'representable/declarative'
-require 'representable/apply'
+require "representable/config"
+require "representable/definition"
+require "representable/for_collection"
+require "representable/represent"
+require "representable/defaults"
+require "representable/declarative"
+require "representable/apply"
 require "representable/deserializer"
 require "representable/serializer"
 

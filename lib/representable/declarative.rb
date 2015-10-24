@@ -1,36 +1,5 @@
-require "uber/delegates"
-
 module Representable
   module Declarative
-    # DSL object.
-    class Defaults
-      def initialize
-        @static_options = {}
-      end
-
-      def merge!(hash, &block)
-        @static_options.merge!(hash) if hash.any?
-        @dynamic_options = block if block_given?
-        self
-      end
-
-      extend Uber::Delegates
-      delegates :@static_options, :[], :[]= # mutuable API!
-
-      # TODO: allow to receive rest of options/block in dynamic block. or, rather, test it as it was already implemented.
-      def call(name, given_options)
-        options = @static_options
-        options = options.merge(dynamic_options(name, given_options))
-        options = options.merge(given_options)
-      end
-
-    private
-      def dynamic_options(name, given_options)
-        return {} if @dynamic_options.nil?
-        @dynamic_options.call(name, given_options)
-      end
-    end
-
     def representable_attrs
       @representable_attrs ||= build_config
     end
@@ -73,23 +42,12 @@ module Representable
     def property(name, options={}, &block)
       options = defaults.(name, options)
 
-      # wenn default da is, kann man einfach default m_i mit options[m_i] mergen.
+      mi = options[:include_modules] #|| []
 
-      mi = options[:include_modules] || []
-
-      # if  && options[:include_modules].any? # TODO: when calling ::feature, don't save it, make it a options default for this representer.
-      #   _opts = {}
-      # else
-        @features ||= {}
-        _opts = {include_modules: @features.keys+mi}
-      # puts "@@@@@ #{name.inspect}: #{_opts.inspect}"
-      # end
-
-      # TODO: heritage does not contain include_modules (it could, be this will come via the inherited defaults)
-      heritage.record(:property, name, options.merge(_opts), &block)
+      heritage.record(:property, name, options, &block)
 
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
-        build_definition(name, default_options.merge!(_opts), &block)
+        build_definition(name, default_options.merge!(include_modules: mi), &block)
       end
     end
 
@@ -117,10 +75,8 @@ module Representable
       end # FIXME: can we handle this in super/Definition.new ?
 
       if block
-        includes = options[:include_modules]
-
         options[:_inline] = true
-        options[:extend]  = inline_representer_for(base, includes, name, options, &block)
+        options[:extend]  = inline_representer_for(base, options[:include_modules], name, options, &block)
       end
     end
 
