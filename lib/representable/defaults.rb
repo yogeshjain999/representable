@@ -1,5 +1,3 @@
-require "uber/delegates"
-
 module Representable
   # Private class. Use via Representable::defaults.
   class Defaults

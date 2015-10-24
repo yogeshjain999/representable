@@ -1,20 +1,18 @@
+require "uber/delegates"
+
 require "representable/config"
 require "representable/definition"
-require "representable/for_collection"
-require "representable/represent"
 require "representable/defaults"
 require "representable/declarative"
 require "representable/apply"
 require "representable/deserializer"
 require "representable/serializer"
-
-require "uber/delegates"
 require "representable/binding"
-
-require "uber/callable"
 require "representable/pipeline"
 require "representable/insert" # Pipeline::Insert
 require "representable/cached"
+require "representable/for_collection"
+require "representable/represent"
 
 module Representable
   attr_writer :representable_attrs

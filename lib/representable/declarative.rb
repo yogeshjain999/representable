@@ -7,7 +7,7 @@ module Representable
     def defaults(options={}, &block)
       heritage.record(:defaults, options, &block) # FIXME: this adds shit to defaults when called without args.
 
-      (@defaults ||= Defaults.new).merge!(options, &block) # FIXME: what if called twice?
+      (@defaults ||= Defaults.new).merge!(options, &block)
     end
 
     def representation_wrap=(name)
@@ -42,12 +42,10 @@ module Representable
     def property(name, options={}, &block)
       options = defaults.(name, options)
 
-      mi = options[:include_modules] #|| []
-
       heritage.record(:property, name, options, &block)
 
       representable_attrs.add(name, options) do |default_options| # handles :inherit.
-        build_definition(name, default_options.merge!(include_modules: mi), &block)
+        build_definition(name, default_options, &block)
       end
     end
 
