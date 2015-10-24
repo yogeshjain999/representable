@@ -36,7 +36,8 @@ module Representable
     end
 
     def defaults(options={}, &block)
-      # @defaults get inherited using Declarative::Heritage.
+      heritage.record(:defaults, options, &block) # FIXME: this adds shit to defaults when called without args.
+
       (@defaults ||= Defaults.new).merge!(options, &block) # FIXME: what if called twice?
     end
 

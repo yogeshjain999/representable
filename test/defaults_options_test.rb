@@ -118,3 +118,5 @@ class DefaultsOptionsTest < BaseTest
     it { render(prepared).must_equal_document({"TITLE"=>"Revolution", "DESCRIPTION"=>{"hello"=>"Hello!"}}) }
   end
 end
+
+# TODO: test inheritance, vert and horiz
