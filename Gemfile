@@ -12,4 +12,7 @@ group :test do
   gem "nokogiri", require: false
   gem "multi_json", require: false
   gem "minitest-line"
+  gem "pry"
 end
+
+gem "declarative", github: "apotonick/declarative" #path: "../declarative"

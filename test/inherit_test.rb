@@ -109,7 +109,6 @@ class InheritTest < MiniTest::Spec
     end
 
     let (:inheriting) {
-      raise representer.heritage.inspect
       class InheritingDecorator < representer
         include Representable::Debug
         property :hit, :inherit => true do

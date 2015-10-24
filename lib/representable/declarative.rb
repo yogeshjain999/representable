@@ -82,7 +82,7 @@ module Representable
       # else
         @features ||= {}
         _opts = {include_modules: @features.keys+mi}
-      puts "@@@@@ #{name.inspect}: #{_opts.inspect}"
+      # puts "@@@@@ #{name.inspect}: #{_opts.inspect}"
       # end
 
       # TODO: heritage does not contain include_modules (it could, be this will come via the inherited defaults)
