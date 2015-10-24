@@ -145,18 +145,4 @@ class ApplyTest < MiniTest::Spec
       end
     end
   end
-
-  # #apply
-  it do
-    properties = []
-
-    AlbumDecorator.apply do |dfn|
-      properties << dfn.name
-      dfn.merge! :cool => true
-    end.must_equal AlbumDecorator
-
-    properties.must_equal ["title", "hit", "title", "songs", "title", "band", "label", "name"]
-    # writeable
-    AlbumDecorator.representable_attrs.get(:band).representer_module.representable_attrs.get(:label).representer_module.representable_attrs.get(:name)[:cool].must_equal true
-  end
 end

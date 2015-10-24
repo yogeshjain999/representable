@@ -4,7 +4,6 @@ require "representable/config"
 require "representable/definition"
 require "representable/defaults"
 require "representable/declarative"
-require "representable/apply"
 require "representable/deserializer"
 require "representable/serializer"
 require "representable/binding"
@@ -25,7 +24,6 @@ module Representable
       extend Feature
       extend ForCollection
       extend Represent
-      extend Apply # FIXME: REMOVE!
     end
   end
 
