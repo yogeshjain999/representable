@@ -11,7 +11,7 @@ module Representable
       new(represented)
     end
 
-    def self.default_inline_class
+    def self.default_nested_class
       Representable::Decorator
     end
 
@@ -33,12 +33,15 @@ module Representable
       @represented = represented
     end
 
-  private
-    def self.build_inline(base, features, name, options, &block)
-      Class.new(base || default_inline_class) do
-        feature *features
-        class_eval &block
+    NestedBuilder = ->(options) do
+      base = Class.new(options[:_base]) do
+        feature *options[:_features]
+        class_eval(&options[:_block])
       end
+    end
+
+    def self.nested_builder
+      NestedBuilder
     end
   end
 end

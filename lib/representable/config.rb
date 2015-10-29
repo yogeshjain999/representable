@@ -1,7 +1,7 @@
 require "forwardable"
 
 module Representable
-  class Config < Hash
+  class Config < ::Declarative::Definitions
     # Stores Definitions from ::property. It preserves the adding order (1.9+).
     # Same-named properties get overridden, just like in a Hash.
     #
@@ -22,9 +22,6 @@ module Representable
         self[name.to_s] = @definition_class.new(name, options, &block)
       end
 
-      def get(name)
-        self[name.to_s]
-      end
 
       def remove(name)
         delete(name.to_s)
@@ -34,16 +31,19 @@ module Representable
       def_delegators :values, :each # so we look like an array. this is only used in Mapper. we could change that so we don't need to hide the hash.
     end
 
-    def initialize(definition_class=Definition)
-      super()
-      merge!(
-        :definitions => @definitions  = Definitions.new(definition_class),
-        :options     => @options      = {})
-    end
+    # def initialize(definition_class=Definition)
+    #   super()
+    #   merge!(
+    #     :definitions => @definitions  = Definitions.new(definition_class),
+    #     :options     => @options      = {})
+    # end
     attr_reader :options
 
-    extend Forwardable
-    def_delegators :@definitions, :get, :add, :each, :size, :remove
+    # extend Forwardable
+    # def_delegators :@definitions, :get, :add, :each, :size, :remove
+    def each(&block)
+      values.each(&block)
+    end
 
     def wrap=(value)
       value = value.to_s if value.is_a?(Symbol)

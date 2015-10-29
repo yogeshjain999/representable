@@ -1,13 +1,8 @@
 module Representable
   module Declarative
     def representable_attrs
-      @representable_attrs ||= build_config
-    end
-
-    def defaults(options={}, &block)
-      heritage.record(:defaults, options, &block) # FIXME: this adds shit to defaults when called without args.
-
-      (@defaults ||= Defaults.new).merge!(options, &block)
+      # @representable_attrs ||= build_config
+      definitions
     end
 
     def representation_wrap=(name)
@@ -39,54 +34,37 @@ module Representable
       property(name, options, &block)
     end
 
-    def property(name, options={}, &block)
-      options = defaults.(name, options)
 
-      heritage.record(:property, name, options, &block)
+    include ::Declarative::Schema::DSL
+    include ::Declarative::Schema::Feature
+    include ::Declarative::Schema::Heritage
 
-      # FIXME: DO WE REALLY NEED THE Definition.new&block detour?
-      # options[:extend] = options[:extend] || options[:decorator]
-      representable_attrs.add(name, options) do |default_options| # handles :inherit.
-        build_definition(name, default_options, &block)
-      end
+    def default_nested_class
+      Module.new # FIXME: make that unnecessary in Declarative
     end
 
-    require "declarative"
-    def heritage
-      @heritage ||= ::Declarative::Heritage.new
-    end
 
-    def build_inline(base, features, name, options, &block) # DISCUSS: separate module?
+    NestedBuilder = ->(options) do
       Module.new do
-        include Representable
-        feature *features # Representable::JSON or similar.
-        include base if base # base when :inherit, or in decorator.
+        include Representable # FIXME: do we really need this?
+        puts "@@@@@ #{options[:_features].inspect} for #{options[:_name]}"
+        feature *options[:_features]
+        include options[:base] if options[:base] # base when :inherit, or in decorator.
 
-        module_eval &block
+        module_eval &options[:_block]
       end
     end
 
-  private
-    def build_definition(name, options, &block)
-      base = nil
-
-      if options[:inherit]
-        base = representable_attrs.get(name).representer_module
-      end
-
-      if block
-        options[:extend] = inline_representer_for(base, options[:include_modules], name, options, &block)
-      end
+    def nested_builder
+      NestedBuilder
     end
+  # private
 
-    def inline_representer_for(base, includes, name, options, &block)
-      representer = options[:use_decorator] ? Decorator : self
-
-      representer.build_inline(base, includes, name, options, &block)
+    # def build_config
+    #   Config.new
+    # end
+    def definitions
+      @definitions ||= Config.new(Representable::Definition)
     end
-
-    def build_config
-      Config.new
-    end
-  end # Declarations
+  end
 end

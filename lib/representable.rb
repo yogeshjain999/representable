@@ -1,5 +1,7 @@
 require "uber/delegates"
 
+require "declarative/schema"
+
 require "representable/config"
 require "representable/definition"
 require "representable/defaults"
@@ -21,7 +23,6 @@ module Representable
       extend Declarative
       extend ClassInclusions, ModuleExtensions
       extend ClassMethods
-      extend Feature
       extend ForCollection
       extend Represent
     end
@@ -92,7 +93,7 @@ private
   end
 
   def representable_attrs
-    @representable_attrs ||= self.class.representable_attrs
+    @representable_attrs ||= self.class.definitions
   end
 
   def representation_wrap(*args)
@@ -128,24 +129,6 @@ private
   module ClassMethods
     def prepare(represented)
       represented.extend(self)
-    end
-  end
-
-
-  module Feature
-    def feature(*mods)
-      mods.each do |mod|
-        include mod
-        register_feature(mod)
-      end
-    end
-
-  private
-    def register_feature(mod)
-      heritage.record(:register_feature, mod) # this is only for inheritance between decorators and modules!!! ("horizontal and vertical")
-
-      defaults[:include_modules] ||= []
-      defaults[:include_modules] << mod
     end
   end
 

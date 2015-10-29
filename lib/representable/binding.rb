@@ -30,12 +30,12 @@ module Representable
     module Deprecatable
       # Retrieve value and write fragment to the doc.
       def compile_fragment(options)
-        render_pipeline(nil, options).(nil, options)
+        render_pipeline(nil, options).extend(Representable::Debug).(nil, options)
       end
 
       # Parse value from doc and update the model property.
       def uncompile_fragment(options)
-        parse_pipeline(options[:doc], options).(options[:doc], options)
+        parse_pipeline(options[:doc], options).extend(Representable::Debug).(options[:doc], options)
       end
     end
     include Deprecatable

@@ -1,16 +1,14 @@
-require 'uber/options'
+require "uber/options"
 require "representable/parse_strategies"
 
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
-  class Definition
-    attr_reader :name
-    alias_method :getter, :name
+  class Definition < ::Declarative::Definitions::Definition
 
     def initialize(sym, options={}, &block)
-      @options = {}
-      @name    = sym.to_s
-      options  = options.clone
+      options[:extend] = options[:nested] if options[:nested]
+
+      super
 
       # defaults:
       options[:parse_filter]  = Pipeline[*options[:parse_filter]]
@@ -18,6 +16,11 @@ module Representable
 
       setup!(options, &block)
     end
+
+    def name
+      self[:name]
+    end
+    alias_method :getter, :name
 
     def merge!(options, &block)
       options = options.clone
@@ -36,6 +39,8 @@ module Representable
     end
 
     def [](name)
+      # return nil if name==:extend && self[:nested].nil?
+      # return Uber::Options::Value.new(self[:nested]) if name==:extend
       @runtime_options[name]
     end
 

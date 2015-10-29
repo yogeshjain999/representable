@@ -315,7 +315,7 @@ class RepresentableTest < MiniTest::Spec
       end
 
       it "#to_hash propagates to nested objects" do
-        OpenStruct.new(track: OpenStruct.new(nr: 1, length: OpenStruct.new(seconds: nil))).extend(representer).
+        OpenStruct.new(track: OpenStruct.new(nr: 1, length: OpenStruct.new(seconds: nil))).extend(representer).extend(Representable::Debug).
           to_hash(nr: 9).must_equal({"track"=>{"nr"=>9, "length"=>{seconds: 9}}})
       end
 

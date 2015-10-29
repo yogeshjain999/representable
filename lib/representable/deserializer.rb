@@ -71,7 +71,7 @@ module Representable
         binding = options[:binding]
 
         return object unless object # object might be nil.
-
+puts "@@@@@ #{binding.inspect}"
         mod = binding.evaluate_option(:extend, object, options)
 
         prepare_for(mod, object, binding)

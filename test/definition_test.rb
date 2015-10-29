@@ -101,7 +101,7 @@ class DefinitionTest < MiniTest::Spec
 
   # #inspect
   describe "#inspect" do
-    it { Definition.new(:songs).inspect.must_equal "#<Representable::Definition ==>songs @options={:parse_filter=>[], :render_filter=>[]}>" }
+    it { Definition.new(:songs).inspect.must_equal "#<Representable::Definition ==>songs @options={:name=>\"songs\", :parse_filter=>[], :render_filter=>[]}>" }
   end
 
 
@@ -153,6 +153,14 @@ class DefinitionTest < MiniTest::Spec
 
     it "responds to #setter" do
       assert_equal :"songs=", @def.setter
+    end
+
+    describe "nested: FIXME" do
+      it do
+        dfn = Representable::Definition.new(:songs, nested: Module)
+        assert dfn.typed?
+        dfn[:extend].(nil).must_equal Module
+      end
     end
 
 
