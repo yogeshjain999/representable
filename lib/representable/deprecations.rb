@@ -59,7 +59,7 @@ module Representable::Binding::Deprecation
         end
       end
 
-      proc.(name, options)
+      proc.(send(:exec_context, options), options)
     end
     private :evaluate_option_with_deprecation
 
