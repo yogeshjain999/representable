@@ -89,8 +89,8 @@ class InheritanceWithDecoratorTest < MiniTest::Spec
   end
 
   it do
-    Twin.representer_class.representable_attrs[:definitions].size.must_equal 0
-    Album.representer_class.representable_attrs[:definitions].size.must_equal 1
-    Song.representer_class.representable_attrs[:definitions].size.must_equal 0
+    Twin.representer_class.definitions.size.must_equal 0
+    Album.representer_class.definitions.size.must_equal 1
+    Song.representer_class.definitions.size.must_equal 0
   end
 end

@@ -90,33 +90,4 @@ class DefaultsOptionsTest < BaseTest
 
     it { render(prepared).must_equal_document({"TITLE" => "Revolution", "AUTHOR_NAME" => "Some author", "volume" => 20}) }
   end
-
-  # TODO: not sure if this stays here, i'm testing internals for the Heritage implementation.
-  describe "multiple calls" do
-    module Hello
-      def hello
-        "Hello!"
-      end
-    end
-
-    # TODO test this interface explicitly.
-    representer! do
-      defaults[:include_modules] ||= []
-      defaults[:include_modules] += [Hello]
-
-      defaults do |name, options|
-        { as: name.to_s.upcase }
-      end
-
-      property :title
-      property :description do
-        property :hello
-      end
-    end
-
-    let (:song) { Struct.new(:title, :description).new("Revolution", Object.new) }
-    it { render(prepared).must_equal_document({"TITLE"=>"Revolution", "DESCRIPTION"=>{"hello"=>"Hello!"}}) }
-  end
 end
-
-# TODO: test inheritance, vert and horiz
