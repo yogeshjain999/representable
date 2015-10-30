@@ -27,10 +27,16 @@ class NestedTest < MiniTest::Spec
           # self.representation_wrap = :album if format == :xml
         end
 
-        let (:album) { representer.prepare(Album.new("Epitaph", "Brett Gurewitz", 19)) }
+        let (:album) { Album.new("Epitaph", "Brett Gurewitz", 19) }
+        let (:decorator) { representer.prepare(album) }
 
         it "renders nested Album-properties in separate section" do
-          render(album).must_equal_document output
+          render(decorator).must_equal_document output
+
+          # do not use extend on the nested object. # FIXME: make this a proper test with two describes instead of this pseudo-meta stuff.
+          if is_decorator==true
+            album.wont_be_kind_of(Representable::Hash)
+          end
         end
 
         it "parses nested properties to Album instance" do

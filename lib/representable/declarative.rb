@@ -1,10 +1,5 @@
 module Representable
   module Declarative
-    def representable_attrs
-      # @representable_attrs ||= build_config
-      definitions
-    end
-
     def representation_wrap=(name)
       heritage.record(:representation_wrap=, name)
 
@@ -22,14 +17,15 @@ module Representable
       property(name, options, &block)
     end
 
-    # Allows you to nest a block of properties in a separate section while still mapping them to the outer object.
+    # Allows you to nest a block of properties in a separate section while still mapping
+    # them to the original object.
     def nested(name, options={}, &block)
       options = options.merge(
-        :use_decorator => true,
-        :getter        => lambda { |*| self },
-        :setter        => lambda { |*| },
-        :instance      => lambda { |*| self }
-      ) # DISCUSS: should this be a macro just as :parse_strategy?
+        getter:   ->(options) { self },
+        setter:   ->(options) { },
+        instance: ->(options) { self },
+        _nested_builder: Decorator::NestedBuilder
+      )
 
       property(name, options, &block)
     end
@@ -57,13 +53,11 @@ module Representable
     def nested_builder
       NestedBuilder
     end
-  # private
 
-    # def build_config
-    #   Config.new
-    # end
     def definitions
       @definitions ||= Config.new(Representable::Definition)
     end
+
+    alias_method :representable_attrs, :definitions
   end
 end
