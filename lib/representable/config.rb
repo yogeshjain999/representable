@@ -1,32 +1,18 @@
-require "forwardable"
-
 module Representable
+  # Stores Definitions from ::property. It preserves the adding order (1.9+).
+  # Same-named properties get overridden, just like in a Hash.
+  #
+  # Overwrite definition_class if you need a custom Definition object (helpful when using
+  # representable in other gems).
   class Config < ::Declarative::Definitions
-    # Stores Definitions from ::property. It preserves the adding order (1.9+).
-    # Same-named properties get overridden, just like in a Hash.
-    #
-    # Overwrite definition_class if you need a custom Definition object (helpful when using
-    # representable in other gems).
-    class Definitions < Hash
-      def initialize(definition_class)
-        @definition_class = definition_class
-        super()
-      end
-
-      def remove(name)
-        delete(name.to_s)
-      end
-
-      extend Forwardable
-      def_delegators :values, :each # so we look like an array. this is only used in Mapper. we could change that so we don't need to hide the hash.
+    def remove(name)
+      delete(name.to_s)
     end
 
     def options # FIXME: this is not inherited.
       @options ||= {}
     end
 
-    # extend Forwardable
-    # def_delegators :@definitions, :get, :add, :each, :size, :remove
     def each(&block)
       values.each(&block)
     end
