@@ -55,8 +55,8 @@ class InheritTest < MiniTest::Spec
     representer! do
       include SongRepresenter
 
-      property :name, :inherit => true, :as => :name do # inherit module, only.
-        # that doesn't make sense.
+      property :name, inherit: true, as: :name do # inherit module, only.
+        # that doesn't make sense. but it should simply inherit the old nested properties.
       end
     end
 

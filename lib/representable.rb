@@ -125,13 +125,11 @@ private
     end
   end
 
-
   module ClassMethods
     def prepare(represented)
       represented.extend(self)
     end
   end
-
 
   require "representable/deprecations"
   def self.deprecations=(value)

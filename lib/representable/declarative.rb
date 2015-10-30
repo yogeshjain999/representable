@@ -49,7 +49,7 @@ module Representable
         include Representable # FIXME: do we really need this?
         # puts "@@@@@ #{options[:_features].inspect} for #{options[:_name]}"
         feature *options[:_features]
-        include options[:base] if options[:base] # base when :inherit, or in decorator.
+        include options[:_base] if options[:_base] # base when :inherit, or in decorator.
 
         module_eval &options[:_block]
       end
