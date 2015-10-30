@@ -557,9 +557,9 @@ class RepresentableTest < MiniTest::Spec
       outer = Struct.new(:title, :lower, :band, :bla).new(inner = Struct.new(:lower).new("paper wings"))
 
       outer.extend(representer).to_hash.must_equal({"title"=>{"lower"=>"paper wings"}})
-      outer.must_be_kind_of Representable::Hash
 
-      inner.must_be_kind_of Representable::Decorator
+      outer.must_be_kind_of Representable::Hash
+      inner.wont_be_kind_of Representable::Hash
     end
   end
 

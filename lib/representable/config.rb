@@ -13,10 +13,6 @@ module Representable
       @options ||= {}
     end
 
-    def each(&block)
-      values.each(&block)
-    end
-
     def wrap=(value)
       value = value.to_s if value.is_a?(Symbol)
       @wrap = Uber::Options::Value.new(value)

@@ -4,6 +4,7 @@
 render_filter: val, doc, options
 * `Decorator` always needs a format engine included, e.g. `Representable::JSON` to build bindings at compile-time.
 * Removed `Representable::Apply`. This is now done via `Schema`.
+representer_class.representable_attrs is definitions
 
 TODO: DEPRECATE 4-args? also, allow options[:fragment] instead of options[:result] ?
 
