@@ -13,9 +13,11 @@ module Representable
 
       # what happens here is basically
       # Module.new { include Representable::JSON::Collection; ... }
-      build_inline(nil, [singular.collection_representer_class], "", {}) {
-        items options.merge(:extend => singular)
-      }
+      nested_builder.(
+        _base:     default_nested_class,
+        _features: [singular.collection_representer_class],
+        _block:    ->(*) { items options.merge(:extend => singular) }
+      )
     end
 
     def collection_representer(options={})
