@@ -11,7 +11,7 @@ module Representable
       new(represented)
     end
 
-    def self.default_nested_class
+    def self.default_nested_class #FIXME. SHOULD we move that into NestedBuilder?
       Representable::Decorator
     end
 

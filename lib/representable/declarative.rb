@@ -47,7 +47,7 @@ module Representable
     NestedBuilder = ->(options) do
       Module.new do
         include Representable # FIXME: do we really need this?
-        puts "@@@@@ #{options[:_features].inspect} for #{options[:_name]}"
+        # puts "@@@@@ #{options[:_features].inspect} for #{options[:_name]}"
         feature *options[:_features]
         include options[:base] if options[:base] # base when :inherit, or in decorator.
 
