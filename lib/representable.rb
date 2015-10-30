@@ -1,10 +1,9 @@
 require "uber/delegates"
 
-require "declarative"
+require "declarative/schema"
 
 require "representable/config"
 require "representable/definition"
-require "representable/defaults"
 require "representable/declarative"
 require "representable/deserializer"
 require "representable/serializer"
