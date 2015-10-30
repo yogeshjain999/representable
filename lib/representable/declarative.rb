@@ -35,7 +35,7 @@ module Representable
     end
 
 
-    include ::Declarative::Schema::DSL
+    include ::Declarative::Schema::DSL # ::property
     include ::Declarative::Schema::Feature
     include ::Declarative::Schema::Heritage
 

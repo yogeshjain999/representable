@@ -24,13 +24,13 @@ module Representable
 
 
     module ClassMethods
-      def build_definition(name, options, &block) # Representable::Declarative
-        return super unless type = options[:type]
+      def property(name, options={}, &block)
+        super.tap do |definition|
+          return definition unless type = options[:type]
 
-        options[:render_filter] << coercer = Coercer.new(type)
-        options[:parse_filter]  << coercer
-
-        super
+          definition.merge!(render_filter: coercer = Coercer.new(type))
+          definition.merge!(parse_filter: coercer)
+        end
       end
     end
   end
