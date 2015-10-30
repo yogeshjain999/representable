@@ -8,7 +8,7 @@ module Representable
     def representation_wrap=(name)
       heritage.record(:representation_wrap=, name)
 
-      representable_attrs.wrap = name
+      definitions.wrap = name
     end
 
     def collection(name, options={}, &block)

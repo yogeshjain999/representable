@@ -13,14 +13,14 @@ module Representable
         super()
       end
 
-      def add(name, options, &block)
-        if options[:inherit] and parent_property = get(name) # i like that: the :inherit shouldn't be handled outside.
-          return parent_property.merge!(options, &block)
-        end
-        options.delete(:inherit) # TODO: can we handle the :inherit in one single place?
+      # def add(name, options, &block)
+      #   if options[:inherit] and parent_property = get(name) # i like that: the :inherit shouldn't be handled outside.
+      #     return parent_property.merge!(options, &block)
+      #   end
+      #   options.delete(:inherit) # TODO: can we handle the :inherit in one single place?
 
-        self[name.to_s] = @definition_class.new(name, options, &block)
-      end
+      #   self[name.to_s] = @definition_class.new(name, options, &block)
+      # end
 
 
       def remove(name)
@@ -47,14 +47,14 @@ module Representable
 
     def wrap=(value)
       value = value.to_s if value.is_a?(Symbol)
-      self[:wrap] = Uber::Options::Value.new(value)
+      @wrap = Uber::Options::Value.new(value)
     end
 
     # Computes the wrap string or returns false.
     def wrap_for(represented, *args, &block)
-      return unless self[:wrap]
+      return unless @wrap
 
-      value = self[:wrap].evaluate(represented, *args)
+      value = @wrap.evaluate(represented, *args)
 
       return value if value != true
       infer_name_for(represented.class.name)

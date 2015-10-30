@@ -558,7 +558,8 @@ class RepresentableTest < MiniTest::Spec
 
       outer.extend(representer).to_hash.must_equal({"title"=>{"lower"=>"paper wings"}})
       outer.must_be_kind_of Representable::Hash
-      inner.wont_be_kind_of Representable::Hash
+
+      inner.must_be_kind_of Representable::Decorator
     end
   end
 

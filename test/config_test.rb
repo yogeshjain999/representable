@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class ConfigTest < MiniTest::Spec
-  subject { Representable::Config.new }
+  subject { Representable::Config.new(Representable::Definition) }
   PunkRock = Class.new
   Definition = Representable::Definition
 
@@ -42,7 +42,7 @@ class ConfigTest < MiniTest::Spec
     describe "returns" do
       it do
         # #add returns Definition.`
-        subject = Representable::Config.new.add(:title, {:me => true})
+        subject = Representable::Config.new(Representable::Definition).add(:title, {:me => true})
 
         subject.must_be_kind_of Representable::Definition
         subject[:me].must_equal true
@@ -76,7 +76,7 @@ class ConfigTest < MiniTest::Spec
 
 
   describe "#remove" do
-    subject { Representable::Config.new }
+    subject { Representable::Config.new(Representable::Definition) }
 
     it do
       subject.add(:title, {:me => true})
@@ -109,7 +109,7 @@ class ConfigTest < MiniTest::Spec
   end
 
   describe "#get" do
-    subject       { Representable::Config.new }
+    subject       { Representable::Config.new(Representable::Definition) }
 
     it do
       title  = subject.add(:title, {})
