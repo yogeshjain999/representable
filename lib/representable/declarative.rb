@@ -27,7 +27,7 @@ module Representable
       )
 
       if block
-        options[:_nested_builder] = Decorator::NestedBuilder
+        options[:_nested_builder] = Decorator.nested_builder
         options[:_base]           = Decorator.default_nested_class
       end
 
