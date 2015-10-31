@@ -15,5 +15,5 @@ group :test do
   gem "pry"
 end
 
-gem "declarative", path: "../declarative"
+# gem "declarative", path: "../declarative"
 # gem "declarative", github: "apotonick/declarative"
