@@ -24,8 +24,12 @@ module Representable
         getter:   ->(options) { self },
         setter:   ->(options) { },
         instance: ->(options) { self },
-        _nested_builder: Decorator::NestedBuilder
       )
+
+      if block
+        options[:_nested_builder] = Decorator::NestedBuilder
+        options[:_base]           = Decorator.default_nested_class
+      end
 
       property(name, options, &block)
     end
