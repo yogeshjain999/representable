@@ -108,11 +108,6 @@ private
       super
       heritage.(includer)
     end
-
-    def inherited(subclass) # DISCUSS: this could be in Decorator? but then we couldn't do B < A(include X) for non-decorators, right?
-      super
-      heritage.(subclass)
-    end
   end
 
   module ModuleExtensions
