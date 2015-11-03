@@ -15,9 +15,10 @@ module Representable
       Representable::Decorator
     end
 
+    # extend ::Declarative::Heritage::Inherited # DISCUSS: currently, that is handled via Representable::inherited.
+
     # This is called from inheritable_attr when inheriting a decorator class to a subclass.
     # Explicitly subclassing the Decorator makes sure representable_attrs is a clean version.
-    # FIXME: find out if we really need inheritable_attr :representer_class, etc.
     def self.clone
       Class.new(self)
     end

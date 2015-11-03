@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.license       = "MIT"
 
   s.add_dependency "uber", "~> 0.0.15"
-  s.add_dependency "declarative", "~> 0.0.3"
+  s.add_dependency "declarative", "~> 0.0.4"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "test_xml", "0.1.6"

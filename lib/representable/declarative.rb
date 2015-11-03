@@ -37,7 +37,7 @@ module Representable
 
     include ::Declarative::Schema::DSL # ::property
     include ::Declarative::Schema::Feature
-    include ::Declarative::Schema::Heritage # overrides ::included.
+    include ::Declarative::Heritage::DSL
 
     def default_nested_class
       Module.new # FIXME: make that unnecessary in Declarative

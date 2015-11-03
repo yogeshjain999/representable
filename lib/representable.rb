@@ -20,7 +20,8 @@ module Representable
   def self.included(base)
     base.class_eval do
       extend Declarative
-      extend ClassInclusions, ModuleExtensions
+      # make Representable horizontally and vertically inheritable.
+      extend ModuleExtensions, ::Declarative::Heritage::Inherited, ::Declarative::Heritage::Included
       extend ClassMethods
       extend ForCollection
       extend Represent
@@ -101,13 +102,6 @@ private
 
   def represented
     self
-  end
-
-  module ClassInclusions
-    def included(includer)
-      super
-      heritage.(includer)
-    end
   end
 
   module ModuleExtensions
