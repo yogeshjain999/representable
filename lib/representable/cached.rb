@@ -1,18 +1,18 @@
 module Representable
   # Using this module only makes sense with Decorator representers.
   module Cached
-    module Property
-      def property(*)
-        super.tap do |property|
+    module BuildDefinition
+      def build_definition(*)
+        super.tap do |definition|
           binding_builder = format_engine::Binding
 
-          map << binding_builder.build(property)
+          map << binding_builder.build(definition)
         end
       end
     end
 
     def self.included(includer)
-      includer.extend(Property)
+      includer.extend(BuildDefinition)
     end
 
     def representable_map(*)
