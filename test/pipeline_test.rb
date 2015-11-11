@@ -246,13 +246,29 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
 
       P::Insert.(pipeline, R::Default, replace: R::StopOnNil).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, StopOnSkipable], Default]"
     end
+
+    it "applies on nested Collect with Function::CreateObject" do
+      pipeline = P[R::Get, R::Collect[R::Get, R::CreateObject], R::StopOnNil]
+
+      P::Insert.(pipeline, R::Default, replace: R::CreateObject).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, Default], StopOnNil]"
+      pipeline.must_equal P[R::Get, R::Collect[R::Get, R::CreateObject], R::StopOnNil]
+    end
   end
 
-  describe "Insert delete: true" do
+  describe "Insert.(delete: true)" do
+    let(:pipeline) { P[R::Get, R::StopOnNil] }
+
+    it do
+      P::Insert.(pipeline, R::Get, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[StopOnNil]"
+      pipeline.extend(P::Debug).inspect.must_equal "Pipeline[Get, StopOnNil]"
+    end
+  end
+
+  describe "Insert.(delete: true) with Collect" do
     let(:pipeline) { P[R::Get, R::Collect[R::Get, R::StopOnSkipable], R::StopOnNil] }
 
     it do
-      P::Insert.(pipeline, R::Get, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[Collect[Get, StopOnSkipable], StopOnNil]"
+      P::Insert.(pipeline, R::Get, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[Collect[StopOnSkipable], StopOnNil]"
       pipeline.extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, StopOnSkipable], StopOnNil]"
     end
   end

@@ -26,7 +26,7 @@ class PopulatorFindOrInstantiateTest < MiniTest::Spec
       end
     end
 
-    let (:album) { Composer.new.extend(representer) }
+    let (:album) { Composer.new.extend(representer).extend(Representable::Debug) }
 
     it "finds by :id and creates new without :id" do
       album.from_hash({"song"=>{"id" => 1, "title"=>"Resist Stance"}})
