@@ -136,6 +136,7 @@ class PipelineTest < MiniTest::Spec
       R::StopOnNotFound,
       R::OverwriteOnNil,
       # R::SkipParse,
+      R::AssignFragment,
       R::CreateObject,
       R::Decorate,
       R::Deserialize,
@@ -201,6 +202,7 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
       R::OverwriteOnNil,
       # R::SkipParse,
       R::Collect[
+        R::AssignFragment,
         R::SkipRender,
         R::CreateObject,
         R::Decorate,

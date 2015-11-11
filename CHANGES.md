@@ -44,6 +44,10 @@ and it suddenly is super simple to understand
 * Removed `Binding@represented` (which was never public anyway). Use `Binding#represented`.
 * Changed signature: `Binding#get(represented:)`. In now needs a hash `{represented: ..}`.
 
+# 2.4.0.rc3
+
+* `CreateObject` no longer invokes `AssignFragment`. This is now part of the official parse pipeline.
+
 # 2.4.0.rc2
 
 * Use Declarative's `::build_definition` interface instead of overwriting `::property`.

@@ -64,7 +64,7 @@ module Representable
     end
 
     def default_parse_fragment_functions
-      functions = []
+      functions = [AssignFragment]
       functions << SkipParse if self[:skip_parse]
 
       if typed?

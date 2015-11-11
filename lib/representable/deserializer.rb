@@ -38,8 +38,6 @@ module Representable
   module Function
     class CreateObject
       def call(input, options)
-        AssignFragment.(input, options)
-
         instance_for(input, options) || class_for(input, options)
       end
 
