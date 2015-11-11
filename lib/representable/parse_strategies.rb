@@ -1,8 +1,6 @@
 module Representable
   class Populator
     FindOrInstantiate = ->(input, options) {
-      AssignFragment.(input, options)
-
       binding = options[:binding]
 
       object_class = binding[:class].(input, options)
@@ -18,6 +16,8 @@ module Representable
       object
      }
 
+    # pipeline: [StopOnExcluded, AssignName, ReadFragment, StopOnNotFound, OverwriteOnNil, AssignFragment, #<Representable::Function::CreateObject:0x9805a44>, #<Representable::Function::Decorate:0x9805a1c>, Deserialize, Set]
+
     def self.apply!(options)
       return unless populator = options[:populator]
 
@@ -25,6 +25,8 @@ module Representable
         pipeline = Pipeline[*parse_functions] # TODO: AssignFragment
         pipeline = Pipeline::Insert.(pipeline, Set, delete: true) # remove the setter function.
         pipeline = Pipeline::Insert.(pipeline, populator, replace: CreateObject) # let the populator do CreateObject's job.
+        # puts pipeline.extend(Representable::Pipeline::Debug).inspect
+        pipeline
       end
     end
   end
