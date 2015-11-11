@@ -5,21 +5,27 @@ class PopulatorTest < Minitest::Spec
   Artist = Struct.new(:name)
   Album  = Struct.new(:songs, :artist)
 
-  representer! do
-    collection :songs, populator: ->(input, options) { options[:represented].songs << song = Song.new; song } do
-      property :id
+  describe "populator: ->{}" do
+    representer! do
+      collection :songs, populator: ->(input, options) { options[:represented].songs << song = Song.new; song } do
+        property :id
+      end
+
+      property :artist, populator: ->(input, options) { options[:represented].artist = Artist.new } do
+        property :name
+      end
     end
 
-    property :artist, populator: ->(input, options) { options[:represented].artist = Artist.new } do
-      property :name
+    let (:album) { Album.new([]) }
+
+    it do
+      album.extend(representer).from_hash("songs"=>[{"id"=>1}, {"id"=>2}], "artist"=>{"name"=>"Waste"})
+      album.inspect.must_equal "#<struct PopulatorTest::Album songs=[#<struct PopulatorTest::Song id=1>, #<struct PopulatorTest::Song id=2>], artist=#<struct PopulatorTest::Artist name=\"Waste\">>"
     end
   end
 
-  let (:album) { Album.new([]) }
+  describe "populator: ->{}, " do
 
-  it do
-    album.extend(representer).from_hash("songs"=>[{"id"=>1}, {"id"=>2}], "artist"=>{"name"=>"Waste"})
-    album.inspect.must_equal "#<struct PopulatorTest::Album songs=[#<struct PopulatorTest::Song id=1>, #<struct PopulatorTest::Song id=2>], artist=#<struct PopulatorTest::Artist name=\"Waste\">>"
   end
 end
 
