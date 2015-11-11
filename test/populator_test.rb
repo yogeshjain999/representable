@@ -1,6 +1,29 @@
 require "test_helper"
 
-class PopulatorFindOrInstantiateTest < MiniTest::Spec
+class PopulatorTest < Minitest::Spec
+  Song   = Struct.new(:id)
+  Artist = Struct.new(:name)
+  Album  = Struct.new(:songs, :artist)
+
+  representer! do
+    collection :songs, populator: ->(input, options) { options[:represented].songs << song = Song.new; song } do
+      property :id
+    end
+
+    property :artist, populator: ->(input, options) { options[:represented].artist = Artist.new } do
+      property :name
+    end
+  end
+
+  let (:album) { Album.new([]) }
+
+  it do
+    album.extend(representer).from_hash("songs"=>[{"id"=>1}, {"id"=>2}], "artist"=>{"name"=>"Waste"})
+    album.inspect.must_equal "#<struct PopulatorTest::Album songs=[#<struct PopulatorTest::Song id=1>, #<struct PopulatorTest::Song id=2>], artist=#<struct PopulatorTest::Artist name=\"Waste\">>"
+  end
+end
+
+class PopulatorFindOrInstantiateTest < Minitest::Spec
   Song = Struct.new(:id, :title, :uid) do
     def self.find_by(attributes={})
       return new(1, "Resist Stan", "abcd") if attributes[:id]==1# we should return the same object here
