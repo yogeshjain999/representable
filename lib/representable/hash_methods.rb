@@ -4,7 +4,7 @@ module Representable
       hash  = filter_keys_for!(represented, options) # FIXME: this modifies options and replicates logic from Representable.
       bin   = representable_map(options, format).first
 
-      Collect::Hash[*bin.default_render_fragment_functions].extend(Pipeline::Debug).(hash, {doc: doc, user_options: options, binding: bin, represented: represented, decorator: self})
+      Collect::Hash[*bin.default_render_fragment_functions].(hash, {doc: doc, user_options: options, binding: bin, represented: represented, decorator: self})
     end
 
     def update_properties_from(doc, options, format)
