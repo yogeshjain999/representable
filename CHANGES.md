@@ -46,11 +46,11 @@ and it suddenly is super simple to understand
 
 # 2.4.0.rc3
 
+* `Set` is `SetValue`. `Get` is `GetValue`.
 * `CreateObject` no longer invokes `AssignFragment`. This is now part of the official parse pipeline.
 
-# 2.4.0.rc4
+# 2.4.0.rc2
 
-* `Set` is `SetValue`. `Get` is `GetValue`.
 * Use Declarative's `::build_definition` interface instead of overwriting `::property`.
 
 # 2.3.0
