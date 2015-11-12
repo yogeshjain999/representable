@@ -77,7 +77,7 @@ class PipelineTest < MiniTest::Spec
   it "rendering scalar property" do
     doc = {}
     P[
-      R::Get,
+      R::GetValue,
       R::StopOnSkipable,
       R::AssignName,
       R::WriteFragment
@@ -93,7 +93,7 @@ class PipelineTest < MiniTest::Spec
       R::StopOnNotFound,
       R::OverwriteOnNil,
       # R::SkipParse,
-      R::Set,
+      R::SetValue,
     ].extend(P::Debug).(doc={"title"=>"Eruption"}, {represented: song=Song.new("Lime Green"), binding: title, doc: doc}).must_equal "Eruption"
     song.title.must_equal "Eruption"
   end
@@ -116,7 +116,7 @@ class PipelineTest < MiniTest::Spec
   it "rendering typed property" do
     doc = {}
     P[
-      R::Get,
+      R::GetValue,
       R::StopOnSkipable,
       R::StopOnNil,
       R::SkipRender,
@@ -140,7 +140,7 @@ class PipelineTest < MiniTest::Spec
       R::CreateObject,
       R::Decorate,
       R::Deserialize,
-      R::Set,
+      R::SetValue,
     ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {represented: song_model, binding: artist, doc: doc, user_options: {}}).must_equal model=Artist.new("Doobie Brothers")
     song_model.artist.must_equal model
   end
@@ -156,7 +156,7 @@ class PipelineTest < MiniTest::Spec
   it "render scalar collection" do
     doc = {}
     P[
-      R::Get,
+      R::GetValue,
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,
@@ -177,7 +177,7 @@ class PipelineTest < MiniTest::Spec
   it "render typed collection" do
     doc = {}
     P[
-      R::Get,
+      R::GetValue,
       R::StopOnSkipable,
       R::Collect[
         R::SkipRender,
@@ -208,7 +208,7 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
         R::Decorate,
         R::Deserialize,
       ],
-      R::Set,
+      R::SetValue,
     ].extend(P::Debug).(doc, {represented: album_model, binding: artists, doc: doc, user_options: {}}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
 
     album_model.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
@@ -216,7 +216,7 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
 
   # TODO: test with arrays, too, not "only" Pipeline instances.
   describe "#Insert Pipeline[], Function, replace: OldFunction" do
-    let (:pipeline) { P[R::Get, R::StopOnSkipable, R::StopOnNil] }
+    let (:pipeline) { P[R::GetValue, R::StopOnSkipable, R::StopOnNil] }
 
     it "returns Pipeline instance when passing in Pipeline instance" do
       P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_be_instance_of(R::Pipeline)
@@ -224,8 +224,8 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
 
     it "replaces if exists" do
       # pipeline.insert!(R::Default, replace: R::StopOnSkipable)
-      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_equal P[R::Get, R::Default, R::StopOnNil]
-      pipeline.must_equal P[R::Get, R::StopOnSkipable, R::StopOnNil]
+      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).must_equal P[R::GetValue, R::Default, R::StopOnNil]
+      pipeline.must_equal P[R::GetValue, R::StopOnSkipable, R::StopOnNil]
     end
 
     it "replaces Function instance" do
@@ -236,42 +236,42 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
 
     it "does not replace when not existing" do
       P::Insert.(pipeline, R::Default, replace: R::Prepare)
-      pipeline.must_equal P[R::Get, R::StopOnSkipable, R::StopOnNil]
+      pipeline.must_equal P[R::GetValue, R::StopOnSkipable, R::StopOnNil]
     end
 
     it "applies on nested Collect" do
-      pipeline = P[R::Get, R::Collect[R::Get, R::StopOnSkipable], R::StopOnNil]
+      pipeline = P[R::GetValue, R::Collect[R::GetValue, R::StopOnSkipable], R::StopOnNil]
 
-      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, Default], StopOnNil]"
-      pipeline.must_equal P[R::Get, R::Collect[R::Get, R::StopOnSkipable], R::StopOnNil]
+      P::Insert.(pipeline, R::Default, replace: R::StopOnSkipable).extend(P::Debug).inspect.must_equal "Pipeline[GetValue, Collect[GetValue, Default], StopOnNil]"
+      pipeline.must_equal P[R::GetValue, R::Collect[R::GetValue, R::StopOnSkipable], R::StopOnNil]
 
 
-      P::Insert.(pipeline, R::Default, replace: R::StopOnNil).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, StopOnSkipable], Default]"
+      P::Insert.(pipeline, R::Default, replace: R::StopOnNil).extend(P::Debug).inspect.must_equal "Pipeline[GetValue, Collect[GetValue, StopOnSkipable], Default]"
     end
 
     it "applies on nested Collect with Function::CreateObject" do
-      pipeline = P[R::Get, R::Collect[R::Get, R::CreateObject], R::StopOnNil]
+      pipeline = P[R::GetValue, R::Collect[R::GetValue, R::CreateObject], R::StopOnNil]
 
-      P::Insert.(pipeline, R::Default, replace: R::CreateObject).extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, Default], StopOnNil]"
-      pipeline.must_equal P[R::Get, R::Collect[R::Get, R::CreateObject], R::StopOnNil]
+      P::Insert.(pipeline, R::Default, replace: R::CreateObject).extend(P::Debug).inspect.must_equal "Pipeline[GetValue, Collect[GetValue, Default], StopOnNil]"
+      pipeline.must_equal P[R::GetValue, R::Collect[R::GetValue, R::CreateObject], R::StopOnNil]
     end
   end
 
   describe "Insert.(delete: true)" do
-    let(:pipeline) { P[R::Get, R::StopOnNil] }
+    let(:pipeline) { P[R::GetValue, R::StopOnNil] }
 
     it do
-      P::Insert.(pipeline, R::Get, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[StopOnNil]"
-      pipeline.extend(P::Debug).inspect.must_equal "Pipeline[Get, StopOnNil]"
+      P::Insert.(pipeline, R::GetValue, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[StopOnNil]"
+      pipeline.extend(P::Debug).inspect.must_equal "Pipeline[GetValue, StopOnNil]"
     end
   end
 
   describe "Insert.(delete: true) with Collect" do
-    let(:pipeline) { P[R::Get, R::Collect[R::Get, R::StopOnSkipable], R::StopOnNil] }
+    let(:pipeline) { P[R::GetValue, R::Collect[R::GetValue, R::StopOnSkipable], R::StopOnNil] }
 
     it do
-      P::Insert.(pipeline, R::Get, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[Collect[StopOnSkipable], StopOnNil]"
-      pipeline.extend(P::Debug).inspect.must_equal "Pipeline[Get, Collect[Get, StopOnSkipable], StopOnNil]"
+      P::Insert.(pipeline, R::GetValue, delete: true).extend(P::Debug).inspect.must_equal "Pipeline[Collect[StopOnSkipable], StopOnNil]"
+      pipeline.extend(P::Debug).inspect.must_equal "Pipeline[GetValue, Collect[GetValue, StopOnSkipable], StopOnNil]"
     end
   end
 end

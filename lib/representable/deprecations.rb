@@ -84,7 +84,7 @@ module Representable::Binding::Deprecation
 
     def get(options={}) # DISCUSS: evluate if we really need this.
       warn "[Representable] Binding#get is deprecated."
-      self[:getter] ? Representable::Getter.(nil, options.merge(binding: self)) : Representable::Get.(nil, options.merge(binding: self))
+      self[:getter] ? Representable::Getter.(nil, options.merge(binding: self)) : Representable::GetValue.(nil, options.merge(binding: self))
     end
   end
 end

@@ -44,7 +44,7 @@ module Representable
       functions << Stop if self[:readable]==false
       functions << StopOnExcluded
       functions << If if self[:if]
-      functions << (self[:getter] ? Getter : Get)
+      functions << (self[:getter] ? Getter : GetValue)
       functions << Writer if self[:writer]
       functions << RenderFilter if self[:render_filter].any?
       functions << RenderDefault if has_default?
@@ -82,7 +82,7 @@ module Representable
     def default_post_functions
       funcs = []
       funcs << ParseFilter if self[:parse_filter].any?
-      funcs << (self[:setter] ? Setter : Set)
+      funcs << (self[:setter] ? Setter : SetValue)
     end
   end
 end

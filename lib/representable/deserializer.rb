@@ -20,7 +20,7 @@ module Representable
   end
 
   OverwriteOnNil = ->(input, options) do
-    input.nil? ? (Set.(input, options); Pipeline::Stop) : input
+    input.nil? ? (SetValue.(input, options); Pipeline::Stop) : input
   end
 
   Default = ->(input, options) do
@@ -97,8 +97,8 @@ module Representable
     options[:binding][:parse_filter].(input, options)
   end
 
-  Setter = ->(input, options) { options[:binding].evaluate_option(:setter, input, options) }
-  Set = ->(input, options) { options[:binding].send(:exec_context, options).send(options[:binding].setter, input) }
+  Setter   = ->(input, options) { options[:binding].evaluate_option(:setter, input, options) }
+  SetValue = ->(input, options) { options[:binding].send(:exec_context, options).send(options[:binding].setter, input) }
 
 
   Stop = ->(*) { Pipeline::Stop }
