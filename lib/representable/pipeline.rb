@@ -19,7 +19,18 @@ module Representable
     def evaluate(block, input, options)
       block.call(input, options)
     end
-  end
+
+
+    module Insert # TODO: explicit test.
+      # Macro to quickly modify an array of functions via Pipeline::Insert and return a
+      # Pipeline instance.
+      def insert(functions, new_function, options)
+        Pipeline.new(Insert.(functions, new_function, options))
+
+      end
+    end
+    extend Insert
+  end # Pipeline
 
 
   # Collect applies a pipeline to each element of input.
