@@ -8,7 +8,7 @@ class ParsePipelineTest < MiniTest::Spec
   describe "transforming nil to [] when parsing" do
     representer!(decorator: true) do
       collection :songs,
-          parse_pipeline: ->(input, options) {
+          parse_pipeline: ->(*) {
             Representable::Pipeline.insert(
               parse_functions,                                # original function list from Binding#parse_functions.
               ->(input, options) { input.nil? ? [] : input }, # your new function (can be any callable object)..
