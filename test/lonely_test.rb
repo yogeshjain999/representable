@@ -221,3 +221,19 @@ class LonelyRepresenterTest < MiniTest::Spec
     end
   end
 end
+
+
+# describe "Hash::Collection with :include" do
+class CollectionWithIncludeTest < MiniTest::Spec
+  Song = Struct.new(:id, :title)
+
+  representer!(decorator: true, module: Representable::Hash::Collection) do
+    items do
+      property :id
+      property :title
+    end
+  end
+
+  it { representer.new([Song.new(1, "ACAB")]).to_hash.must_equal([{"id"=>1, "title"=>"ACAB"}]) }
+  it { representer.new([Song.new(1, "ACAB")]).to_hash(include: [:title]).must_equal([{"title"=>"ACAB"}]) }
+end
