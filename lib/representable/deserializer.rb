@@ -90,6 +90,11 @@ module Representable
     binding, fragment, user_options = options[:binding], options[:fragment], options[:user_options]
 
     user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
+    puts "@@@@@ds #{options[:user_options].inspect}"
+    name = options[:binding].name.to_sym
+    user_options = user_options.merge(user_options[name]) if user_options[name]
+    puts "user_options #{user_options.inspect}"
+
     input.send(binding.deserialize_method, fragment, user_options)
   end
 

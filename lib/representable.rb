@@ -79,6 +79,8 @@ private
     # here, we could also filter out local options e.g. like options[:band].
     return options unless options.any?
 
+    puts "@@@@@ #{options.inspect}"
+
     propagated_options = options.dup
     propagated_options.delete(:wrap) # FIXME.
     propagated_options.delete(:_private)

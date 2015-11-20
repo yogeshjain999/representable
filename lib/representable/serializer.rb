@@ -40,6 +40,8 @@ module Representable
     binding, user_options = options[:binding], options[:user_options]
 
     user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
+    name = options[:binding].name.to_sym
+    user_options = user_options.merge(user_options[name]) if user_options[name] # FIXME.
 
     input.send(binding.serialize_method, user_options)
   end
