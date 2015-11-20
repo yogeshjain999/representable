@@ -38,4 +38,19 @@ class IncludeExcludeTest < Minitest::Spec
       decorator.to_hash(include: [:title]).must_equal({"title"=>"Listless"})
     end
   end
+
+  it "does not propagate private options to nested objects" do
+    Cover = Struct.new(:title, :original)
+
+    cover_rpr = Module.new do
+      include Representable::Hash
+      property :title
+      property :original, extend: self
+    end
+
+    # FIXME: we should test all representable-options (:include, :exclude, ?)
+
+    Cover.new("Roxanne", Cover.new("Roxanne (Don't Put On The Red Light)")).extend(cover_rpr).
+      to_hash(:include => [:original]).must_equal({"original"=>{"title"=>"Roxanne (Don't Put On The Red Light)"}})
+  end
 end

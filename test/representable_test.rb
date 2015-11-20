@@ -343,19 +343,6 @@ class RepresentableTest < MiniTest::Spec
       @band.groupies = false
       assert_equal({"name"=>"No One's Choice","groupies"=>false}, @band.to_hash)
     end
-
-    it "does not propagate private options to nested objects" do
-      cover_rpr = Module.new do
-        include Representable::Hash
-        property :title
-        property :original, :extend => self
-      end
-
-      # FIXME: we should test all representable-options (:include, :exclude, ?)
-
-      Class.new(OpenStruct).new(:title => "Roxanne", :original => Class.new(OpenStruct).new(:title => "Roxanne (Don't Put On The Red Light)")).extend(cover_rpr).
-        to_hash(:include => [:original]).must_equal({"original"=>{"title"=>"Roxanne (Don't Put On The Red Light)"}})
-    end
   end
 
 
