@@ -222,19 +222,6 @@ class RepresentableTest < MiniTest::Spec
       assert_equal 2, @band.groupies
     end
 
-
-    it "accepts :exclude option" do
-      @band.from_hash({"name"=>"No One's Choice", "groupies"=>2}, {:exclude => [:groupies]})
-      assert_equal "No One's Choice", @band.name
-      assert_equal nil, @band.groupies
-    end
-
-    it "accepts :include option" do
-      @band.from_hash({"name"=>"No One's Choice", "groupies"=>2}, :include => [:groupies])
-      assert_equal 2, @band.groupies
-      assert_equal nil, @band.name
-    end
-
     it "ignores non-writeable properties" do
       @band = Class.new(Band) { property :name; collection :founders, :writeable => false; attr_accessor :founders }.new
       @band.from_hash("name" => "Iron Maiden", "groupies" => 2, "founders" => ["Steve Harris"])
@@ -336,16 +323,6 @@ class RepresentableTest < MiniTest::Spec
 
     it "compiles document from properties in object" do
       assert_equal({"name"=>"No One's Choice", "groupies"=>2}, @band.to_hash)
-    end
-
-    it "accepts :exclude option" do
-      hash = @band.to_hash({:exclude => [:groupies]})
-      assert_equal({"name"=>"No One's Choice"}, hash)
-    end
-
-    it "accepts :include option" do
-      hash = @band.to_hash({:include => [:groupies]})
-      assert_equal({"groupies"=>2}, hash)
     end
 
     it "ignores non-readable properties" do
