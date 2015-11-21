@@ -1,4 +1,25 @@
 # WARNING: this will be removed in 3.0.
+module Representable::Deprecation
+  module NormalizeOptions
+    def normalize_options(options)
+      return options unless options.any?
+
+      options      = options.dup
+
+      user_option_keys = options.keys - [:exclude, :include, :wrap, :user_options, * representable_attrs.keys.map(&:to_sym)]
+      if user_option_keys.any?
+        user_options = {}
+        warn "[Representable] Mixing user and representable options is deprecated. Please provide your options via :user_options."
+        user_option_keys.each { |key| user_options[key] = options.delete(key) }
+
+        options[:user_options] = user_options
+      end
+
+      options # {user_options: {..}, include: [], wrap: "song", artist: {..}}
+    end
+  end
+end
+
 module Representable::Binding::Deprecation
   Options = Struct.new(:binding, :user_options, :represented, :decorator)
 
@@ -60,7 +81,6 @@ module Representable::Binding::Deprecation
         end
       end
 
-      # FIXME: rename top-level :user_options to :options
       proc.(send(:exec_context, options), options.merge(user_options: options[:options][:user_options]))
     end
     private :evaluate_option_with_deprecation

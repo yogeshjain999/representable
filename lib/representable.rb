@@ -75,22 +75,11 @@ private
 
   # Make sure we do not change original options. However, private options like :include or :wrap are
   # not passed on to child representers.
-  def normalize_options(options)
-    return options unless options.any?
-
-    options      = options.dup
-
-    # TODO: move to Deprecation.
-    user_option_keys = options.keys - [:exclude, :include, :wrap, :user_options, * representable_attrs.keys.map(&:to_sym)]
-    if user_option_keys.any?
-      user_options = {}
-      warn "[Representable] Mixing user and representable options is deprecated. Please provide your options via :user_options."
-      user_option_keys.each { |key| user_options[key] = options.delete(key) }
-
-      options[:user_options] = user_options
+  module NormalizeOptions
+    # WARNING: will be removed in 2.5.
+    def normalize_options(options)
+      options
     end
-
-    options # {user_options: {..}, include: [], wrap: "song", artist: {..}}
   end
 
   OptionsForNested = ->(options, binding) do
@@ -135,6 +124,9 @@ private
   def self.deprecations=(value)
     evaluator = value==false ? Binding::EvaluateOption : Binding::Deprecation::EvaluateOption
     ::Representable::Binding.send :include, evaluator
+
+    evaluator = value==false ? NormalizeOptions : Deprecation::NormalizeOptions
+    ::Representable.send :include, evaluator
   end
   self.deprecations = true # TODO: change to false in 2.5 or remove entirely.
 end
