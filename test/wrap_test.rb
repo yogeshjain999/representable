@@ -92,7 +92,7 @@ class HashDisableWrapTest < MiniTest::Spec
 
   let (:album) { AlbumDecorator.prepare(Album.new(Band.new("Social Distortion", Label.new("Epitaph")))) }
 
-  # band has wrap turned of per property definition, however, label still has wrap.
+  # band has wrap turned off per property definition, however, label still has wrap.
   it "renders" do
     album.to_hash.must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
   end

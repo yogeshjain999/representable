@@ -32,10 +32,12 @@ module Representable::Binding::Deprecation
       __options = if self[:pass_options]
         warn %{[Representable] The :pass_options option is deprecated. Please access environment objects via options[:binding].
   Learn more here: http://trailblazerb.org/gems/representable/upgrading-guide.html#pass-options}
-        Options.new(self, options[:user_options], options[:represented], options[:decorator])
+
+
+        Options.new(self, options[:user_options][:user_options], options[:represented], options[:decorator])
       else
         # user_options
-        options[:user_options]
+        options[:user_options][:user_options] || {}
       end
       # options[:user_options] = __options # TODO: always make this user_options in Representable 3.0.
 
@@ -54,12 +56,13 @@ module Representable::Binding::Deprecation
             deprecated_args << __options  and next if arg == :user_options# either hash or Options object.
             deprecated_args << options[arg]
           end
-
+puts deprecated_args.inspect
           return proc.(send(:exec_context, options), *deprecated_args)
         end
       end
 
-      proc.(send(:exec_context, options), options)
+      # FIXME: rename top-level :user_options to :options
+      proc.(send(:exec_context, options), options.merge(user_options: options[:user_options][:user_options]))
     end
     private :evaluate_option_with_deprecation
 

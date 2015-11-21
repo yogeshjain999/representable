@@ -66,7 +66,7 @@ class IncludeExcludeTest < Minitest::Spec
     end
   end
 
-  it "does not propagate private options to nested objects" do
+  it "xdoes not propagate private options to nested objects" do
     Cover = Struct.new(:title, :original)
 
     cover_rpr = Module.new do

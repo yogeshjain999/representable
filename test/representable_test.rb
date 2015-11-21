@@ -279,23 +279,23 @@ class RepresentableTest < MiniTest::Spec
 
           property :length, class: OpenStruct do
             def to_hash(options)
-              {seconds: options[:nr]}
+              {seconds: options[:user_options][:nr]}
             end
 
             def from_hash(hash, options)
               super.tap do
-                self.seconds = options[:nr]
+                self.seconds = options[:user_options][:nr]
               end
             end
           end
 
           def to_hash(options)
-            super.merge({"nr" => options[:nr]})
+            super.merge({"nr" => options[:user_options][:nr]})
           end
 
           def from_hash(data, options)
             super.tap do
-              self.nr = options[:nr]
+              self.nr = options[:user_options][:nr]
             end
           end
         end

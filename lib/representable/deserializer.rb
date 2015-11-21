@@ -86,16 +86,27 @@ module Representable
   Decorate     = Function::Decorate.new
   Deserializer =  ->(input, options) { options[:binding].evaluate_option(:deserialize, input, options) }
 
-  Deserialize  =  ->(input, options) do
-    binding, fragment, user_options = options[:binding], options[:fragment], options[:user_options]
+  # options:
+    # :user_options :_private {exclude>}
 
-    user_options = user_options.merge(wrap: binding[:wrap]) unless binding[:wrap].nil? # DISCUSS: can we leave that here?
-    puts "@@@@@ds #{options[:user_options].inspect}"
-    name = options[:binding].name.to_sym
-    user_options = user_options.merge(user_options[name]) if user_options[name]
-    puts "user_options #{user_options.inspect}"
 
-    input.send(binding.deserialize_method, fragment, user_options)
+  Deserialize  =  ->(input, args) do
+    binding, fragment, options = args[:binding], args[:fragment], args[:user_options]
+
+    # user_options:
+    child_options = OptionsForNested.(options, args[:binding])
+
+    # # wrap:
+    # child_options[:wrap] = binding[:wrap] unless binding[:wrap].nil?
+
+    # # nested params:
+    # name = args[:binding].name.to_sym
+    # child_options.merge!(options[name]) if options[name]
+
+    # puts "user_options #{user_options.inspect}"
+
+
+    input.send(binding.deserialize_method, fragment, child_options)
   end
 
   ParseFilter = ->(input, options) do
@@ -111,13 +122,13 @@ module Representable
   If = ->(input, options) { options[:binding].evaluate_option(:if, nil, options) ? input : Pipeline::Stop }
 
   StopOnExcluded = ->(input, options) do
-    return input unless private = options[:_private]
-    return input unless props = (private[:exclude] || private[:include])
+    return input unless private = options[:user_options]
+    return input unless props = (options[:user_options][:exclude] || options[:user_options][:include])
 
     res = props.include?(options[:binding].name.to_sym) # false with include: Stop. false with exclude: go!
 
-    return input if private[:include]&&res
-    return input if private[:exclude]&&!res
+    return input if options[:user_options][:include]&&res
+    return input if options[:user_options][:exclude]&&!res
     Pipeline::Stop
   end
 end

@@ -39,7 +39,7 @@ private
 
   # Compiles the document going through all properties.
   def create_representation_with(doc, options, format)
-    propagated_options = normalize_options(options) # {_private: {include: }, is_admin: true}
+    propagated_options = normalize_options(options)
 
     representable_map!(doc, propagated_options, format, :compile_fragment)
     doc
@@ -64,7 +64,7 @@ private
   end
 
   def representable_map!(doc, propagated_options, format, method)
-    options = {doc: doc, _private: propagated_options[:_private], user_options: propagated_options, represented: represented, decorator: self}
+    options = {doc: doc, user_options: propagated_options, represented: represented, decorator: self}
 
     representable_map(options, format).(method, options) # .(:uncompile_fragment, options)
   end
@@ -79,19 +79,44 @@ private
     # here, we could also filter out local options e.g. like options[:band].
     return options unless options.any?
 
-    puts "@@@@@ #{options.inspect}"
+    user_options = {}
+    options = options.dup
 
-    propagated_options = options.dup
-    propagated_options.delete(:wrap) # FIXME.
-    propagated_options.delete(:_private)
+    user_option_keys = options.keys - [:exclude, :include, :wrap, :user_options, * representable_attrs.keys.map(&:to_sym)]
+    if user_option_keys.any?
+      warn "[Representable] Mixing user and representable options is deprecated. Please provide your options via :user_options."
+      user_option_keys.each { |key| user_options[key] = options.delete(key) }
 
-    private_options = {}
-    private_options[:include] = propagated_options.delete(:include) if options[:include]
-    private_options[:exclude] = propagated_options.delete(:exclude) if options[:exclude]
+          options[:user_options] = user_options
 
-    propagated_options[:_private] = private_options if private_options.any?
+puts "not cool: #{options}"
+        else
+          puts "cool! #{options}"
+    end
 
-    propagated_options
+    # options:
+    # {
+    #   user_options: {},
+    #   :include, :exclude, :wrap,
+
+    #   songs:  {},
+    #   artist: {}
+    # }
+
+puts "all: #{options}"
+
+    options
+  end
+
+  OptionsForNested = ->(options, binding) do
+    child_options = {user_options: options[:user_options], }
+
+    # wrap:
+    child_options[:wrap] = binding[:wrap] unless binding[:wrap].nil?
+
+    # nested params:
+    child_options.merge!(options[binding.name.to_sym]) if options[binding.name.to_sym]
+    child_options
   end
 
   def representable_attrs
