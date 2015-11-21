@@ -37,7 +37,7 @@ module Representable
 
   Serialize = ->(input, options) do
     return if input.nil? # DISCUSS: how can we prevent that?
-    binding, options = options[:binding], options[:user_options] # FIXME: rename to :local_options.
+    binding, options = options[:binding], options[:options] # FIXME: rename to :local_options.
 
     options_for_nested = OptionsForNested.(options, binding)
 

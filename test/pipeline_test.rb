@@ -124,7 +124,7 @@ class PipelineTest < MiniTest::Spec
       R::Serialize,
       R::AssignName,
       R::WriteFragment
-    ].extend(P::Debug).(nil, {represented: song_model, binding: artist, doc: doc, user_options: {}}).must_equal({"name" => "Diesel Boy"})
+    ].extend(P::Debug).(nil, {represented: song_model, binding: artist, doc: doc, options: {}}).must_equal({"name" => "Diesel Boy"})
 
     doc.must_equal({"artist"=>{"name"=>"Diesel Boy"}})
   end
@@ -141,7 +141,7 @@ class PipelineTest < MiniTest::Spec
       R::Decorate,
       R::Deserialize,
       R::SetValue,
-    ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {represented: song_model, binding: artist, doc: doc, user_options: {}}).must_equal model=Artist.new("Doobie Brothers")
+    ].extend(P::Debug).(doc={"artist"=>{"name"=>"Doobie Brothers"}}, {represented: song_model, binding: artist, doc: doc, options: {}}).must_equal model=Artist.new("Doobie Brothers")
     song_model.artist.must_equal model
   end
 
@@ -186,7 +186,7 @@ class PipelineTest < MiniTest::Spec
       ],
       R::AssignName,
       R::WriteFragment
-    ].extend(P::Debug).(nil, {represented: Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")]), binding: artists, doc: doc, user_options: {}}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
+    ].extend(P::Debug).(nil, {represented: Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van Halen")]), binding: artists, doc: doc, options: {}}).must_equal([{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}])
 
     doc.must_equal({"artists"=>[{"name"=>"Diesel Boy"}, {"name"=>"Van Halen"}]})
   end
@@ -209,7 +209,7 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
         R::Deserialize,
       ],
       R::SetValue,
-    ].extend(P::Debug).(doc, {represented: album_model, binding: artists, doc: doc, user_options: {}}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
+    ].extend(P::Debug).(doc, {represented: album_model, binding: artists, doc: doc, options: {}}).must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
 
     album_model.artists.must_equal([Artist.new("Diesel Boy"), Artist.new("Van Halen")])
   end

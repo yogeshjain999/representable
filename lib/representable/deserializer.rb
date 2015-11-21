@@ -86,12 +86,8 @@ module Representable
   Decorate     = Function::Decorate.new
   Deserializer =  ->(input, options) { options[:binding].evaluate_option(:deserialize, input, options) }
 
-  # options:
-    # :user_options :_private {exclude>}
-
-
   Deserialize  =  ->(input, args) do
-    binding, fragment, options = args[:binding], args[:fragment], args[:user_options]
+    binding, fragment, options = args[:binding], args[:fragment], args[:options]
 
     # user_options:
     child_options = OptionsForNested.(options, args[:binding])
@@ -122,13 +118,13 @@ module Representable
   If = ->(input, options) { options[:binding].evaluate_option(:if, nil, options) ? input : Pipeline::Stop }
 
   StopOnExcluded = ->(input, options) do
-    return input unless private = options[:user_options]
-    return input unless props = (options[:user_options][:exclude] || options[:user_options][:include])
+    return input unless private = options[:options]
+    return input unless props = (options[:options][:exclude] || options[:options][:include])
 
     res = props.include?(options[:binding].name.to_sym) # false with include: Stop. false with exclude: go!
 
-    return input if options[:user_options][:include]&&res
-    return input if options[:user_options][:exclude]&&!res
+    return input if options[:options][:include]&&res
+    return input if options[:options][:exclude]&&!res
     Pipeline::Stop
   end
 end

@@ -63,8 +63,8 @@ private
     Binding::Map.new(representable_bindings_for(format, options))
   end
 
-  def representable_map!(doc, propagated_options, format, method)
-    options = {doc: doc, user_options: propagated_options, represented: represented, decorator: self}
+  def representable_map!(doc, options, format, method)
+    options = {doc: doc, options: options, represented: represented, decorator: self}
 
     representable_map(options, format).(method, options) # .(:uncompile_fragment, options)
   end
@@ -90,7 +90,7 @@ private
       options[:user_options] = user_options
     end
 
-    options # {user_options: {..}, include: [], wrap: :song, artist: {..}}
+    options # {user_options: {..}, include: [], wrap: "song", artist: {..}}
   end
 
   OptionsForNested = ->(options, binding) do
