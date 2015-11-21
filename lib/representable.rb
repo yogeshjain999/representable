@@ -73,8 +73,6 @@ private
     representable_attrs.collect {|definition| format.build(definition) }
   end
 
-  # Make sure we do not change original options. However, private options like :include or :wrap are
-  # not passed on to child representers.
   module NormalizeOptions
     # WARNING: will be removed in 2.5.
     def normalize_options(options)
@@ -82,6 +80,8 @@ private
     end
   end
 
+  # Prepares options for a particular nested representer.
+  # This is used in Serializer and Deserializer.
   OptionsForNested = ->(options, binding) do
     child_options = {user_options: options[:user_options], }
 
