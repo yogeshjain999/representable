@@ -1,18 +1,23 @@
 require "test_helper"
 
 class IncludeExcludeTest < Minitest::Spec
-  Song   = Struct.new(:title, :artist)
-  Artist = Struct.new(:name, :id)
+  Song   = Struct.new(:title, :artist, :id)
+  Artist = Struct.new(:name, :id, :songs)
 
   representer!(decorator: true) do
     property :title
     property :artist, class: Artist do
       property :name
       property :id
+
+      collection :songs, class: Song do
+        property :title
+        property :id
+      end
     end
   end
 
-  let (:song) { Song.new("Listless", Artist.new("7yearsbadluck", 1)) }
+  let (:song) { Song.new("Listless", Artist.new("7yearsbadluck", 1  )) }
   let (:decorator) { representer.new(song) }
 
   describe "#from_hash" do
@@ -30,22 +35,18 @@ class IncludeExcludeTest < Minitest::Spec
       song.artist.must_equal Artist.new("7yearsbadluck", 1)
     end
 
-    it "accepts nestedx :exclude option" do
-      decorator.extend(Representable::Debug).from_hash({"title"=>"Don't Smile In Trouble", "artist"=>{"name"=>"Foo", "id"=>2}},
+    it "accepts nested :exclude/:include option" do
+      decorator.from_hash({"title"=>"Don't Smile In Trouble", "artist"=>{"name"=>"Foo", "id"=>2, "songs"=>[{"id"=>1, "title"=>"Listless"}]}},
         exclude: [:title],
-        artist: { exclude: [:id] }
+        artist: {
+          exclude: [:id],
+          songs: { include: [:title] }
+        }
       )
 
       song.title.must_equal "Listless"
-      song.artist.must_equal Artist.new("Foo", nil)
+      song.artist.must_equal Artist.new("Foo", nil, [Song.new("Listless", nil, nil)])
     end
-
-    # it "accepts nested :include option" do
-    #   decorator.from_hash({"title"=>"Don't Smile In Trouble", "artist"=>{"name"=>"Foo", "id"=>2}}, include: {artist: [:id]})
-
-    #   song.title.must_equal "Listless"
-    #   song.artist.must_equal Artist.new("7yearsbadluck", 2)
-    # end
   end
 
   describe "#to_hash" do
@@ -57,12 +58,16 @@ class IncludeExcludeTest < Minitest::Spec
       decorator.to_hash(include: [:title]).must_equal({"title"=>"Listless"})
     end
 
-    # it "accepts nested :exclude option" do
-    #   decorator.to_hash(exclude: {artist: [:name]}).must_equal({"title"=>"Listless", "artist"=>{"id"=>1}})
-    # end
+    it "accepts nested :exclude/:include option" do
+      decorator = representer.new(Song.new("Listless", Artist.new("7yearsbadluck", 1, [Song.new("C.O.A.B.I.E.T.L.")])))
 
-    it "accepts nested :include option" do
-      decorator.to_hash(include: [:artist], artist: {include: [:name]}).must_equal({"artist"=>{"name"=>"7yearsbadluck"}})
+      decorator.to_hash(
+        exclude: [:title],
+        artist: {
+          exclude: [:id],
+          songs: { include: [:title] }
+        }
+      ).must_equal({"artist"=>{"name"=>"7yearsbadluck", "songs"=>[{"title"=>"C.O.A.B.I.E.T.L."}]}})
     end
   end
 
