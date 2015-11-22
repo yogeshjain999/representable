@@ -43,7 +43,7 @@ module Representable
     module EvaluateOption
       def evaluate_option(name, input, options)
         proc = self[name]
-        proc.(send(:exec_context, options), options) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
+        proc.(send(:exec_context, options), options.merge(user_options: options[:user_options])) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
     # include EvaluateOption
