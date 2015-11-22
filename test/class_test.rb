@@ -5,7 +5,7 @@ class ClassTest < BaseTest
   class RepresentingSong
     attr_reader :name
 
-    def from_hash(doc, *args)
+    def from_hash(doc, *)
       @name = doc["__name__"]
 
       self # DISCUSS: do we wanna be able to return whatever we want here? this is a trick to replace the actual object
@@ -66,10 +66,10 @@ class ClassTest < BaseTest
 
     representer!(:inject => :klass) do
       _klass = klass
-      property :song, :class => lambda { |fragment, args| _klass.args=([fragment,args]); _klass }
+      property :song, :class => lambda { |options| _klass.args=([options[:fragment],options[:user_options]]); _klass }
     end
 
-    it { representer.prepare(OpenStruct.new).from_hash({"song" => {"name" => "Captured"}}, :volume => true).song.class.args.
+    it { representer.prepare(OpenStruct.new).from_hash({"song" => {"name" => "Captured"}}, user_options: {volume: true}).song.class.args.
       must_equal([{"name"=>"Captured"}, {:volume=>true}]) }
   end
 
@@ -87,10 +87,10 @@ class ClassTest < BaseTest
 
     representer!(:inject => :klass) do
       _klass = klass
-      collection :songs, :class => lambda { |fragment, i, args| _klass.args=([fragment,i,args]); _klass }
+      collection :songs, :class => lambda { |options| _klass.args=([options[:fragment],options[:index],options[:user_options]]); _klass }
     end
 
-    it { representer.prepare(OpenStruct.new).from_hash({"songs" => [{"name" => "Captured"}]}, :volume => true).songs.first.class.args.
+    it { representer.prepare(OpenStruct.new).from_hash({"songs" => [{"name" => "Captured"}]}, user_options: {volume: true}).songs.first.class.args.
       must_equal([{"name"=>"Captured"}, 0, {:volume=>true}]) }
   end
 

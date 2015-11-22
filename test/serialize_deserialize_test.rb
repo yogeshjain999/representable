@@ -6,28 +6,28 @@ class SerializeDeserializeTest < BaseTest
   describe "deserialize" do
     representer! do
       property :song,
-        :instance => lambda { |fragment, *| fragment.to_s.upcase },
-        :prepare  => lambda { |fragment, *| fragment },
-        :deserialize => lambda { |object, fragment, args|
-          "#{object} #{fragment} #{args.inspect}"
+        :instance => lambda { |options| options[:input].to_s.upcase },
+        :prepare  => lambda { |options| options[:input] },
+        :deserialize => lambda { |options|
+          "#{options[:input]} #{options[:fragment]} #{options[:user_options].inspect}"
         }
     end
 
-    it { subject.from_hash({"song" => Object}, {:volume => 9}).song.must_equal "OBJECT Object {:volume=>9}" }
+    it { subject.from_hash({"song" => Object}, user_options: {volume: 9}).song.must_equal "OBJECT Object {:volume=>9}" }
   end
 
   describe "serialize" do
     representer! do
       property :song,
         :representable => true,
-        :prepare  => lambda { |fragment, *| fragment },
-        :serialize => lambda { |object, args|
-          "#{object} #{args.inspect}"
+        :prepare  => lambda { |options| options[:fragment] },
+        :serialize => lambda { |options|
+          "#{options[:input]} #{options[:user_options].inspect}"
         }
     end
 
     before { subject.song = "Arrested In Shanghai" }
 
-    it { subject.to_hash({:volume => 9}).must_equal({"song"=>"Arrested In Shanghai {:volume=>9}"}) }
+    it { subject.to_hash(user_options: {volume: 9}).must_equal({"song"=>"Arrested In Shanghai {:volume=>9}"}) }
   end
 end

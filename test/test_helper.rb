@@ -11,6 +11,8 @@ require 'test_xml/mini_test'
 
 require "representable/debug"
 
+Representable.deprecations = false
+
 class Album
   attr_accessor :songs, :best_song
   def initialize(songs=nil, best_song=nil)

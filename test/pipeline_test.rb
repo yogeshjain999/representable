@@ -119,7 +119,6 @@ class PipelineTest < MiniTest::Spec
       R::GetValue,
       R::StopOnSkipable,
       R::StopOnNil,
-      R::SkipRender,
       R::Decorate,
       R::Serialize,
       R::AssignName,
@@ -135,9 +134,8 @@ class PipelineTest < MiniTest::Spec
       R::ReadFragment,
       R::StopOnNotFound,
       R::OverwriteOnNil,
-      # R::SkipParse,
       R::AssignFragment,
-      R::CreateObject,
+      R::CreateObject::Class,
       R::Decorate,
       R::Deserialize,
       R::SetValue,
@@ -149,7 +147,7 @@ class PipelineTest < MiniTest::Spec
   ######### collection :ratings
 
   let (:ratings) {
-    dfn = R::Definition.new(:ratings, collection: true)
+    dfn = R::Definition.new(:ratings, collection: true, skip_render: ->(*) { false })
 
     R::Hash::Binding::Collection.new(dfn)
   }
@@ -163,7 +161,7 @@ class PipelineTest < MiniTest::Spec
       ],
       R::AssignName,
       R::WriteFragment
-    ].extend(P::Debug).(nil, {represented: Album.new([1,2,3]), binding: ratings, doc: doc}).must_equal([1,2,3])
+    ].extend(P::Debug).(nil, {represented: Album.new([1,2,3]), binding: ratings, doc: doc, options: {}}).must_equal([1,2,3])
 
     doc.must_equal({"ratings"=>[1,2,3]})
   end
@@ -180,7 +178,6 @@ class PipelineTest < MiniTest::Spec
       R::GetValue,
       R::StopOnSkipable,
       R::Collect[
-        R::SkipRender,
         R::Decorate,
         R::Serialize,
       ],
@@ -203,8 +200,7 @@ let (:album_model) { Album.new(nil, [Artist.new("Diesel Boy"), Artist.new("Van H
       # R::SkipParse,
       R::Collect[
         R::AssignFragment,
-        R::SkipRender,
-        R::CreateObject,
+        R::CreateObject::Class,
         R::Decorate,
         R::Deserialize,
       ],

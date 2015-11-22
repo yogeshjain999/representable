@@ -303,11 +303,11 @@ class RepresentableTest < MiniTest::Spec
 
       it "#to_hash propagates to nested objects" do
         OpenStruct.new(track: OpenStruct.new(nr: 1, length: OpenStruct.new(seconds: nil))).extend(representer).extend(Representable::Debug).
-          to_hash(nr: 9).must_equal({"track"=>{"nr"=>9, "length"=>{seconds: 9}}})
+          to_hash(user_options: {nr: 9}).must_equal({"track"=>{"nr"=>9, "length"=>{seconds: 9}}})
       end
 
       it "#from_hash propagates to nested objects" do
-        song = OpenStruct.new.extend(representer).from_hash({"track"=>{"nr" => "replace me", "length"=>{"seconds"=>"replacing"}}}, :nr => 9)
+        song = OpenStruct.new.extend(representer).from_hash({"track"=>{"nr" => "replace me", "length"=>{"seconds"=>"replacing"}}}, user_options: {nr: 9})
         song.track.nr.must_equal 9
         song.track.length.seconds.must_equal 9
       end
@@ -391,7 +391,7 @@ class RepresentableTest < MiniTest::Spec
 
     describe "property with :extend" do
       representer! do
-        property :name, :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+        property :name, :extend => lambda { |options| options[:input].is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
       end
 
       it "uses lambda when rendering" do
@@ -406,8 +406,8 @@ class RepresentableTest < MiniTest::Spec
 
       describe "with :class lambda" do
         representer! do
-          property :name, :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
-                          :class  => lambda { |fragment, *| fragment == "Still Failing?" ? String : UpcaseString }
+          property :name, :extend => lambda { |options| options[:input].is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
+                          :class  => lambda { |options| options[:fragment] == "Still Failing?" ? String : UpcaseString }
         end
 
         it "creates instance from :class lambda when parsing" do
@@ -425,7 +425,7 @@ class RepresentableTest < MiniTest::Spec
 
     describe "collection with :extend" do
       representer! do
-        collection :songs, :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
+        collection :songs, :extend => lambda { |options| options[:input].is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter }, :class => String
       end
 
       it "uses lambda for each item when rendering" do
@@ -439,8 +439,8 @@ class RepresentableTest < MiniTest::Spec
 
       describe "with :class lambda" do
         representer! do
-          collection :songs,  :extend => lambda { |name, *| name.is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
-                              :class  => lambda { |fragment, *| fragment == "Still Failing?" ? String : UpcaseString }
+          collection :songs,  :extend => lambda { |options| options[:input].is_a?(UpcaseString) ? UpcaseRepresenter : DowncaseRepresenter },
+                              :class  => lambda { |options| options[:input] == "Still Failing?" ? String : UpcaseString }
         end
 
         it "creates instance from :class lambda for each item when parsing" do

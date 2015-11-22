@@ -36,7 +36,7 @@ class ExecContextTest < MiniTest::Spec
         property :name,
           :as           => lambda { |*| self.class }, # to actually test
           :exec_context => :binding,
-          :setter        => lambda { |v, *args| represented.name = v # to make parsing work.
+          :setter        => lambda { |options| represented.name = options[:fragment] # to make parsing work.
         }
       end
 
@@ -81,7 +81,7 @@ class ExecContextTest < MiniTest::Spec
           property :name,
             :as           => lambda { |*| self.class }, # to actually test
             :exec_context => :binding,
-            :setter        => lambda { |v, *args| represented.name = v # to make parsing work.
+            :setter        => lambda { |options| represented.name = options[:fragment ] # to make parsing work.
           }
         end
 

@@ -10,7 +10,7 @@ class InstanceTest < BaseTest
 
   describe "lambda { fragment } (new way of class: lambda { nil })" do
     representer! do
-      property :title, :instance  => lambda { |fragment, args| fragment }
+      property :title, :instance  => lambda { |options| options[:fragment] }
     end
 
     it "skips creating new instance" do
@@ -21,7 +21,7 @@ class InstanceTest < BaseTest
         end
       end
 
-      song = OpenStruct.new.extend(representer).from_hash(hash = {"title" => object})
+      song = OpenStruct.new.extend(representer).from_hash({"title" => object})
       song.title.must_equal object
     end
   end
@@ -32,7 +32,7 @@ class InstanceTest < BaseTest
   describe "property with :instance" do
     representer!(:inject => :song_representer) do
       property :song,
-        :instance => lambda { |fragment, *args| fragment["id"] == song.id ? song : Song.find(fragment["id"]) },
+        :instance => lambda { |options| options[:fragment]["id"] == song.id ? song : Song.find(options[:fragment]["id"]) },
         :extend => song_representer
     end
 
@@ -47,8 +47,8 @@ class InstanceTest < BaseTest
   describe "collection with :instance" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i, *args|
-          fragment["id"] == songs[i].id ? songs[i] : Song.find(fragment["id"])
+        :instance => lambda { |options|
+          options[:fragment]["id"] == songs[options[:index]].id ? songs[options[:index]] : Song.find(options[:fragment]["id"])
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
 
         :extend => song_representer
@@ -68,11 +68,11 @@ class InstanceTest < BaseTest
 
   describe "property with lambda receiving fragment and args" do
     representer!(:inject => :song_representer) do
-      property :song, :instance => lambda { |fragment, args| Struct.new(:args, :id).new([fragment, args]) }, :extend => song_representer
+      property :song, :instance => lambda { |options| Struct.new(:args, :id).new([options[:fragment], options[:user_options]]) }, :extend => song_representer
     end
 
     it { OpenStruct.new(:song => Song.new(1, "The Answer Is Still No")).extend(representer).
-      from_hash({"song" => {"id" => 1}}, {:volume => 1}).song.args.must_equal([{"id"=>1}, {:volume=>1}]) }
+      from_hash({"song" => {"id" => 1}}, user_options: { volume: 1 }).song.args.must_equal([{"id"=>1}, {:volume=>1}]) }
   end
 
   # TODO: raise and test instance:{nil}
@@ -100,8 +100,8 @@ class InstanceTest < BaseTest
   describe "sync" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i, *args|
-          songs[i]
+        :instance => lambda { |options|
+          songs[options[:index]]
         },
         :extend => song_representer,
         # :parse_strategy => :sync
@@ -130,10 +130,10 @@ class InstanceTest < BaseTest
   describe "update existing elements, only" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i, *args|
+        :instance => lambda { |options|
 
           #fragment["id"] == songs[i].id ? songs[i] : Song.find(fragment["id"])
-          songs.find { |s| s.id == fragment["id"] }
+          songs.find { |s| s.id == options[:fragment]["id"] }
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
 
         :extend => song_representer,
@@ -164,7 +164,7 @@ class InstanceTest < BaseTest
   describe "add incoming elements, only" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i, *args|
+        :instance => lambda { |options|
           songs << song=Song.new(2)
           song
         }, # let's not allow returning nil anymore. make sure we can still do everything as with nil. also, let's remove parse_strategy: sync.
@@ -195,8 +195,8 @@ class InstanceTest < BaseTest
   describe "replace existing element" do
     representer!(:inject => :song_representer) do
       collection :songs,
-        :instance => lambda { |fragment, i, *args|
-          id = fragment.delete("replace_id")
+        :instance => lambda { |options|
+          id = options[:fragment].delete("replace_id")
           replaced = songs.find { |s| s.id == id }
           songs[songs.index(replaced)] = song=Song.new(3)
           song
@@ -249,7 +249,7 @@ class InstanceTest < BaseTest
   describe "new syntax for instance: true" do
     representer!(:inject => :song_representer) do
       property :song, :pass_options => true,
-        :extend => song_representer, :instance => lambda { |fragment, args| args.binding.get(represented: args.represented) }
+        :extend => song_representer, :instance => lambda { |options| options[:binding].get(represented: options[:represented]) }
     end
 
     it "uses Binding#get instead of creating an instance, but deprecates" do

@@ -64,7 +64,7 @@ class IfTest < MiniTest::Spec
 
   describe "propagating user options to the block" do
     representer! do
-      property :name, :if => lambda { |opts| opts[:include_name] }
+      property :name, :if => lambda { |opts| opts[:user_options][:include_name] }
     end
     subject { OpenStruct.new(:name => "Outbound").extend(representer) }
 
@@ -73,7 +73,7 @@ class IfTest < MiniTest::Spec
     end
 
     it "passes user options to block" do
-      subject.to_hash(:include_name => true).must_equal({"name" => "Outbound"})
+      subject.to_hash(user_options: { include_name: true }).must_equal({"name" => "Outbound"})
     end
   end
 end
