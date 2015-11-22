@@ -31,31 +31,7 @@ module Representable
     options[:binding].evaluate_option(:skip_parse, input, options) ? Pipeline::Stop : input
   end
 
-  Instance = ->(input, options) do
-    options[:binding].evaluate_option(:instance, input, options)
-  end
-
   module Function
-    class CreateObject
-      def call(input, options)
-        instance_for(input, options) || class_for(input, options)
-      end
-
-    private
-      def class_for(input, options)
-        item_class = class_from(input, options) or raise DeserializeError.new(":class did not return class constant for `#{options[:binding].name}`.")
-        item_class.new
-      end
-
-      def class_from(input, options)
-        options[:binding].evaluate_option(:class, input, options) # FIXME: no additional args passed here, yet.
-      end
-
-      def instance_for(input, options)
-        Instance.(input, options)
-      end
-    end
-
     class Prepare
       def call(input, options)
         binding = options[:binding]
@@ -81,26 +57,28 @@ module Representable
     end
   end
 
-  CreateObject = Function::CreateObject.new
+  module CreateObject
+    Instance = ->(input, options) { options[:binding].evaluate_option(:instance, input, options)||
+        raise( DeserializeError.new(":instance did not return class constant for `#{options[:binding].name}`.")) }
+    Class    = ->(input, options) do
+      object_class = options[:binding].evaluate_option(:class, input, options) ||
+        raise( DeserializeError.new(":class did not return class constant for `#{options[:binding].name}`."))
+      object_class.new
+    end # FIXME: no additional args passed here, yet.
+
+    Populator = ->(*) { raise "Populator: implement me!" }
+  end
+
+  # CreateObject = Function::CreateObject.new
   Prepare      = Function::Prepare.new
   Decorate     = Function::Decorate.new
-  Deserializer =  ->(input, options) { options[:binding].evaluate_option(:deserialize, input, options) }
+  Deserializer = ->(input, options) { options[:binding].evaluate_option(:deserialize, input, options) }
 
   Deserialize  =  ->(input, args) do
     binding, fragment, options = args[:binding], args[:fragment], args[:options]
 
     # user_options:
     child_options = OptionsForNested.(options, args[:binding])
-
-    # # wrap:
-    # child_options[:wrap] = binding[:wrap] unless binding[:wrap].nil?
-
-    # # nested params:
-    # name = args[:binding].name.to_sym
-    # child_options.merge!(options[name]) if options[name]
-
-    # puts "user_options #{user_options.inspect}"
-
 
     input.send(binding.deserialize_method, fragment, child_options)
   end

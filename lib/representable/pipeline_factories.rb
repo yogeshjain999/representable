@@ -67,8 +67,15 @@ module Representable
       functions = [AssignFragment]
       functions << SkipParse if self[:skip_parse]
 
-      if typed?
-        functions << CreateObject
+      if self[:class] or self[:extend] or self[:instance] or self[:populator]
+        if self[:populator]
+          functions << CreateObject::Populator
+        elsif self[:parse_strategy]
+          functions << CreateObject::Instance # TODO: remove in 2.5.
+        else
+          functions << (self[:class] ? CreateObject::Class : CreateObject::Instance)
+        end
+
         functions << Prepare     if self[:prepare]
         functions << Decorate    if self[:extend]
         if representable?
