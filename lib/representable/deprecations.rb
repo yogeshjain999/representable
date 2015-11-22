@@ -2,7 +2,11 @@
 module Representable::Deprecation
   module NormalizeOptions
     def normalize_options(options)
-      return options unless options.any?
+
+      unless options.any?
+        options[:user_options] = {}
+        return options
+      end
 
       options      = options.dup
 
@@ -55,12 +59,12 @@ module Representable::Binding::Deprecation
   Learn more here: http://trailblazerb.org/gems/representable/upgrading-guide.html#pass-options}
 
 
+        options[:options] ||= {}
         Options.new(self, options[:options][:user_options], options[:represented], options[:decorator])
       else
         # user_options
         options[:options][:user_options] || {}
       end
-      # options[:user_options] = __options # TODO: always make this user_options in Representable 3.0.
 
       if proc.send(:proc?) or proc.send(:method?)
         arity = proc.instance_variable_get(:@value).arity if proc.send(:proc?)

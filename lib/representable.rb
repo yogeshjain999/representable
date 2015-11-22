@@ -74,9 +74,9 @@ private
   end
 
   module NormalizeOptions
-    # WARNING: will be removed in 2.5.
     def normalize_options(options)
-      options
+      return options if options.any?
+      {user_options: {}}.merge(options) # TODO: use keyword args once we drop 2.0.
     end
   end
 

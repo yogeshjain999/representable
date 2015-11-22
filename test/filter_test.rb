@@ -16,7 +16,7 @@ class FilterTest < MiniTest::Spec
 
     property :track,
       :parse_filter  => lambda { |input, options| "#{input.downcase},#{options[:doc]}" },
-      :render_filter => lambda { |val, options| "#{val.upcase},#{options[:doc]},#{options[:user_options]}" }
+      :render_filter => lambda { |val, options| "#{val.upcase},#{options[:doc]},#{options[:options][:user_options]}" }
   end
 
   # gets doc and options.

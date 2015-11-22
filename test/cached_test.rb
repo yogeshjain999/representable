@@ -14,7 +14,7 @@ class CachedTest < MiniTest::Spec
     include Representable::Hash
     feature Representable::Cached
 
-    property :title, render_filter: lambda { |input, options| "#{input}:#{options[:user_options]}" }
+    property :title, render_filter: lambda { |input, options| "#{input}:#{options[:options][:user_options]}" }
     property :composer, class: Model::Artist do
       property :name
     end
