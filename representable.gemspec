@@ -3,31 +3,33 @@ $:.unshift lib unless $:.include?(lib)
 
 require 'representable/version'
 
-Gem::Specification.new do |s|
-  s.name        = "representable"
-  s.version     = Representable::VERSION
-  s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Nick Sutterer"]
-  s.email       = ["apotonick@gmail.com"]
-  s.homepage    = "https://github.com/apotonick/representable/"
-  s.summary     = %q{Renders and parses JSON/XML/YAML documents from and to Ruby objects. Includes plain properties, collections, nesting, coercion and more.}
-  s.description = s.summary
+Gem::Specification.new do |spec|
+  spec.name        = "representable"
+  spec.version     = Representable::VERSION
+  spec.platform    = Gem::Platform::RUBY
+  spec.authors     = ["Nick Sutterer"]
+  spec.email       = ["apotonick@gmail.com"]
+  spec.homepage    = "https://github.com/apotonick/representable/"
+  spec.summary     = %q{Renders and parses JSON/XML/YAML documents from and to Ruby objects. Includes plain properties, collections, nesting, coercion and more.}
+  spec.description = spec.summary
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
-  s.license       = "MIT"
+  spec.files         = `git ls-files`.split("\n")
+  spec.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  spec.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  spec.require_paths = ["lib"]
+  spec.license       = "MIT"
 
-  s.add_dependency "uber", "~> 0.0.15"
-  s.add_dependency "declarative", "~> 0.0.5"
+  spec.required_ruby_version = '>= 1.9.3'
 
-  s.add_development_dependency "rake"
-  s.add_development_dependency "test_xml", "0.1.6"
-  s.add_development_dependency "minitest"
-  s.add_development_dependency "mongoid"
-  s.add_development_dependency "virtus"
-  s.add_development_dependency "json", '>= 1.7.7'
+  spec.add_dependency "uber", "~> 0.0.15"
+  spec.add_dependency "declarative", "~> 0.0.5"
 
-  s.add_development_dependency "ruby-prof"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "test_xml", "0.1.6"
+  spec.add_development_dependency "minitest"
+  spec.add_development_dependency "mongoid"
+  spec.add_development_dependency "virtus"
+  spec.add_development_dependency "json", '>= 1.7.7'
+
+  spec.add_development_dependency "ruby-prof"
 end
