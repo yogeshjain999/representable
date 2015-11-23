@@ -10,12 +10,11 @@ module Representable::Deprecation
 
       options      = options.dup
 
-      user_option_keys = options.keys - [:exclude, :include, :wrap, :user_options, * representable_attrs.keys.map(&:to_sym)]
+      user_option_keys = options.keys - [:doc, :exclude, :include, :wrap, :user_options, * representable_attrs.keys.map(&:to_sym)]
       if user_option_keys.any?
         user_options = {}
         warn "[Representable] Mixing user and representable options is deprecated. Please provide your options via :user_options."
         user_option_keys.each { |key| user_options[key] = options.delete(key) }
-
         options[:user_options] = user_options
       end
 
