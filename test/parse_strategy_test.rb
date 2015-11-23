@@ -208,7 +208,7 @@ class ParseStrategyFindOrInstantiateTest < BaseTest
   describe "property with dynamic :class" do
     representer!(:inject => :song_representer) do
       property :song, :parse_strategy => :find_or_instantiate, :extend => song_representer,
-        :class => lambda { |fragment, *args| fragment["class"] }
+        :class => lambda { |options| options[:fragment]["class"] }
     end
 
     let (:album) { Struct.new(:song).new.extend(representer) }
@@ -241,7 +241,7 @@ class ParseStrategyLambdaTest < MiniTest::Spec
   describe "property parse_strategy: lambda, representable: false" do
     representer! do
       property :title,
-        :instance      => lambda { |fragment, options| fragment.to_s },  # this will still call song.title= "8675309".
+        :instance      => lambda { |options| options[:fragment].to_s },  # this will still call song.title= "8675309".
         :representable => false # don't call object.from_hash
     end
 
@@ -252,7 +252,7 @@ class ParseStrategyLambdaTest < MiniTest::Spec
 
   describe "collection" do
     representer!(:inject => :song_representer) do
-      collection :songs, :parse_strategy => lambda { |fragment, i, options|
+      collection :songs, :parse_strategy => lambda { |options|
         songs << song = Song.new
         song
       }, :extend => song_representer

@@ -35,13 +35,13 @@ class RenderPipelineOptionTest < MiniTest::Spec
     end
   end
 
-  it { representer.new(Album.new).to_hash(function: NilToNA).must_equal({"id"=>"n/a"}) }
-  it { representer.new(Album.new(1)).to_hash(function: NilToNA).must_equal({"id"=>1}) }
+  it { representer.new(Album.new).to_hash(user_options: {function: NilToNA}).must_equal({"id"=>"n/a"}) }
+  it { representer.new(Album.new(1)).to_hash(user_options: {function: NilToNA}).must_equal({"id"=>1}) }
 
   it "is cached" do
     decorator = representer.new(Album.new)
-    decorator.to_hash(function: NilToNA).must_equal({"id"=>"n/a"})
-    decorator.to_hash(function: nil).must_equal({"id"=>"n/a"}) # non-sense function is not applied.
+    decorator.to_hash(user_options: {function: NilToNA}).must_equal({"id"=>"n/a"})
+    decorator.to_hash(user_options: {function: nil}).must_equal({"id"=>"n/a"}) # non-sense function is not applied.
   end
 
 end
@@ -56,12 +56,12 @@ class ParsePipelineOptionTest < MiniTest::Spec
     end
   end
 
-  it { representer.new(Album.new).from_hash({"id"=>nil}, function: NilToNA).id.must_equal "n/a" }
-  it { representer.new(Album.new(1)).to_hash(function: NilToNA).must_equal({"id"=>1}) }
+  it { representer.new(Album.new).from_hash({"id"=>nil}, user_options: {function: NilToNA}).id.must_equal "n/a" }
+  it { representer.new(Album.new(1)).to_hash(user_options: {function: NilToNA}).must_equal({"id"=>1}) }
 
   it "is cached" do
     decorator = representer.new(Album.new)
-    decorator.from_hash({"id"=>nil}, function: NilToNA).id.must_equal "n/a"
-    decorator.from_hash({"id"=>nil}, function: "nonsense").id.must_equal "n/a" # non-sense function is not applied.
+    decorator.from_hash({"id"=>nil}, user_options: {function: NilToNA}).id.must_equal "n/a"
+    decorator.from_hash({"id"=>nil}, user_options: {function: "nonsense"}).id.must_equal "n/a" # non-sense function is not applied.
   end
 end

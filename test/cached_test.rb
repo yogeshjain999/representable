@@ -41,7 +41,7 @@ class CachedTest < MiniTest::Spec
       album2 = Model::Album.new("Louder And Even More Dangerous", [song2, song])
 
       # makes sure options are passed correctly.
-      representer.to_hash(volume: 9).must_equal({"name"=>"Live And Dangerous",
+      representer.to_hash(user_options: {volume: 9}).must_equal({"name"=>"Live And Dangerous",
         "songs"=>[{"title"=>"Jailbreak:{:volume=>9}"}, {"title"=>"Southbound:{:volume=>9}"}, {"title"=>"Emerald:{:volume=>9}"}]}) # called in Deserializer/Serializer
 
       # representer becomes reusable as it is stateless.

@@ -33,11 +33,11 @@ class AsTest < MiniTest::Spec
 
     describe "lambda arguments" do
       representer! do
-        property :name, :as => lambda { |*args| args.inspect }
+        property :name, :as => lambda { |options| options[:user_options].inspect }
       end
 
-      it { render(song, :volume => 1).must_equal_document({"[{:volume=>1}]" => "Revolution"}) }
-      it { parse(song, {"[{:volume=>1}]" => "Wie Es Geht"}, :volume => 1).name.must_equal "Wie Es Geht" }
+      it { render(song, user_options:{volume: 1}).must_equal_document({"{:volume=>1}" => "Revolution"}) }
+      it { parse(song, {"{:volume=>1}" => "Wie Es Geht"}, user_options: {volume: 1}).name.must_equal "Wie Es Geht" }
     end
   end
 end

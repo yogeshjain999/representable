@@ -112,7 +112,7 @@ class LonelyRepresenterTest < MiniTest::Spec
     end
 
 
-    it { [1,2].extend(representer).to_hash(one: One, two: Two).must_equal(["One: 1", "Two: 2"]) }
+    it { [1,2].extend(representer).to_hash(user_options: {one: One, two: Two}).must_equal(["One: 1", "Two: 2"]) }
   end
 
 

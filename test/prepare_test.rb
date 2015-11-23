@@ -18,10 +18,9 @@ class PrepareTest < BaseTest
   describe "#to_hash" do # TODO: introduce :representable option?
     representer! do
       property :song,
-        :prepare       => lambda { |obj, args| args.binding[:arbitrary].new(obj) },
+        :prepare       => lambda { |options| options[:binding][:arbitrary].new(options[:input]) },
         :arbitrary     => PreparerClass,
         :extend => true,
-        :pass_options  => true,
         :representable => false # don't call #to_hash.
     end
 
@@ -47,7 +46,7 @@ class PrepareTest < BaseTest
   describe "#from_hash" do
     representer! do
       property :song,
-        :prepare       => lambda { |obj, args| args.binding[:arbitrary].new(obj) },
+        :prepare       => lambda { |options| options[:binding][:arbitrary].new(options[:input]) },
         :arbitrary     => PreparerClass,
         #:extend => true, # TODO: typed: true would be better.
         :instance => String.new, # pass_fragment

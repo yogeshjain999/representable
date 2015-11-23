@@ -72,8 +72,8 @@ module Representable
         options[:setter]       = lambda { |*args| }
         options[:pass_options] = true
         options[:instance]     = options[:collection] ?
-          lambda { |fragment, i, options| options.binding.get(represented: options.represented)[i] } :
-          lambda { |fragment, options|    options.binding.get(represented: options.represented) }
+          lambda { |options| options[:binding].get(options)[options[:index]] } :
+          lambda { |options| options[:binding].get(options) }
       end
     end
 
@@ -82,11 +82,10 @@ module Representable
     class FindOrInstantiate
       def self.apply!(name, options)
         options[:pass_options] = true
-        options[:instance]     = lambda { |fragment, *args|
-          args = args.last # TODO: don't pass i as separate block parameter but in Options.
-          object_class = args.binding[:class].evaluate(self, fragment, args)
+        options[:instance]     = lambda { |options|
+          object_class = options[:binding][:class].evaluate(self, options)
 
-          object_class.find_by({id: fragment["id"]}) or object_class.new
+          object_class.find_by({id: options[:fragment]["id"]}) or object_class.new
         }
       end
     end

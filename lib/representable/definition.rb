@@ -48,7 +48,7 @@ module Representable
       :"#{name}="
     end
 
-    def typed?
+    def typed? # TODO: remove.
       self[:class] or self[:extend] or self[:instance]
     end
 
