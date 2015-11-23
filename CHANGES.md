@@ -44,6 +44,11 @@ and it suddenly is super simple to understand
 * Removed `Binding@represented` (which was never public anyway). Use `Binding#represented`.
 * Changed signature: `Binding#get(represented:)`. In now needs a hash `{represented: ..}`.
 
+# 2.4.0.rc4
+
+* The preferred way of passing user options is now `to_hash(user_options: {})`.
+* Supports nested options for nested representers.
+
 # 2.4.0.rc3
 
 * `Set` is `SetValue`. `Get` is `GetValue`.
