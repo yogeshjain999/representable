@@ -1,5 +1,7 @@
 # 2.4.0
 
+Full migration guide here: http://trailblazer.to/gems/representable/upgrading-guide.html#to-24
+
 * Breaking API change: `:parse_filter` and `:render_filter` have no deprecation as all the other, they receive one options.
 render_filter: val, doc, options
 * `Decorator` always needs a format engine included, e.g. `Representable::JSON` to build bindings at compile-time.
