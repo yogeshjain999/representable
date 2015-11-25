@@ -24,9 +24,21 @@ module Representable::Deprecation
 end
 
 module Representable::Binding::Deprecation
+  module Build
+    def build(definition)
+      warn "[Representable] The :binding option is deprecated and will be removed in 3.0. Please use your own pipeline instead." if definition[:binding]
+      super
+    end
+  end
+
   Options = Struct.new(:binding, :user_options, :represented, :decorator)
 
   module EvaluateOption
+      def self.included(includer)
+        super
+        includer.extend(Build)
+      end
+
     def evaluate_option(name, input=nil, options={})
       return evaluate_option_with_deprecation(name, input, options, :user_options) if name==:as
       return evaluate_option_with_deprecation(name, input, options, :user_options) if name==:if

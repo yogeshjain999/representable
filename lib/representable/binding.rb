@@ -6,10 +6,13 @@ module Representable
     class FragmentNotFound
     end
 
-    def self.build(definition)
-      return definition.create_binding if definition[:binding]
-      build_for(definition)
+    module ClassDeprecatable
+      def build(definition)
+        return definition.create_binding if definition[:binding]
+        build_for(definition)
+      end
     end
+    extend ClassDeprecatable
 
     def initialize(definition)
       @definition       = definition
