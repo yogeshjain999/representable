@@ -1,5 +1,5 @@
 module Representable
-  Pipeline.class_eval do # FIXME: this doesn't define Function in Pipeline.
+  class Pipeline < Array # i hate that.
     module Function
       class Insert
         def call(arr, func, options)
@@ -32,7 +32,7 @@ module Representable
         end
       end
     end
-  end
 
-  Pipeline::Insert = Function::Insert.new
+    Insert = Pipeline::Function::Insert.new
+  end # Pipeline
 end

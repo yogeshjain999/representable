@@ -21,15 +21,14 @@ module Representable
     end
 
 
-    module Insert # TODO: explicit test.
+    module Macros # TODO: explicit test.
       # Macro to quickly modify an array of functions via Pipeline::Insert and return a
       # Pipeline instance.
       def insert(functions, new_function, options)
-        Pipeline.new(Insert.(functions, new_function, options))
-
+        Pipeline.new(Pipeline::Insert.(functions, new_function, options))
       end
     end
-    extend Insert
+    extend Macros
   end # Pipeline
 
 
