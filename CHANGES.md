@@ -46,6 +46,11 @@ and it suddenly is super simple to understand
 * Removed `Binding@represented` (which was never public anyway). Use `Binding#represented`.
 * Changed signature: `Binding#get(represented:)`. In now needs a hash `{represented: ..}`.
 
+# 2.4.0.rc5
+
+* Fix double definition of `Insert`.
+* Deprecate `:binding`.
+
 # 2.4.0.rc4
 
 * The preferred way of passing user options is now `to_hash(user_options: {})`.
