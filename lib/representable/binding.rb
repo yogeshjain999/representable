@@ -50,7 +50,7 @@ module Representable
         proc.(send(:exec_context, options), options.merge(user_options: options[:options][:user_options], input: input)) # from Uber::Options::Value. # NOTE: this can also be the Proc object if it's not wrapped by Uber:::Value.
       end
     end
-    # include EvaluateOption
+    include EvaluateOption
 
     def [](name)
       @definition[name]

@@ -1,5 +1,5 @@
 require "uber/options"
-require "representable/parse_strategies"
+require "representable/populator"
 
 module Representable
   # Created at class compile time. Keeps configuration options for one property.
@@ -88,7 +88,6 @@ module Representable
       handle_as!(options)
 
       # DISCUSS: we could call more macros here (e.g. for :nested).
-      Representable::ParseStrategy.apply!(options)
       Representable::Populator.apply!(options)
 
       yield options if block_given?

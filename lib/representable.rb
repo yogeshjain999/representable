@@ -73,11 +73,9 @@ private
     representable_attrs.collect {|definition| format.build(definition) }
   end
 
-  module NormalizeOptions
-    def normalize_options(options)
-      return options if options.any?
-      {user_options: {}}.merge(options) # TODO: use keyword args once we drop 2.0.
-    end
+  def normalize_options(options)
+    return options if options.any?
+    {user_options: {}}.merge(options) # TODO: use keyword args once we drop 2.0.
   end
 
   # Prepares options for a particular nested representer.
@@ -120,15 +118,7 @@ private
     end
   end
 
-  require "representable/deprecations"
-  def self.deprecations=(value)
-    evaluator = value==false ? Binding::EvaluateOption : Binding::Deprecation::EvaluateOption
-    ::Representable::Binding.send :include, evaluator
-
-    evaluator = value==false ? NormalizeOptions : Deprecation::NormalizeOptions
-    ::Representable.send :include, evaluator
-  end
-  self.deprecations = true # TODO: change to false in 2.5 or remove entirely.
+  # require "representable/deprecations"
 end
 
 require 'representable/autoload'
