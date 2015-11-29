@@ -289,33 +289,6 @@ property :title, parse_filter: Santizer.new
 This is enough to have the `Sanitizer` class run with all the arguments that are usually passed to the lambda (preceded by the represented object as first argument).
 
 
-## XML Support
-
-While representable does a great job with JSON, it also features support for XML, YAML and pure ruby hashes.
-
-```ruby
-require 'representable/xml'
-
-module SongRepresenter
-  include Representable::XML
-
-  property :title
-  property :track
-  collection :composers
-end
-```
-
-For XML we just include the `Representable::XML` module.
-
-```xml
-Song.new(title: "Fallout", composers: ["Stewart Copeland", "Sting"]).
-     extend(SongRepresenter).to_xml #=>
-<song>
-    <title>Fallout</title>
-    <composers>Stewart Copeland</composers>
-    <composers>Sting</composers>
-</song>
-```
 
 
 
@@ -413,94 +386,6 @@ song.extend(SongRepresenter).to_yaml
 title: Fallout
 composers: [Stewart Copeland, Sting]
 ```
-
-## More on XML
-
-### Mapping Tag Attributes
-
-You can also map properties to tag attributes in representable. This works only for the top-level node, though (seen from the representer's perspective).
-
-```ruby
-module SongRepresenter
-  include Representable::XML
-
-  property :title, attribute: true
-  property :track, attribute: true
-end
-
-Song.new(title: "American Idle").to_xml
-#=> <song title="American Idle" />
-```
-
-Naturally, this works for both ways.
-
-
-### Mapping Content
-
-The same concept can also be applied to content. If you need to map a property to the top-level node's content, use the `:content` option. Again, _top-level_ refers to the document fragment that maps to the representer.
-
-```ruby
-module SongRepresenter
-  include Representable::XML
-
-  property :title, content: true
-end
-
-Song.new(title: "American Idle").to_xml
-#=> <song>American Idle</song>
-```
-
-
-### Wrapping Collections
-
-It is sometimes unavoidable to wrap tag lists in a container tag.
-
-```ruby
-module AlbumRepresenter
-  include Representable::XML
-
-  collection :songs, :as => :song, :wrap => :songs
-end
-```
-
-Note that `:wrap` defines the container tag name.
-
-```xml
-Album.new.to_xml #=>
-<album>
-    <songs>
-        <song>Laundry Basket</song>
-        <song>Two Kevins</song>
-        <song>Wright and Rong</song>
-    </songs>
-</album>
-```
-
-### Namespaces
-
-Support for namespaces are not yet implemented. However, if an incoming parsed document contains namespaces, you can automatically remove them.
-
-```ruby
-module AlbumRepresenter
-  include Representable::XML
-
-  remove_namespaces!
-```
-
-## Avoiding Modules
-
-There's been a rough discussion whether or not to use `extend` in Ruby. If you want to save that particular step when representing objects, define the representers right in your classes.
-
-```ruby
-class Song < OpenStruct
-  include Representable::JSON
-
-  property :name
-end
-```
-
-I do not recommend this approach as it bloats your domain classes with representation logic that is barely needed elsewhere. Use [decorators](#decorator-vs-extend) instead.
-
 
 
 ### Read/Write Restrictions
