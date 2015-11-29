@@ -1,19 +1,6 @@
 require 'test_helper'
 require 'benchmark'
 
-Kernel.class_eval do
-  # def respond_to_missing?
-  #   raise
-  # end
-#   alias_method :orig_hash, :hash
-#   def hash
-#     puts "hash in #{self.class}"
-#     raise self.inspect if self.class == Symbol
-#     orig_hash
-#   end
-end
-Representable.deprecations = false
-
 SONG_PROPERTIES = 50.times.collect do |i|
   "song_property_#{i}"
 end
