@@ -1,3 +1,9 @@
+# 2.5.0
+
+* Removed deprecations from 2.4.
+* Removed `:parse_strategy` in favor of `:populator`.
+* Removed `:binding` in favor of your own pipeline.
+
 # 2.4.0
 
 Full migration guide here: http://trailblazer.to/gems/representable/upgrading-guide.html#to-24
@@ -8,33 +14,6 @@ render_filter: val, doc, options
 * Removed `Representable::Apply`. This is now done via `Schema`.
 representer_class.representable_attrs is definitions
 * Removed `:use_decorator` option. Use a decorator instead.
-
-TODO: DEPRECATE 4-args? also, allow options[:fragment] instead of options[:result] ?
-
-
-TODO: :representable should be removing Deserialize.
-       deprecate Coercion, it sucks
-       deprecate parse/render filter
-
-pipeline
-less ifs, instead: simply remove the "middleware"
-read_fragment
-  represented.set instance.prepare.from_json
-Populator.(fragment)
-  not_found?.default.deserialize.parse_filter.set
-Deserializer.(fragment)
-   instance.class.prepare.deserialize=from_json
-
-OverwriteOnNil vs. StopOnNil
-[Instance, ->(){..}, Bla]
-
-did you ever overwrite #create_object in a binding? you can now simply pass a callable object into the pipeline.
-TODO: deprecate parse strategies in favour of :populator (analogue to Reform)
-
-elegant, easier to understand, and extend
-you know, the whole deserialize stack (same for rendering): you pass in the json, it finds the fragments for each property, passes it to  the binding, the binding deserializes, builds/finds a model, assigns values to it, and so on
-you can partially hook in with :instance or :deserialize or :parse_filter, but it's really awkward. i am now changing the architecture to a pipeline, where you plug in the features you want (e.g. "do not call :prepare, :instance, :class, etc. but run my own :populator")
-and it suddenly is super simple to understand
 
 * Added `Representable.deprecations = false` to disable slow and weird deprecation code.
 
