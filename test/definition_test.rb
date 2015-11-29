@@ -43,13 +43,6 @@ class DefinitionTest < MiniTest::Spec
     # override original when passed in #merge!.
     it { definition.merge!({:whatever => false})[:whatever].must_equal false }
 
-
-    it "runs macros" do
-      definition[:setter].must_equal nil
-      definition.merge!(:parse_strategy => :sync)
-      definition[:setter].must_respond_to :evaluate
-    end
-
     # with block
     it do
       definition = Definition.new(:song, :extend => Module).merge!({:something => true}) do |options|

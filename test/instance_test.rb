@@ -244,23 +244,4 @@ class InstanceTest < BaseTest
       songs.object_id.wont_equal album.songs.object_id
     }
   end
-
-
-  describe "new syntax for instance: true" do
-    representer!(:inject => :song_representer) do
-      property :song, :pass_options => true,
-        :extend => song_representer, :instance => lambda { |options| options[:binding].get(represented: options[:represented]) }
-    end
-
-    it "uses Binding#get instead of creating an instance, but deprecates" do
-      album= Struct.new(:song).new(song = Song.new(1, "The Answer Is Still No"))
-
-      album.
-        extend(representer).
-        from_hash("song" => {"title" => "Invincible"}).
-        song.must_equal Song.new(1, "Invincible")
-
-      album.song.object_id.must_equal song.object_id
-    end
-  end
 end
