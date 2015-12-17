@@ -1,3 +1,7 @@
+# 2.4.1
+
+* No need to use Uber::Callable in Pipeline as this object is always invoked via `#call`.
+
 # 2.4.0
 
 Full migration guide here: http://trailblazer.to/gems/representable/upgrading-guide.html#to-24
