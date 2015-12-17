@@ -206,51 +206,6 @@ module AlbumRepresenter
 ```
 
 
-## Representing Singular Models And Collections
-
-You can explicitly define representers for collections of models using a ["Lonely Collection"](#lonely-collections). Or you can let representable  do that for you.
-
-Rendering a collection of objects comes for free, using `::for_collection`.
-
-```ruby
-  Song.all.extend(SongRepresenter.for_collection).to_hash
-  #=> [{title: "Sevens"}, {title: "Eric"}]
-```
-
-For parsing, you need to provide the class constant to which the items should be deserialized to.
-
-```ruby
-module SongRepresenter
-  include Representable::Hash
-  property :title
-
-  collection_representer class: Song
-end
-```
-
-You can now parse collections to `Song` instances.
-
-```ruby
-[].extend(SongRepresenter.for_collection).from_hash([{title: "Sevens"}, {title: "Eric"}])
-```
-
-As always, this works for decorators _and_ modules.
-
-In case you don't want to know whether or not you're working with a collection or singular model, use `::represent`.
-
-```ruby
-# singular
-SongRepresenter.represent(Song.find(1)).to_hash #=> {title: "Sevens"}
-
-# collection
-SongRepresenter.represent(Song.all).to_hash #=> [{title: "Sevens"}, {title: "Eric"}]
-```
-
-As you can see, `::represent` figures out the correct representer for you (works also for parsing!).
-
-Note: the implicit collection representer internally is implemented using a lonely collection. Everything you pass to `::collection_representer` is simply provided to the `::items` call in the lonely collection. That allows you to use `:parse_strategy` and all the other goodies, too.
-
-
 ### Methods In Decorators
 
 When adding a method to a decorator, representable will still invoke accessors on the represented instance - unless you tell it the scope.
@@ -289,103 +244,6 @@ property :title, parse_filter: Santizer.new
 This is enough to have the `Sanitizer` class run with all the arguments that are usually passed to the lambda (preceded by the represented object as first argument).
 
 
-
-
-
-## Hashes
-
-As an addition to single properties and collections representable also offers to represent hash attributes.
-
-```ruby
-module SongRepresenter
-  include Representable::JSON
-
-  property :title
-  hash :ratings
-end
-
-Song.new(title: "Bliss", ratings: {"Rolling Stone" => 4.9, "FryZine" => 4.5}).
-extend(SongRepresenter).to_json
-
-#=> {"title":"Bliss","ratings":{"Rolling Stone":4.9,"FryZine":4.5}}
-```
-
-## Lonely Hashes
-
-Need to represent a bare hash without any container? Use the `JSON::Hash` representer (or XML::Hash).
-
-```ruby
-require 'representable/json/hash'
-
-module FavoriteSongsRepresenter
-  include Representable::JSON::Hash
-end
-
-{"Nick" => "Hyper Music", "El" => "Blown In The Wind"}.extend(FavoriteSongsRepresenter).to_json
-#=> {"Nick":"Hyper Music","El":"Blown In The Wind"}
-```
-
-Works both ways. The values are configurable and might be self-representing objects in turn. Tell the `Hash` by using `#values`.
-
-```ruby
-module FavoriteSongsRepresenter
-  include Representable::JSON::Hash
-
-  values extend: SongRepresenter, class: Song
-end
-
-{"Nick" => Song.new(title: "Hyper Music")}.extend(FavoriteSongsRepresenter).to_json
-```
-
-In XML, if you want to store hash attributes in tag attributes instead of dedicated nodes, use `XML::AttributeHash`.
-
-## Lonely Collections
-
-Same goes with arrays.
-
-```ruby
-require 'representable/json/collection'
-
-module SongsRepresenter
-  include Representable::JSON::Collection
-
-  items extend: SongRepresenter, class: Song
-end
-```
-
-The `#items` method lets you configure the contained entity representing here.
-
-```ruby
-[Song.new(title: "Hyper Music"), Song.new(title: "Screenager")].extend(SongsRepresenter.for_collection).to_json
-#=> [{"title":"Hyper Music"},{"title":"Screenager"}]
-```
-
-Note that this also works for XML.
-
-
-## YAML Support
-
-Representable also comes with a YAML representer.
-
-```ruby
-module SongRepresenter
-  include Representable::YAML
-
-  property :title
-  property :track
-  collection :composers, :style => :flow
-end
-```
-
-A nice feature is that `#collection` also accepts a `:style` option which helps having nicely formatted inline (or "flow") arrays in your YAML - if you want that!
-
-```ruby
-song.extend(SongRepresenter).to_yaml
-#=>
----
-title: Fallout
-composers: [Stewart Copeland, Sting]
-```
 
 
 ### Read/Write Restrictions
@@ -451,19 +309,6 @@ This will run the entire serialization/deserialization _without_ calling the act
 Extremely helpful if you wanna use representable as a data mapping tool with filtering, aliasing, etc., without the rendering and parsing part.
 
 
-### Decorator In Module
-
-Inline representers defined in a module can be implemented as a decorator, thus wrapping the represented object without pollution.
-
-```ruby
-property :song, use_decorator: true do
-  property :title
-end
-```
-
-This is an implementation detail most people shouldn't worry about.
-
-
 ## Symbol Keys vs. String Keys
 
 When parsing representable reads properties from hashes by using their string keys.
@@ -483,31 +328,6 @@ end
 ```
 
 This will give you a behavior close to Rails' `HashWithIndifferentAccess` by stringifying the incoming hash internally.
-
-
-## Debugging
-
-Representable is a generic mapper using recursions and things that might be hard to understand from the outside. That's why we got the `Debug` module which will give helpful output about what it's doing when parsing or rendering.
-
-You can extend objects on the run to see what they're doing.
-
-```ruby
-song.extend(SongRepresenter).extend(Representable::Debug).from_json("..")
-song.extend(SongRepresenter).extend(Representable::Debug).to_json
-```
-
-`Debug` can also be included statically into your representer or decorator.
-
-```ruby
-class SongRepresenter < Representable::Decorator
-  include Representable::JSON
-  include Representable::Debug
-
-  property :title
-end
-```
-
-It's probably a good idea not to do this in production.
 
 
 ## Copyright
