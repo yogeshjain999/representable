@@ -1,4 +1,4 @@
-# 2.5.0
+# 3.0.0
 
 * Removed deprecations from 2.4.
 * Removed `:parse_strategy` in favor of `:populator`.
