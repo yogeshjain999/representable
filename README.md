@@ -12,30 +12,9 @@ In other words: Take an object and decorate it with a representer module. This w
 Representable is helpful for all kind of mappings, rendering and parsing workflows. However, it is mostly useful in API code. Are you planning to write a real REST API with representable? Then check out the [Roar](http://github.com/apotonick/roar) gem first, save work and time and make the world a better place instead.
 
 
-## Installation
+## Full Documentation
 
-The representable gem runs with all Ruby versions >= 1.9.3.
-
-```ruby
-gem 'representable'
-```
-
-### Dependencies
-
-Representable does a great job with JSON, it also features support for XML, YAML and pure ruby
-hashes. But Representable did not bundle dependencies for JSON and XML.
-
-If you want to use JSON, add the following to your Gemfile:
-
-```ruby
-gem 'multi_json'
-```
-
-If you want to use XML, add the following to your Gemfile:
-
-```ruby
-gem 'nokogiri'
-```
+Representable comes with a rich set of options and semantics for parsing and rendering documents. Its [full documentation](http://trailblazer.to/gems/representable/3.0/api.html) can be found on the Trailblazer site.
 
 ## Example
 
@@ -50,12 +29,14 @@ song = Song.new(title: "Fallout", track: 1)
 
 ## Defining Representations
 
-Representations are defined using representer modules.
+Representations are defined using representer classes, called _decorator, or modules.
+
+In these examples, let's use decorators
 
 ```ruby
 require 'representable/json'
 
-module SongRepresenter
+class SongRepresenter < Representable::Decorator
   include Representable::JSON
 
   property :title
@@ -71,7 +52,7 @@ In the representer the #property method allows declaring represented attributes 
 Mixing in the representer into the object adds a rendering method.
 
 ```ruby
-song.extend(SongRepresenter).to_json
+SongRepresenter.new(song).to_json
 #=> {"title":"Fallout","track":1}
 ```
 
@@ -80,17 +61,11 @@ song.extend(SongRepresenter).to_json
 It also adds support for parsing.
 
 ```ruby
-song = Song.new.extend(SongRepresenter).from_json(%{ {"title":"Roxanne"} })
+song = SongRepresenter.new(song).from_json(%{ {"title":"Roxanne"} })
 #=> #<Song title="Roxanne", track=nil>
 ```
 
-Note that parsing hashes per default does [require string keys](#symbol-keys-vs-string-keys) and does _not_ pick up symbol keys.
-
-## Extend vs. Decorator
-
-If you don't want representer modules to be mixed into your objects (using `#extend`) you can use the `Decorator` strategy [described below](#decorator-vs-extend). Decorating instead of extending was introduced in 1.4.
-
-
+Note that parsing hashes per default does [require string keys](http://trailblazer.to/gems/representable/3.0/api.html#symbol-keys) and does _not_ pick up symbol keys.
 
 
 ## Collections
@@ -98,7 +73,7 @@ If you don't want representer modules to be mixed into your objects (using `#ext
 Let's add a list of composers to the song representation.
 
 ```ruby
-module SongRepresenter
+class SongRepresenter < Representable::Decorator
   include Representable::JSON
 
   property :title
@@ -133,52 +108,20 @@ album = Album.new(name: "The Police", songs: [song, Song.new(title: "Synchronici
 Here comes the representer that defines the composition.
 
 ```ruby
-module AlbumRepresenter
+class AlbumRepresenter < Representable::Decorator
   include Representable::JSON
 
   property :name
-  collection :songs, extend: SongRepresenter, class: Song
+  collection :songs, decorator: SongRepresenter, class: Song
 end
 ```
-
-## Suppressing Nested Wraps
-
-When reusing a representer for a nested document, you might want to suppress the wrap for the nested fragment.
-
-```ruby
-module SongRepresenter
-  include Representable::JSON
-
-  self.representation_wrap = :songs
-  property :title
-end
-```
-
-When reusing `SongRepresenter` in a nested setup you can suppress the wrapping using the `:wrap` option.
-
-```ruby
-module AlbumRepresenter
-  include Representable::JSON
-
-  collection :songs, extend: SongRepresenter, wrap: false
-end
-```
-
-The `representation_wrap` from the nested representer now won't be rendered and parsed.
-
-```ruby
-album.extend(AlbumRepresenter).to_json #=> "{\"songs\": [{\"name\": \"Roxanne\"}]}"
-```
-
-Note that this only works for JSON and Hash at the moment.
-
 
 ## Inline Representers
 
 If you don't want to maintain two separate modules when nesting representations you can define the `SongRepresenter` inline.
 
 ```ruby
-module AlbumRepresenter
+class AlbumRepresenter < Representable::Decorator
   include Representable::JSON
 
   property :name
@@ -189,152 +132,44 @@ module AlbumRepresenter
     collection :composers
   end
 ```
-## Feature
 
-If you need to include modules in all inline representers automatically, register it as a feature.
+## More
 
-```ruby
-module AlbumRepresenter
-  include Representable::JSON
-  feature Link # imports ::link
+Representable has many more features and can literally parse and render any kind of document to an arbitrary Ruby object graph.
 
-  link "/album/1"
-
-  property :hit do
-    link "/hit/1" # link method imported automatically.
-  end
-```
+Please check the [official documentation for more](http://trailblazer.to/gems/representable/).
 
 
-### Methods In Decorators
+## Installation
 
-When adding a method to a decorator, representable will still invoke accessors on the represented instance - unless you tell it the scope.
+The representable gem runs with all Ruby versions >= 1.9.3.
 
 ```ruby
-class SongRepresenter < Representable::Decorator
-  property :title, exec_context: :decorator
-
-  def title
-    represented.name
-  end
-end
+gem 'representable'
 ```
 
+### Dependencies
 
-## Callable Options
+Representable does a great job with JSON, it also features support for XML, YAML and pure ruby
+hashes. But Representable did not bundle dependencies for JSON and XML.
 
-While lambdas are one option for dynamic options, you might also pass a "callable" object to a directive.
+If you want to use JSON, add the following to your Gemfile:
 
 ```ruby
-class Sanitizer
-  include Uber::Callable
-
-  def call(represented, fragment, doc, *args)
-    fragment.sanitize
-  end
-end
+gem 'multi_json'
 ```
 
-Note how including `Uber::Callable` marks instances of this class as callable. No `respond_to?` or other magic takes place here.
+If you want to use XML, add the following to your Gemfile:
 
 ```ruby
-property :title, parse_filter: Santizer.new
+gem 'nokogiri'
 ```
-
-This is enough to have the `Sanitizer` class run with all the arguments that are usually passed to the lambda (preceded by the represented object as first argument).
-
-
-
-
-### Read/Write Restrictions
-
-Using the `:readable` and `:writeable` options access to properties can be restricted.
-
-```ruby
-property :title, :readable => false
-```
-
-This will leave out the `title` property in the rendered document. Vice-versa, `:writeable` will skip the property when parsing and does not assign it.
-
-
-
-
-## Coercion
-
-If you fancy coercion when parsing a document you can use the Coercion module which uses [virtus](https://github.com/solnic/virtus) for type conversion.
-
-Include virtus in your Gemfile, first. Be sure to include virtus 0.5.0 or greater.
-
-```ruby
-gem 'virtus', ">= 0.5.0"
-```
-
-Use the `:type` option to specify the conversion target. Note that `:default` still works.
-
-```ruby
-module SongRepresenter
-  include Representable::JSON
-  include Representable::Coercion
-
-  property :title
-  property :recorded_at, :type => DateTime, :default => "May 12th, 2012"
-end
-```
-
-In a decorator it works alike.
-
-```ruby
-class SongRepresenter < Representable::Decorator
-  include Representable::JSON
-  include Representable::Coercion
-
-  property :recorded_at, :type => DateTime
-end
-```
-
-Coercing values only happens when rendering or parsing a document. Representable does not create accessors in your model as `virtus` does.
-
-
-
-### Skipping Rendering Or Parsing
-
-You can skip to call to `#to_hash`/`#from_hash` on the prepared object by using `:representable`.
-
-```ruby
-property :song, :representable => false
-```
-
-This will run the entire serialization/deserialization _without_ calling the actual representing method on the object.
-
-Extremely helpful if you wanna use representable as a data mapping tool with filtering, aliasing, etc., without the rendering and parsing part.
-
-
-## Symbol Keys vs. String Keys
-
-When parsing representable reads properties from hashes by using their string keys.
-
-```ruby
-song.from_hash("title" => "Road To Never")
-```
-
-To allow symbol keys also include the `AllowSymbols` module.
-
-```ruby
-module SongRepresenter
-  include Representable::Hash
-  include Representable::Hash::AllowSymbols
-  # ..
-end
-```
-
-This will give you a behavior close to Rails' `HashWithIndifferentAccess` by stringifying the incoming hash internally.
-
 
 ## Copyright
 
-Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his inspiring work.
+Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his extremely inspiring work.
 
-* Copyright (c) 2011-2015 Nick Sutterer <apotonick@gmail.com>
+* Copyright (c) 2011-2016 Nick Sutterer <apotonick@gmail.com>
 * ROXML is Copyright (c) 2004-2009 Ben Woosley, Zak Mandhro and Anders Engstrom.
 
 Representable is released under the [MIT License](http://www.opensource.org/licenses/MIT).
