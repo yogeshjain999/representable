@@ -36,7 +36,7 @@ class SkipParseTest < MiniTest::Spec
     song.from_hash({
       "title"    => "skip me",
       "band"     => {},
-      "airplays" => [{"station" => "JJJ"}, {}],
+      "airplays" => [{}, {"station" => "JJJ"}, {}],
     }, user_options: { skip?: true })
 
     song.title.must_equal nil
