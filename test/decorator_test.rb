@@ -12,8 +12,17 @@ class DecoratorTest < MiniTest::Spec
     collection :songs, :class => Song, :extend => SongRepresentation
   end
 
+  class RatingRepresentation < Representable::Decorator
+    include Representable::JSON
+
+    property :system
+    property :value
+  end
+
   let (:song) { Song.new("Mama, I'm Coming Home") }
   let (:album) { Album.new([song]) }
+
+  let (:rating) { OpenStruct.new(system: 'MPAA', value: 'R') }
 
   describe "inheritance" do
     let (:inherited_decorator) do
@@ -27,12 +36,16 @@ class DecoratorTest < MiniTest::Spec
 
   let (:decorator) { AlbumRepresentation.new(album) }
 
+  let(:rating_decorator) { RatingRepresentation.new(rating) }
+
   it "renders" do
     decorator.to_hash.must_equal({"songs"=>[{"name"=>"Mama, I'm Coming Home"}]})
     album.wont_respond_to :to_hash
     song.wont_respond_to :to_hash # DISCUSS: weak test, how to assert blank slate?
     # no @representable_attrs in decorated objects
     song.instance_variable_get(:@representable_attrs).must_equal nil
+
+    rating_decorator.to_hash.must_equal({"system" => "MPAA", "value" => "R"})
   end
 
   describe "#from_hash" do
