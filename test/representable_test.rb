@@ -76,8 +76,6 @@ class RepresentableTest < MiniTest::Spec
     end
 
     it "allows mixing in multiple representers" do
-      require 'representable/json'
-      require 'representable/xml'
       class Bodyjar
         include Representable::XML
         include Representable::JSON
