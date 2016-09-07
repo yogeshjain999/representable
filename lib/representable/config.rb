@@ -20,7 +20,7 @@ module Representable
 
     # Computes the wrap string or returns false.
     def wrap_for(represented, *args, &block)
-      return unless @wrap
+      return if !defined?(@wrap) || @wrap.nil?
 
       value = @wrap.evaluate(represented, *args)
 
