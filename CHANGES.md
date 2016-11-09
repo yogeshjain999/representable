@@ -1,3 +1,7 @@
+# 3.0.1
+
+* Loosen `uber` dependency.
+
 # 3.0.0
 
 * Removed deprecations from 2.4.
