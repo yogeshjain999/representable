@@ -5,6 +5,11 @@ module Representable
   # Overwrite definition_class if you need a custom Definition object (helpful when using
   # representable in other gems).
   class Config < ::Declarative::Definitions
+    def initialize(*)
+      super
+      @wrap = nil
+    end
+
     def remove(name)
       delete(name.to_s)
     end
