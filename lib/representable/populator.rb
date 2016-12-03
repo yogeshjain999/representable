@@ -21,7 +21,7 @@ module Representable
     def self.apply!(options)
       return unless populator = options[:populator]
 
-      options[:parse_pipeline] = ->(input, options) do
+      options[:parse_pipeline] = ->(input, opts) do
         pipeline = Pipeline[*parse_functions] # TODO: AssignFragment
         pipeline = Pipeline::Insert.(pipeline, SetValue, delete: true) # remove the setter function.
         pipeline = Pipeline::Insert.(pipeline, populator, replace: CreateObject::Populator) # let the actual populator do the job.
