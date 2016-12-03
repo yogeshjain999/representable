@@ -1,11 +1,7 @@
 require 'representable'
 
-require "json"
 require "psych"
 
-require 'representable/json'
-require 'representable/xml'
-require 'representable/yaml'
 require 'minitest/autorun'
 require 'test_xml/mini_test'
 

@@ -35,8 +35,6 @@ Representations are defined using representer classes, called _decorator, or mod
 In these examples, let's use decorators
 
 ```ruby
-require 'representable/json'
-
 class SongRepresenter < Representable::Decorator
   include Representable::JSON
 

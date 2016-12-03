@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'representable/xml'
 
 
 class XmlPublicMethodsTest < Minitest::Spec
