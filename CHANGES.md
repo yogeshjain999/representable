@@ -1,6 +1,8 @@
 # 3.0.2
 
 * Initialize `Config@wrap` to avoid Ruby's warning.
+* Add `#render` and `#parse` alias methods to all format modules as a generic entry point.
+* In `GetValue`, use `public_send` now.
 
 # 3.0.1
 
