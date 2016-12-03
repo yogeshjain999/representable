@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "virtus"
   spec.add_development_dependency "ruby-prof"
+  spec.add_development_dependency "json"
 end
