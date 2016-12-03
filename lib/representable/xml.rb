@@ -56,6 +56,9 @@ module Representable
       to_node(*args).to_s
     end
 
+    alias_method :render, :to_xml
+    alias_method :parse, :from_xml
+
   private
     def remove_namespaces?
       # TODO: make local Config easily extendable so you get Config#remove_ns? etc.

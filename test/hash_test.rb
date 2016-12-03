@@ -1,5 +1,27 @@
 require 'test_helper'
 
+class HashPublicMethodsTest < Minitest::Spec
+  #---
+  # from_hash
+  class BandRepresenter < Representable::Decorator
+    include Representable::Hash
+    property :id
+    property :name
+  end
+
+  let (:data) { {"id"=>1,"name"=>"Rancid"} }
+
+  it { BandRepresenter.new(Band.new).from_hash(data)[:id, :name].must_equal [1, "Rancid"] }
+  it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal [1, "Rancid"] }
+
+  #---
+  # to_hash
+  let (:band) { Band.new(1, "Rancid") }
+
+  it { BandRepresenter.new(band).to_hash.must_equal data }
+  it { BandRepresenter.new(band).render.must_equal data }
+end
+
 class HashWithScalarPropertyTest < MiniTest::Spec
   Album = Struct.new(:title)
 

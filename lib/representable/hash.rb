@@ -39,6 +39,9 @@ module Representable
       {wrap => hash}
     end
 
+    alias_method :render, :to_hash
+    alias_method :parse, :from_hash
+
   private
     def filter_wrap(data, options)
       return data if options[:wrap] == false

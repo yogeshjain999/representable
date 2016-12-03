@@ -1,5 +1,30 @@
 require 'test_helper'
 
+class YamlPublicMethodsTest < Minitest::Spec
+  #---
+  # from_yaml
+  class BandRepresenter < Representable::Decorator
+    include Representable::YAML
+    property :id
+    property :name
+  end
+
+  let (:data) { %{---
+id: 1
+name: Rancid
+} }
+
+  it { BandRepresenter.new(Band.new).from_yaml(data)[:id, :name].must_equal [1, "Rancid"] }
+  it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal [1, "Rancid"] }
+
+  #---
+  # to_yaml
+  let (:band) { Band.new("1", "Rancid") }
+
+  it { BandRepresenter.new(band).to_yaml.must_equal data }
+  it { BandRepresenter.new(band).render.must_equal data }
+end
+
 class YamlTest < MiniTest::Spec
   def self.yaml_representer(&block)
     Module.new do

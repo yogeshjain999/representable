@@ -133,3 +133,9 @@ class BaseTest < MiniTest::Spec
   let (:song_representer) { Module.new do include Representable::Hash; property :title end  }
 
 end
+
+Band = Struct.new(:id, :name) do
+  def [](*attrs)
+    attrs.collect { |attr| send(attr) }
+  end
+end

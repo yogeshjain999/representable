@@ -1,3 +1,7 @@
+# 3.0.2
+
+* Initialize `Config@wrap` to avoid Ruby's warning.
+
 # 3.0.1
 
 * Loosen `uber` dependency.

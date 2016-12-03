@@ -1,22 +1,42 @@
 require 'test_helper'
 require 'representable/xml'
 
-class Band
-  include Representable::XML
-  property :name
-  attr_accessor :name
 
-  def initialize(name=nil)
-    name and self.name = name
+class XmlPublicMethodsTest < Minitest::Spec
+  #---
+  # from_hash
+  class BandRepresenter < Representable::Decorator
+    include Representable::XML
+    property :id
+    property :name
   end
-end
 
-class Album
-  attr_accessor :songs
-end
+  let (:data) { %{<data><id>1</id><name>Rancid</name></data>} }
 
+  it { BandRepresenter.new(Band.new).from_xml(data)[:id, :name].must_equal ["1", "Rancid"] }
+  it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal ["1", "Rancid"] }
+
+  #---
+  # to_hash
+  let (:band) { Band.new("1", "Rancid") }
+
+  it { BandRepresenter.new(band).to_xml.must_equal_xml data }
+  it { BandRepresenter.new(band).render.must_equal_xml data }
+end
 
 class XmlTest < MiniTest::Spec
+
+  class Band
+    include Representable::XML
+    property :name
+    attr_accessor :name
+
+    def initialize(name=nil)
+      name and self.name = name
+    end
+  end
+
+
   XML = Representable::XML
   Def = Representable::Definition
 
@@ -156,7 +176,8 @@ class XmlTest < MiniTest::Spec
       end
 
       it "extends contained models when serializing" do
-        @album = Album.new([Song.new("I Hate My Brain"), mr=Song.new("Mr. Charisma")], mr)
+        @album = Album.new(
+          [Song.new("I Hate My Brain"), mr=Song.new("Mr. Charisma")], mr)
         @album.extend(AlbumRepresenter)
 
         assert_xml_equal "<album>
@@ -222,6 +243,16 @@ class CDataBand
 end
 
 class TypedPropertyTest < MiniTest::Spec
+  class Band
+    include Representable::XML
+    property :name
+    attr_accessor :name
+
+    def initialize(name=nil)
+      name and self.name = name
+    end
+  end
+
   module AlbumRepresenter
     include Representable::XML
     property :band, :class => Band
@@ -288,6 +319,17 @@ end
 
 
 class CollectionTest < MiniTest::Spec
+  class Band
+    include Representable::XML
+    property :name
+    attr_accessor :name
+
+    def initialize(name=nil)
+      name and self.name = name
+    end
+  end
+
+
   describe ":class => Band, :as => :band, :collection => true" do
     class Compilation
       include Representable::XML

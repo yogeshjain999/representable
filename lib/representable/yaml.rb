@@ -38,5 +38,8 @@ module Representable
       doc.children << to_ast(*args)
       stream.to_yaml
     end
+
+     alias_method :render, :to_yaml
+    alias_method :parse, :from_yaml
   end
 end

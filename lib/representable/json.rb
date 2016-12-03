@@ -43,5 +43,8 @@ module Representable
     def to_json(*args)
       MultiJson.dump to_hash(*args)
     end
+
+    alias_method :render, :to_json
+    alias_method :parse, :from_json
   end
 end

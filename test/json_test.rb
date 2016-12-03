@@ -1,9 +1,32 @@
 require 'test_helper'
 
 module JsonTest
+class JSONPublicMethodsTest < Minitest::Spec
+  #---
+  # from_json
+  class BandRepresenter < Representable::Decorator
+    include Representable::JSON
+    property :id
+    property :name
+  end
+
+  let (:json) { '{"id":1,"name":"Rancid"}' }
+
+  it { BandRepresenter.new(Band.new).from_json(json)[:id, :name].must_equal [1, "Rancid"] }
+  it { BandRepresenter.new(Band.new).parse(json)[:id, :name].must_equal [1, "Rancid"] }
+
+  #---
+  # to_json
+  let (:band) { Band.new(1, "Rancid") }
+
+  it { BandRepresenter.new(band).to_json.must_equal json }
+  it { BandRepresenter.new(band).render.must_equal json }
+end
+
   class APITest < MiniTest::Spec
     Json = Representable::JSON
     Def = Representable::Definition
+
 
     describe "JSON module" do
       before do
