@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'json'
 
 module JsonTest
 class JSONPublicMethodsTest < Minitest::Spec
