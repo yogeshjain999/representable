@@ -1,3 +1,4 @@
+require 'psych'
 require 'representable/hash'
 require 'representable/yaml/binding'
 
