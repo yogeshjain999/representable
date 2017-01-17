@@ -1,7 +1,5 @@
 require 'representable'
 
-require "psych"
-
 require 'minitest/autorun'
 require 'test_xml/mini_test'
 
