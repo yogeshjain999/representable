@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
-  gem "nokogiri", require: false
+  gem 'nokogiri', '~> 1.6.8', require: false
   gem "multi_json", require: false
   gem "minitest-line"
 end
