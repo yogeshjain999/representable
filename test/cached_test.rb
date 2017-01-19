@@ -1,5 +1,4 @@
 require "test_helper"
-require 'ruby-prof'
 
 class CachedTest < MiniTest::Spec
   # TODO: also test with feature(Cached)
