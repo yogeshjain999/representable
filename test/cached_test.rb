@@ -1,5 +1,28 @@
 require "test_helper"
-require 'ruby-prof'
+
+class Profiler
+  def self.profile(&block)
+    case RUBY_ENGINE
+    when "ruby"
+      require 'ruby-prof'
+
+      output = StringIO.new
+      profile_result = RubyProf.profile(&block)
+      printer = RubyProf::FlatPrinter.new(profile_result)
+      printer.print(output)
+      output.string
+    when "jruby"
+      require 'jruby/profiler'
+
+      output_stream  = java.io.ByteArrayOutputStream.new
+      print_stream   = java.io.PrintStream.new(output_stream)
+      profile_result = JRuby::Profiler.profile(&block)
+      printer = JRuby::Profiler::FlatProfilePrinter.new(profile_result)
+      printer.printProfile(print_stream)
+      output_stream.toString
+    end
+  end
+end
 
 class CachedTest < MiniTest::Spec
   # TODO: also test with feature(Cached)
@@ -55,28 +78,23 @@ class CachedTest < MiniTest::Spec
     it do
       representer.to_hash
 
-     RubyProf.start
-        representer.to_hash
-      res = RubyProf.stop
-
-      printer = RubyProf::FlatPrinter.new(res)
-
-      data = StringIO.new
-      printer.print(data)
-      data = data.string
-
-      printer.print(STDOUT)
+      data = Profiler.profile { representer.to_hash }
 
       # 3 songs get decorated.
-      data.must_match "3   Representable::Function::Decorate#call"
+      data.must_match /3\s*Representable::Function::Decorate#call/m
+      # These weird Regexp bellow are a quick workaround to accomodate
+      # the different profiler result formats.
+      #   - "3   <Class::Representable::Decorator>#prepare" -> At MRI Ruby
+      #   - "3  Representable::Decorator.prepare"           -> At JRuby
+
       # 3 nested decorator is instantiated for 3 Songs, though.
-      data.must_match "3   <Class::Representable::Decorator>#prepare"
+      data.must_match /3\s*(<Class::)?Representable::Decorator\>?[\#.]prepare/m
       # no Binding is instantiated at runtime.
       data.wont_match "Representable::Binding#initialize"
       # 2 mappers for Album, Song
       # data.must_match "2   Representable::Mapper::Methods#initialize"
       # title, songs, 3x title, composer
-      data.must_match "8   Representable::Binding#render_pipeline"
+      data.must_match /8\s*Representable::Binding[#\.]render_pipeline/m
       data.wont_match "render_functions"
       data.wont_match "Representable::Binding::Factories#render_functions"
     end
@@ -116,25 +134,17 @@ class CachedTest < MiniTest::Spec
       representer = AlbumRepresenter.new(Model::Album.new)
       representer.from_hash(album_hash)
 
-      RubyProf.start
-        # puts "#{representer.class.representable_attrs.get(:songs).representer_module.representable_attrs.inspect}"
-        representer.from_hash(album_hash)
-      res = RubyProf.stop
-
-      printer = RubyProf::FlatPrinter.new(res)
-
-      data = StringIO.new
-      printer.print(data)
-      data = data.string
+      data = Profiler.profile { representer.from_hash(album_hash) }
 
       # only 2 nested decorators are instantiated, Song, and Artist.
-      data.must_match "5   <Class::Representable::Decorator>#prepare"
+      # Didn't like the regexp?
+      # MRI and JRuby has different output formats. See note above.
+      data.must_match /5\s*(<Class::)?Representable::Decorator>?[#\.]prepare/
       # a total of 5 properties in the object graph.
       data.wont_match "Representable::Binding#initialize"
 
-
       data.wont_match "parse_functions" # no pipeline creation.
-      data.must_match "10   Representable::Binding#parse_pipeline"
+      data.must_match /10\s*Representable::Binding[#\.]parse_pipeline/
       # three mappers for Album, Song, composer
       # data.must_match "3   Representable::Mapper::Methods#initialize"
       # # 6 deserializers as the songs collection uses 2.
