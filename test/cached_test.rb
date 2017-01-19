@@ -1,5 +1,29 @@
 require "test_helper"
 
+class Profiler
+  def self.profile(&block)
+    case RUBY_ENGINE
+    when "ruby"
+      require 'ruby-prof'
+
+      output = StringIO.new
+      profile_result = RubyProf.profile(&block)
+      printer = RubyProf::FlatPrinter.new(profile_result)
+      printer.print(output)
+      output.string
+    when "jruby"
+      require 'jruby/profiler'
+
+      output_stream  = java.io.ByteArrayOutputStream.new
+      print_stream   = java.io.PrintStream.new(output_stream)
+      profile_result = JRuby::Profiler.profile(&block)
+      printer = JRuby::Profiler::FlatProfilePrinter.new(profile_result)
+      printer.printProfile(print_stream)
+      output_stream.toString
+    end
+  end
+end
+
 class CachedTest < MiniTest::Spec
   # TODO: also test with feature(Cached)
 
@@ -54,17 +78,7 @@ class CachedTest < MiniTest::Spec
     it do
       representer.to_hash
 
-     RubyProf.start
-        representer.to_hash
-      res = RubyProf.stop
-
-      printer = RubyProf::FlatPrinter.new(res)
-
-      data = StringIO.new
-      printer.print(data)
-      data = data.string
-
-      printer.print(STDOUT)
+      data = Profiler.profile { representer.to_hash }
 
       # 3 songs get decorated.
       data.must_match "3   Representable::Function::Decorate#call"
@@ -115,16 +129,7 @@ class CachedTest < MiniTest::Spec
       representer = AlbumRepresenter.new(Model::Album.new)
       representer.from_hash(album_hash)
 
-      RubyProf.start
-        # puts "#{representer.class.representable_attrs.get(:songs).representer_module.representable_attrs.inspect}"
-        representer.from_hash(album_hash)
-      res = RubyProf.stop
-
-      printer = RubyProf::FlatPrinter.new(res)
-
-      data = StringIO.new
-      printer.print(data)
-      data = data.string
+      data = Profiler.profile { representer.from_hash(album_hash) }
 
       # only 2 nested decorators are instantiated, Song, and Artist.
       data.must_match "5   <Class::Representable::Decorator>#prepare"
