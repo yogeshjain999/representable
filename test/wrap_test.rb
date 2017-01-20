@@ -11,7 +11,7 @@ class WrapTest < MiniTest::Spec
   let (:band) { HardcoreBand.new }
 
   it "returns false per default" do
-    assert_equal nil, SoftcoreBand.new.send(:representation_wrap)
+    assert_nil SoftcoreBand.new.send(:representation_wrap)
   end
 
   it "infers a printable class name if set to true" do

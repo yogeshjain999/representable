@@ -14,7 +14,7 @@ class DefinitionTest < MiniTest::Spec
         options[:parse_filter] << 1
 
         # default variables
-        options[:as].must_equal nil
+        options[:as].must_be_nil
         options[:extend].must_equal Module
       end
       definition.name.must_equal "song"
@@ -29,7 +29,7 @@ class DefinitionTest < MiniTest::Spec
   describe "#[]" do
     let (:definition) { Definition.new(:song) }
     # default is nil.
-    it { definition[:bla].must_equal nil }
+    it { definition[:bla].must_be_nil }
   end
 
   # merge!
@@ -89,7 +89,7 @@ class DefinitionTest < MiniTest::Spec
 
     before { definition[:serialize].(nil).must_equal "remove me!" }
 
-    it { definition.delete!(:serialize)[:serialize].must_equal nil }
+    it { definition.delete!(:serialize)[:serialize].must_be_nil }
   end
 
   # #inspect
@@ -104,7 +104,7 @@ class DefinitionTest < MiniTest::Spec
     end
 
     it "responds to #representer_module" do
-      assert_equal nil, Representable::Definition.new(:song).representer_module
+      assert_nil Representable::Definition.new(:song).representer_module
       assert_equal Hash, Representable::Definition.new(:song, :extend => Hash).representer_module
     end
 
@@ -217,7 +217,7 @@ class DefinitionTest < MiniTest::Spec
   describe ":default => value" do
     it "responds to #default" do
       @def = Representable::Definition.new(:song)
-      assert_equal nil, @def[:default]
+      assert_nil @def[:default]
     end
 
     it "accepts a default value" do

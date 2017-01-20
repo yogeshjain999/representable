@@ -46,7 +46,7 @@ class HashWithScalarPropertyTest < MiniTest::Spec
     # Fixes issue #115
     it "allows nil value in the incoming document and corresponding nil value for the represented" do
       album = Album.new
-      album.title.must_equal nil
+      album.title.must_be_nil
       album.extend(representer).from_hash("title" => nil)
     end
   end
@@ -80,21 +80,21 @@ class HashWithTypedPropertyTest < MiniTest::Spec
     it do
       album = Album.new(Song.new("Pre-medicated Murder"))
       album.extend(representer).from_hash("best_song" => nil)
-      album.best_song.must_equal nil
+      album.best_song.must_be_nil
     end
 
     # nested blank hash creates blank object when not populated.
     it do
       album = Album.new#(Song.new("Pre-medicated Murder"))
       album.extend(representer).from_hash("best_song" => {})
-      album.best_song.name.must_equal nil
+      album.best_song.name.must_be_nil
     end
 
     # Fixes issue #115
     it "allows nil value in the incoming document and corresponding nil value for the represented" do
       album = Album.new
       album.extend(representer).from_hash("best_song" => nil)
-      album.best_song.must_equal nil
+      album.best_song.must_be_nil
     end
   end
 end

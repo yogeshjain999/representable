@@ -69,8 +69,8 @@ class PopulatorFindOrInstantiateTest < Minitest::Spec
       album.from_hash({"song"=>{"title"=>"Lower"}})
 
       album.song.title.must_equal "Lower"
-      album.song.id.must_equal nil
-      album.song.uid.must_equal nil
+      album.song.id.must_be_nil
+      album.song.uid.must_be_nil
     end
   end
 
@@ -95,8 +95,8 @@ class PopulatorFindOrInstantiateTest < Minitest::Spec
       album.songs[0].uid.must_equal "abcd" # not changed via populator, indicating this is a formerly "persisted" object.
 
       album.songs[1].title.must_equal "Suffer"
-      album.songs[1].id.must_equal nil
-      album.songs[1].uid.must_equal nil
+      album.songs[1].id.must_be_nil
+      album.songs[1].uid.must_be_nil
     end
 
     # TODO: test with existing collection

@@ -14,7 +14,7 @@ class GenericTest < MiniTest::Spec # TODO: rename/restructure to CollectionTest.
 
     it "doesn't initialize property" do
       new_album.from_hash({})
-      new_album.songs.must_equal nil
+      new_album.songs.must_be_nil
     end
 
     it "leaves properties untouched" do

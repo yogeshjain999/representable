@@ -125,7 +125,7 @@ class CachedTest < MiniTest::Spec
       album.songs[1].title.must_equal "Jailbreak"
       album.songs[1].composer.name.must_equal "Phil Lynott"
       album.songs[2].title.must_equal "Emerald"
-      album.songs[2].composer.must_equal nil
+      album.songs[2].composer.must_be_nil
 
       # TODO: test options.
     end

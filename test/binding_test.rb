@@ -35,12 +35,12 @@ class BindingTest < MiniTest::Spec
     it { binding.default_for(nil).must_equal "Insider" }
 
     # return nil when value nil and render_nil: true.
-    it { Binding.new(render_nil_definition).default_for(nil).must_equal nil }
+    it { Binding.new(render_nil_definition).default_for(nil).must_be_nil }
 
     # return nil when value nil and render_nil: true, even when :default is set" do
-    it { Binding.new(Representable::Definition.new(:song, :render_nil => true, :default => "The Quest")).default_for(nil).must_equal nil }
+    it { Binding.new(Representable::Definition.new(:song, :render_nil => true, :default => "The Quest")).default_for(nil).must_be_nil }
 
     # return nil if no :default
-    it { Binding.new(Representable::Definition.new(:song)).default_for(nil).must_equal nil }
+    it { Binding.new(Representable::Definition.new(:song)).default_for(nil).must_be_nil }
   end
 end

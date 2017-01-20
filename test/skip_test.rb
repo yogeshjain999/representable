@@ -39,8 +39,8 @@ class SkipParseTest < MiniTest::Spec
       "airplays" => [{}, {"station" => "JJJ"}, {}],
     }, user_options: { skip?: true })
 
-    song.title.must_equal nil
-    song.band.must_equal nil
+    song.title.must_be_nil
+    song.band.must_be_nil
     song.airplays.must_equal [airplay]
   end
 end
