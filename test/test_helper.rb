@@ -95,6 +95,8 @@ MiniTest::Spec.class_eval do
       mod
     end
 
+    undef :inject_representer if method_defined? :inject_representer
+
     def inject_representer(mod, options)
       return unless options[:inject]
 
