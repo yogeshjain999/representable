@@ -112,7 +112,7 @@ MiniTest::Spec.class_eval do
     def representer_for(modules=[Representable::Hash], &block)
       Module.new do
         extend TestMethods
-        include *modules
+        include(*modules)
         module_exec(&block)
       end
     end
