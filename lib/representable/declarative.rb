@@ -50,7 +50,7 @@ module Representable
         feature(*options[:_features])
         include(*options[:_base]) # base when :inherit, or in decorator.
 
-        module_eval &options[:_block]
+        module_eval(&options[:_block])
       end
     end
 

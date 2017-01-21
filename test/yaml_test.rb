@@ -29,7 +29,7 @@ class YamlTest < MiniTest::Spec
   def self.yaml_representer(&block)
     Module.new do
       include Representable::YAML
-      instance_exec &block
+      instance_exec(&block)
     end
   end
 
