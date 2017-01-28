@@ -87,7 +87,7 @@ class DefinitionTest < MiniTest::Spec
   describe "#delete!" do
     let (:definition) { Definition.new(:song, serialize: "remove me!") }
 
-    before { definition[:serialize].evaluate(nil).must_equal "remove me!" }
+    before { definition[:serialize].(nil).must_equal "remove me!" }
 
     it { definition.delete!(:serialize)[:serialize].must_equal nil }
   end
@@ -158,10 +158,10 @@ class DefinitionTest < MiniTest::Spec
 
 
     describe "#clone" do
-      subject { Representable::Definition.new(:title, :volume => 9, :clonable => Uber::Options::Value.new(1)) }
+      subject { Representable::Definition.new(:title, :volume => 9, :clonable => Declarative::Option(1)) }
 
       it { subject.clone.must_be_kind_of Representable::Definition }
-      it { subject.clone[:clonable].evaluate(nil).must_equal 1 }
+      it { subject.clone[:clonable].(nil).must_equal 1 }
 
       it "clones @options" do
         @def.merge!(:volume => 9)

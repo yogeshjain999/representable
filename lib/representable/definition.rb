@@ -1,4 +1,3 @@
-require "uber/options"
 require "representable/populator"
 
 module Representable
@@ -102,7 +101,7 @@ module Representable
       @runtime_options = {}
 
       for name, value in options
-        value = Uber::Options::Value.new(value) if dynamic_options.include?(name)
+        value = ::Declarative::Option(value, instance_exec: true, callable: Uber::Callable) if dynamic_options.include?(name)
         @runtime_options[name] = value
       end
     end

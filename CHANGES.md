@@ -1,3 +1,7 @@
+# 3.0.3
+
+* Replace `Uber::Option` with the new `Declarative::Option`. This should result in a significant performance boost.
+
 # 3.0.2
 
 * Initialize `Config@wrap` to avoid Ruby's warning.

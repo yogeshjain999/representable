@@ -10,3 +10,5 @@ end
 
 # gem "declarative", path: "../declarative"
 # gem "declarative", github: "apotonick/declarative"
+
+# gem "uber","0.0.15" #, path: "../uber"

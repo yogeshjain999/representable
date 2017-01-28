@@ -1,5 +1,6 @@
 require "uber/delegates"
-
+require "uber/callable"
+require "declarative/option"
 require "declarative/schema"
 
 require "representable/config"
