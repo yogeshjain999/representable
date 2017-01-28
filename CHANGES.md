@@ -1,6 +1,6 @@
 # 3.0.3
 
-* Replace `Uber::Option` with the new `Declarative::Option`. This should result in a significant performance boost.
+* Replace `Uber::Option` with the new [`Declarative::Option`](https://github.com/apotonick/declarative-option). This should result in a significant performance boost.
 
 # 3.0.2
 
