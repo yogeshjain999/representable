@@ -77,7 +77,7 @@ MiniTest::Spec.class_eval do
   end
 
   def self.representer!(options={}, &block)
-    fmt = options # we need that so the 2nd call to ::let (within a ::describe) remembers the right format.
+    fmt = options # we need that so the 2nd call to ::let(within a ::describe) remembers the right format.
 
     name   = options[:name]   || :representer
     format = options[:module] || Representable::Hash
@@ -95,6 +95,8 @@ MiniTest::Spec.class_eval do
       mod
     end
 
+    undef :inject_representer if method_defined? :inject_representer
+
     def inject_representer(mod, options)
       return unless options[:inject]
 
@@ -110,7 +112,7 @@ MiniTest::Spec.class_eval do
     def representer_for(modules=[Representable::Hash], &block)
       Module.new do
         extend TestMethods
-        include *modules
+        include(*modules)
         module_exec(&block)
       end
     end
@@ -121,10 +123,10 @@ MiniTest::Spec.class_eval do
 end
 
 class BaseTest < MiniTest::Spec
-  let (:new_album)  { OpenStruct.new.extend(representer) }
-  let (:album)      { OpenStruct.new(:songs => ["Fuck Armageddon"]).extend(representer) }
-  let (:song) { OpenStruct.new(:title => "Resist Stance") }
-  let (:song_representer) { Module.new do include Representable::Hash; property :title end  }
+  let(:new_album)  { OpenStruct.new.extend(representer) }
+  let(:album)      { OpenStruct.new(:songs => ["Fuck Armageddon"]).extend(representer) }
+  let(:song) { OpenStruct.new(:title => "Resist Stance") }
+  let(:song_representer) { Module.new do include Representable::Hash; property :title end  }
 
 end
 
