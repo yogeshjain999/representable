@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "declarative-option", "< 0.2.0"
 
   spec.add_development_dependency "rake"
-  spec.add_development_dependency "test_xml", "0.1.6"
+  spec.add_development_dependency "test_xml", ">= 0.1.6"
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "virtus"
   spec.add_development_dependency "multi_json"
