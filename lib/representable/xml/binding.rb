@@ -32,12 +32,15 @@ module Representable
 
       # Creates wrapped node for the property.
       def serialize_for(value, parent, as)
-        node = node_for(parent, as)
-        serialize_node(node, value)
+        node = node_for(parent, as) # node doesn't have attr="" attributes!!!
+        serialize_node(node, value, as)
       end
 
-      def serialize_node(node, value)
-        return value if typed?
+      def serialize_node(node, value, as)
+        if typed?
+          value.name = as if as != self[:name]
+          return value
+        end
 
         node.content = value
         node
@@ -78,6 +81,7 @@ module Representable
         include Representable::Binding::Collection
 
         def serialize_for(value, parent, as)
+          puts "@@@@xx@ #{value.inspect}"
           # return NodeSet so << works.
           set_for(parent, value.collect { |item| super(item, parent, as) })
         end
@@ -101,7 +105,7 @@ module Representable
         def serialize_for(value, parent, as)
           set_for(parent, value.collect do |k, v|
             node = node_for(parent, k)
-            serialize_node(node, v)
+            serialize_node(node, v, as)
           end)
         end
 

@@ -145,14 +145,12 @@ class XmlTest < MiniTest::Spec
       module SongRepresenter
         include Representable::XML
         property :name
-        :song # representation_wrap
       end
 
       module AlbumRepresenter
         include Representable::XML
         property :best_song, :class => Song, :extend => SongRepresenter
         collection :songs, :class => Song, :as => :song, :extend => SongRepresenter
-        :album # representation_wrap
       end
 
 
@@ -179,11 +177,11 @@ class XmlTest < MiniTest::Spec
           [Song.new("I Hate My Brain"), mr=Song.new("Mr. Charisma")], mr)
         @album.extend(AlbumRepresenter)
 
-        assert_xml_equal "<album>
+        @album.to_xml.must_equal_xml "<album>
   <song><name>Mr. Charisma</name></song>
   <song><name>I Hate My Brain</name></song>
   <song><name>Mr. Charisma</name></song>
-</album>", @album.to_xml
+</album>"
       end
 
       it "extends contained models when deserializing" do
@@ -316,32 +314,54 @@ class TypedPropertyTest < MiniTest::Spec
   end
 end
 
+# TODO: add parsing tests.
+class XMLPropertyTest < Minitest::Spec
+  Band = Struct.new(:name, :genre)
+  Manager = Struct.new(:managed)
 
-class CollectionTest < MiniTest::Spec
-  class Band
+  #---
+  #- :as with scalar
+  class BandRepresenter < Representable::Decorator
     include Representable::XML
-    property :name
-    attr_accessor :name
-
-    def initialize(name=nil)
-      name and self.name = name
-    end
+    property :name, as: :theyCallUs
+    property :genre, attribute: true
   end
 
+  it { BandRepresenter.new(Band.new("Mute")).to_xml.must_equal_xml %{<band><theyCallUs>Mute</theyCallUs></band>} }
 
+  class ManagerRepresenter < Representable::Decorator
+    include Representable::XML
+    property :managed, as: :band, decorator: BandRepresenter
+  end
+
+  #- :as with nested property
+  it { ManagerRepresenter.new(Manager.new(Band.new("Mute", "Punkrock"))).to_xml.must_equal_xml %{<manager><band genre="Punkrock"><theyCallUs>Mute</theyCallUs></band></manager>} }
+end
+
+
+class XMLCollectionTest < MiniTest::Spec
+  Band        = Struct.new(:name)
+  Compilation = Struct.new(:bands)
+
+  class BandRepresenter < Representable::Decorator
+    include Representable::XML
+    property :name
+  end
+
+  #---
+  #- :as, :decorator, :class
   describe ":class => Band, :as => :band, :collection => true" do
-    class Compilation
+    class CompilationRepresenter < Representable::Decorator
       include Representable::XML
-      collection :bands, :class => Band, :as => :band
-      attr_accessor :bands
+      collection :bands, class: Band, as: :group, decorator: BandRepresenter
     end
 
     describe "#from_xml" do
       it "pushes collection items to array" do
-        cd = Compilation.new.from_xml(%{
+        cd = CompilationRepresenter.new(Compilation.new).from_xml(%{
           <compilation>
-            <band><name>Diesel Boy</name></band>
-            <band><name>Cobra Skulls</name></band>
+            <group><name>Diesel Boy</name></group>
+            <group><name>Cobra Skulls</name></group>
           </compilation>
         })
         assert_equal ["Cobra Skulls", "Diesel Boy"], cd.bands.map(&:name).sort
@@ -349,13 +369,12 @@ class CollectionTest < MiniTest::Spec
     end
 
     it "responds to #to_xml" do
-      cd = Compilation.new
-      cd.bands = [Band.new("Diesel Boy"), Band.new("Bad Religion")]
+      cd = Compilation.new([Band.new("Diesel Boy"), Band.new("Bad Religion")])
 
-      assert_xml_equal %{<compilation>
-        <band><name>Diesel Boy</name></band>
-        <band><name>Bad Religion</name></band>
-      </compilation>}, cd.to_xml
+      CompilationRepresenter.new(cd).to_xml.must_equal_xml %{<compilation>
+        <group><name>Diesel Boy</name></group>
+        <group><name>Bad Religion</name></group>
+      </compilation>}
     end
   end
 
