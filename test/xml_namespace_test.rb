@@ -80,7 +80,7 @@ class NamespaceXMLTest < Minitest::Spec
   <book id=\"1\">
     <isbn>666</isbn>
   </book>
-</library>}.gsub("\n", "")
+</library>}.gsub("\n", "").gsub(/(\s\s+)/, "")
   end
 end
 
