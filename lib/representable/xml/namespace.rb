@@ -100,10 +100,8 @@ module Representable::XML
     # "Physically" add `xmlns` attributes to `node`.
     def add_namespace_definitions!(node, namespaces)
       namespaces.each do |uri, prefix|
-        # Nokogiri's API sucks hard here.
-        prefix.nil? ?
-          node.default_namespace = uri :
-          node.add_namespace_definition(prefix.to_s, uri)
+        prefix = prefix.nil? ? nil : prefix.to_s
+        node.add_namespace_definition(prefix, uri)
       end
     end
 
