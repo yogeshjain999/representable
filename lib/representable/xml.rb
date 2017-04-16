@@ -47,7 +47,7 @@ module Representable
       options[:doc] ||= Nokogiri::XML::Document.new
       root_tag = options[:wrap] || representation_wrap(options)
 
-      create_representation_with(Nokogiri::XML::Node.new(root_tag.to_s, options[:doc]), options, Binding)
+      create_representation_with(Node(options[:doc], root_tag.to_s), options, Binding)
     end
 
     def to_xml(*args)
