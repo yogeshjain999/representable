@@ -58,20 +58,19 @@ module Representable::XML
 
     module AsWithNamespace
       def write(doc, fragment, as)
-        uri    = self[:namespace] # this is generic behavior and per property
-        prefix = self[:namespace_defs][uri]
-        as     = Namespace::Namespaced(prefix, as)
-
-        super(doc, fragment, as)
+        super(doc, fragment, prefixed(self, as))
       end
 
       # FIXME: this is shit, the NestedOptions is executed too late here!
       def read(node, as)
-        uri    = self[:namespace] # this is generic behavior and per property
-        prefix = self[:namespace_defs][uri]
-        as     = Namespace::Namespaced(prefix, as)
+        super(node, prefixed(self, as))
+      end
 
-        super(node, as)
+      private
+      def prefixed(dfn, as)
+        uri    = dfn[:namespace] # this is generic behavior and per property
+        prefix = dfn[:namespace_defs][uri]
+        as     = Namespace::Namespaced(prefix, as)
       end
     end
 
