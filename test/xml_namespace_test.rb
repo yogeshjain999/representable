@@ -76,11 +76,11 @@ class NamespaceXMLTest < Minitest::Spec
 
   # default namespace for library
   it "what" do
-    Library.new(Model::Library.new(book)).to_xml.must_equal %{<library xmlns=\"http://eric.van-der-vlist.com/ns/library\">
+    Library.new(Model::Library.new(book)).to_xml.gsub("\n", "").must_equal %{<library xmlns=\"http://eric.van-der-vlist.com/ns/library\">
   <book id=\"1\">
     <isbn>666</isbn>
   </book>
-</library>}
+</library>}.gsub("\n", "")
   end
 end
 
@@ -127,7 +127,7 @@ class Namespace2XMLTest < Minitest::Spec
   end
 
   it "renders" do
-    Library.new(Model::Library.new(book)).to_xml.must_equal %{<lib:library xmlns:lib=\"http://eric.van-der-vlist.com/ns/library\" xmlns:hr=\"http://eric.van-der-vlist.com/ns/person\">
+    Library.new(Model::Library.new(book)).to_xml.gsub("\n", "").must_equal %{<lib:library xmlns:lib=\"http://eric.van-der-vlist.com/ns/library\" xmlns:hr=\"http://eric.van-der-vlist.com/ns/person\">
   <lib:book id=\"1\">
     <lib:isbn>666</lib:isbn>
     <hr:author>
@@ -139,7 +139,7 @@ class Namespace2XMLTest < Minitest::Spec
       <hr:born>1991</hr:born>
     </lib:character>
   </lib:book>
-</lib:library>}
+</lib:library>}.gsub("\n", "")
   end
 
   it "parses" do

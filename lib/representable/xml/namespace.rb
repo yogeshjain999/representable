@@ -26,8 +26,6 @@ module Representable::XML
         uri = representable_attrs.options[:local_namespace] # per default, a property belongs to the local namespace.
         options[:namespace] ||= uri # don't override if already set.
 
-        # options[:namespace_defs] = namespace_defs
-
         # a nested representer is automatically assigned "its" local namespace. It's like saying
         #   property :author, namespace: "http://ns/author" do ... end
 
@@ -112,7 +110,6 @@ module Representable::XML
     def self.Namespaced(prefix, name)
       [ prefix, name ].compact.join(":")
     end
-
 
     # FIXME: this is a PoC, we need a better API to inject code.
     def representable_map(options, format)
