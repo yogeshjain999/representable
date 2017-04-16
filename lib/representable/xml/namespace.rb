@@ -59,7 +59,6 @@ module Representable::XML
     module AsWithNamespace
       def write(doc, fragment, as)
         uri    = self[:namespace] # this is generic behavior and per property
-        # prefix = options[:options][:namespaces][uri]
         prefix = self[:namespace_defs][uri]
         as     = Namespace::Namespaced(prefix, as)
 
@@ -67,40 +66,27 @@ module Representable::XML
       end
 
       # FIXME: this is shit, the NestedOptions is executed too late here!
-      def read(fragment, options)
-        puts "@@@@@--> #{options[:options].inspect}"
-        # if namespace = options[:options][:namespace] # this is generic behavior and per property
-          # this is for song and band, because the options are done too late.
-        if options[:options][self[:name].to_sym] and namespace =   options[:options][self[:name].to_sym][:namespace] # this is generic behavior and per property
-          options[:as] = "#{namespace}:#{options[:as]}"
-           # raise options[:as].inspect
-        elsif namespace = options[:options][:namespace] # this is generic behavior and per property
-          options[:as] = "#{namespace}:#{options[:as]}"
-        end
+      def read(node, as)
+        uri    = self[:namespace] # this is generic behavior and per property
+        prefix = self[:namespace_defs][uri]
+        as     = Namespace::Namespaced(prefix, as)
 
-        super
+        super(node, as)
       end
     end
 
+  # FIXME: some "bug" in Representable's XML doesn't consider the container tag, so we could theoretically pick the
+  # wrong namespaced tag here :O
     def from_node(node, options={})
-      options_for_nested_namespaced_representers!(representable_attrs.options[:registered_namespaces], options)
-      # options[:song] = { namespace: :nsSong }
-
       super
     end
 
-    def to_xml(options={})
-      super( options.merge(namespaces: self.class.namespace_defs) )
-    end
-
-
     def to_node(options={})
       local_uri = representable_attrs.options[:local_namespace] # every decorator MUST have a local namespace.
-      prefix    = options[:namespaces][local_uri]
+      prefix    = self.class.namespace_defs[local_uri]
 
       # if namespace = options[:namespace] # this is generic behavior and per property
       root_tag = [prefix, representation_wrap(options)].compact.join(":")
-
 
       options = { wrap: root_tag }.merge(options)
 

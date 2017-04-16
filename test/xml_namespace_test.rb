@@ -101,20 +101,20 @@ class Namespace2XMLTest < Minitest::Spec
     namespace_def lib: "http://eric.van-der-vlist.com/ns/library"
     namespace_def hr: "http://eric.van-der-vlist.com/ns/person"
 
-    property :book do
+    property :book, class: Model::Book do
       namespace "http://eric.van-der-vlist.com/ns/library"
 
       property :id,  attribute: true
       property :isbn
 
-      property :author do
+      property :author, class: Model::Character do
         namespace "http://eric.van-der-vlist.com/ns/person"
 
         property :name
         property :born
       end
 
-      collection :character do
+      collection :character, class: Model::Character do
         namespace "http://eric.van-der-vlist.com/ns/library"
 
         property :qualification
@@ -126,7 +126,7 @@ class Namespace2XMLTest < Minitest::Spec
     end
   end
 
-  it "what" do
+  it "renders" do
     Library.new(Model::Library.new(book)).to_xml.must_equal %{<lib:library xmlns:lib=\"http://eric.van-der-vlist.com/ns/library\" xmlns:hr=\"http://eric.van-der-vlist.com/ns/person\">
   <lib:book id=\"1\">
     <lib:isbn>666</lib:isbn>
@@ -141,151 +141,24 @@ class Namespace2XMLTest < Minitest::Spec
   </lib:book>
 </lib:library>}
   end
+
+  it "parses" do
+    Library.new(lib = Model::Library.new).from_xml(%{<lib:library xmlns:lib=\"http://eric.van-der-vlist.com/ns/library\" xmlns:hr=\"http://eric.van-der-vlist.com/ns/person\">
+  <lib:book id=\"1\">
+    <lib:isbn>666</lib:isbn>
+    <hr:author>
+      <hr:name>Fowler</hr:name>
+    </hr:author>
+    <lib:character>
+      <lib:qualification>typed</lib:qualification>
+      <hr:name>Frau Java</hr:name>
+      <bogus:name>Mr. Ruby</hr:name>
+      <name>Dr. Elixir</hr:name>
+      <hr:born>1991</hr:born>
+    </lib:character>
+  </lib:book>
+</lib:library>})
+
+    lib.book.inspect.must_equal %{#<struct Namespace2XMLTest::Model::Book id=\"1\", isbn=\"666\", author=#<struct Namespace2XMLTest::Model::Character name=\"Fowler\", born=nil, qualification=nil>, character=[#<struct Namespace2XMLTest::Model::Character name=\"Frau Java\", born=\"1991\", qualification=\"typed\">]>}
+  end
 end
-
-
-# class XmlNamespaceTest < Minitest::Spec
-
-
-
-
-#   Band = Struct.new(:name, :song, :genre)
-#   Song = Struct.new(:name)
-#   let(:band) { Band.new("Nofx", "Linoleum", "Punk") }
-#   let(:song) { Song.new("The Brews") }
-# end
-
-# class XmlNamespaceWithNamespaceAndPropertyTest < XmlNamespaceTest
-#   class BandRepresenter < Representable::Decorator
-#     include Representable::XML
-#     include Representable::XML::Namespace
-#     self.representation_wrap = :band
-
-#     # namespaces music: "http://test.org/music"
-#     namespace "http://test.org/band" # could also be `wrap :band, namespace: :music`
-
-#     property :name#, as: "music:name"
-#     property :genre, attribute: true
-#   end
-
-#   # no prefix, only xmlns attribute.
-#   it do
-#     BandRepresenter.new(band).to_xml.must_equal %{<band xmlns="http://test.org/band" genre="Punk">
-#   <name>Nofx</name>
-# </band>}
-#   end
-
-#   # with namespace prefix
-#   it do
-#     BandRepresenter.new(band).to_xml(namespace: :music).must_equal %{<music:band xmlns:music="http://test.org/band" genre="Punk">
-#   <music:name>Nofx</music:name>
-# </music:band>}
-#   end
-
-#   # with :namespace and :show_definition
-#   it do
-#     BandRepresenter.new(band).to_xml(namespace: :music).must_equal %{<music:band xmlns:music="http://test.org/band" genre="Punk">
-#   <music:name>Nofx</music:name>
-# </music:band>}
-#   end
-
-#   #---
-#   #- from_xml
-#   it do
-#     BandRepresenter.new(band).from_xml(%{
-
-# <music:band xmlns:music="http://test.org/music">
-#   <name>Pulley not namespaced</name>
-#   <music:name>Pulley</name>
-# </music:band>})
-
-#     band.name.must_equal "Pulley not namespaced"
-#   end
-
-#   it do
-#     BandRepresenter.new(band).from_xml(%{
-
-# <music:band xmlns:music="http://test.org/music">
-#   <name>Pulley not namespaced</name>
-#   <music:name>Pulley</name>
-# </music:band>}, namespace: :music)
-
-#     band.name.must_equal "Pulley"
-#   end
-
-#   #---
-#   #- Nested
-#   Label = Struct.new(:band, :song, :group)
-
-#   class LabelRepresenter < Representable::Decorator
-#     include Representable::XML
-#     # include Representable::XML::Namespace
-#     self.representation_wrap = :label
-
-#     property :band, decorator: BandRepresenter
-#   end
-
-#   it do
-#     LabelRepresenter.new(Label.new(band)).to_xml.must_equal %{<label>
-#   <band xmlns=\"http://test.org/band\" genre="Punk">
-#     <name>Nofx</name>
-#   </band>
-# </label>}
-#   end
-
-#   class SongRepresenter < Representable::Decorator
-#     include Representable::XML
-#     include Representable::XML::Namespace
-#     self.representation_wrap = :song
-
-#     # namespaces music: "http://test.org/music"
-#     namespace "http://song"
-
-#     property :name
-#   end
-
-#   class NamespaceLabelRepresenter < Representable::Decorator
-#     include Representable::XML
-#     include Representable::XML::Namespace
-#     self.representation_wrap = :label
-
-#     # namespace "http://Override"
-
-#     property :band, decorator: BandRepresenter, namespace: "nsBand", class: XmlNamespaceTest::Band # defines ::namespace
-#     property :song, decorator: SongRepresenter, namespace: "nsSong", class: Song
-#     property :group, decorator: BandRepresenter # this will print the namespace definition in <group xmlns="http://test.org/band">
-#     # FIXME: why isn't that <group>?
-#   end
-
-#   it do
-#     NamespaceLabelRepresenter.new(Label.new(band, song, Band.new("El Grupo"))).to_xml.must_equal(
-# %{<label xmlns:nsBand="http://test.org/band" xmlns:nsSong=\"http://song\">
-#   <nsBand:band genre="Punk">
-#     <nsBand:name>Nofx</nsBand:name>
-#   </nsBand:band>
-#   <nsSong:song>
-#     <nsSong:name>The Brews</nsSong:name>
-#   </nsSong:song>
-#   <band xmlns=\"http://test.org/band\">
-#     <name>El Grupo</name>
-#   </band>
-# </label>}
-#     )
-#   end
-
-#   it do
-#     NamespaceLabelRepresenter.new(label = Label.new(band, song)).from_xml(
-# %{<label xmlns:nsBand="http://test.org/band" xmlns:nsSong=\"http://song\">
-#   <nsBand:band>
-#     <nsBand:name>Nofx!!!</nsBand:name>
-#   </nsBand:band>
-#   <nsSong:song>
-#     <nsSong:name>Longest Line</nsSong:name>
-#   </nsSong:song>
-# </label>}
-#     )
-
-#     label.song.name.must_equal "Longest Line"
-#     label.band.name.must_equal "Nofx!!!"
-#   end
-# end
