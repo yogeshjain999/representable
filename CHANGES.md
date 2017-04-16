@@ -1,3 +1,8 @@
+# 3.0.4
+
+* Add proper XML namespace support.
+* [internal] Replace `XML::Binding#node_for` with function `XML::Node`.
+
 # 3.0.3
 
 * Replace `Uber::Option` with the new [`Declarative::Option`](https://github.com/apotonick/declarative-option). This should result in a significant performance boost.
