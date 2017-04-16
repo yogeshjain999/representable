@@ -1,6 +1,4 @@
 require 'representable'
-require 'representable/xml/binding'
-require 'representable/xml/collection'
 
 begin
   require 'nokogiri'
@@ -73,3 +71,7 @@ module Representable
     end
   end
 end
+
+require "representable/xml/binding"
+require "representable/xml/collection"
+require "representable/xml/namespace"

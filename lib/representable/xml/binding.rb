@@ -3,6 +3,13 @@ require 'representable/hash/binding.rb'
 
 module Representable
   module XML
+    module_function
+    def Node(document, name, attributes={})
+      node = Nokogiri::XML::Node.new(name.to_s, document)
+      attributes.each { |k, v| node[k] = v } # TODO: benchmark.
+      node
+    end
+
     class Binding < Representable::Binding
       def self.build_for(definition)
         return Collection.new(definition)      if definition.array?
@@ -17,7 +24,7 @@ module Representable
         wrap_node = parent
 
         if wrap = self[:wrap]
-          parent << wrap_node = node_for(parent, wrap)
+          parent << wrap_node = XML::Node(parent, wrap)
         end
 
         wrap_node << serialize_for(fragments, parent, as)
@@ -32,7 +39,7 @@ module Representable
 
       # Creates wrapped node for the property.
       def serialize_for(value, parent, as)
-        node = node_for(parent, as) # node doesn't have attr="" attributes!!!
+        node = XML::Node(parent, as) # node doesn't have attr="" attributes!!!
         serialize_node(node, value, as)
       end
 
@@ -66,10 +73,6 @@ module Representable
         doc.xpath(selector) # nodes
       end
 
-      def node_for(parent, name)
-        Nokogiri::XML::Node.new(name.to_s, parent.document)
-      end
-
       def content_for(node) # TODO: move this into a ScalarDecorator.
         return node if typed?
 
@@ -81,7 +84,6 @@ module Representable
         include Representable::Binding::Collection
 
         def serialize_for(value, parent, as)
-          puts "@@@@xx@ #{value.inspect}"
           # return NodeSet so << works.
           set_for(parent, value.collect { |item| super(item, parent, as) })
         end
@@ -104,7 +106,7 @@ module Representable
       class Hash < Collection
         def serialize_for(value, parent, as)
           set_for(parent, value.collect do |k, v|
-            node = node_for(parent, k)
+            node = XML::Node(parent, k)
             serialize_node(node, v, as)
           end)
         end
