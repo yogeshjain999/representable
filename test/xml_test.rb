@@ -2,9 +2,16 @@ require 'test_helper'
 
 
 class XmlPublicMethodsTest < Minitest::Spec
-  Band = Struct.new(:id, :name, :genre, :uid, :logo, :songs, :scores)
+  Band = Struct.new(:id, :name, :genre, :uid, :logo, :songs, :scores, :manager)
   IoFile = Struct.new(:blob, :file)
   MusicSong = Struct.new(:title, :track)
+  Person    = Struct.new(:email)
+
+  class ManagerRepresenter < Representable::Decorator
+    include Representable::XML
+
+    property :email
+  end
 
   class BandRepresenter < Representable::Decorator
     include Representable::XML
@@ -26,6 +33,8 @@ class XmlPublicMethodsTest < Minitest::Spec
       property :title
       property :track, attribute: true
     end
+
+    property :manager, decorator: ManagerRepresenter # FIXME: the name here is wrong!!!!!!!!!!!!!!!!!!!!
   end
 
   let(:data) { %{
@@ -37,6 +46,8 @@ class XmlPublicMethodsTest < Minitest::Spec
 
       <music_song track=\"1\"><title>The Wolf</title></music_song>
       <music_song track=\"2\"><title>Cocktails</title></music_song>
+
+      <person><email>kt@trb.to</email></person>
     </artists>}
   }
 
@@ -47,7 +58,8 @@ class XmlPublicMethodsTest < Minitest::Spec
   # to_xml
   let(:band) { Band.new(1, "Rancid", "Punk", "4711", IoFile.new("0x1", "logo.png"),
     [ MusicSong.new("The Wolf", 1), MusicSong.new("Cocktails", 2) ],
-    [ 6, 10, 9 ]
+    [ 6, 10, 9 ],
+    Person.new("kt@trb.to")
   ) }
 
   it { BandRepresenter.new(band).to_xml.must_xml data }
@@ -64,143 +76,7 @@ class XmlTest < MiniTest::Spec
       name and self.name = name
     end
   end
-
-
-  XML = Representable::XML
-  Def = Representable::Definition
-
-  describe "Xml module" do
-    before do
-      @Band = Class.new do
-        include Representable::XML
-        self.representation_wrap = :band
-        property :name
-        property :label
-        attr_accessor :name, :label
-      end
-
-      @band = @Band.new
-    end
-
-
-    describe "#from_xml" do
-      before do
-        @band = @Band.new
-        @xml  = %{<band><name>Nofx</name><label>NOFX</label></band>}
-      end
-
-      it "parses XML and assigns properties" do
-        @band.from_xml(@xml)
-        assert_equal ["Nofx", "NOFX"], [@band.name, @band.label]
-      end
-    end
-
-    describe "#from_xml with remove_namespaces! and xmlns present" do
-      before do
-        @Band.remove_namespaces!
-        @band = @Band.new
-        @xml = %{<band xmlns="exists"><name>Nofx</name><label>NOFX</label></band>}
-      end
-
-      it "parses with xmlns present" do
-        @band.from_xml(@xml)
-        assert_equal ["Nofx", "NOFX"], [@band.name, @band.label]
-      end
-    end
-
-    describe "#from_node" do
-      before do
-        @band = @Band.new
-        @xml  = Nokogiri::XML(%{<band><name>Nofx</name><label>NOFX</label></band>}).root
-      end
-
-      it "receives Nokogiri node and assigns properties" do
-        @band.from_node(@xml)
-        assert_equal ["Nofx", "NOFX"], [@band.name, @band.label]
-      end
-    end
-
-
-    describe "#to_xml" do
-      it "delegates to #to_node and returns string" do
-        assert_xml_equal "<band><name>Rise Against</name></band>", Band.new("Rise Against").to_xml
-      end
-    end
-
-    describe "DCI" do
-      module SongRepresenter
-        include Representable::XML
-        property :name
-      end
-
-      module AlbumRepresenter
-        include Representable::XML
-        property :best_song, :class => Song, :extend => SongRepresenter
-        collection :songs, :class => Song, :as => :song, :extend => SongRepresenter
-      end
-
-
-      it "allows adding the representer by using #extend" do
-        module BandRepresenter
-          include Representable::XML
-          property :name
-        end
-
-        civ = Object.new
-        civ.instance_eval do
-          def name; "CIV"; end
-          def name=(v)
-            @name = v
-          end
-        end
-
-        civ.extend(BandRepresenter)
-        assert_xml_equal "<object><name>CIV</name></object>", civ.to_xml
-      end
-
-      it "extends contained models when serializing" do
-        @album = Album.new(
-          [Song.new("I Hate My Brain"), mr=Song.new("Mr. Charisma")], mr)
-        @album.extend(AlbumRepresenter)
-
-        @album.to_xml.must_equal_xml "<album>
-  <song><name>Mr. Charisma</name></song>
-  <song><name>I Hate My Brain</name></song>
-  <song><name>Mr. Charisma</name></song>
-</album>"
-      end
-
-      it "extends contained models when deserializing" do
-        @album = Album.new
-        @album.extend(AlbumRepresenter)
-
-        @album.from_xml("<album><best_song><name>Mr. Charisma</name></best_song><song><name>I Hate My Brain</name></song><song><name>Mr. Charisma</name></song></album>")
-        assert_equal "Mr. Charisma", @album.best_song.name
-      end
-    end
-  end
 end
-
-
-class AttributesTest < MiniTest::Spec
-  describe ":as => rel, :attribute => true" do
-    class Link
-      include Representable::XML
-      property :href,   :as => "href",  :attribute => true
-      property :title,  :as => "title", :attribute => true
-      attr_accessor :href, :title
-    end
-
-    it "#from_xml creates correct accessors" do
-      link = Link.new.from_xml(%{
-        <a href="http://apotomo.de" title="Home, sweet home" />
-      })
-      assert_equal "http://apotomo.de", link.href
-      assert_equal "Home, sweet home",  link.title
-    end
-  end
-end
-
 
 class CDataBand
   class CData < Representable::XML::Binding
