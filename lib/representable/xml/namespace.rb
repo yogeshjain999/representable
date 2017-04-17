@@ -1,6 +1,10 @@
 module Representable::XML
   # Experimental!
   # Best explanation so far: http://books.xmlschemata.org/relaxng/relax-CHP-11-SECT-1.html
+  #
+  # Note: This module doesn't work with JRuby because Nokogiri uses a completely
+  # different implementation in Java which has other requirements that we couldn't fulfil.
+  # Please wait for Representable 4 where we replace Nokogiri with Oga.
   module Namespace
     def self.included(includer)
       includer.extend(DSL)
@@ -82,7 +86,6 @@ module Representable::XML
       local_uri = representable_attrs.options[:local_namespace] # every decorator MUST have a local namespace.
       prefix    = self.class.namespace_defs[local_uri]
 
-      # if namespace = options[:namespace] # this is generic behavior and per property
       root_tag = [prefix, representation_wrap(options)].compact.join(":")
 
       options = { wrap: root_tag }.merge(options)
