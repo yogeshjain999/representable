@@ -6,6 +6,7 @@
 
   # hat vorteil: [].each{ Collection.to_xml(item) }
 
+* make all properties "Object-like", even arrays of strings etc. This saves us from having `extend ObjectBinding if typed?` and we could just call to_hash/from_hash on all attributes. performance issues here? otherwise: implement!
 
 
 # how to?
@@ -42,3 +43,30 @@ representable_attrs.keys.each do |property|
   options[property.to_sym] = { show_definition: false, namespaces: options[:namespaces] }
 end
 ```
+
+* Allow passing options to Binding#serialize.
+  serialize(.., options{:exclude => ..})
+
+
+# wrap, as
+
+AsWithNamespace( Binding )
+   BUT NOT FOR AsWithNamespace( Binding::Attribute )
+  => selectively wrap bindings at compile- and runtime
+
+
+
+
+
+
+* Cleanup the manifest part in Decorator.
+
+* all property objects should be extended/wrapped so we don't need the switch.
+
+# Deprecations
+
+* deprecate instance: { nil } which is superseded by parse_strategy: :sync
+
+
+
+from_hash, property :band, class: vergessen
