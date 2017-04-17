@@ -4,13 +4,6 @@ require 'representable/hash/binding.rb'
 module Representable
   module XML
     module_function
-    def Node(document, name, attributes={})
-      node = Nokogiri::XML::Node.new(name.to_s, document) # Java::OrgW3cDom::DOMException: NAMESPACE_ERR: An attempt is made to create or change an object in a way which is incorrect with regard to namespaces.
-
-      attributes.each { |k, v| node[k] = v } # TODO: benchmark.
-      node
-    end
-
     class Binding < Representable::Binding
       def self.build_for(definition)
         return Collection.new(definition)      if definition.array?
@@ -28,7 +21,10 @@ module Representable
           parent << wrap_node = XML::Node(parent, wrap)
         end
 
-        wrap_node << serialize_for(fragments, parent, as)
+        XML::Append(
+          wrap_node,
+          serialize_node(fragments, parent, as)
+        )
       end
 
       def read(node, as)
@@ -38,20 +34,15 @@ module Representable
         deserialize_from(nodes)
       end
 
-      # Creates wrapped node for the property.
-      def serialize_for(value, parent, as)
-        node = XML::Node(parent, as) # node doesn't have attr="" attributes!!!
-        serialize_node(node, value, as)
-      end
-
-      def serialize_node(node, value, as)
+      # content
+      def serialize_node(value, parent, as)
         if typed?
           value.name = as if as != self[:name]
           return value
         end
 
-        node.content = value
-        node
+        # puts "@@@@@ #{XML::Node(as, {}, value)}"
+        XML::Node(as, {}, value) # :as !!!!!!!!!!!!!
       end
 
       def deserialize_from(nodes)
@@ -81,25 +72,27 @@ module Representable
       end
 
 
-      class Collection < self
-        include Representable::Binding::Collection
+      class Collection < Binding
+        # include Representable::Binding::Collection
 
-        def serialize_for(value, parent, as)
-          # return NodeSet so << works.
-          set_for(parent, value.collect { |item| super(item, parent, as) })
-        end
+        def write(parent, nodes, as) # FIXME!
+          wrap_node = parent
 
-        def deserialize_from(nodes)
-          content_nodes = nodes.collect do |item| # TODO: move this to Node?
-            content_for(item)
+          if wrap = self[:wrap]
+            parent << wrap_node = XML::Node(parent, wrap)
           end
 
-          content_nodes
-        end
 
-      private
-        def set_for(parent, nodes)
-          Nokogiri::XML::NodeSet.new(parent.document, nodes)
+
+
+          nodes.each { |node|
+
+            XML::Append(
+              wrap_node,
+              serialize_node(node, parent, as)
+            )
+
+           }
         end
       end
 
@@ -107,7 +100,7 @@ module Representable
       class Hash < Collection
         def serialize_for(value, parent, as)
           set_for(parent, value.collect do |k, v|
-            node = XML::Node(parent, k)
+            node = XML::_Node(parent, k)
             serialize_node(node, v, as)
           end)
         end
@@ -138,18 +131,14 @@ module Representable
       end
 
 
-      # Represents a tag attribute. Currently this only works on the top-level tag.
-      class Attribute < self
+      # <.. id="1">
+      class Attribute < Binding
         def read(node, as)
           node[as]
         end
 
-        def serialize_for(value, parent, as)
-          parent[as] = value.to_s
-        end
-
         def write(parent, value, as)
-          serialize_for(value, parent, as)
+          parent[1].merge!(as => value) # TODO: MergeAttribute
         end
       end
 

@@ -2,25 +2,55 @@ require 'test_helper'
 
 
 class XmlPublicMethodsTest < Minitest::Spec
-  #---
-  # from_hash
+  Band = Struct.new(:id, :name, :genre, :uid, :logo, :songs, :scores)
+  IoFile = Struct.new(:blob, :file)
+  MusicSong = Struct.new(:title, :track)
+
   class BandRepresenter < Representable::Decorator
     include Representable::XML
-    property :id
-    property :name
+    self.representation_wrap = :artists
+
+    property :id, attribute: true
+    property :uid, attribute: true, as: :uuid
+
+    property :name, as: :bandName
+    property :genre
+    collection :scores
+
+    property :logo do # FIXME: the name here is wrong!!!!!!!!!!!!!!!!!!!!
+      property :blob
+      property :file, as: :fileName, attribute: true
+    end
+
+    collection :songs do # FIXME: the name here is wrong!!!!!!!!!!!!!!!!!!!!
+      property :title
+      property :track, attribute: true
+    end
   end
 
-  let(:data) { %{<data><id>1</id><name>Rancid</name></data>} }
+  let(:data) { %{
+    <artists id="1" uuid="4711">
+      <bandName>Rancid</bandName>
+      <genre>Punk</genre>
+      <scores>6</scores><scores>10</scores><scores>9</scores>
+      <io_file fileName=\"logo.png\"><blob>0x1</blob></io_file>
 
-  it { BandRepresenter.new(Band.new).from_xml(data)[:id, :name].must_equal ["1", "Rancid"] }
-  it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal ["1", "Rancid"] }
+      <music_song track=\"1\"><title>The Wolf</title></music_song>
+      <music_song track=\"2\"><title>Cocktails</title></music_song>
+    </artists>}
+  }
+
+  # it { BandRepresenter.new(Band.new).from_xml(data)[:id, :name].must_equal ["1", "Rancid"] }
+  # it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal ["1", "Rancid"] }
 
   #---
-  # to_hash
-  let(:band) { Band.new("1", "Rancid") }
+  # to_xml
+  let(:band) { Band.new(1, "Rancid", "Punk", "4711", IoFile.new("0x1", "logo.png"),
+    [ MusicSong.new("The Wolf", 1), MusicSong.new("Cocktails", 2) ],
+    [ 6, 10, 9 ]
+  ) }
 
-  it { BandRepresenter.new(band).to_xml.must_equal_xml data }
-  it { BandRepresenter.new(band).render.must_equal_xml data }
+  it { BandRepresenter.new(band).to_xml.must_xml data }
 end
 
 class XmlTest < MiniTest::Spec
@@ -97,50 +127,6 @@ class XmlTest < MiniTest::Spec
       end
     end
 
-
-    describe "#to_node" do
-      it "returns Nokogiri node" do
-        node = Band.new("Rise Against").to_node
-        assert_kind_of Nokogiri::XML::Element, node
-      end
-
-      it "wraps with infered class name per default" do
-        node = Band.new("Rise Against").to_node
-        assert_xml_equal "<band><name>Rise Against</name></band>", node.to_s
-      end
-
-      it "respects #representation_wrap=" do
-        klass = Class.new(Band) do
-          include Representable
-          property :name
-        end
-
-        klass.representation_wrap = :group
-        assert_xml_equal "<group><name>Rise Against</name></group>", klass.new("Rise Against").to_node.to_s
-      end
-    end
-
-
-    describe "XML::Binding#build_for" do
-      it "returns AttributeBinding" do
-        assert_kind_of XML::Binding::Attribute, XML::Binding.build_for(Def.new(:band, :as => "band", :attribute => true))
-      end
-
-      it "returns Binding" do
-        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :class => Hash))
-        assert_kind_of XML::Binding, XML::Binding.build_for(Def.new(:band, :as => :content))
-      end
-
-      it "returns CollectionBinding" do
-        assert_kind_of XML::Binding::Collection, XML::Binding.build_for(Def.new(:band, :collection => :true))
-      end
-
-      it "returns HashBinding" do
-        assert_kind_of XML::Binding::Hash, XML::Binding.build_for(Def.new(:band, :hash => :true))
-      end
-    end
-
-
     describe "DCI" do
       module SongRepresenter
         include Representable::XML
@@ -211,13 +197,6 @@ class AttributesTest < MiniTest::Spec
       })
       assert_equal "http://apotomo.de", link.href
       assert_equal "Home, sweet home",  link.title
-    end
-
-    it "#to_xml serializes correctly" do
-      link = Link.new
-      link.href = "http://apotomo.de/"
-
-      assert_xml_equal %{<link href="http://apotomo.de/">}, link.to_xml
     end
   end
 end

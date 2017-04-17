@@ -44,14 +44,17 @@ module Representable
 
     # Returns a Nokogiri::XML object representing this object.
     def to_node(options={})
-      options[:doc] = Nokogiri::XML::Document.new # DISCUSS: why do we need a fresh Document here?
       root_tag = options[:wrap] || representation_wrap(options)
 
-      create_representation_with(Node(options[:doc], root_tag.to_s), options, Binding)
+      create_representation_with(
+        Node(root_tag),
+        options,
+        Binding
+        )
     end
 
     def to_xml(*args)
-      to_node(*args).to_s
+      Render [to_node(*args)]
     end
 
     alias_method :render, :to_xml
@@ -75,3 +78,4 @@ end
 require "representable/xml/binding"
 require "representable/xml/collection"
 require "representable/xml/namespace"
+require "representable/xml/serializer"
