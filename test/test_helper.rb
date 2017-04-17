@@ -5,6 +5,14 @@ require 'test_xml/mini_test'
 
 require "representable/debug"
 
+module MiniTest::Assertions
+  def assert_equal_xml(text, subject)
+    subject.gsub("\n", "").gsub(/(\s\s+)/, "").must_equal(text.gsub("\n", "").gsub(/(\s\s+)/, ""))
+  end
+end
+String.infect_an_assertion :assert_equal_xml, :must_xml
+
+# TODO: delete all that in 4.0:
 class Album
   attr_accessor :songs, :best_song
   def initialize(songs=nil, best_song=nil)

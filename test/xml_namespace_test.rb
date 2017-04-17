@@ -59,6 +59,7 @@ class NamespaceXMLTest < Minitest::Spec
 
   let (:book) { Model::Book.new(1, 666) }
 
+  #:simple-class
   class Library < Representable::Decorator
     feature Representable::XML
     feature Representable::XML::Namespace
@@ -72,15 +73,21 @@ class NamespaceXMLTest < Minitest::Spec
       property :isbn
     end
   end
+  #:simple-class end
 
 
   # default namespace for library
   it "what" do
-    Library.new(Model::Library.new(book)).to_xml.gsub("\n", "").gsub(/(\s\s+)/, "").must_equal %{<library xmlns=\"http://eric.van-der-vlist.com/ns/library\">
-  <book id=\"1\">
-    <isbn>666</isbn>
-  </book>
-</library>}.gsub("\n", "").gsub(/(\s\s+)/, "")
+    Library.new(Model::Library.new(book)).to_xml.must_xml(
+
+    #:simple-xml
+    %{<library xmlns="http://eric.van-der-vlist.com/ns/library">
+      <book id="1">
+        <isbn>666</isbn>
+      </book>
+    </library>}
+    #:simple-xml end
+    )
   end
 end
 
@@ -93,6 +100,7 @@ class Namespace2XMLTest < Minitest::Spec
 
   let (:book) { Model::Book.new(1, 666, Model::Character.new("Fowler"), [Model::Character.new("Frau Java", 1991, "typed")]) }
 
+  #:map-class
   class Library < Representable::Decorator
     feature Representable::XML
     feature Representable::XML::Namespace
@@ -119,15 +127,17 @@ class Namespace2XMLTest < Minitest::Spec
 
         property :qualification
 
-        # TODO: this should be referenceable to reduce redundancy!
         property :name, namespace: "http://eric.van-der-vlist.com/ns/person"
         property :born, namespace: "http://eric.van-der-vlist.com/ns/person"
       end
     end
   end
+  #:map-class end
 
   it "renders" do
-    Library.new(Model::Library.new(book)).to_xml.gsub("\n", "").must_equal %{<lib:library xmlns:lib=\"http://eric.van-der-vlist.com/ns/library\" xmlns:hr=\"http://eric.van-der-vlist.com/ns/person\">
+    Library.new(Model::Library.new(book)).to_xml.must_xml(
+#:map-xml
+%{<lib:library xmlns:lib=\"http://eric.van-der-vlist.com/ns/library\" xmlns:hr=\"http://eric.van-der-vlist.com/ns/person\">
   <lib:book id=\"1\">
     <lib:isbn>666</lib:isbn>
     <hr:author>
@@ -139,12 +149,18 @@ class Namespace2XMLTest < Minitest::Spec
       <hr:born>1991</hr:born>
     </lib:character>
   </lib:book>
-</lib:library>}.gsub("\n", "")
+</lib:library>}
+#:map-xml end
+    )
   end
 
   it "parses" do
-    Library.new(lib = Model::Library.new).from_xml(%{<lib:library xmlns:lib=\"http://eric.van-der-vlist.com/ns/library\" xmlns:hr=\"http://eric.van-der-vlist.com/ns/person\">
-  <lib:book id=\"1\">
+    lib  = Model::Library.new
+    #:parse-call
+    Library.new(lib).from_xml(%{<lib:library
+  xmlns:lib="http://eric.van-der-vlist.com/ns/library"
+  xmlns:hr="http://eric.van-der-vlist.com/ns/person">
+  <lib:book id="1">
     <lib:isbn>666</lib:isbn>
     <hr:author>
       <hr:name>Fowler</hr:name>
@@ -157,8 +173,14 @@ class Namespace2XMLTest < Minitest::Spec
       <hr:born>1991</hr:born>
     </lib:character>
   </lib:book>
-</lib:library>})
+</lib:library>}
+    #:parse-call end
+    )
 
     lib.book.inspect.must_equal %{#<struct Namespace2XMLTest::Model::Book id=\"1\", isbn=\"666\", author=#<struct Namespace2XMLTest::Model::Character name=\"Fowler\", born=nil, qualification=nil>, character=[#<struct Namespace2XMLTest::Model::Character name=\"Frau Java\", born=\"1991\", qualification=\"typed\">]>}
+
+    #:parse-res
+    lib.book.character[0].name #=> "Frau Java"
+    #:parse-res end
   end
 end
