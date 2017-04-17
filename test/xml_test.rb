@@ -63,6 +63,33 @@ class XmlPublicMethodsTest < Minitest::Spec
   ) }
 
   it { BandRepresenter.new(band).to_xml.must_xml data }
+
+  #---
+  # from_xml
+  describe "#from_xml" do
+    let(:data) { %{
+      <artists id="1" uuid="4711">
+        <bandName>Rancid</bandName>
+        <genre>Punk</genre>
+        <scores>6</scores><scores>10</scores><scores>9</scores>
+        <io_file fileName=\"logo.png\"><blob>0x1</blob></io_file>
+
+        <music_song track=\"1\"><title>The Wolf</title></music_song>
+        <music_song track=\"2\"><title>Cocktails</title></music_song>
+
+        <person><email>kt@trb.to</email></person>
+      </artists>}
+    }
+
+    it do
+      band = Band.new
+
+      BandRepresenter.new(band).from_xml(data)
+
+      band.id.must_equal "1"
+    end
+  end
+
 end
 
 class XmlTest < MiniTest::Spec

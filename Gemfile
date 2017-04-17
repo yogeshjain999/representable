@@ -1,9 +1,9 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 gemspec
 
 group :test do
-  gem 'nokogiri', '~> 1.6.8', require: false
+  gem "oga", require: false
   gem "multi_json", require: false
   gem "minitest-line"
 end

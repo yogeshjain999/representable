@@ -1,9 +1,9 @@
-require 'representable'
+require "representable"
 
 begin
-  require 'nokogiri'
+  require "oga"
 rescue LoadError => _
-  abort "Missing dependency 'nokogiri' for Representable::XML. See dependencies section in README.md for details."
+  abort "Missing dependency 'oga' for Representable::XML. See dependencies section in README.md for details."
 end
 
 module Representable
@@ -67,10 +67,10 @@ module Representable
     end
 
     def parse_xml(doc, *args)
-      node = Nokogiri::XML(doc)
+      node = Oga.parse_xml(doc)
 
-      node.remove_namespaces! if remove_namespaces?
-      node.root
+      # node.remove_namespaces! if remove_namespaces?
+      # node
     end
   end
 end

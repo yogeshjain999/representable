@@ -31,7 +31,7 @@ module Representable
         nodes = find_nodes(node, as)
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
 
-        deserialize_from(nodes)
+        deserialize_from(nodes, as)
       end
 
       # content
@@ -62,6 +62,7 @@ module Representable
       def find_nodes(doc, as)
         selector  = as
         selector  = "#{self[:wrap]}/#{as}" if self[:wrap]
+        puts "@@@@@ #{as.inspect}"
         doc.xpath(selector) # nodes
       end
 
@@ -134,7 +135,7 @@ module Representable
       # <.. id="1">
       class Attribute < Binding
         def read(node, as)
-          node[as]
+          node.at_xpath("artists").get(as) # DISCUSS: this currently only works on the top node.
         end
 
         def write(parent, value, as)
