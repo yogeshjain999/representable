@@ -1,10 +1,6 @@
 module Representable::XML
   # Experimental!
   # Best explanation so far: http://books.xmlschemata.org/relaxng/relax-CHP-11-SECT-1.html
-  #
-  # Note: This module doesn't work with JRuby because Nokogiri uses a completely
-  # different implementation in Java which has other requirements that we couldn't fulfil.
-  # Please wait for Representable 4 where we replace Nokogiri with Oga.
   module Namespace
     def self.included(includer)
       includer.extend(DSL)
@@ -64,8 +60,10 @@ module Representable::XML
       end
 
       # FIXME: this is shit, the NestedOptions is executed too late here!
-      def read(node, as)
-        super(node, prefixed(self, as))
+      def read(node, as:, **options)
+        prefixed_options = { as: prefixed(self, as) }
+
+        super( node, options.merge(prefixed_options) )
       end
 
       private
@@ -103,8 +101,7 @@ module Representable::XML
     # "Physically" add `xmlns` attributes to `node`.
     def add_namespace_definitions!(node, namespaces)
       namespaces.each do |uri, prefix|
-        prefix = prefix.nil? ? nil : prefix.to_s
-        node.add_namespace_definition(prefix, uri)
+        Merge(node, ["xmlns", prefix].compact.join(":") => uri)
       end
     end
 

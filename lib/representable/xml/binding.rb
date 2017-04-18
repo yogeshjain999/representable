@@ -134,7 +134,7 @@ module Representable
       end
 
 
-      # <.. id="1">
+      # Binding for an attribute: `<.. id="1">`
       class Attribute < Binding
         def read(node, as:, **)
           node.get(as)
