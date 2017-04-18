@@ -141,7 +141,7 @@ module Representable
         end
 
         def write(parent, value, as)
-          parent[1].merge!(as => value) # TODO: MergeAttribute
+          XML::Merge(parent, as => value)
         end
       end
 

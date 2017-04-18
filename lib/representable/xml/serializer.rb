@@ -20,6 +20,10 @@ module Representable
       node
     end
 
+    def Merge(node, attributes)
+      node[1].merge!(attributes)
+    end
+
     # Render tree functions
     def Render(arr)
       arr.collect { |(name, attrs, text, children)|
