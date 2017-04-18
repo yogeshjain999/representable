@@ -27,11 +27,11 @@ module Representable
         )
       end
 
-      def read(node, as)
-        nodes = find_nodes(node, as)
+      def read(node, options)
+        nodes = find_nodes(node, options)
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
 
-        deserialize_from(nodes, as)
+        content_for(nodes, options)
       end
 
       # content
@@ -45,10 +45,6 @@ module Representable
         XML::Node(as, {}, value) # :as !!!!!!!!!!!!!
       end
 
-      def deserialize_from(nodes)
-        content_for(nodes.first)
-      end
-
       # DISCUSS: why is this public?
       def serialize_method
         :to_node
@@ -59,22 +55,38 @@ module Representable
       end
 
     private
-      def find_nodes(doc, as)
+      def find_nodes(node, options:, as:, **)
+
+
         selector  = as
-        selector  = "#{self[:wrap]}/#{as}" if self[:wrap]
-        puts "@@@@@ #{as.inspect}"
-        doc.xpath(selector) # nodes
+        # selector  = "#{self[:wrap]}/#{as}" if self[:wrap]
+
+        # selector = "#{from_node_wrap}/#{as}"
+
+        node.xpath(selector).tap do |nodes|
+          put selector, nodes
+        end # nodes
       end
 
-      def content_for(node) # TODO: move this into a ScalarDecorator.
-        return node if typed?
+      def content_for(nodes, options) # TODO: move this into a ScalarDecorator.
+        node = nodes.first
+        # puts "{selector}: @@@@@____ #{node.inspect} " if typed?
+        return node if typed? # <logo ..>
 
-        node.content
+        scalar_content(node, options)
+      end
+
+      def scalar_content(node, options) # FIXME.
+        node.text
       end
 
 
       class Collection < Binding
         # include Representable::Binding::Collection
+
+        def content_for(nodes, options)
+          nodes.collect { |node| super([node], options) } # FIXME, super sucks.
+        end
 
         def write(parent, nodes, as) # FIXME!
           wrap_node = parent
@@ -134,8 +146,8 @@ module Representable
 
       # <.. id="1">
       class Attribute < Binding
-        def read(node, as)
-          node.at_xpath("artists").get(as) # DISCUSS: this currently only works on the top node.
+        def read(node, as:, **)
+          node.get(as) # DISCUSS: this currently only works on the top node.
         end
 
         def write(parent, value, as)

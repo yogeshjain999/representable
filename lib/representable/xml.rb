@@ -17,7 +17,6 @@ module Representable
       end
     end
 
-
     module ClassMethods
       def remove_namespaces!
         representable_attrs.options[:remove_namespaces] = true
@@ -32,14 +31,35 @@ module Representable
       end
     end
 
-    def from_xml(doc, *args)
-      node = parse_xml(doc, *args)
+    def from_xml(doc, options={})
+      node = parse_xml(doc, options)
 
-      from_node(node, *args)
+
+
+      root_tag = options[:wrap] || representation_wrap(options)
+      # options = options.merge(from_node_wrap: root_tag)
+
+
+      from_node_wrap = root_tag
+        selector = "#{from_node_wrap}"
+
+        _node = node.at_xpath(selector)
+
+
+
+
+
+      from_node(_node, options)
     end
 
     def from_node(node, options={})
-      update_properties_from(node, options, Binding)
+
+
+      update_properties_from(
+        node,
+        options,
+        Binding
+      )
     end
 
     # Returns a Nokogiri::XML object representing this object.
@@ -50,7 +70,7 @@ module Representable
         Node(root_tag),
         options,
         Binding
-        )
+      )
     end
 
     def to_xml(*args)

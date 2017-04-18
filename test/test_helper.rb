@@ -1,3 +1,4 @@
+require "raise"
 require 'representable'
 
 require 'minitest/autorun'

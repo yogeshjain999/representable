@@ -8,7 +8,7 @@ module Representable
 
   AssignFragment = ->(input, options) { options[:fragment] = input }
 
-  ReadFragment = ->(input, options) { options[:binding].read(input, options[:as]) }
+  ReadFragment = ->(input, options) { options[:binding].read(input, options) }
   Reader = ->(input, options) { options[:binding].evaluate_option(:reader, input, options) }
 
   StopOnNotFound = ->(input, options) do

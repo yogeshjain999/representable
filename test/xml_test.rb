@@ -24,17 +24,17 @@ class XmlPublicMethodsTest < Minitest::Spec
     property :genre
     collection :scores
 
-    property :logo do # FIXME: the name here is wrong!!!!!!!!!!!!!!!!!!!!
+    property :logo, class: IoFile do
       property :blob
       property :file, as: :fileName, attribute: true
     end
 
-    collection :songs do # FIXME: the name here is wrong!!!!!!!!!!!!!!!!!!!!
+    collection :songs, as: :hit, class: MusicSong do
       property :title
       property :track, attribute: true
     end
 
-    property :manager, decorator: ManagerRepresenter # FIXME: the name here is wrong!!!!!!!!!!!!!!!!!!!!
+    property :manager, decorator: ManagerRepresenter, as: :boss, class: Person
   end
 
   let(:data) { %{
@@ -44,15 +44,12 @@ class XmlPublicMethodsTest < Minitest::Spec
       <scores>6</scores><scores>10</scores><scores>9</scores>
       <io_file fileName=\"logo.png\"><blob>0x1</blob></io_file>
 
-      <music_song track=\"1\"><title>The Wolf</title></music_song>
-      <music_song track=\"2\"><title>Cocktails</title></music_song>
+      <hit track=\"1\"><title>The Wolf</title></hit>
+      <hit track=\"2\"><title>Cocktails</title></hit>
 
       <person><email>kt@trb.to</email></person>
     </artists>}
   }
-
-  # it { BandRepresenter.new(Band.new).from_xml(data)[:id, :name].must_equal ["1", "Rancid"] }
-  # it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal ["1", "Rancid"] }
 
   #---
   # to_xml
@@ -67,42 +64,35 @@ class XmlPublicMethodsTest < Minitest::Spec
   #---
   # from_xml
   describe "#from_xml" do
-    let(:data) { %{
+    let(:incoming_document) { %{
       <artists id="1" uuid="4711">
         <bandName>Rancid</bandName>
         <genre>Punk</genre>
         <scores>6</scores><scores>10</scores><scores>9</scores>
-        <io_file fileName=\"logo.png\"><blob>0x1</blob></io_file>
+        <logo fileName=\"logo.png\"><blob>0x1</blob></logo>
 
-        <music_song track=\"1\"><title>The Wolf</title></music_song>
-        <music_song track=\"2\"><title>Cocktails</title></music_song>
+        <hit track=\"1\"><title>The Wolf</title></hit>
+        <hit track=\"2\"><title>Cocktails</title></hit>
 
-        <person><email>kt@trb.to</email></person>
+        <boss><email>kt@trb.to</email></boss>
       </artists>}
     }
 
     it do
       band = Band.new
 
-      BandRepresenter.new(band).from_xml(data)
+      BandRepresenter.new(band).from_xml(incoming_document)
 
       band.id.must_equal "1"
+      band.uid.must_equal "4711"
+      band.genre.must_equal "Punk"
+      band.scores.must_equal ["6", "10", "9"]
+      band.logo.inspect.must_equal %{#<struct XmlPublicMethodsTest::IoFile blob="0x1", file="logo.png">}
+      band.songs.inspect.must_equal %{[#<struct XmlPublicMethodsTest::MusicSong title="The Wolf", track="1">, #<struct XmlPublicMethodsTest::MusicSong title="Cocktails", track="2">]}
+      band.manager.inspect.must_equal %{#<struct XmlPublicMethodsTest::Person email="kt@trb.to">}
     end
   end
 
-end
-
-class XmlTest < MiniTest::Spec
-
-  class Band
-    include Representable::XML
-    property :name
-    attr_accessor :name
-
-    def initialize(name=nil)
-      name and self.name = name
-    end
-  end
 end
 
 class CDataBand
@@ -122,52 +112,15 @@ class CDataBand
 end
 
 class TypedPropertyTest < MiniTest::Spec
-  class Band
-    include Representable::XML
-    property :name
-    attr_accessor :name
-
-    def initialize(name=nil)
-      name and self.name = name
-    end
-  end
-
-  module AlbumRepresenter
-    include Representable::XML
-    property :band, :class => Band
-  end
-
-  class Album
-    attr_accessor :band
-    def initialize(band=nil)
-      @band = band
-    end
-  end
 
   # TODO:property :group, :class => Band
   # :class
   # where to mixin DCI?
   describe ":class => Item" do
-    it "#from_xml creates one Item instance" do
-      album = Album.new.extend(AlbumRepresenter).from_xml(%{
-        <album>
-          <band><name>Bad Religion</name></band>
-        </album>
-      })
-      assert_equal "Bad Religion", album.band.name
-    end
+
 
     describe "#to_xml" do
-      it "doesn't escape xml from Band#to_xml" do
-        band = Band.new("Bad Religion")
-        album = Album.new(band).extend(AlbumRepresenter)
 
-        assert_xml_equal %{<album>
-         <band>
-           <name>Bad Religion</name>
-         </band>
-       </album>}, album.to_xml
-      end
 
       it "doesn't escape and wrap string from Band#to_node" do
         band = Band.new("Bad Religion")
@@ -194,30 +147,6 @@ class TypedPropertyTest < MiniTest::Spec
       end
     end
   end
-end
-
-# TODO: add parsing tests.
-class XMLPropertyTest < Minitest::Spec
-  Band = Struct.new(:name, :genre)
-  Manager = Struct.new(:managed)
-
-  #---
-  #- :as with scalar
-  class BandRepresenter < Representable::Decorator
-    include Representable::XML
-    property :name, as: :theyCallUs
-    property :genre, attribute: true
-  end
-
-  it { BandRepresenter.new(Band.new("Mute")).to_xml.must_equal_xml %{<band><theyCallUs>Mute</theyCallUs></band>} }
-
-  class ManagerRepresenter < Representable::Decorator
-    include Representable::XML
-    property :managed, as: :band, decorator: BandRepresenter
-  end
-
-  #- :as with nested property
-  it { ManagerRepresenter.new(Manager.new(Band.new("Mute", "Punkrock"))).to_xml.must_equal_xml %{<manager><band genre="Punkrock"><theyCallUs>Mute</theyCallUs></band></manager>} }
 end
 
 

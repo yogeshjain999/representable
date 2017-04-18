@@ -1,3 +1,9 @@
+# 4.0.0
+
+## Internals
+
+* `Binding#read(document, options)`
+
 # 3.0.4
 
 * Add proper XML namespace support.
