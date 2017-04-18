@@ -1,5 +1,9 @@
 # 4.0.0
 
+## XML
+
+* `from_xml` now considers the top-level node's name when parsing. If your incoming document's top node has the wrong name, nothing will be deserialized.
+
 ## Internals
 
 * `Binding#read(document, options)`

@@ -27,6 +27,7 @@ module Representable
         )
       end
 
+      # For parsing, we use the Oga gem.
       def read(node, options)
         nodes = find_nodes(node, options)
         return FragmentNotFound if nodes.size == 0 # TODO: write dedicated test!
@@ -41,7 +42,6 @@ module Representable
           return value
         end
 
-        # puts "@@@@@ #{XML::Node(as, {}, value)}"
         XML::Node(as, {}, value) # :as !!!!!!!!!!!!!
       end
 
@@ -56,23 +56,15 @@ module Representable
 
     private
       def find_nodes(node, options:, as:, **)
-
-
         selector  = as
-        # selector  = "#{self[:wrap]}/#{as}" if self[:wrap]
 
-        # selector = "#{from_node_wrap}/#{as}"
-
-        node.xpath(selector).tap do |nodes|
-          put selector, nodes
-        end # nodes
+        node.xpath(selector)
       end
 
       def content_for(nodes, options) # TODO: move this into a ScalarDecorator.
         node = nodes.first
-        # puts "{selector}: @@@@@____ #{node.inspect} " if typed?
-        return node if typed? # <logo ..>
 
+        return node if typed? # <logo ..>
         scalar_content(node, options)
       end
 
@@ -82,8 +74,6 @@ module Representable
 
 
       class Collection < Binding
-        # include Representable::Binding::Collection
-
         def content_for(nodes, options)
           nodes.collect { |node| super([node], options) } # FIXME, super sucks.
         end
@@ -147,7 +137,7 @@ module Representable
       # <.. id="1">
       class Attribute < Binding
         def read(node, as:, **)
-          node.get(as) # DISCUSS: this currently only works on the top node.
+          node.get(as)
         end
 
         def write(parent, value, as)

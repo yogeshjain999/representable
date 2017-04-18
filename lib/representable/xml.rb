@@ -34,35 +34,16 @@ module Representable
     def from_xml(doc, options={})
       node = parse_xml(doc, options)
 
+      root_tag = options[:wrap] || representation_wrap(options) # FIXME!
+      node     = node.at_xpath(root_tag) # parse top level node from document.
 
-
-      root_tag = options[:wrap] || representation_wrap(options)
-      # options = options.merge(from_node_wrap: root_tag)
-
-
-      from_node_wrap = root_tag
-        selector = "#{from_node_wrap}"
-
-        _node = node.at_xpath(selector)
-
-
-
-
-
-      from_node(_node, options)
+      from_node(node, options)
     end
 
     def from_node(node, options={})
-
-
-      update_properties_from(
-        node,
-        options,
-        Binding
-      )
+      update_properties_from(node, options, Binding)
     end
 
-    # Returns a Nokogiri::XML object representing this object.
     def to_node(options={})
       root_tag = options[:wrap] || representation_wrap(options)
 
@@ -80,17 +61,9 @@ module Representable
     alias_method :render, :to_xml
     alias_method :parse, :from_xml
 
-  private
-    def remove_namespaces?
-      # TODO: make local Config easily extendable so you get Config#remove_ns? etc.
-      representable_attrs.options[:remove_namespaces]
-    end
-
+    private
     def parse_xml(doc, *args)
-      node = Oga.parse_xml(doc)
-
-      # node.remove_namespaces! if remove_namespaces?
-      # node
+      Oga.parse_xml(doc)
     end
   end
 end
