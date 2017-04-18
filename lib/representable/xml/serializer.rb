@@ -22,6 +22,7 @@ module Representable
 
     def Merge(node, attributes)
       node[1].merge!(attributes)
+      node
     end
 
     # Render tree functions

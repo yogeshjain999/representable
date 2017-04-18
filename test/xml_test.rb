@@ -24,7 +24,7 @@ class XmlPublicMethodsTest < Minitest::Spec
     property :genre
     collection :scores
 
-    property :logo, class: IoFile do
+    property :logo, as: :logo, wrap: :logo, class: IoFile do
       property :blob
       property :file, as: :fileName, attribute: true
     end
@@ -42,12 +42,12 @@ class XmlPublicMethodsTest < Minitest::Spec
       <bandName>Rancid</bandName>
       <genre>Punk</genre>
       <scores>6</scores><scores>10</scores><scores>9</scores>
-      <io_file fileName=\"logo.png\"><blob>0x1</blob></io_file>
+      <logo fileName=\"logo.png\"><blob>0x1</blob></logo>
 
       <hit track=\"1\"><title>The Wolf</title></hit>
       <hit track=\"2\"><title>Cocktails</title></hit>
 
-      <person><email>kt@trb.to</email></person>
+      <boss><email>kt@trb.to</email></boss>
     </artists>}
   }
 

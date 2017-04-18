@@ -17,9 +17,9 @@ module Representable
       def write(parent, fragments, as)
         wrap_node = parent
 
-        if wrap = self[:wrap]
-          parent << wrap_node = XML::Node(parent, wrap)
-        end
+        # if wrap = self[:wrap]
+        #   parent << wrap_node = XML::Node(parent, wrap)
+        # end
 
         XML::Append(
           wrap_node,
@@ -35,14 +35,11 @@ module Representable
         content_for(nodes, options)
       end
 
-      # content
-      def serialize_node(value, parent, as)
-        if typed?
-          value.name = as if as != self[:name]
-          return value
-        end
 
-        XML::Node(as, {}, value) # :as !!!!!!!!!!!!!
+      def serialize_node(value, parent, as)
+        return value if typed?
+        #   value.name = as if as != self[:name]
+        XML::Node(as, {}, value) # <name>Rancid</name>
       end
 
       # DISCUSS: why is this public?

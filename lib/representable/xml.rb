@@ -47,11 +47,7 @@ module Representable
     def to_node(options={})
       root_tag = options[:wrap] || representation_wrap(options)
 
-      create_representation_with(
-        Node(root_tag),
-        options,
-        Binding
-      )
+      create_representation_with( Node(root_tag), options, Binding )
     end
 
     def to_xml(*args)
