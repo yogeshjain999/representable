@@ -4,26 +4,41 @@ require 'representable/hash/binding.rb'
 module Representable
   module XML
     module_function
+    class Node
+      module Create
+
+        module_function
+        def scalar(value, as:, **)
+          XML::Node(as, {}, value) # <name>Rancid</name>
+        end
+
+        def object(value, *)
+          value
+        end
+      end
+    end
+
+    # Bindings do the actual document modification, e.g. adding a node or merging an attribute.
     class Binding < Representable::Binding
       def self.build_for(definition)
-        return Collection.new(definition)      if definition.array?
+        return Collection.new(definition, new(definition, definition.typed? ? :object : :scalar))      if definition.array?
         return Hash.new(definition)            if definition.hash? and not definition[:use_attributes] # FIXME: hate this.
         return AttributeHash.new(definition)   if definition.hash? and definition[:use_attributes]
         return Attribute.new(definition)       if definition[:attribute]
         return Content.new(definition)         if definition[:content]
-        new(definition)
+        new(definition, definition.typed? ? :object : :scalar)
       end
 
-      def write(parent, fragments, as)
-        wrap_node = parent
+      def initialize(definition, node_factory=nil) # TODO: remove optional argument
+        super(definition)
+        @node_factory = node_factory
+      end
 
-        # if wrap = self[:wrap]
-        #   parent << wrap_node = XML::Node(parent, wrap)
-        # end
+      def write(parent, value, as)
 
         XML::Append(
-          wrap_node,
-          serialize_node(fragments, parent, as)
+          parent,
+          Node::Create.send(@node_factory, value, as: as)
         )
       end
 
@@ -36,7 +51,7 @@ module Representable
       end
 
 
-      def serialize_node(value, parent, as)
+      def serialize_node(value, as)
         return value if typed?
         #   value.name = as if as != self[:name]
         XML::Node(as, {}, value) # <name>Rancid</name>
@@ -75,24 +90,9 @@ module Representable
           nodes.collect { |node| super([node], options) } # FIXME, super sucks.
         end
 
+        # TODO: generic!
         def write(parent, nodes, as) # FIXME!
-          wrap_node = parent
-
-          if wrap = self[:wrap]
-            parent << wrap_node = XML::Node(parent, wrap)
-          end
-
-
-
-
-          nodes.each { |node|
-
-            XML::Append(
-              wrap_node,
-              serialize_node(node, parent, as)
-            )
-
-           }
+          nodes.each { |node| @node_factory.write(parent, node, as) }
         end
       end
 

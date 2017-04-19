@@ -24,7 +24,7 @@ class XmlPublicMethodsTest < Minitest::Spec
     property :genre
     collection :scores
 
-    property :logo, as: :logo, wrap: :logo, class: IoFile do
+    property :logo, as: :logo, class: IoFile do
       property :blob
       property :file, as: :fileName, attribute: true
     end

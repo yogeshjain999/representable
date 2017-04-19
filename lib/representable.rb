@@ -85,7 +85,7 @@ private
     child_options = {user_options: options[:user_options], }
 
     # wrap:
-    child_options[:wrap] = binding[:wrap] unless binding[:wrap].nil?
+    child_options[:as] = binding[:as] unless binding[:as].nil?
 
     # nested params:
     child_options.merge!(options[binding.name.to_sym]) if options[binding.name.to_sym]

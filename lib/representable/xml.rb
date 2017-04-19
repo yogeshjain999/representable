@@ -26,9 +26,7 @@ module Representable
         Representable::XML
       end
 
-      def collection_representer_class
-        Collection
-      end
+
     end
 
     def from_xml(doc, options={})
@@ -45,9 +43,26 @@ module Representable
     end
 
     def to_node(options={})
-      root_tag = options[:wrap] || representation_wrap(options)
 
-      create_representation_with( Node(root_tag), options, Binding )
+
+      as = ->(_options) {
+        _options[:options][:as]&&_options[:options][:as].(_options) ||
+         _options[:decorator].send(:representable_attrs).instance_variable_get(:@wrap).(_options) }
+
+      # root_tag = options[:wrap] || representation_wrap(options)
+
+
+
+      root = Definition.new("__root__", render_nil: true, as: as)
+      root = Binding.new(root, :scalar)
+
+      # problem: it wants to call represented.artists, but we need the as: logic.
+node=       root.compile_fragment(opts={represented: OpenStruct.new, binding: root, doc: [[]], options: options, decorator: self})
+
+      # node = Node::Create.scalar "",as:root_tag
+      # put node
+
+      create_representation_with( node, options, Binding )
     end
 
     def to_xml(*args)
