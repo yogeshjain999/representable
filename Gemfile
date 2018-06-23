@@ -1,14 +1,9 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 gemspec
 
 group :test do
-  gem 'nokogiri', '~> 1.6.8', require: false
-  gem "multi_json", require: false
   gem "minitest-line"
+  gem "multi_json", require: false
+  gem "nokogiri", require: false
 end
-
-# gem "declarative", path: "../declarative"
-# gem "declarative", github: "apotonick/declarative"
-
-# gem "uber","0.0.15" #, path: "../uber"
