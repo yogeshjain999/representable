@@ -1,5 +1,7 @@
 # 3.1.0
-* Remove circular require 
+* Remove circular require
+* Use Dry-types 1.0.0+ as coercion library
+* Renamed Coercion to VirtusCoercion to support old codebases
 
 # 3.0.4
 

@@ -1,18 +1,17 @@
-gem 'dry-types', '>= 1.0.0'
-require "dry-types"
+gem 'virtus'
+require "virtus"
 
 module Representable
-  module Coercion
-    module Types
-      include Dry::Types()
-    end
+  module VirtusCoercion
     class Coercer
       def initialize(type)
         @type = type
       end
 
-      def call(input, _options)
-        @type.call(input)
+      # This gets called when the :render_filter or :parse_filter option is evaluated.
+      # Usually the Coercer instance is an element in a Pipeline to allow >1 filters per property.
+      def call(input, options)
+        Virtus::Attribute.build(@type).coerce(input)
       end
     end
 
@@ -20,7 +19,7 @@ module Representable
     def self.included(base)
       base.class_eval do
         extend ClassMethods
-        register_feature Coercion
+        register_feature VirtusCoercion
       end
     end
 

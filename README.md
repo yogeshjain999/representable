@@ -130,6 +130,7 @@ class AlbumRepresenter < Representable::Decorator
     property :track
     collection :composers
   end
+end
 ```
 
 ## More
@@ -141,8 +142,8 @@ Please check the [official documentation for more](http://trailblazer.to/gems/re
 
 ## Installation
 
-The representable gem runs with all Ruby versions >= 1.9.3.
-
+The representable gem runs with all Ruby versions >= 2.4.0.
+t
 ```ruby
 gem 'representable'
 ```
@@ -168,7 +169,7 @@ gem 'nokogiri'
 
 Representable started as a heavily simplified fork of the ROXML gem. Big thanks to Ben Woosley for his extremely inspiring work.
 
-* Copyright (c) 2011-2016 Nick Sutterer <apotonick@gmail.com>
+* Copyright (c) 2011-2020 Nick Sutterer <apotonick@gmail.com>
 * ROXML is Copyright (c) 2004-2009 Ben Woosley, Zak Mandhro and Anders Engstrom.
 
 Representable is released under the [MIT License](http://www.opensource.org/licenses/MIT).
