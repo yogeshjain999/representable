@@ -70,8 +70,8 @@ module Representable
     def _inspect_function(func)
       return func.extend(Pipeline::Debug).inspect if func.is_a?(Collect)
       return func unless func.is_a?(Proc)
+
       File.readlines(func.source_location[0])[func.source_location[1]-1].match(/^\s+(\w+)/)[1]
     end
   end
 end
-

@@ -30,6 +30,7 @@ module Representable
       value = @wrap.(represented, *args)
 
       return value if value != true
+
       infer_name_for(represented.class.name)
     end
 

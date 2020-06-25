@@ -21,7 +21,8 @@ module Representable
       excluding = options[:exclude]
       # TODO: use same filtering method as in normal representer in Representable#create_representation_with.
       return hash unless props = options.delete(:exclude) || options.delete(:include)
-      hash.reject { |k,v| excluding ? props.include?(k.to_sym) : !props.include?(k.to_sym) }
+
+      hash.reject { |k,_v| excluding ? props.include?(k.to_sym) : !props.include?(k.to_sym) }
     end
   end
 end

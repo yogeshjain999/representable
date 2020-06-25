@@ -7,7 +7,7 @@ require "representable/debug"
 
 module MiniTest::Assertions
   def assert_equal_xml(text, subject)
-    subject.gsub("\n", "").gsub(/(\s\s+)/, "").must_equal(text.gsub("\n", "").gsub(/(\s\s+)/, ""))
+    assert_equal (text.gsub("\n", "").gsub(/(\s\s+)/, "")), subject.gsub("\n", "").gsub(/(\s\s+)/, "")
   end
 end
 String.infect_an_assertion :assert_equal_xml, :must_xml
@@ -47,7 +47,7 @@ module AssertJson
   module Assertions
     def assert_json(expected, actual, msg=nil)
       msg = message(msg, "") { diff expected, actual }
-      assert(expected.split("").sort == actual.split("").sort, msg)
+      assert_equal(expected.split("").sort, actual.split("").sort, msg)
     end
   end
 end

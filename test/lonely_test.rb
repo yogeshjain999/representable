@@ -60,11 +60,11 @@ class LonelyRepresenterTest < MiniTest::Spec
       end
 
       it "parses array" do
-        [].extend(representer).from_json(json).must_equal songs
+        _([].extend(representer).from_json(json)).must_equal songs
       end
 
       it "parses array with decorator" do
-        decorator.new([]).from_json(json).must_equal songs
+        _(decorator.new([]).from_json(json)).must_equal songs
       end
     end
 
@@ -75,8 +75,8 @@ class LonelyRepresenterTest < MiniTest::Spec
         end
       end
 
-      it { songs.extend(representer).to_json.must_equal json }
-      it { [].extend(representer).from_json(json).must_equal songs }
+      it { _(songs.extend(representer).to_json).must_equal json }
+      it { _([].extend(representer).from_json(json)).must_equal songs }
     end
 
     describe "with contained text" do
@@ -93,7 +93,7 @@ class LonelyRepresenterTest < MiniTest::Spec
       end
 
       it "returns objects array from #from_json" do
-        [].extend(representer).from_json(json).must_equal songs
+        _([].extend(representer).from_json(json)).must_equal songs
       end
     end
   end
@@ -112,7 +112,7 @@ class LonelyRepresenterTest < MiniTest::Spec
     end
 
 
-    it { [1,2].extend(representer).to_hash(user_options: {one: One, two: Two}).must_equal(["One: 1", "Two: 2"]) }
+    it { _([1,2].extend(representer).to_hash(user_options: {one: One, two: Two})).must_equal(["One: 1", "Two: 2"]) }
   end
 
 
@@ -129,11 +129,11 @@ class LonelyRepresenterTest < MiniTest::Spec
 
       describe "#to_json" do
         it "renders hash" do
-          songs.extend(representer).to_json.must_equal json
+          _(songs.extend(representer).to_json).must_equal json
         end
 
         it "renders hash with decorator" do
-          decorator.new(songs).to_json.must_equal json
+          _(decorator.new(songs).to_json).must_equal json
         end
 
         it "respects :exclude" do
@@ -147,11 +147,11 @@ class LonelyRepresenterTest < MiniTest::Spec
 
       describe "#from_json" do
         it "returns objects array" do
-          {}.extend(representer).from_json(json).must_equal songs
+          _({}.extend(representer).from_json(json)).must_equal songs
         end
 
         it "parses hash with decorator" do
-          decorator.new({}).from_json(json).must_equal songs
+          _(decorator.new({}).from_json(json)).must_equal songs
         end
 
         it "respects :exclude" do
@@ -171,8 +171,8 @@ class LonelyRepresenterTest < MiniTest::Spec
           end
         end
 
-        it { songs.extend(representer).to_json.must_equal json }
-        it { {}.extend(representer).from_json(json).must_equal songs }
+        it { _(songs.extend(representer).to_json).must_equal json }
+        it { _({}.extend(representer).from_json(json)).must_equal songs }
       end
     end
 
@@ -187,7 +187,7 @@ class LonelyRepresenterTest < MiniTest::Spec
       let(:data) { {one: 2, two: 3} }
 
       describe "#to_json" do
-        it { data.extend(representer).to_json.must_equal %{{"one":2,"two":3}} }
+        it { _(data.extend(representer).to_json).must_equal %{{"one":2,"two":3}} }
 
         # it "respects :exclude" do
         #   assert_json "{\"two\":{\"name\":\"Can't Take Them All\"}}", {:one => Song.new("Days Go By"), :two => Song.new("Can't Take Them All")}.extend(representer).to_json(:exclude => [:one])
@@ -199,7 +199,7 @@ class LonelyRepresenterTest < MiniTest::Spec
       end
 
       describe "#from_json" do # FIXME: what's the point of this?
-        it { data.extend(representer).from_hash(data).must_equal data }
+        it { _(data.extend(representer).from_hash(data)).must_equal data }
       end
     end
 
@@ -234,6 +234,6 @@ class CollectionWithIncludeTest < MiniTest::Spec
     end
   end
 
-  it { representer.new([Song.new(1, "ACAB")]).to_hash.must_equal([{"id"=>1, "title"=>"ACAB"}]) }
-  it { representer.new([Song.new(1, "ACAB")]).to_hash(include: [:title]).must_equal([{"title"=>"ACAB"}]) }
+  it { _(representer.new([Song.new(1, "ACAB")]).to_hash).must_equal([{"id"=>1, "title"=>"ACAB"}]) }
+  it { _(representer.new([Song.new(1, "ACAB")]).to_hash(include: [:title])).must_equal([{"title"=>"ACAB"}]) }
 end

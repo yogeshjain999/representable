@@ -76,6 +76,7 @@ private
 
   def normalize_options(options)
     return options if options.any?
+
     {user_options: {}}.merge(options) # TODO: use keyword args once we drop 2.0.
   end
 
@@ -118,8 +119,6 @@ private
       represented.extend(self)
     end
   end
-
-  # require "representable/deprecations"
 end
 
 require 'representable/autoload'

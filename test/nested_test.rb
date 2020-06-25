@@ -35,14 +35,14 @@ class NestedTest < MiniTest::Spec
 
           # do not use extend on the nested object. # FIXME: make this a proper test with two describes instead of this pseudo-meta stuff.
           if is_decorator==true
-            album.wont_be_kind_of(Representable::Hash)
+            _(album).wont_be_kind_of(Representable::Hash)
           end
         end
 
         it "parses nested properties to Album instance" do
           album = parse(representer.prepare(Album.new), output)
-          album.label.must_equal "Epitaph"
-          album.owner.must_equal "Brett Gurewitz"
+          _(album.label).must_equal "Epitaph"
+          _(album.owner).must_equal "Brett Gurewitz"
         end
       end
     end
@@ -76,9 +76,9 @@ class NestedTest < MiniTest::Spec
 
       it "parses nested properties to Album instance" do
       	album = parse(representer.prepare(Album.new), output)
-      	album.label.must_equal "Epitaph"
-      	album.owner.must_equal "Brett Gurewitz"
-        album.amount.must_equal 19
+      	_(album.label).must_equal "Epitaph"
+      	_(album.owner).must_equal "Brett Gurewitz"
+        _(album.amount).must_equal 19
       end
     end
   end
@@ -102,7 +102,7 @@ class NestedTest < MiniTest::Spec
     let(:album) { representer.prepare(Album.new("Epitaph", "Brett Gurewitz", 19)) }
 
     it "renders nested Album-properties in separate section" do
-      representer.prepare(album).to_hash.must_equal({"Label"=>{"owner"=>"Brett Gurewitz"}})
+      _(representer.prepare(album).to_hash).must_equal({"Label"=>{"owner"=>"Brett Gurewitz"}})
     end
 
     # it "parses nested properties to Album instance" do

@@ -18,6 +18,7 @@ module Representable
         return AttributeHash.new(definition)   if definition.hash? and definition[:use_attributes]
         return Attribute.new(definition)       if definition[:attribute]
         return Content.new(definition)         if definition[:content]
+
         new(definition)
       end
 

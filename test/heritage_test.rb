@@ -35,15 +35,15 @@ class HeritageTest < Minitest::Spec
   end
 
   it "B must inherit Hello! feature from A" do
-    B.representable_attrs.get(:id)[:extend].(nil).new(nil).hello.must_equal "Hello!"
+    _(B.representable_attrs.get(:id)[:extend].(nil).new(nil).hello).must_equal "Hello!"
   end
 
   it "B must have Ciao from module (feauture) Ciao" do
-    B.representable_attrs.get(:id)[:extend].(nil).new(nil).ciao.must_equal "Ciao!"
+    _(B.representable_attrs.get(:id)[:extend].(nil).new(nil).ciao).must_equal "Ciao!"
   end
 
   it "C must inherit Hello! feature from A" do
-    C.representable_attrs.get(:id)[:extend].(nil).new(nil).hello.must_equal "Hello!"
+    _(C.representable_attrs.get(:id)[:extend].(nil).new(nil).hello).must_equal "Hello!"
   end
 
   module M
@@ -60,6 +60,6 @@ class HeritageTest < Minitest::Spec
   let(:obj_extending_N) { Object.new.extend(N) }
 
   it "obj should inherit from N, and N from M" do
-    obj_extending_N.hello.must_equal "Hello!"
+    _(obj_extending_N.hello).must_equal "Hello!"
   end
 end

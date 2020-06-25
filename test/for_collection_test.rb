@@ -36,7 +36,7 @@ class ForCollectionTest < MiniTest::Spec
       it { render(songs.extend(representer.for_collection)).must_equal_document output }
       it { render(representer.for_collection.prepare(songs)).must_equal_document output }
       # parsing needs the class set, at least
-      it { parse([].extend(representer.for_collection), input).must_equal songs }
+      it { _(parse([].extend(representer.for_collection), input)).must_equal songs }
     end
 
     describe "Module::for_collection without configuration [#{format}]" do
@@ -66,7 +66,7 @@ class ForCollectionTest < MiniTest::Spec
       }
 
       it { render(representer.for_collection.new(songs)).must_equal_document output }
-      it { parse(representer.for_collection.new([]), input).must_equal songs }
+      it { _(parse(representer.for_collection.new([]), input)).must_equal songs }
     end
   end
 

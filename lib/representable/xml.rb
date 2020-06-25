@@ -1,10 +1,5 @@
-require 'representable'
-
-begin
-  require 'nokogiri'
-rescue LoadError => _
-  abort "Missing dependency 'nokogiri' for Representable::XML. See dependencies section in README.md for details."
-end
+gem 'nokogiri', '> 1.10.8'
+require 'nokogiri'
 
 module Representable
   module XML

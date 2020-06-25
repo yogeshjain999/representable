@@ -14,13 +14,13 @@ class GenericTest < MiniTest::Spec # TODO: rename/restructure to CollectionTest.
 
     it "doesn't initialize property" do
       new_album.from_hash({})
-      new_album.songs.must_be_nil
+      _(new_album.songs).must_be_nil
     end
 
     it "leaves properties untouched" do
       album.from_hash({})
       # TODO: test property.
-      album.songs.must_equal ["Fuck Armageddon"] # when the collection is not present in the incoming hash, this propery stays untouched.
+      _(album.songs).must_equal ["Fuck Armageddon"] # when the collection is not present in the incoming hash, this propery stays untouched.
     end
 
 
@@ -109,7 +109,7 @@ class GenericTest < MiniTest::Spec # TODO: rename/restructure to CollectionTest.
       end
 
       it "doesn't change represented object" do
-        song.extend(representer).send("from_#{format}", input).title.must_equal "Resist Stance"
+        _(song.extend(representer).send("from_#{format}", input).title).must_equal "Resist Stance"
       end
     end
   end

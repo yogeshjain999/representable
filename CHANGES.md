@@ -1,3 +1,6 @@
+# 3.1.0
+* Remove circular require 
+
 # 3.0.4
 
 * Add proper XML namespace support.

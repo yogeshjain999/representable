@@ -21,9 +21,9 @@ module Representable
     # them to the original object.
     def nested(name, options={}, &block)
       options = options.merge(
-        getter:   ->(opts) { self },
+        getter:   ->(_opts) { self },
         setter:   ->(opts) { },
-        instance: ->(opts) { self },
+        instance: ->(_opts) { self },
       )
 
       if block

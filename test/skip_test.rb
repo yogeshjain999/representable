@@ -24,9 +24,9 @@ class SkipParseTest < MiniTest::Spec
       "airplays" => [{"station" => "JJJ"}]
     }, user_options: { skip?: true })
 
-    song.title.must_equal "Victim Of Fate"
-    song.band.name.must_equal "Mute 98"
-    song.airplays[0].station.must_equal "JJJ"
+    _(song.title).must_equal "Victim Of Fate"
+    _(song.band.name).must_equal "Mute 98"
+    _(song.airplays[0].station).must_equal "JJJ"
   end
 
   # skip parsing.
@@ -39,9 +39,9 @@ class SkipParseTest < MiniTest::Spec
       "airplays" => [{}, {"station" => "JJJ"}, {}],
     }, user_options: { skip?: true })
 
-    song.title.must_be_nil
-    song.band.must_be_nil
-    song.airplays.must_equal [airplay]
+    _(song.title).must_be_nil
+    _(song.band).must_be_nil
+    _(song.airplays).must_equal [airplay]
   end
 end
 
@@ -63,19 +63,19 @@ class SkipRenderTest < MiniTest::Spec
   let(:skip_song) { OpenStruct.new(title: "Time Bomb",   band: OpenStruct.new(name: "Rancid")).extend(representer) }
 
   # do render.
-  it { song.to_hash(user_options: { skip?: true }).must_equal({"title"=>"Black Night", "band"=>{"name"=>"Time Again"}}) }
+  it { _(song.to_hash(user_options: { skip?: true })).must_equal({"title"=>"Black Night", "band"=>{"name"=>"Time Again"}}) }
   # skip.
-  it { skip_song.to_hash(user_options: { skip?: true }).must_equal({"title"=>"Time Bomb"}) }
+  it { _(skip_song.to_hash(user_options: { skip?: true })).must_equal({"title"=>"Time Bomb"}) }
 
   # do render all collection items.
   it do
     song = OpenStruct.new(airplays: [OpenStruct.new(station: "JJJ"), OpenStruct.new(station: "ABC")]).extend(representer)
-    song.to_hash(user_options: { skip?: true }).must_equal({"airplays"=>[{"station"=>"JJJ"}, {"station"=>"ABC"}]})
+    _(song.to_hash(user_options: { skip?: true })).must_equal({"airplays"=>[{"station"=>"JJJ"}, {"station"=>"ABC"}]})
   end
 
   # skip middle item.
   it do
     song = OpenStruct.new(airplays: [OpenStruct.new(station: "JJJ"), OpenStruct.new(station: "Radio Dreyeckland"), OpenStruct.new(station: "ABC")]).extend(representer)
-    song.to_hash(user_options: { skip?: true }).must_equal({"airplays"=>[{"station"=>"JJJ"}, {"station"=>"ABC"}]})
+    _(song.to_hash(user_options: { skip?: true })).must_equal({"airplays"=>[{"station"=>"JJJ"}, {"station"=>"ABC"}]})
   end
 end

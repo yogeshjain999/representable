@@ -53,6 +53,7 @@ module Representable
 
     def representable?
       return if self[:representable] == false
+
       self[:representable] or typed?
     end
 

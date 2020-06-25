@@ -12,8 +12,8 @@ class XmlPublicMethodsTest < Minitest::Spec
 
   let(:data) { %{<data><id>1</id><name>Rancid</name></data>} }
 
-  it { BandRepresenter.new(Band.new).from_xml(data)[:id, :name].must_equal ["1", "Rancid"] }
-  it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal ["1", "Rancid"] }
+  it { _(BandRepresenter.new(Band.new).from_xml(data)[:id, :name]).must_equal ["1", "Rancid"] }
+  it { _(BandRepresenter.new(Band.new).parse(data)[:id, :name]).must_equal ["1", "Rancid"] }
 
   #---
   # to_hash
@@ -468,11 +468,11 @@ class XMLCollectionTest < MiniTest::Spec
         end
 
         it "parses array" do
-          [].extend(representer).from_xml(xml_doc).must_equal songs
+          _([].extend(representer).from_xml(xml_doc)).must_equal songs
         end
 
         it "parses array with decorator" do
-          decorator.new([]).from_xml(xml_doc).must_equal songs
+          _(decorator.new([]).from_xml(xml_doc)).must_equal songs
         end
       end
     end
@@ -505,7 +505,7 @@ class XMLCollectionTest < MiniTest::Spec
 
       describe "#from_json" do
         it "returns hash" do
-          {}.extend(representer).from_xml(xml_doc).must_equal songs
+          _({}.extend(representer).from_xml(xml_doc)).must_equal songs
         end
 
         it "respects :exclude" do
@@ -517,7 +517,7 @@ class XMLCollectionTest < MiniTest::Spec
         end
 
         it "parses hash with decorator" do
-          decorator.new({}).from_xml(xml_doc).must_equal songs
+          _(decorator.new({}).from_xml(xml_doc)).must_equal songs
         end
       end
     end

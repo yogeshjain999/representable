@@ -177,7 +177,7 @@ class Namespace2XMLTest < Minitest::Spec
     #:parse-call end
     )
 
-    lib.book.inspect.must_equal %{#<struct Namespace2XMLTest::Model::Book id=\"1\", isbn=\"666\", author=#<struct Namespace2XMLTest::Model::Character name=\"Fowler\", born=nil, qualification=nil>, character=[#<struct Namespace2XMLTest::Model::Character name=\"Frau Java\", born=\"1991\", qualification=\"typed\">]>}
+    _(lib.book.inspect).must_equal %{#<struct Namespace2XMLTest::Model::Book id=\"1\", isbn=\"666\", author=#<struct Namespace2XMLTest::Model::Character name=\"Fowler\", born=nil, qualification=nil>, character=[#<struct Namespace2XMLTest::Model::Character name=\"Frau Java\", born=\"1991\", qualification=\"typed\">]>}
 
     #:parse-res
     lib.book.character[0].name #=> "Frau Java"

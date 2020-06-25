@@ -24,7 +24,7 @@ class RepresentTest < MiniTest::Spec
       }
 
       it { render(representer.represent(songs)).must_equal_document output }
-      it { parse(representer.represent([]), input).must_equal songs }
+      it { _(parse(representer.represent([]), input)).must_equal songs }
     end
 
     # Decorator.represents detects collection.
@@ -40,7 +40,7 @@ class RepresentTest < MiniTest::Spec
       }
 
       it { render(representer.represent(songs)).must_equal_document output }
-      it("ficken") { parse(representer.represent([]), input).must_equal songs }
+      it("ficken") { _(parse(representer.represent([]), input)).must_equal songs }
     end
   end
 
@@ -65,7 +65,7 @@ class RepresentTest < MiniTest::Spec
       }
 
       it { render(representer.represent(song)).must_equal_document output }
-      it { parse(representer.represent(Song.new), input).must_equal song }
+      it { _(parse(representer.represent(Song.new), input)).must_equal song }
     end
 
 
@@ -82,7 +82,7 @@ class RepresentTest < MiniTest::Spec
       }
 
       it { render(representer.represent(song)).must_equal_document output }
-      it { parse(representer.represent(Song.new), input).must_equal song }
+      it { _(parse(representer.represent(Song.new), input)).must_equal song }
     end
   end
 end

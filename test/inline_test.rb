@@ -22,7 +22,7 @@ class InlineTest < MiniTest::Spec
       let(:format) { format }
 
       it { render(request).must_equal_document output }
-      it { parse(request, input).song.name.must_equal "You've Taken Everything"}
+      it { _(parse(request, input).song.name).must_equal "You've Taken Everything"}
     end
   end
 
@@ -47,7 +47,7 @@ class InlineTest < MiniTest::Spec
       let(:format) { format } # FIXME: why do we have to define this?
 
       it { render(request).must_equal_document output }
-      it { parse(request, input).songs.first.name.must_equal "You've Taken Everything"}
+      it { _(parse(request, input).songs.first.name).must_equal "You've Taken Everything"}
     end
   end
 
@@ -58,7 +58,7 @@ class InlineTest < MiniTest::Spec
       end
     end
 
-    it { request.to_hash.must_equal({"song"=>{"name"=>"Alive"}}) }
+    it { _(request.to_hash).must_equal({"song"=>{"name"=>"Alive"}}) }
   end
 
 
@@ -76,7 +76,7 @@ class InlineTest < MiniTest::Spec
       end
 
       it "doesn't change represented object" do
-        request.send("from_#{format}", input).song.must_equal song
+        _(request.send("from_#{format}", input).song).must_equal song
       end
     end
   end
@@ -96,8 +96,8 @@ class InlineTest < MiniTest::Spec
 
       let(:decorator) { representer.prepare(request) }
 
-      it { decorator.to_hash.must_equal({"requester"=>"Josephine", "song"=>{"name"=>"Alive"}}) }
-      it { decorator.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name.must_equal "You've Taken Everything"}
+      it { _(decorator.to_hash).must_equal({"requester"=>"Josephine", "song"=>{"name"=>"Alive"}}) }
+      it { _(decorator.from_hash({"song"=>{"name"=>"You've Taken Everything"}}).song.name).must_equal "You've Taken Everything"}
     end
   end
 
@@ -110,7 +110,7 @@ class InlineTest < MiniTest::Spec
 
     it "uses an inline decorator and doesn't alter represented" do
       representer.prepare(Struct.new(:song).new(song)).to_hash
-      song.wont_be_kind_of Representable
+      _(song).wont_be_kind_of Representable
     end
   end
 
@@ -221,8 +221,8 @@ class InlineTest < MiniTest::Spec
       end
     end
 
-    it do OpenStruct.new(:song => OpenStruct.new(:title => "The Fever And The Sound", :artist => "Strung Out")).extend(representer).
-      to_hash.
+    it do _(OpenStruct.new(:song => OpenStruct.new(:title => "The Fever And The Sound", :artist => "Strung Out")).extend(representer).
+      to_hash).
       must_equal({"song"=>{"artist"=>"Strung Out", "title"=>"The Fever And The Sound"}})
     end
   end
@@ -246,7 +246,7 @@ class InlineTest < MiniTest::Spec
       end
     end
 
-    it { Object.new.extend(Mod).to_hash.must_equal("song"=>{"duration"=>"6:53"}) }
+    it { _(Object.new.extend(Mod).to_hash).must_equal("song"=>{"duration"=>"6:53"}) }
   end
 
   # define method inline with Decorator
@@ -267,6 +267,6 @@ class InlineTest < MiniTest::Spec
       end
     end
 
-    it { dec.new(Object.new).to_hash.must_equal("song"=>{"duration"=>"6:53"}) }
+    it { _(dec.new(Object.new).to_hash).must_equal("song"=>{"duration"=>"6:53"}) }
   end
 end

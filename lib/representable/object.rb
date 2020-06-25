@@ -1,8 +1,6 @@
-require 'representable'
-require 'representable/object/binding'
-
 module Representable
   module Object
+    autoload :Binding, 'representable/object/binding'
     def self.included(base)
       base.class_eval do
         include Representable

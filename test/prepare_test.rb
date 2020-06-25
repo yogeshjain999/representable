@@ -28,7 +28,7 @@ class PrepareTest < BaseTest
 
     it "calls prepare:, nothing else" do
       # render(hit).must_equal_document(output)
-      hit.to_hash.must_equal({"song" => PreparerClass.new(song)})
+      _(hit.to_hash).must_equal({"song" => PreparerClass.new(song)})
     end
 
 
@@ -60,7 +60,7 @@ class PrepareTest < BaseTest
       # render(hit).must_equal_document(output)
       hit.from_hash("song" => {})
 
-      hit.song.must_equal(PreparerClass.new(String.new))
+      _(hit.song).must_equal(PreparerClass.new(String.new))
     end
   end
 end

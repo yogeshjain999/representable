@@ -13,15 +13,15 @@ class JSONPublicMethodsTest < Minitest::Spec
 
   let(:json) { '{"id":1,"name":"Rancid"}' }
 
-  it { BandRepresenter.new(Band.new).from_json(json)[:id, :name].must_equal [1, "Rancid"] }
-  it { BandRepresenter.new(Band.new).parse(json)[:id, :name].must_equal [1, "Rancid"] }
+  it { _(BandRepresenter.new(Band.new).from_json(json)[:id, :name]).must_equal [1, "Rancid"] }
+  it { _(BandRepresenter.new(Band.new).parse(json)[:id, :name]).must_equal [1, "Rancid"] }
 
   #---
   # to_json
   let(:band) { Band.new(1, "Rancid") }
 
-  it { BandRepresenter.new(band).to_json.must_equal json }
-  it { BandRepresenter.new(band).render.must_equal json }
+  it { _(BandRepresenter.new(band).to_json).must_equal json }
+  it { _(BandRepresenter.new(band).render).must_equal json }
 end
 
   class APITest < MiniTest::Spec
@@ -356,7 +356,7 @@ end
       end
 
       it "renders" do
-        OpenStruct.new(:songs => {"7" => Song.new("Contemplation")}).extend(representer).to_hash.must_equal("songs"=>{"7"=>{"name"=>"Contemplation"}})
+        _(OpenStruct.new(:songs => {"7" => Song.new("Contemplation")}).extend(representer).to_hash).must_equal("songs"=>{"7"=>{"name"=>"Contemplation"}})
       end
 
       describe "parsing" do
@@ -364,12 +364,12 @@ end
         let(:hsh) { {"7"=>{"name"=>"Contemplation"}} }
 
         it "parses incoming hash" do
-          subject.from_hash("songs"=>hsh).songs.must_equal({"7"=>Song.new("Contemplation")})
+          _(subject.from_hash("songs"=>hsh).songs).must_equal({"7"=>Song.new("Contemplation")})
         end
 
         it "doesn't modify the incoming hash" do
           subject.from_hash("songs"=> incoming_hash = hsh.dup)
-          hsh.must_equal incoming_hash
+          _(hsh).must_equal incoming_hash
         end
       end
     end

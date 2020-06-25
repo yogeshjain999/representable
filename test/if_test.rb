@@ -44,20 +44,20 @@ class IfTest < MiniTest::Spec
     subject { OpenStruct.new(:signed_contract => false, :label => "Fat") }
 
     it "skips when false" do
-      subject.extend(representer).to_hash.must_equal({})
+      _(subject.extend(representer).to_hash).must_equal({})
     end
 
     it "represents when true" do
       subject.signed_contract= true
-      subject.extend(representer).to_hash.must_equal({"label"=>"Fat"})
+      _(subject.extend(representer).to_hash).must_equal({"label"=>"Fat"})
     end
 
     it "works with decorator" do
       rpr = representer
-      Class.new(Representable::Decorator) do
+      _(Class.new(Representable::Decorator) do
         include Representable::Hash
         include rpr
-      end.new(subject).to_hash.must_equal({})
+      end.new(subject).to_hash).must_equal({})
     end
   end
 
@@ -69,11 +69,11 @@ class IfTest < MiniTest::Spec
     subject { OpenStruct.new(:name => "Outbound").extend(representer) }
 
     it "works without specifying options" do
-      subject.to_hash.must_equal({})
+      _(subject.to_hash).must_equal({})
     end
 
     it "passes user options to block" do
-      subject.to_hash(user_options: { include_name: true }).must_equal({"name" => "Outbound"})
+      _(subject.to_hash(user_options: { include_name: true })).must_equal({"name" => "Outbound"})
     end
   end
 end

@@ -1,9 +1,9 @@
 require 'psych'
 require 'representable/hash'
-require 'representable/yaml/binding'
 
 module Representable
   module YAML
+    autoload :Binding, 'representable/yaml/binding'
     include Hash
 
     def self.included(base)
@@ -40,7 +40,7 @@ module Representable
       stream.to_yaml
     end
 
-     alias_method :render, :to_yaml
+    alias_method :render, :to_yaml
     alias_method :parse, :from_yaml
   end
 end

@@ -42,7 +42,7 @@ class WrapTest < MiniTest::Spec
 
       it { render(band, {:number => 182}).must_equal_document(output) }
 
-      it { parse(band, input, {:number => 182}).genre.must_equal "Poppunk" } # TODO: better test. also, xml parses _any_ wrap.
+      it { _(parse(band, input, {:number => 182}).genre).must_equal "Poppunk" } # TODO: better test. also, xml parses _any_ wrap.
     end
   end
 end
@@ -69,15 +69,15 @@ class HashDisableWrapTest < MiniTest::Spec
 
   # direct, local api.
   it do
-    band.to_hash.must_equal({"bands" => {"name"=>"Social Distortion"}})
-    band.to_hash(wrap: false).must_equal({"name"=>"Social Distortion"})
-    band.to_hash(wrap: :band).must_equal(:band=>{"name"=>"Social Distortion"})
+    _(band.to_hash).must_equal({"bands" => {"name"=>"Social Distortion"}})
+    _(band.to_hash(wrap: false)).must_equal({"name"=>"Social Distortion"})
+    _(band.to_hash(wrap: :band)).must_equal(:band=>{"name"=>"Social Distortion"})
   end
 
   it do
-    band.from_hash({"bands" => {"name"=>"Social Distortion"}}).name.must_equal "Social Distortion"
-    band.from_hash({"name"=>"Social Distortion"}, wrap: false).name.must_equal "Social Distortion"
-    band.from_hash({band: {"name"=>"Social Distortion"}}, wrap: :band).name.must_equal "Social Distortion"
+    _(band.from_hash({"bands" => {"name"=>"Social Distortion"}}).name).must_equal "Social Distortion"
+    _(band.from_hash({"name"=>"Social Distortion"}, wrap: false).name).must_equal "Social Distortion"
+    _(band.from_hash({band: {"name"=>"Social Distortion"}}, wrap: :band).name).must_equal "Social Distortion"
   end
 
 
@@ -94,11 +94,11 @@ class HashDisableWrapTest < MiniTest::Spec
 
   # band has wrap turned off per property definition, however, label still has wrap.
   it "renders" do
-    album.to_hash.must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
+    _(album.to_hash).must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
   end
 
   it "parses" do
-    album.from_hash({"albums" => {"band" => {"name"=>"Rvivr"}}}).band.name.must_equal "Rvivr"
+    _(album.from_hash({"albums" => {"band" => {"name"=>"Rvivr"}}}).band.name).must_equal "Rvivr"
   end
 end
 
@@ -142,7 +142,7 @@ class XMLDisableWrapTest < MiniTest::Spec
   # band has wrap turned of per property definition, however, label still has wrap.
   it "rendersxx" do
     skip
-    album.to_xml.must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
+    _(album.to_xml).must_equal({"albums" => {"band" => {"name"=>"Social Distortion", "label"=>{"important"=>{"name"=>"Epitaph"}}}}})
   end
 
   # it "parses" do

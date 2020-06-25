@@ -14,15 +14,15 @@ id: 1
 name: Rancid
 } }
 
-  it { BandRepresenter.new(Band.new).from_yaml(data)[:id, :name].must_equal [1, "Rancid"] }
-  it { BandRepresenter.new(Band.new).parse(data)[:id, :name].must_equal [1, "Rancid"] }
+  it { _(BandRepresenter.new(Band.new).from_yaml(data)[:id, :name]).must_equal [1, "Rancid"] }
+  it { _(BandRepresenter.new(Band.new).parse(data)[:id, :name]).must_equal [1, "Rancid"] }
 
   #---
   # to_yaml
   let(:band) { Band.new("1", "Rancid") }
 
-  it { BandRepresenter.new(band).to_yaml.must_equal data }
-  it { BandRepresenter.new(band).render.must_equal data }
+  it { _(BandRepresenter.new(band).to_yaml).must_equal data }
+  it { _(BandRepresenter.new(band).render).must_equal data }
 end
 
 class YamlTest < MiniTest::Spec
@@ -47,14 +47,14 @@ class YamlTest < MiniTest::Spec
 
     describe "#to_yaml" do
       it "renders plain property" do
-        album.extend(yaml).to_yaml.must_equal(
+        _(album.extend(yaml).to_yaml).must_equal(
 "---
 best_song: Liar
 ")
       end
 
       it "always renders values into strings" do
-        Album.new.tap { |a| a.best_song = 8675309 }.extend(yaml).to_yaml.must_equal(
+        _(Album.new.tap { |a| a.best_song = 8675309 }.extend(yaml).to_yaml).must_equal(
 "---
 best_song: 8675309
 "
@@ -65,10 +65,10 @@ best_song: 8675309
 
     describe "#from_yaml" do
       it "parses plain property" do
-        album.extend(yaml).from_yaml(
+        _(album.extend(yaml).from_yaml(
 "---
 best_song: This Song Is Recycled
-").best_song.must_equal "This Song Is Recycled"
+").best_song).must_equal "This Song Is Recycled"
       end
     end
 
@@ -87,7 +87,7 @@ best_song: This Song Is Recycled
 
       describe "#to_yaml" do
         it "renders embedded typed property" do
-          album.extend(yaml_album).to_yaml.must_equal "---
+          _(album.extend(yaml_album).to_yaml).must_equal "---
 best_song:
   name: Liar
 "
@@ -96,10 +96,10 @@ best_song:
 
       describe "#from_yaml" do
         it "parses embedded typed property" do
-          album.extend(yaml_album).from_yaml("---
+          _(album.extend(yaml_album).from_yaml("---
 best_song:
   name: Go With Me
-").must_equal Album.new(nil,Song.new("Go With Me"))
+")).must_equal Album.new(nil,Song.new("Go With Me"))
         end
       end
     end
@@ -116,7 +116,7 @@ best_song:
 
     describe "#to_yaml" do
       it "renders a block style list per default" do
-        album.extend(yaml).to_yaml.must_equal "---
+        _(album.extend(yaml).to_yaml).must_equal "---
 songs:
 - Jackhammer
 - Terrible Man
@@ -125,7 +125,7 @@ songs:
 
       it "renders a flow style list when :style => :flow set" do
         yaml = yaml_representer { collection :songs, :style => :flow }
-        album.extend(yaml).to_yaml.must_equal "---
+        _(album.extend(yaml).to_yaml).must_equal "---
 songs: [Jackhammer, Terrible Man]
 "
       end
@@ -134,16 +134,16 @@ songs: [Jackhammer, Terrible Man]
 
     describe "#from_yaml" do
       it "parses a block style list" do
-        album.extend(yaml).from_yaml("---
+        _(album.extend(yaml).from_yaml("---
 songs:
 - Off Key Melody
-- Sinking").must_equal Album.new(["Off Key Melody", "Sinking"])
+- Sinking")).must_equal Album.new(["Off Key Melody", "Sinking"])
 
       end
 
       it "parses a flow style list" do
-        album.extend(yaml).from_yaml("---
-songs: [Off Key Melody, Sinking]").must_equal Album.new(["Off Key Melody", "Sinking"])
+        _(album.extend(yaml).from_yaml("---
+songs: [Off Key Melody, Sinking]")).must_equal Album.new(["Off Key Melody", "Sinking"])
       end
     end
 
@@ -162,7 +162,7 @@ songs: [Off Key Melody, Sinking]").must_equal Album.new(["Off Key Melody", "Sink
 
       describe "#to_yaml" do
         it "renders collection of typed property" do
-          album.extend(yaml_album).to_yaml.must_equal "---
+          _(album.extend(yaml_album).to_yaml).must_equal "---
 songs:
 - name: Liar
   track: 1
@@ -174,12 +174,12 @@ songs:
 
       describe "#from_yaml" do
         it "parses collection of typed property" do
-          album.extend(yaml_album).from_yaml("---
+          _(album.extend(yaml_album).from_yaml("---
 songs:
 - name: One Shot Deal
   track: 4
 - name: Three Way Dance
-  track: 5").must_equal Album.new([Song.new("One Shot Deal", 4), Song.new("Three Way Dance", 5)])
+  track: 5")).must_equal Album.new([Song.new("One Shot Deal", 4), Song.new("Three Way Dance", 5)])
         end
       end
     end

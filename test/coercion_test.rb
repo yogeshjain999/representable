@@ -21,7 +21,7 @@ class VirtusCoercionTest < MiniTest::Spec
     :band  => OpenStruct.new(:founded => "1977"),
     :songs => [OpenStruct.new(:ok => 1), OpenStruct.new(:ok => 0)]) }
 
-  it { album.extend(representer).to_hash.must_equal({"title"=>"Dire Straits", "length"=>41.34, "band"=>{"founded"=>1977}, "songs"=>[{"ok"=>true}, {"ok"=>false}]}) }
+  it { _(album.extend(representer).to_hash).must_equal({"title"=>"Dire Straits", "length"=>41.34, "band"=>{"founded"=>1977}, "songs"=>[{"ok"=>true}, {"ok"=>false}]}) }
 
   it {
     album = OpenStruct.new
@@ -29,9 +29,9 @@ class VirtusCoercionTest < MiniTest::Spec
     album.from_hash({"title"=>"Dire Straits", "length"=>"41.34", "band"=>{"founded"=>"1977"}, "songs"=>[{"ok"=>1}, {"ok"=>0}]})
 
     # it
-    album.length.must_equal 41.34
-    album.band.founded.must_equal 1977
-    album.songs[0].ok.must_equal true
+    _(album.length).must_equal 41.34
+    _(album.band.founded).must_equal 1977
+    _(album.songs[0].ok).must_equal true
   }
 
 
@@ -45,8 +45,8 @@ class VirtusCoercionTest < MiniTest::Spec
     end
 
     # user's :parse_filter(s) are run before coercion.
-    it { OpenStruct.new.extend(representer).from_hash("length"=>"1").length.must_equal 1.1 }
+    it { _(OpenStruct.new.extend(representer).from_hash("length"=>"1").length).must_equal 1.1 }
     # user's :render_filter(s) are run before coercion.
-    it { OpenStruct.new(:length=>1).extend(representer).to_hash.must_equal({"length" => 1.1}) }
+    it { _(OpenStruct.new(:length=>1).extend(representer).to_hash).must_equal({"length" => 1.1}) }
   end
 end

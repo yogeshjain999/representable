@@ -64,7 +64,7 @@ class CachedTest < MiniTest::Spec
       # album2 = Model::Album.new("Louder And Even More Dangerous", [song2, song])
 
       # makes sure options are passed correctly.
-      representer.to_hash(user_options: {volume: 9}).must_equal({"name"=>"Live And Dangerous",
+      _(representer.to_hash(user_options: {volume: 9})).must_equal({"name"=>"Live And Dangerous",
         "songs"=>[{"title"=>"Jailbreak:{:volume=>9}"}, {"title"=>"Southbound:{:volume=>9}"}, {"title"=>"Emerald:{:volume=>9}"}]}) # called in Deserializer/Serializer
 
       # representer becomes reusable as it is stateless.
@@ -81,22 +81,22 @@ class CachedTest < MiniTest::Spec
       data = Profiler.profile { representer.to_hash }
 
       # 3 songs get decorated.
-      data.must_match(/3\s*Representable::Function::Decorate#call/m)
+      _(data).must_match(/3\s*Representable::Function::Decorate#call/m)
       # These weird Regexp bellow are a quick workaround to accomodate
       # the different profiler result formats.
       #   - "3   <Class::Representable::Decorator>#prepare" -> At MRI Ruby
       #   - "3  Representable::Decorator.prepare"           -> At JRuby
 
       # 3 nested decorator is instantiated for 3 Songs, though.
-      data.must_match(/3\s*(<Class::)?Representable::Decorator\>?[\#.]prepare/m)
+      _(data).must_match(/3\s*(<Class::)?Representable::Decorator\>?[\#.]prepare/m)
       # no Binding is instantiated at runtime.
-      data.wont_match "Representable::Binding#initialize"
+      _(data).wont_match "Representable::Binding#initialize"
       # 2 mappers for Album, Song
       # data.must_match "2   Representable::Mapper::Methods#initialize"
       # title, songs, 3x title, composer
-      data.must_match(/8\s*Representable::Binding[#\.]render_pipeline/m)
-      data.wont_match "render_functions"
-      data.wont_match "Representable::Binding::Factories#render_functions"
+      _(data).must_match(/8\s*Representable::Binding[#\.]render_pipeline/m)
+      _(data).wont_match "render_functions"
+      _(data).wont_match "Representable::Binding::Factories#render_functions"
     end
   end
 
@@ -118,14 +118,14 @@ class CachedTest < MiniTest::Spec
 
       AlbumRepresenter.new(album).from_hash(album_hash)
 
-      album.songs.size.must_equal 3
-      album.name.must_equal "Louder And Even More Dangerous"
-      album.songs[0].title.must_equal "Southbound"
-      album.songs[0].composer.name.must_equal "Lynott"
-      album.songs[1].title.must_equal "Jailbreak"
-      album.songs[1].composer.name.must_equal "Phil Lynott"
-      album.songs[2].title.must_equal "Emerald"
-      album.songs[2].composer.must_be_nil
+      _(album.songs.size).must_equal 3
+      _(album.name).must_equal "Louder And Even More Dangerous"
+      _(album.songs[0].title).must_equal "Southbound"
+      _(album.songs[0].composer.name).must_equal "Lynott"
+      _(album.songs[1].title).must_equal "Jailbreak"
+      _(album.songs[1].composer.name).must_equal "Phil Lynott"
+      _(album.songs[2].title).must_equal "Emerald"
+      _(album.songs[2].composer).must_be_nil
 
       # TODO: test options.
     end
@@ -139,12 +139,12 @@ class CachedTest < MiniTest::Spec
       # only 2 nested decorators are instantiated, Song, and Artist.
       # Didn't like the regexp?
       # MRI and JRuby has different output formats. See note above.
-      data.must_match(/5\s*(<Class::)?Representable::Decorator>?[#\.]prepare/)
+      _(data).must_match(/5\s*(<Class::)?Representable::Decorator>?[#\.]prepare/)
       # a total of 5 properties in the object graph.
-      data.wont_match "Representable::Binding#initialize"
+      _(data).wont_match "Representable::Binding#initialize"
 
-      data.wont_match "parse_functions" # no pipeline creation.
-      data.must_match(/10\s*Representable::Binding[#\.]parse_pipeline/)
+      _(data).wont_match "parse_functions" # no pipeline creation.
+      _(data).must_match(/10\s*Representable::Binding[#\.]parse_pipeline/)
       # three mappers for Album, Song, composer
       # data.must_match "3   Representable::Mapper::Methods#initialize"
       # # 6 deserializers as the songs collection uses 2.
