@@ -5,6 +5,20 @@ module Representable
   #
   # Actually parsing the fragment from the document happens in Binding#read, everything after that is generic.
   class Binding
+    class Map < Array
+      def call(method, options)
+        each do |bin|
+          options[:binding] = bin # this is so much faster than options.merge().
+          bin.send(method, options)
+        end
+      end
+
+      # TODO: Merge with Definitions.
+      def <<(binding) # can be slow. this is compile time code.
+        (existing = find { |bin| bin.name == binding.name }) ? self[index(existing)] = binding : super(binding)
+      end
+    end
+
     class FragmentNotFound
     end
 

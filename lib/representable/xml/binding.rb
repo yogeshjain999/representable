@@ -1,6 +1,3 @@
-require 'representable/binding'
-require 'representable/hash/binding.rb'
-
 module Representable
   module XML
     module_function def Node(document, name, attributes={})

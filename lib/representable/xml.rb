@@ -3,6 +3,10 @@ require 'nokogiri'
 
 module Representable
   module XML
+    autoload :Binding, 'representable/xml/binding'
+    autoload :Collection, 'representable/xml/collection'
+    autoload :Namespace, 'representable/xml/namespace'
+
     def self.included(base)
       base.class_eval do
         include Representable
@@ -66,7 +70,3 @@ module Representable
     end
   end
 end
-
-require "representable/xml/binding"
-require "representable/xml/collection"
-require "representable/xml/namespace"

@@ -1,5 +1,3 @@
-require 'representable/hash/binding'
-
 module Representable
   module YAML
     class Binding < Representable::Hash::Binding

@@ -16,6 +16,17 @@ require "representable/for_collection"
 require "representable/represent"
 
 module Representable
+  autoload :Binding, 'representable/binding'
+  autoload :HashMethods, 'representable/hash_methods'
+  autoload :Decorator, 'representable/decorator'
+
+  autoload :Hash, 'representable/hash'
+  autoload :JSON, 'representable/json'
+  autoload :Object, 'representable/object'
+  autoload :YAML, 'representable/yaml'
+  autoload :XML, 'representable/xml'
+
+
   attr_writer :representable_attrs
 
   def self.included(base)
@@ -46,19 +57,6 @@ private
     doc
   end
 
-  class Binding::Map < Array
-    def call(method, options)
-      each do |bin|
-        options[:binding] = bin # this is so much faster than options.merge().
-        bin.send(method, options)
-      end
-    end
-
-     # TODO: Merge with Definitions.
-    def <<(binding) # can be slow. this is compile time code.
-      (existing = find { |bin| bin.name == binding.name }) ? self[index(existing)] = binding : super(binding)
-    end
-  end
 
   def representable_map(options, format)
     Binding::Map.new(representable_bindings_for(format, options))
@@ -120,5 +118,3 @@ private
     end
   end
 end
-
-require 'representable/autoload'

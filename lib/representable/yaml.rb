@@ -1,9 +1,9 @@
 require 'psych'
-require 'representable/hash'
 
 module Representable
   module YAML
     autoload :Binding, 'representable/yaml/binding'
+
     include Hash
 
     def self.included(base)

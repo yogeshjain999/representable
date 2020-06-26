@@ -20,9 +20,9 @@ module Representable
     def filter_keys_for!(hash, options)
       excluding = options[:exclude]
       # TODO: use same filtering method as in normal representer in Representable#create_representation_with.
-      return hash unless props = options.delete(:exclude) || options.delete(:include)
+      return hash unless (props = (options.delete(:exclude) || options.delete(:include)))
 
-      hash.reject { |k,_v| excluding ? props.include?(k.to_sym) : !props.include?(k.to_sym) }
+      hash.select { |k, _v| excluding ? !props.include?(k.to_sym) : props.include?(k.to_sym) }
     end
   end
 end
