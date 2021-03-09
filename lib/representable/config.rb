@@ -20,14 +20,14 @@ module Representable
 
     def wrap=(value)
       value = value.to_s if value.is_a?(Symbol)
-      @wrap = ::Declarative::Option(value, instance_exec: true, callable: Uber::Callable)
+      @wrap = ::Representable::Option(value)
     end
 
     # Computes the wrap string or returns false.
-    def wrap_for(represented, *args, &block)
+    def wrap_for(represented, options = {}, &block)
       return unless @wrap
 
-      value = @wrap.(represented, *args)
+      value = @wrap.(exec_context: represented, keyword_arguments: options.to_hash)
 
       return value if value != true
 

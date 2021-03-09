@@ -102,7 +102,7 @@ module Representable
       @runtime_options = {}
 
       for name, value in options
-        value = ::Declarative::Option(value, instance_exec: true, callable: Uber::Callable) if dynamic_options.include?(name)
+        value = ::Representable::Option(value) if dynamic_options.include?(name)
         @runtime_options[name] = value
       end
     end
