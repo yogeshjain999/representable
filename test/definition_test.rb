@@ -156,7 +156,7 @@ class DefinitionTest < MiniTest::Spec
 
 
     describe "#clone" do
-      subject { Representable::Definition.new(:title, :volume => 9, :clonable => Declarative::Option(1)) }
+      subject { Representable::Definition.new(:title, :volume => 9, :clonable => ::Representable::Option(1)) }
 
       it { _(subject.clone).must_be_kind_of Representable::Definition }
       it { _(subject.clone[:clonable].(nil)).must_equal 1 }
