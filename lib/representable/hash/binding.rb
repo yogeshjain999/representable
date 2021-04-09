@@ -1,3 +1,5 @@
+require 'representable/binding'
+
 module Representable
   module Hash
     class Binding < Representable::Binding

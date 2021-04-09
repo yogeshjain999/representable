@@ -1,6 +1,8 @@
 gem 'nokogiri', '> 1.10.8'
 require 'nokogiri'
 
+require 'representable'
+
 module Representable
   module XML
     autoload :Binding, 'representable/xml/binding'

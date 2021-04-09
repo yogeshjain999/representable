@@ -1,4 +1,5 @@
 require 'logger'
+
 module Representable
   module Debug
     module_function def _representable_logger

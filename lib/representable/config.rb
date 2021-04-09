@@ -1,4 +1,8 @@
+require 'declarative/definitions'
+
 module Representable
+  autoload :Option, 'representable/option'
+
   # Stores Definitions from ::property. It preserves the adding order (1.9+).
   # Same-named properties get overridden, just like in a Hash.
   #

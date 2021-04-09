@@ -1,4 +1,9 @@
+require "declarative/schema"
+
 module Representable
+  autoload :Decorator, "representation/decorator"
+  autoload :Definition, "representation/definition"
+
   module Declarative
     def representation_wrap=(name)
       heritage.record(:representation_wrap=, name)

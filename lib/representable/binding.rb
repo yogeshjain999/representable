@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'uber/delegates'
+
 module Representable
   # The Binding provides methods to read/write the fragment for one property.
   #

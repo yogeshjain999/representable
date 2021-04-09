@@ -1,3 +1,5 @@
+require 'representable/binding'
+
 module Representable
   module Object
     class Binding < Representable::Binding

@@ -1,3 +1,5 @@
+require 'representable/hash'
+
 module Representable::Hash
   module Collection
     include Representable::Hash
