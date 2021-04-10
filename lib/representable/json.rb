@@ -1,10 +1,13 @@
 gem "multi_json", '>= 1.14.1'
 require "multi_json"
 
+require "representable"
+
 module Representable
   # Brings #to_json and #from_json to your object.
   module JSON
     autoload :Collection, "representable/json/collection"
+
     extend Hash::ClassMethods
     include Hash
 

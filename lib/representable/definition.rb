@@ -1,6 +1,10 @@
-require "representable/populator"
+require 'declarative/definitions'
 
 module Representable
+  autoload :Pipeline, "representable/pipeline"
+  autoload :Populator, "representable/populator"
+  autoload :Option, "representable/option"
+
   # Created at class compile time. Keeps configuration options for one property.
   class Definition < ::Declarative::Definitions::Definition
 

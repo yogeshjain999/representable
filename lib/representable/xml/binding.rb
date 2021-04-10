@@ -1,3 +1,5 @@
+require 'representable/binding'
+
 module Representable
   module XML
     module_function def Node(document, name, attributes={})

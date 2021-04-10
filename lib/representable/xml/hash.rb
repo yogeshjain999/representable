@@ -1,3 +1,6 @@
+require 'representable/xml'
+require 'representable/hash_methods'
+
 module Representable::XML
   module AttributeHash
     include Representable::XML

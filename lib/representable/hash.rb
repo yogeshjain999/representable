@@ -1,11 +1,14 @@
+require 'representable'
+require 'representable/hash/binding'
+
 module Representable
   # The generic representer. Brings #to_hash and #from_hash to your object.
   # If you plan to write your own representer for a new media type, try to use this module (e.g., check how JSON reuses Hash's internal
   # architecture).
   module Hash
-    autoload :Binding, 'representable/hash/binding'
-    autoload :AllowSymbols, 'representable/hash/allow_symbols'
     autoload :Collection, 'representable/hash/collection'
+    autoload :AllowSymbols, 'representable/hash/allow_symbols'
+
     def self.included(base)
       base.class_eval do
         include Representable # either in Hero or HeroRepresentation.

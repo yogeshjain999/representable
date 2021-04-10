@@ -1,3 +1,6 @@
+require 'representable/json'
+require 'representable/hash_methods'
+
 module Representable::JSON
   # "Lonely Hash" support.
   module Hash
