@@ -1,3 +1,7 @@
+# 3.1.1
+
+* Upgrade `trailblazer-option` to `0.1.1` which supports passing an empty `keyword_arguments`.
+
 # 3.1.0
 * Remove circular require
 * Use Dry-types 1.0.0+ as coercion library
